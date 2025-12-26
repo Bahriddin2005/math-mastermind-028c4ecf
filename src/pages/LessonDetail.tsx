@@ -18,11 +18,12 @@ import {
   Play, 
   CheckCircle2,
   Clock,
-  BookOpen,
   MessageCircle,
   Target,
   Loader2,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  Video
 } from 'lucide-react';
 
 interface PracticeConfig {
@@ -61,7 +62,9 @@ const LessonDetail = () => {
   const [practiceCompleted, setPracticeCompleted] = useState(false);
   const [nextLesson, setNextLesson] = useState<Lesson | null>(null);
   const [prevLesson, setPrevLesson] = useState<Lesson | null>(null);
-  const [activeTab, setActiveTab] = useState('video');
+  const [activeTab, setActiveTab] = useState('practice');
+  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+  const [totalLessons, setTotalLessons] = useState(0);
 
   useEffect(() => {
     if (lessonId) {
@@ -70,7 +73,6 @@ const LessonDetail = () => {
   }, [lessonId, user]);
 
   const fetchLesson = async () => {
-    // Fetch lesson
     const { data: lessonData } = await supabase
       .from('lessons')
       .select('*')
@@ -83,7 +85,6 @@ const LessonDetail = () => {
         practice_config: (lessonData.practice_config as unknown) as PracticeConfig
       });
 
-      // Fetch course
       const { data: courseData } = await supabase
         .from('courses')
         .select('id, title')
@@ -94,7 +95,6 @@ const LessonDetail = () => {
         setCourse(courseData);
       }
 
-      // Fetch adjacent lessons
       const { data: allLessons } = await supabase
         .from('lessons')
         .select('*')
@@ -103,12 +103,13 @@ const LessonDetail = () => {
         .order('order_index', { ascending: true });
 
       if (allLessons) {
+        setTotalLessons(allLessons.length);
         const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+        setCurrentLessonIndex(currentIndex + 1);
         if (currentIndex > 0) setPrevLesson({ ...allLessons[currentIndex - 1], practice_config: (allLessons[currentIndex - 1].practice_config as unknown) as PracticeConfig });
         if (currentIndex < allLessons.length - 1) setNextLesson({ ...allLessons[currentIndex + 1], practice_config: (allLessons[currentIndex + 1].practice_config as unknown) as PracticeConfig });
       }
 
-      // Fetch user progress
       if (user) {
         const { data: progressData } = await supabase
           .from('user_lesson_progress')
@@ -172,7 +173,10 @@ const LessonDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Dars yuklanmoqda...</p>
+        </div>
       </div>
     );
   }
@@ -183,11 +187,13 @@ const LessonDetail = () => {
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-12 flex items-center justify-center">
           <div className="text-center">
-            <GraduationCap className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h1 className="text-2xl font-bold mb-2">Dars topilmadi</h1>
+            <div className="h-24 w-24 rounded-3xl bg-secondary flex items-center justify-center mx-auto mb-6">
+              <GraduationCap className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h1 className="text-2xl font-display font-bold mb-3">Dars topilmadi</h1>
             <p className="text-muted-foreground mb-6">Bu dars mavjud emas yoki o'chirilgan</p>
-            <Button onClick={() => navigate('/courses')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <Button onClick={() => navigate('/courses')} size="lg" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
               Kurslarga qaytish
             </Button>
           </div>
@@ -198,29 +204,42 @@ const LessonDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/20">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
-        {/* Header */}
-        <div className="bg-secondary/30 border-b py-4">
-          <div className="container px-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => navigate(`/courses/${lesson.course_id}`)}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              {course?.title || 'Kursga qaytish'}
-            </Button>
+        {/* Breadcrumb Header */}
+        <div className="bg-card/80 backdrop-blur-sm border-b sticky top-0 z-10">
+          <div className="container px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="gap-2"
+                onClick={() => navigate(`/courses/${lesson.course_id}`)}
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline">{course?.title || 'Kursga qaytish'}</span>
+                <span className="sm:hidden">Orqaga</span>
+              </Button>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Dars {currentLessonIndex}/{totalLessons}</span>
+                {isCompleted && (
+                  <Badge className="bg-success/10 text-success gap-1">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Tugatilgan
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="container px-4 py-8">
-          <div className="max-w-5xl mx-auto">
-            {/* Video Player */}
-            <div className="mb-8">
-              <div className="aspect-video bg-black rounded-xl overflow-hidden mb-4">
+          <div className="max-w-5xl mx-auto space-y-8">
+            {/* Video Player Section */}
+            <div className="space-y-4">
+              <div className="relative aspect-video bg-card rounded-2xl overflow-hidden shadow-2xl border border-border/40">
                 {lesson.video_url ? (
                   <video
                     ref={videoRef}
@@ -230,96 +249,133 @@ const LessonDetail = () => {
                     onEnded={markAsCompleted}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-secondary/50">
                     <div className="text-center">
-                      <Play className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                      <p className="text-muted-foreground">Video hali yuklanmagan</p>
+                      <div className="h-20 w-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                        <Video className="h-10 w-10 text-muted-foreground" />
+                      </div>
+                      <p className="text-muted-foreground font-medium">Video hali yuklanmagan</p>
+                      <p className="text-sm text-muted-foreground/70 mt-1">Tez orada qo'shiladi</p>
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    {isCompleted && (
-                      <Badge className="bg-green-500 text-white">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Tugatilgan
+              {/* Lesson Info */}
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <Badge variant="secondary" className="gap-1">
+                      <Clock className="h-3 w-3" />
+                      {lesson.duration_minutes} daqiqa
+                    </Badge>
+                    {practiceCompleted && (
+                      <Badge className="bg-accent/10 text-accent gap-1">
+                        <Target className="h-3 w-3" />
+                        Mashq bajarildi
                       </Badge>
                     )}
-                    <span className="text-sm text-muted-foreground flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {lesson.duration_minutes} daqiqa
-                    </span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold mb-2">{lesson.title}</h1>
-                  <p className="text-muted-foreground">{lesson.description}</p>
+                  <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+                    {lesson.title}
+                  </h1>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {lesson.description}
+                  </p>
                 </div>
 
                 {!isCompleted && user && (
-                  <Button onClick={markAsCompleted} variant="outline">
-                    <CheckCircle2 className="h-4 w-4 mr-2" />
-                    Tugatildi
+                  <Button 
+                    onClick={markAsCompleted} 
+                    variant="outline"
+                    className="gap-2 shrink-0"
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                    Tugatildi deb belgilash
                   </Button>
                 )}
               </div>
             </div>
 
-            {/* Tabs for Practice and Q&A */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="practice" className="gap-2">
-                  <Target className="h-4 w-4" />
-                  Mashq
-                  {practiceCompleted && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                </TabsTrigger>
-                <TabsTrigger value="qa" className="gap-2">
-                  <MessageCircle className="h-4 w-4" />
-                  Savol-javob
-                </TabsTrigger>
-              </TabsList>
+            {/* Tabs Section */}
+            <Card className="border-border/40 shadow-lg overflow-hidden">
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <CardHeader className="pb-0 bg-gradient-to-r from-secondary/50 to-transparent">
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary/60">
+                    <TabsTrigger value="practice" className="gap-2 data-[state=active]:bg-card">
+                      <Target className="h-4 w-4" />
+                      Mashq
+                      {practiceCompleted && <CheckCircle2 className="h-3 w-3 text-success" />}
+                    </TabsTrigger>
+                    <TabsTrigger value="qa" className="gap-2 data-[state=active]:bg-card">
+                      <MessageCircle className="h-4 w-4" />
+                      Savol-javob
+                    </TabsTrigger>
+                  </TabsList>
+                </CardHeader>
 
-              <TabsContent value="practice" className="mt-6">
-                <LessonPractice 
-                  lessonId={lesson.id}
-                  config={lesson.practice_config}
-                  onComplete={handlePracticeComplete}
-                  isCompleted={practiceCompleted}
-                />
-              </TabsContent>
+                <CardContent className="pt-6">
+                  <TabsContent value="practice" className="mt-0">
+                    <LessonPractice 
+                      lessonId={lesson.id}
+                      config={lesson.practice_config}
+                      onComplete={handlePracticeComplete}
+                      isCompleted={practiceCompleted}
+                    />
+                  </TabsContent>
 
-              <TabsContent value="qa" className="mt-6">
-                <LessonQA lessonId={lesson.id} />
-              </TabsContent>
-            </Tabs>
+                  <TabsContent value="qa" className="mt-0">
+                    <LessonQA lessonId={lesson.id} />
+                  </TabsContent>
+                </CardContent>
+              </Tabs>
+            </Card>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between pt-8 border-t">
-              {prevLesson ? (
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate(`/lessons/${prevLesson.id}`)}
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Oldingi dars
-                </Button>
-              ) : (
-                <div />
-              )}
+            <Card className="border-border/40">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between gap-4">
+                  {prevLesson ? (
+                    <Button 
+                      variant="outline"
+                      className="gap-2 flex-1 md:flex-none"
+                      onClick={() => navigate(`/lessons/${prevLesson.id}`)}
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span className="hidden sm:inline">Oldingi dars</span>
+                      <span className="sm:hidden">Oldingi</span>
+                    </Button>
+                  ) : (
+                    <div />
+                  )}
 
-              {nextLesson ? (
-                <Button onClick={() => navigate(`/lessons/${nextLesson.id}`)}>
-                  Keyingi dars
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              ) : (
-                <Button onClick={() => navigate(`/courses/${lesson.course_id}`)}>
-                  Kursni tugatish
-                  <CheckCircle2 className="h-4 w-4 ml-2" />
-                </Button>
-              )}
-            </div>
+                  <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span>Davom eting, ajoyib natija!</span>
+                  </div>
+
+                  {nextLesson ? (
+                    <Button 
+                      className="gap-2 flex-1 md:flex-none"
+                      onClick={() => navigate(`/lessons/${nextLesson.id}`)}
+                    >
+                      <span className="hidden sm:inline">Keyingi dars</span>
+                      <span className="sm:hidden">Keyingi</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      className="gap-2 flex-1 md:flex-none"
+                      onClick={() => navigate(`/courses/${lesson.course_id}`)}
+                    >
+                      <span className="hidden sm:inline">Kursni tugatish</span>
+                      <span className="sm:hidden">Tugatish</span>
+                      <CheckCircle2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
