@@ -884,13 +884,75 @@ export const NumberTrainer = () => {
       
       <div className="container py-8 px-4 md:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">
-            Mental Arifmetika <span className="text-gradient-primary">Treneri</span>
-          </h1>
-          <p className="text-muted-foreground max-w-lg mx-auto">
-            Aql hisoblash ko'nikmalarini rivojlantiring va o'z darajangizni oshiring
-          </p>
+        <div className="relative text-center mb-10 py-8 animate-fade-in">
+          {/* Background decorations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-0 left-1/4 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+          </div>
+          
+          {/* Floating icons */}
+          <div className="absolute top-4 left-[15%] animate-bounce-soft opacity-60">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center rotate-12">
+              <span className="text-xl">🧮</span>
+            </div>
+          </div>
+          <div className="absolute top-8 right-[15%] animate-bounce-soft opacity-60" style={{ animationDelay: '0.5s' }}>
+            <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center -rotate-12">
+              <span className="text-xl">🧠</span>
+            </div>
+          </div>
+          <div className="absolute bottom-2 left-[20%] animate-bounce-soft opacity-50 hidden md:block" style={{ animationDelay: '1s' }}>
+            <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center rotate-6">
+              <span className="text-lg">⚡</span>
+            </div>
+          </div>
+          <div className="absolute bottom-4 right-[20%] animate-bounce-soft opacity-50 hidden md:block" style={{ animationDelay: '0.7s' }}>
+            <div className="h-8 w-8 rounded-lg bg-success/10 flex items-center justify-center -rotate-6">
+              <span className="text-lg">🎯</span>
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-sm text-primary font-medium mb-4">
+              <Flame className="h-4 w-4" />
+              Kundalik mashq qiling
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4">
+              Mental Arifmetika{' '}
+              <span className="relative">
+                <span className="text-gradient-primary">Treneri</span>
+                <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
+                  <path d="M2 6C50 2 150 2 198 6" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" className="opacity-50"/>
+                </svg>
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
+              Aql hisoblash ko&apos;nikmalarini rivojlantiring va{' '}
+              <span className="text-foreground font-medium">o&apos;z darajangizni</span> oshiring
+            </p>
+
+            {/* Stats badges */}
+            {user && stats.totalProblems > 0 && (
+              <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
+                  <Target className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">{stats.totalProblems} mashq</span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
+                  <Trophy className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium">{accuracy}% aniqlik</span>
+                </div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
+                  <Flame className="h-4 w-4 text-accent" />
+                  <span className="text-sm font-medium">{stats.bestStreak} seriya</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
