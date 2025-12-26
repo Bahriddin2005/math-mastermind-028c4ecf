@@ -70,7 +70,10 @@ export type Database = {
           avatar_url: string | null
           best_streak: number | null
           created_at: string
+          current_streak: number | null
+          daily_goal: number | null
           id: string
+          last_active_date: string | null
           total_problems_solved: number | null
           total_score: number | null
           updated_at: string
@@ -81,7 +84,10 @@ export type Database = {
           avatar_url?: string | null
           best_streak?: number | null
           created_at?: string
+          current_streak?: number | null
+          daily_goal?: number | null
           id?: string
+          last_active_date?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
@@ -92,7 +98,10 @@ export type Database = {
           avatar_url?: string | null
           best_streak?: number | null
           created_at?: string
+          current_streak?: number | null
+          daily_goal?: number | null
           id?: string
+          last_active_date?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string

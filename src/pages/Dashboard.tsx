@@ -6,6 +6,9 @@ import { Navbar } from '@/components/Navbar';
 import { WelcomeHero } from '@/components/WelcomeHero';
 import { FeatureCard } from '@/components/FeatureCard';
 import { StatsCard } from '@/components/StatsCard';
+import { DailyGoals } from '@/components/DailyGoals';
+import { Achievements } from '@/components/Achievements';
+import { StatsCharts } from '@/components/StatsCharts';
 import { GameHistoryItem } from '@/components/GameHistoryItem';
 import { Leaderboard } from '@/components/Leaderboard';
 import { Button } from '@/components/ui/button';
@@ -30,6 +33,8 @@ interface Profile {
   total_score: number;
   total_problems_solved: number;
   best_streak: number;
+  daily_goal: number;
+  current_streak: number;
 }
 
 interface GameSession {
@@ -51,6 +56,7 @@ const Dashboard = () => {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [sessions, setSessions] = useState<GameSession[]>([]);
+  const [todaySolved, setTodaySolved] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,6 +66,7 @@ const Dashboard = () => {
     }
 
     const fetchData = async () => {
+      // Fetch profile
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -67,18 +74,33 @@ const Dashboard = () => {
         .maybeSingle();
 
       if (profileData) {
-        setProfile(profileData);
+        setProfile({
+          username: profileData.username,
+          total_score: profileData.total_score || 0,
+          total_problems_solved: profileData.total_problems_solved || 0,
+          best_streak: profileData.best_streak || 0,
+          daily_goal: profileData.daily_goal || 20,
+          current_streak: profileData.current_streak || 0,
+        });
       }
 
+      // Fetch all game sessions for charts
       const { data: sessionsData } = await supabase
         .from('game_sessions')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(50);
 
       if (sessionsData) {
         setSessions(sessionsData);
+
+        // Calculate today's solved problems
+        const today = new Date().toISOString().split('T')[0];
+        const todayProblems = sessionsData
+          .filter(s => s.created_at.startsWith(today))
+          .reduce((sum, s) => sum + s.correct + s.incorrect, 0);
+        setTodaySolved(todayProblems);
       }
 
       setLoading(false);
@@ -161,9 +183,31 @@ const Dashboard = () => {
             />
           </div>
 
+          {/* Daily Goals & Achievements Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {user && profile && (
+              <DailyGoals
+                userId={user.id}
+                dailyGoal={profile.daily_goal}
+                todaySolved={todaySolved}
+                currentStreak={profile.current_streak}
+                onGoalChange={(newGoal) => setProfile({ ...profile, daily_goal: newGoal })}
+              />
+            )}
+            <Achievements
+              totalProblems={profile?.total_problems_solved || 0}
+              bestStreak={profile?.best_streak || 0}
+              totalScore={profile?.total_score || 0}
+              totalGames={stats.totalGames}
+            />
+          </div>
+
+          {/* Statistics Charts */}
+          <StatsCharts sessions={sessions} />
+
           {/* Feature Cards */}
           <div className="space-y-4">
-            <h2 className="text-lg font-display font-bold text-foreground opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+            <h2 className="text-lg font-display font-bold text-foreground opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
               Tez kirish
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -175,7 +219,7 @@ const Dashboard = () => {
                 icon={Play}
                 iconBgColor="primary"
                 onClick={() => navigate('/')}
-                delay={300}
+                delay={500}
               />
               <FeatureCard
                 category="VAQT REJIMI"
@@ -185,31 +229,13 @@ const Dashboard = () => {
                 icon={Timer}
                 iconBgColor="accent"
                 onClick={() => navigate('/')}
-                delay={350}
-              />
-              <FeatureCard
-                category="STATISTIKA"
-                title="Natijalar paneli"
-                description="Har bir mashq va test natijalaringizni grafik ko'rinishda kuzating."
-                buttonText="Grafik va statistika"
-                icon={BarChart3}
-                iconBgColor="success"
-                delay={400}
-              />
-              <FeatureCard
-                category="MUSOBAQA"
-                title="Reyting jadvali"
-                description="Global reytingda boshqa o'quvchilar bilan raqobatlashing."
-                buttonText="Reytingni ko'rish"
-                icon={Users}
-                iconBgColor="warning"
-                delay={450}
+                delay={550}
               />
             </div>
           </div>
 
           {/* Tabs for History & Leaderboard */}
-          <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+          <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
             <TabsList className="grid w-full grid-cols-2 rounded-2xl p-1 bg-secondary/50">
               <TabsTrigger
                 value="history"
@@ -250,8 +276,8 @@ const Dashboard = () => {
                       </Button>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {sessions.map((session, index) => (
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                      {sessions.slice(0, 10).map((session, index) => (
                         <GameHistoryItem
                           key={session.id}
                           section={session.section}
