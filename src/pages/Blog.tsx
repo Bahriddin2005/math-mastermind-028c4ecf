@@ -5,6 +5,7 @@ import { Footer } from '@/components/Footer';
 import { useSound } from '@/hooks/useSound';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { BlogLikeButton } from '@/components/BlogLikeButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -160,6 +161,7 @@ const Blog = () => {
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{post.author}</span>
                         <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{post.read_time}</span>
+                        <BlogLikeButton postId={post.id} variant="compact" />
                       </div>
                       <Button variant="ghost" size="sm"><ArrowRight className="h-4 w-4" /></Button>
                     </CardFooter>

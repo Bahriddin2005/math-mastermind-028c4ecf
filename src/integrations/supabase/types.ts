@@ -19,6 +19,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          parent_id: string | null
           post_id: string
           updated_at: string
           user_id: string
@@ -27,6 +28,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           post_id: string
           updated_at?: string
           user_id: string
@@ -35,13 +37,50 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           post_id?: string
           updated_at?: string
           user_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "blog_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "blog_comments"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "blog_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blog_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blog_likes_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "blog_posts"

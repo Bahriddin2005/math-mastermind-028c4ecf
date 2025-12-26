@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { BlogComments } from '@/components/BlogComments';
+import { BlogLikeButton } from '@/components/BlogLikeButton';
 import { useSound } from '@/hooks/useSound';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -161,6 +162,11 @@ const BlogPost = () => {
                   {paragraph}
                 </p>
               ))}
+            </div>
+
+            {/* Like Button */}
+            <div className="flex justify-center mt-8">
+              <BlogLikeButton postId={post.id} />
             </div>
 
             {/* Comments Section */}
