@@ -14,6 +14,7 @@ import { Leaderboard } from '@/components/Leaderboard';
 import { InfoCarousel } from '@/components/InfoCarousel';
 import { GuestDashboard } from '@/components/GuestDashboard';
 import { Footer } from '@/components/Footer';
+import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -30,6 +31,7 @@ import {
   Zap,
   Sparkles,
   GraduationCap,
+  Calculator,
 } from 'lucide-react';
 
 interface Profile {
@@ -280,6 +282,20 @@ const Dashboard = () => {
                   delay={600}
                 />
               </div>
+            </div>
+
+            {/* Mental Arifmetika Mashqi */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                  <Calculator className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-display font-bold text-foreground">Mental Arifmetika</h2>
+                  <p className="text-sm text-muted-foreground">Abacus bilan mashq qiling</p>
+                </div>
+              </div>
+              <MentalArithmeticPractice />
             </div>
 
             {/* Info Carousel */}

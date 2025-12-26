@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Play, RotateCcw, Check } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { AbacusDisplay } from './AbacusDisplay';
+import { Play, RotateCcw, Check, Settings2, Zap } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 
 // Qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
 const RULES: Record<number, { add: number[]; subtract: number[] }> = {
@@ -18,15 +24,32 @@ const RULES: Record<number, { add: number[]; subtract: number[] }> = {
   9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
 };
 
-interface MentalArithmeticPracticeProps {
-  problemCount?: number; // Nechta son ko'rsatiladi
-  onComplete?: (isCorrect: boolean, answer: number, correctAnswer: number) => void;
+// Qiyinlik darajalari
+const DIFFICULTY_CONFIG = {
+  easy: { label: "Oson", count: 3, speed: 1500 },
+  medium: { label: "O'rta", count: 5, speed: 1000 },
+  hard: { label: "Qiyin", count: 10, speed: 700 },
+};
+
+type DifficultyLevel = keyof typeof DIFFICULTY_CONFIG;
+
+interface PracticeStats {
+  totalProblems: number;
+  correctAnswers: number;
+  incorrectAnswers: number;
+  bestStreak: number;
+  averageTime: number;
 }
 
-export const MentalArithmeticPractice = ({ 
-  problemCount = 5,
-  onComplete 
-}: MentalArithmeticPracticeProps) => {
+export const MentalArithmeticPractice = () => {
+  const { user } = useAuth();
+  
+  // Sozlamalar
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
+  const [showAbacus, setShowAbacus] = useState(true);
+  const [showSettings, setShowSettings] = useState(true);
+  
+  // O'yin holati
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -34,10 +57,54 @@ export const MentalArithmeticPractice = ({
   const [userAnswer, setUserAnswer] = useState('');
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  
+  // Statistika
+  const [stats, setStats] = useState<PracticeStats>({
+    totalProblems: 0,
+    correctAnswers: 0,
+    incorrectAnswers: 0,
+    bestStreak: 0,
+    averageTime: 0,
+  });
   
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+
+  // Statistikani yuklash
+  useEffect(() => {
+    if (!user) return;
+    
+    const loadStats = async () => {
+      const { data } = await supabase
+        .from('game_sessions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('section', 'mental-arithmetic')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      
+      if (data && data.length > 0) {
+        const totalProblems = data.reduce((sum, s) => sum + (s.correct || 0) + (s.incorrect || 0), 0);
+        const correctAnswers = data.reduce((sum, s) => sum + (s.correct || 0), 0);
+        const incorrectAnswers = data.reduce((sum, s) => sum + (s.incorrect || 0), 0);
+        const bestStreak = Math.max(...data.map(s => s.best_streak || 0));
+        const totalTime = data.reduce((sum, s) => sum + (s.total_time || 0), 0);
+        
+        setStats({
+          totalProblems,
+          correctAnswers,
+          incorrectAnswers,
+          bestStreak,
+          averageTime: totalProblems > 0 ? totalTime / totalProblems : 0,
+        });
+      }
+    };
+    
+    loadStats();
+  }, [user]);
 
   // Keyingi sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
@@ -46,7 +113,6 @@ export const MentalArithmeticPractice = ({
     
     if (!rules) return null;
 
-    // Barcha mumkin bo'lgan amallarni to'plash
     const possibleOperations: { number: number; isAdd: boolean }[] = [];
     
     rules.add.forEach(num => {
@@ -59,10 +125,8 @@ export const MentalArithmeticPractice = ({
 
     if (possibleOperations.length === 0) return null;
 
-    // Tasodifiy amal tanlash
     const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
     
-    // Natijani yangilash
     if (randomOp.isAdd) {
       runningResultRef.current += randomOp.number;
     } else {
@@ -74,25 +138,25 @@ export const MentalArithmeticPractice = ({
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
-    // Dastlabki natija tasodifiy 0-9
+    const config = DIFFICULTY_CONFIG[difficulty];
     const initialResult = Math.floor(Math.random() * 10);
     runningResultRef.current = initialResult;
     countRef.current = 1;
+    startTimeRef.current = Date.now();
     
     setCurrentNumber(initialResult);
     setDisplayedNumbers([initialResult]);
     setIsRunning(true);
     setIsFinished(false);
+    setShowSettings(false);
     setUserAnswer('');
     setFeedback(null);
     setShowResult(false);
 
-    // Har 1 soniyada yangi son
     intervalRef.current = setInterval(() => {
       countRef.current += 1;
       
-      if (countRef.current > problemCount) {
-        // O'yin tugadi
+      if (countRef.current > config.count) {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
@@ -108,20 +172,74 @@ export const MentalArithmeticPractice = ({
         setCurrentNumber(nextNum);
         setDisplayedNumbers(prev => [...prev, nextNum]);
       }
-    }, 1000);
-  }, [problemCount, generateNextNumber]);
+    }, config.speed);
+  }, [difficulty, generateNextNumber]);
 
-  // Javobni tekshirish
-  const checkAnswer = useCallback(() => {
+  // Javobni tekshirish va saqlash
+  const checkAnswer = useCallback(async () => {
     const userNum = parseInt(userAnswer, 10);
     const correctAnswer = runningResultRef.current;
     const isCorrect = userNum === correctAnswer;
+    const timeTaken = (Date.now() - startTimeRef.current) / 1000;
     
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     setShowResult(true);
     
-    onComplete?.(isCorrect, userNum, correctAnswer);
-  }, [userAnswer, onComplete]);
+    const newStreak = isCorrect ? currentStreak + 1 : 0;
+    setCurrentStreak(newStreak);
+    
+    // Statistikani yangilash
+    setStats(prev => ({
+      ...prev,
+      totalProblems: prev.totalProblems + 1,
+      correctAnswers: prev.correctAnswers + (isCorrect ? 1 : 0),
+      incorrectAnswers: prev.incorrectAnswers + (isCorrect ? 0 : 1),
+      bestStreak: Math.max(prev.bestStreak, newStreak),
+    }));
+    
+    // Supabase'ga saqlash
+    if (user) {
+      try {
+        await supabase.from('game_sessions').insert({
+          user_id: user.id,
+          section: 'mental-arithmetic',
+          difficulty: difficulty,
+          mode: 'practice',
+          correct: isCorrect ? 1 : 0,
+          incorrect: isCorrect ? 0 : 1,
+          best_streak: newStreak,
+          score: isCorrect ? 10 : 0,
+          total_time: timeTaken,
+          problems_solved: 1,
+        });
+        
+        // Profilni yangilash
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_score, total_problems_solved, best_streak')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (profile) {
+          await supabase
+            .from('profiles')
+            .update({
+              total_score: (profile.total_score || 0) + (isCorrect ? 10 : 0),
+              total_problems_solved: (profile.total_problems_solved || 0) + 1,
+              best_streak: Math.max(profile.best_streak || 0, newStreak),
+              last_active_date: new Date().toISOString().split('T')[0],
+            })
+            .eq('user_id', user.id);
+        }
+      } catch (error) {
+        console.error('Error saving session:', error);
+      }
+    }
+    
+    if (isCorrect) {
+      toast.success("To'g'ri javob! 🎉", { duration: 2000 });
+    }
+  }, [userAnswer, user, difficulty, currentStreak]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
@@ -136,11 +254,11 @@ export const MentalArithmeticPractice = ({
     setUserAnswer('');
     setFeedback(null);
     setShowResult(false);
+    setShowSettings(true);
     runningResultRef.current = 0;
     countRef.current = 0;
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -149,58 +267,121 @@ export const MentalArithmeticPractice = ({
     };
   }, []);
 
-  // Enter tugmasi bilan javob berish
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isFinished && !showResult && userAnswer) {
       checkAnswer();
     }
   };
 
-  return (
-    <Card className="p-8 max-w-md mx-auto">
-      {/* Son ko'rsatish maydoni */}
-      <div className="flex flex-col items-center justify-center min-h-[200px]">
-        {!isRunning && !isFinished && currentNumber === null && (
-          <Button 
-            onClick={startGame} 
-            size="lg" 
-            className="gap-2"
-          >
-            <Play className="h-5 w-5" />
-            Boshlash
-          </Button>
-        )}
+  const config = DIFFICULTY_CONFIG[difficulty];
+  const accuracy = stats.totalProblems > 0 
+    ? Math.round((stats.correctAnswers / stats.totalProblems) * 100) 
+    : 0;
 
-        {(isRunning || (isFinished && currentNumber === null)) && (
-          <div className="text-center">
-            {currentNumber !== null && (
-              <div 
-                className="text-8xl font-bold text-primary transition-all duration-200"
-                key={displayedNumbers.length}
-              >
-                {currentNumber}
+  return (
+    <div className="space-y-6">
+      {/* Statistika */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">Jami</div>
+          <div className="text-2xl font-bold text-primary">{stats.totalProblems}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">To'g'ri</div>
+          <div className="text-2xl font-bold text-green-500">{stats.correctAnswers}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">Aniqlik</div>
+          <div className="text-2xl font-bold text-blue-500">{accuracy}%</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">Eng uzun seriya</div>
+          <div className="text-2xl font-bold text-amber-500">{stats.bestStreak}</div>
+        </Card>
+      </div>
+
+      <Card className="overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary" />
+            Mental Arifmetika Mashqi
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {/* Sozlamalar */}
+          {showSettings && !isRunning && !isFinished && (
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Settings2 className="h-4 w-4" />
+                Sozlamalar
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Qiyinlik darajasi</Label>
+                  <Select value={difficulty} onValueChange={(v) => setDifficulty(v as DifficultyLevel)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="easy">Oson (3 son, 1.5s)</SelectItem>
+                      <SelectItem value="medium">O'rta (5 son, 1s)</SelectItem>
+                      <SelectItem value="hard">Qiyin (10 son, 0.7s)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Abacus ko'rsatish</Label>
+                  <Select value={showAbacus ? 'yes' : 'no'} onValueChange={(v) => setShowAbacus(v === 'yes')}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Ha</SelectItem>
+                      <SelectItem value="no">Yo'q</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* O'yin maydoni */}
+          <div className="flex flex-col items-center justify-center min-h-[300px]">
+            {!isRunning && !isFinished && (
+              <Button onClick={startGame} size="lg" className="gap-2">
+                <Play className="h-5 w-5" />
+                Boshlash
+              </Button>
+            )}
+
+            {isRunning && currentNumber !== null && (
+              <div className="text-center">
+                {showAbacus ? (
+                  <AbacusDisplay number={currentNumber} size="lg" />
+                ) : (
+                  <div className="text-8xl font-bold text-primary animate-fade-in" key={displayedNumbers.length}>
+                    {currentNumber}
+                  </div>
+                )}
+                <div className="mt-4 text-sm text-muted-foreground">
+                  {countRef.current} / {config.count}
+                </div>
               </div>
             )}
-            
-            {isFinished && currentNumber === null && !showResult && (
-              <div className="space-y-6">
-                <p className="text-lg text-muted-foreground mb-4">
-                  Natijani kiriting:
-                </p>
+
+            {isFinished && !showResult && (
+              <div className="space-y-6 text-center w-full max-w-xs">
+                <p className="text-lg text-muted-foreground">Natijani kiriting:</p>
                 <Input
                   type="number"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Javob"
-                  className="text-center text-2xl h-16 w-32 mx-auto"
+                  className="text-center text-2xl h-16"
                   autoFocus
                 />
-                <Button 
-                  onClick={checkAnswer} 
-                  disabled={!userAnswer}
-                  className="gap-2"
-                >
+                <Button onClick={checkAnswer} disabled={!userAnswer} className="gap-2 w-full">
                   <Check className="h-4 w-4" />
                   Tekshirish
                 </Button>
@@ -208,14 +389,14 @@ export const MentalArithmeticPractice = ({
             )}
 
             {showResult && (
-              <div className="space-y-4">
-                <div 
-                  className={`text-6xl font-bold ${
-                    feedback === 'correct' ? 'text-green-500' : 'text-red-500'
-                  }`}
-                >
-                  {feedback === 'correct' ? '✓' : '✗'}
-                </div>
+              <div className="space-y-4 text-center">
+                {showAbacus ? (
+                  <AbacusDisplay number={runningResultRef.current} size="md" />
+                ) : (
+                  <div className={`text-6xl font-bold ${feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                    {feedback === 'correct' ? '✓' : '✗'}
+                  </div>
+                )}
                 <p className="text-lg">
                   {feedback === 'correct' 
                     ? "To'g'ri!" 
@@ -225,27 +406,16 @@ export const MentalArithmeticPractice = ({
                 <p className="text-sm text-muted-foreground">
                   Sonlar: {displayedNumbers.join(' → ')}
                 </p>
-                <Button 
-                  onClick={resetGame} 
-                  variant="outline"
-                  className="gap-2"
-                >
+                <Button onClick={resetGame} variant="outline" className="gap-2">
                   <RotateCcw className="h-4 w-4" />
                   Qayta boshlash
                 </Button>
               </div>
             )}
           </div>
-        )}
-      </div>
-
-      {/* Progress ko'rsatkichi */}
-      {isRunning && (
-        <div className="mt-4 text-center text-sm text-muted-foreground">
-          {countRef.current} / {problemCount}
-        </div>
-      )}
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
