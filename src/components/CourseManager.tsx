@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { 
   Dialog, 
@@ -81,10 +82,12 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
   const [courseForm, setCourseForm] = useState({
     title: '',
     description: '',
+    thumbnail_url: '',
     difficulty: 'beginner',
     is_published: false,
   });
   const [savingCourse, setSavingCourse] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   // Lesson dialog
   const [lessonDialogOpen, setLessonDialogOpen] = useState(false);
@@ -98,6 +101,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
   });
   const [savingLesson, setSavingLesson] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     if (isAdmin) {
@@ -141,6 +145,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
       setCourseForm({
         title: course.title,
         description: course.description || '',
+        thumbnail_url: course.thumbnail_url || '',
         difficulty: course.difficulty,
         is_published: course.is_published,
       });
@@ -149,11 +154,44 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
       setCourseForm({
         title: '',
         description: '',
+        thumbnail_url: '',
         difficulty: 'beginner',
         is_published: false,
       });
     }
     setCourseDialogOpen(true);
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Rasm hajmi 5MB dan oshmasligi kerak");
+      return;
+    }
+
+    setUploadingThumbnail(true);
+    try {
+      const fileName = `thumbnails/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage
+        .from('course-videos')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: publicUrl } = supabase.storage
+        .from('course-videos')
+        .getPublicUrl(fileName);
+
+      setCourseForm(prev => ({ ...prev, thumbnail_url: publicUrl.publicUrl }));
+      toast.success("Rasm yuklandi");
+    } catch (error) {
+      console.error(error);
+      toast.error("Rasm yuklashda xatolik");
+    } finally {
+      setUploadingThumbnail(false);
+    }
   };
 
   const handleSaveCourse = async () => {
@@ -163,11 +201,19 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     }
     setSavingCourse(true);
     try {
+      const dataToSave = {
+        title: courseForm.title,
+        description: courseForm.description,
+        thumbnail_url: courseForm.thumbnail_url || null,
+        difficulty: courseForm.difficulty,
+        is_published: courseForm.is_published,
+      };
+      
       if (editingCourse) {
-        await supabase.from('courses').update(courseForm).eq('id', editingCourse.id);
+        await supabase.from('courses').update(dataToSave).eq('id', editingCourse.id);
         toast.success("Kurs yangilandi");
       } else {
-        await supabase.from('courses').insert({ ...courseForm, order_index: courses.length });
+        await supabase.from('courses').insert({ ...dataToSave, order_index: courses.length });
         toast.success("Kurs yaratildi");
       }
       setCourseDialogOpen(false);
@@ -227,14 +273,32 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     }
 
     setUploadingVideo(true);
+    setUploadProgress(0);
+    
     try {
       const fileName = `${Date.now()}-${file.name}`;
+      
+      // Simulate progress for better UX (Supabase doesn't provide native progress)
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 300);
+      
       const { data, error } = await supabase.storage
         .from('course-videos')
         .upload(fileName, file);
 
+      clearInterval(progressInterval);
+      
       if (error) throw error;
 
+      setUploadProgress(100);
+      
       const { data: publicUrl } = supabase.storage
         .from('course-videos')
         .getPublicUrl(fileName);
@@ -245,7 +309,10 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
       console.error(error);
       toast.error("Video yuklashda xatolik");
     } finally {
-      setUploadingVideo(false);
+      setTimeout(() => {
+        setUploadingVideo(false);
+        setUploadProgress(0);
+      }, 500);
     }
   };
 
@@ -463,6 +530,37 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
               />
             </div>
             <div>
+              <Label>Kurs rasmi</Label>
+              <div className="space-y-2">
+                {courseForm.thumbnail_url && (
+                  <img 
+                    src={courseForm.thumbnail_url} 
+                    alt="Thumbnail" 
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    value={courseForm.thumbnail_url}
+                    onChange={(e) => setCourseForm(prev => ({ ...prev, thumbnail_url: e.target.value }))}
+                    placeholder="Rasm URL yoki yuklang..."
+                    className="flex-1"
+                  />
+                  <Button variant="outline" asChild disabled={uploadingThumbnail}>
+                    <label className="cursor-pointer">
+                      {uploadingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleThumbnailUpload}
+                      />
+                    </label>
+                  </Button>
+                </div>
+              </div>
+            </div>
+            <div>
               <Label>Qiyinchilik darajasi</Label>
               <Select 
                 value={courseForm.difficulty} 
@@ -546,6 +644,14 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
                     </label>
                   </Button>
                 </div>
+                {uploadingVideo && (
+                  <div className="space-y-1">
+                    <Progress value={uploadProgress} className="h-2" />
+                    <p className="text-xs text-muted-foreground text-center">
+                      Yuklanmoqda... {uploadProgress}%
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <div>
