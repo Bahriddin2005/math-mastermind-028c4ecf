@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, faqContext, coursesContext, lessonsContext, userProgressContext, imageBase64 } = await req.json();
+    const { message, faqContext, coursesContext, lessonsContext, userProgressContext, imageBase64, pdfBase64, pdfFileName } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -26,7 +26,7 @@ LANGUAGE DETECTION & RESPONSE RULES:
 - If user writes in Russian → respond in Russian (Русский)
 - If user writes in Uzbek or any other language → respond in Uzbek
 - Always respond in the SAME language the user used
-- Keep responses short (2-3 sentences max) unless solving a math problem
+- Keep responses short (2-3 sentences max) unless solving a math problem or analyzing a document
 
 MATH PROBLEM SOLVING:
 - If user asks to solve a math problem, ALWAYS solve it step by step
@@ -40,6 +40,12 @@ IMAGE ANALYSIS:
 - If an image is provided, analyze its content
 - For math problems in images, extract and solve them
 - For other images, describe what you see and relate it to math if possible
+
+PDF DOCUMENT ANALYSIS:
+- If a PDF is provided, analyze its content thoroughly
+- Extract key information, summaries, or answer questions about the document
+- If the PDF contains math problems, solve them
+- Provide structured summaries for educational content
 
 PLATFORM INFO:
 - Mental arithmetic learning platform
@@ -75,14 +81,33 @@ INSTRUCTIONS:
       { role: "system", content: systemPrompt },
     ];
 
-    // If image is provided, use multimodal message
-    if (imageBase64) {
+    // Handle multimodal content
+    if (imageBase64 || pdfBase64) {
+      const contentParts: any[] = [
+        { type: "text", text: message || (pdfBase64 ? `Bu PDF hujjatni (${pdfFileName || 'document.pdf'}) tahlil qiling va asosiy ma'lumotlarni chiqaring.` : "Bu rasmni tahlil qiling va agar matematika masalasi bo'lsa, yeching.") }
+      ];
+
+      if (imageBase64) {
+        contentParts.push({ 
+          type: "image_url", 
+          image_url: { url: `data:image/jpeg;base64,${imageBase64}` } 
+        });
+      }
+
+      if (pdfBase64) {
+        // For PDF, we include it as a file for the model to process
+        contentParts.push({ 
+          type: "file",
+          file: {
+            filename: pdfFileName || "document.pdf",
+            file_data: `data:application/pdf;base64,${pdfBase64}`
+          }
+        });
+      }
+
       messages.push({
         role: "user",
-        content: [
-          { type: "text", text: message || "Bu rasmni tahlil qiling va agar matematika masalasi bo'lsa, yeching." },
-          { type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageBase64}` } }
-        ]
+        content: contentParts
       });
     } else {
       messages.push({ role: "user", content: message });
@@ -95,9 +120,9 @@ INSTRUCTIONS:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: imageBase64 ? "google/gemini-2.5-flash" : "google/gemini-2.5-flash",
+        model: "google/gemini-2.5-flash",
         messages,
-        max_tokens: 1000,
+        max_tokens: 2000,
       }),
     });
 

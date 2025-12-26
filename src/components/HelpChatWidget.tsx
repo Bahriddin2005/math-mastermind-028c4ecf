@@ -26,7 +26,8 @@ import {
   Mic,
   MicOff,
   ImagePlus,
-  XCircle
+  XCircle,
+  FileText
 } from 'lucide-react';
 
 interface FAQItem {
@@ -73,6 +74,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   audioUrl?: string;
+  fileName?: string;
 }
 
 // Generate a unique session ID
@@ -100,11 +102,14 @@ export const HelpChatWidget = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
+  const [pdfFileName, setPdfFileName] = useState<string | null>(null);
   const sessionIdRef = useRef<string>(generateSessionId());
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pdfInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     fetchFAQs();
@@ -162,6 +167,8 @@ export const HelpChatWidget = () => {
     setInputMessage('');
     setSelectedImage(null);
     setImagePreview(null);
+    setSelectedPdf(null);
+    setPdfFileName(null);
     // Stop any playing audio
     if (audioRef.current) {
       audioRef.current.pause();
@@ -202,6 +209,38 @@ export const HelpChatWidget = () => {
   const clearImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+  };
+
+  const handlePdfSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("PDF hajmi 10MB dan oshmasligi kerak");
+      return;
+    }
+
+    if (file.type !== 'application/pdf') {
+      toast.error("Faqat PDF formatlar qo'llab-quvvatlanadi");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = (reader.result as string).split(',')[1];
+      setSelectedPdf(base64);
+      setPdfFileName(file.name);
+    };
+    reader.readAsDataURL(file);
+    
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
+    }
+  };
+
+  const clearPdf = () => {
+    setSelectedPdf(null);
+    setPdfFileName(null);
   };
 
   const playTTS = async (text: string) => {
@@ -358,20 +397,27 @@ export const HelpChatWidget = () => {
   };
 
   const sendMessage = async () => {
-    if ((!inputMessage.trim() && !selectedImage) || isLoading) return;
+    if ((!inputMessage.trim() && !selectedImage && !selectedPdf) || isLoading) return;
 
-    const userMessage = inputMessage.trim() || (selectedImage ? "Bu rasmni tahlil qiling" : "");
+    const userMessage = inputMessage.trim() || (selectedImage ? "Bu rasmni tahlil qiling" : selectedPdf ? "Bu PDF hujjatni tahlil qiling" : "");
     const imageToSend = selectedImage;
+    const pdfToSend = selectedPdf;
+    const pdfName = pdfFileName;
     
     setInputMessage('');
     setSelectedImage(null);
     setImagePreview(null);
+    setSelectedPdf(null);
+    setPdfFileName(null);
     
-    // Show message with image indicator if image was attached
-    const displayMessage = imageToSend 
-      ? `${userMessage} [📷 Rasm biriktirildi]`
-      : userMessage;
-    setMessages(prev => [...prev, { role: 'user', content: displayMessage }]);
+    // Show message with file indicator if file was attached
+    let displayMessage = userMessage;
+    if (imageToSend) {
+      displayMessage = `${userMessage} [📷 Rasm biriktirildi]`;
+    } else if (pdfToSend) {
+      displayMessage = `${userMessage} [📄 ${pdfName}]`;
+    }
+    setMessages(prev => [...prev, { role: 'user', content: displayMessage, fileName: pdfName || undefined }]);
     setIsLoading(true);
 
     // Save user message to database
@@ -417,7 +463,9 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
             coursesContext,
             lessonsContext,
             userProgressContext,
-            imageBase64: imageToSend
+            imageBase64: imageToSend,
+            pdfBase64: pdfToSend,
+            pdfFileName: pdfName
           }),
         }
       );
@@ -589,6 +637,22 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                   </div>
                 )}
 
+                {/* PDF Preview */}
+                {pdfFileName && (
+                  <div className="px-4 pt-2">
+                    <div className="relative inline-flex items-center gap-2 bg-secondary px-3 py-2 rounded-lg">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <span className="text-sm truncate max-w-[150px]">{pdfFileName}</span>
+                      <button
+                        onClick={clearPdf}
+                        className="p-0.5 hover:bg-destructive/20 rounded-full"
+                      >
+                        <XCircle className="h-4 w-4 text-destructive" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Input */}
                 <div className="p-4 border-t">
                   <div className="flex gap-2">
@@ -599,11 +663,27 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       onChange={handleImageSelect}
                       className="hidden"
                     />
+                    <input
+                      ref={pdfInputRef}
+                      type="file"
+                      accept="application/pdf"
+                      onChange={handlePdfSelect}
+                      className="hidden"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => pdfInputRef.current?.click()}
+                      disabled={isLoading || isRecording || !!selectedImage}
+                      title="PDF yuklash"
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Button>
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => fileInputRef.current?.click()}
-                      disabled={isLoading || isRecording}
+                      disabled={isLoading || isRecording || !!selectedPdf}
                       title="Rasm yuklash"
                     >
                       <ImagePlus className="h-4 w-4" />
@@ -626,13 +706,13 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder={isRecording ? "Gapiring..." : selectedImage ? "Rasm haqida so'rang..." : "Savolingizni yozing..."}
+                      placeholder={isRecording ? "Gapiring..." : selectedImage ? "Rasm haqida so'rang..." : selectedPdf ? "PDF haqida so'rang..." : "Savolingizni yozing..."}
                       disabled={isLoading || isRecording}
                       className="flex-1"
                     />
                     <Button 
                       onClick={sendMessage} 
-                      disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
+                      disabled={(!inputMessage.trim() && !selectedImage && !selectedPdf) || isLoading}
                       size="icon"
                     >
                       <Send className="h-4 w-4" />

@@ -32,6 +32,7 @@ import { CourseManager } from '@/components/CourseManager';
 import { ExamplesManager } from '@/components/ExamplesManager';
 import { FAQManager } from '@/components/FAQManager';
 import { ChatHistoryManager } from '@/components/ChatHistoryManager';
+import { AdminUserCharts } from '@/components/AdminUserCharts';
 import { 
   Mail, 
   FileText, 
@@ -91,6 +92,17 @@ interface UserProfile {
   avatar_url: string | null;
 }
 
+interface GameSession {
+  id: string;
+  user_id: string;
+  difficulty: string;
+  section: string;
+  score: number;
+  correct: number;
+  incorrect: number;
+  created_at: string;
+}
+
 interface Stats {
   totalUsers: number;
   totalProblems: number;
@@ -122,6 +134,7 @@ const Admin = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
@@ -168,6 +181,7 @@ const Admin = () => {
       fetchMessages();
       fetchBlogPosts();
       fetchUsers();
+      fetchGameSessions();
       fetchStats();
       fetchAdminUsers();
     }
@@ -254,6 +268,15 @@ const Admin = () => {
       .order('total_score', { ascending: false });
     if (data) setUsers(data);
     setLoadingUsers(false);
+  };
+
+  const fetchGameSessions = async () => {
+    const { data } = await supabase
+      .from('game_sessions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(500);
+    if (data) setGameSessions(data);
   };
 
   const fetchStats = async () => {
@@ -490,7 +513,10 @@ const Admin = () => {
             </TabsList>
 
             {/* Users Tab */}
-            <TabsContent value="users">
+            <TabsContent value="users" className="space-y-6">
+              {/* Statistics Charts */}
+              <AdminUserCharts users={users} gameSessions={gameSessions} />
+
               <Card>
                 <CardHeader>
                   <CardTitle>Foydalanuvchilar ro'yxati</CardTitle>
