@@ -1,9 +1,21 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Square, Volume2, VolumeX, RotateCcw, Check } from 'lucide-react';
+import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 // Formulasiz qoidalar
 const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
@@ -88,7 +100,7 @@ const FORMULA_RULES: Record<FormulaType, Record<number, { add: number[]; subtrac
 // Ovozli o'qish funksiyasi
 const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // Oldingi ovozni to'xtatish
+    window.speechSynthesis.cancel();
     
     let text = number;
     if (!isFirst) {
@@ -96,11 +108,10 @@ const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
     }
     
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'uz-UZ'; // O'zbek tili
-    utterance.rate = 1.2; // Tezroq gapirish
+    utterance.lang = 'uz-UZ';
+    utterance.rate = 1.2;
     utterance.pitch = 1;
     
-    // Agar o'zbek tili topilmasa, rus tilida gapirish
     const voices = window.speechSynthesis.getVoices();
     const uzVoice = voices.find(v => v.lang.startsWith('uz'));
     const ruVoice = voices.find(v => v.lang.startsWith('ru'));
@@ -109,7 +120,6 @@ const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
       utterance.voice = uzVoice;
     } else if (ruVoice) {
       utterance.voice = ruVoice;
-      // Rus tilida sonlarni aytish
       if (!isFirst) {
         utterance.text = isAddition ? `плюс ${number}` : `минус ${number}`;
       } else {
@@ -121,13 +131,29 @@ const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
   }
 };
 
+interface Stats {
+  totalProblems: number;
+  correctAnswers: number;
+  averageTime: number;
+  bestStreak: number;
+}
+
+interface DailyData {
+  name: string;
+  total: number;
+  correct: number;
+}
+
 export const NumberTrainer = () => {
+  const { user } = useAuth();
+  
   // Sozlamalar
   const [formulaType, setFormulaType] = useState<FormulaType>('oddiy');
   const [digitCount, setDigitCount] = useState(1);
   const [speed, setSpeed] = useState(0.5);
   const [problemCount, setProblemCount] = useState(5);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [showStats, setShowStats] = useState(false);
 
   // O'yin holati
   const [isRunning, setIsRunning] = useState(false);
@@ -140,10 +166,81 @@ export const NumberTrainer = () => {
   const [userAnswer, setUserAnswer] = useState('');
   const [showResult, setShowResult] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  
+  // Taymer
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [answerTime, setAnswerTime] = useState(0);
+  
+  // Statistika
+  const [stats, setStats] = useState<Stats>({
+    totalProblems: 0,
+    correctAnswers: 0,
+    averageTime: 0,
+    bestStreak: 0,
+  });
+  const [dailyData, setDailyData] = useState<DailyData[]>([]);
+  const [currentStreak, setCurrentStreak] = useState(0);
 
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const answerStartTimeRef = useRef<number>(0);
+
+  // Statistikani yuklash
+  useEffect(() => {
+    if (!user) return;
+    
+    const loadStats = async () => {
+      const { data } = await supabase
+        .from('game_sessions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('section', 'number-trainer')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      
+      if (data && data.length > 0) {
+        const totalProblems = data.length;
+        const correctAnswers = data.filter(s => (s.correct || 0) > 0).length;
+        const totalTime = data.reduce((sum, s) => sum + (s.total_time || 0), 0);
+        const bestStreak = Math.max(...data.map(s => s.best_streak || 0));
+        
+        setStats({
+          totalProblems,
+          correctAnswers,
+          averageTime: totalProblems > 0 ? totalTime / totalProblems : 0,
+          bestStreak,
+        });
+
+        // Haftalik ma'lumotlar
+        const days = ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan'];
+        const today = new Date();
+        const weekData: DailyData[] = [];
+
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date(today);
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split('T')[0];
+          
+          const daySessions = data.filter(s => 
+            s.created_at.startsWith(dateStr)
+          );
+          
+          weekData.push({
+            name: days[date.getDay()],
+            total: daySessions.length,
+            correct: daySessions.filter(s => (s.correct || 0) > 0).length,
+          });
+        }
+        
+        setDailyData(weekData);
+      }
+    };
+    
+    loadStats();
+  }, [user, showResult]);
 
   // Sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
@@ -191,6 +288,7 @@ export const NumberTrainer = () => {
     
     runningResultRef.current = initialResult;
     countRef.current = 1;
+    startTimeRef.current = Date.now();
 
     setCurrentDisplay(String(initialResult));
     setDisplayedNumbers([{ num: String(initialResult), isAdd: true }]);
@@ -200,8 +298,14 @@ export const NumberTrainer = () => {
     setUserAnswer('');
     setShowResult(false);
     setIsCorrect(null);
+    setElapsedTime(0);
+    setAnswerTime(0);
 
-    // Birinchi sonni o'qish
+    // Taymer
+    timerRef.current = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 100) / 10);
+    }, 100);
+
     if (voiceEnabled) {
       speakNumber(String(initialResult), true, true);
     }
@@ -216,6 +320,7 @@ export const NumberTrainer = () => {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
+        answerStartTimeRef.current = Date.now();
         setIsRunning(false);
         setIsFinished(true);
         setCurrentDisplay(null);
@@ -227,7 +332,6 @@ export const NumberTrainer = () => {
         setCurrentDisplay(String(result.num));
         setDisplayedNumbers(prev => [...prev, { num: String(result.num), isAdd: result.isAdd }]);
         
-        // Sonni o'qish
         if (voiceEnabled) {
           speakNumber(String(result.num), result.isAdd, false);
         }
@@ -241,6 +345,10 @@ export const NumberTrainer = () => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     window.speechSynthesis.cancel();
     setIsRunning(false);
     setIsFinished(false);
@@ -248,38 +356,191 @@ export const NumberTrainer = () => {
     setDisplayedNumbers([]);
   }, []);
 
-  // Javobni tekshirish
-  const checkAnswer = useCallback(() => {
+  // Javobni tekshirish va saqlash
+  const checkAnswer = useCallback(async () => {
     const userNum = parseInt(userAnswer, 10);
     const correctAnswer = runningResultRef.current;
     const correct = userNum === correctAnswer;
+    const totalTime = (Date.now() - startTimeRef.current) / 1000;
+    const answerDuration = (Date.now() - answerStartTimeRef.current) / 1000;
+    
     setIsCorrect(correct);
     setShowResult(true);
-  }, [userAnswer]);
+    setAnswerTime(answerDuration);
+    
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    const newStreak = correct ? currentStreak + 1 : 0;
+    setCurrentStreak(newStreak);
+
+    // Bazaga saqlash
+    if (user) {
+      try {
+        await supabase.from('game_sessions').insert({
+          user_id: user.id,
+          section: 'number-trainer',
+          difficulty: formulaType,
+          mode: `${digitCount}-xonali`,
+          correct: correct ? 1 : 0,
+          incorrect: correct ? 0 : 1,
+          best_streak: newStreak,
+          score: correct ? 10 : 0,
+          total_time: totalTime,
+          problems_solved: problemCount,
+        });
+
+        // Profilni yangilash
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_score, total_problems_solved, best_streak')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profile) {
+          await supabase
+            .from('profiles')
+            .update({
+              total_score: (profile.total_score || 0) + (correct ? 10 : 0),
+              total_problems_solved: (profile.total_problems_solved || 0) + 1,
+              best_streak: Math.max(profile.best_streak || 0, newStreak),
+              last_active_date: new Date().toISOString().split('T')[0],
+            })
+            .eq('user_id', user.id);
+        }
+      } catch (error) {
+        console.error('Error saving session:', error);
+      }
+    }
+  }, [userAnswer, user, formulaType, digitCount, problemCount, currentStreak]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     setIsFinished(false);
     setCurrentDisplay(null);
     setDisplayedNumbers([]);
     setUserAnswer('');
     setShowResult(false);
     setIsCorrect(null);
+    setElapsedTime(0);
+    setAnswerTime(0);
   }, []);
 
   useEffect(() => {
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
       window.speechSynthesis.cancel();
     };
   }, []);
 
-  // O'yin davomida - faqat son ko'rsatish
+  const accuracy = stats.totalProblems > 0 
+    ? Math.round((stats.correctAnswers / stats.totalProblems) * 100) 
+    : 0;
+
+  // Statistika sahifasi
+  if (showStats) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-foreground">Statistika</h1>
+          <Button variant="outline" onClick={() => setShowStats(false)}>
+            Orqaga
+          </Button>
+        </div>
+
+        {/* Statistika kartalar */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <Target className="h-6 w-6 mx-auto mb-2 text-primary" />
+              <p className="text-2xl font-bold">{stats.totalProblems}</p>
+              <p className="text-sm text-muted-foreground">Jami mashqlar</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+              <p className="text-2xl font-bold text-green-500">{accuracy}%</p>
+              <p className="text-sm text-muted-foreground">Aniqlik</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+              <p className="text-2xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+              <p className="text-sm text-muted-foreground">O'rtacha vaqt</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <Trophy className="h-6 w-6 mx-auto mb-2 text-amber-500" />
+              <p className="text-2xl font-bold text-amber-500">{stats.bestStreak}</p>
+              <p className="text-sm text-muted-foreground">Eng uzun seriya</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Haftalik grafik */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Haftalik progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {dailyData.length > 0 ? (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dailyData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="name" 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    />
+                    <YAxis 
+                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--popover))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                    />
+                    <Bar dataKey="total" fill="hsl(var(--muted))" name="Jami" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="correct" fill="hsl(var(--primary))" name="To'g'ri" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-8">
+                Hali ma'lumot yo'q. Mashq qiling!
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // O'yin davomida
   if (isRunning && currentDisplay !== null) {
     return (
       <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50">
+        {/* Taymer */}
+        <div className="absolute top-6 right-6 flex items-center gap-2 text-2xl font-mono text-muted-foreground">
+          <Clock className="h-6 w-6" />
+          {elapsedTime.toFixed(1)}s
+        </div>
+        
         <div 
           className="text-[180px] md:text-[250px] font-light text-foreground transition-all duration-100"
           key={countRef.current}
@@ -314,9 +575,13 @@ export const NumberTrainer = () => {
     return (
       <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-6">
         <div className="max-w-md w-full space-y-8 text-center">
+          <div className="flex items-center justify-center gap-4 text-muted-foreground">
+            <Clock className="h-5 w-5" />
+            <span className="font-mono text-lg">{elapsedTime.toFixed(1)}s</span>
+          </div>
+          
           <h2 className="text-2xl font-bold text-foreground">Mashq tugadi!</h2>
           
-          {/* Ko'rsatilgan sonlar */}
           <div className="bg-muted/50 rounded-lg p-4">
             <p className="text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
             <p className="text-lg font-mono">
@@ -367,6 +632,9 @@ export const NumberTrainer = () => {
                     Sizning javobingiz: {userAnswer}
                   </p>
                 )}
+                <p className="text-sm text-muted-foreground mt-2">
+                  Javob vaqti: {answerTime.toFixed(1)}s
+                </p>
               </div>
             </div>
           )}
@@ -397,18 +665,52 @@ export const NumberTrainer = () => {
   // Sozlamalar sahifasi
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-3xl font-bold text-foreground">Test turini sozlang</h1>
-        <Button
-          onClick={() => setVoiceEnabled(!voiceEnabled)}
-          variant="outline"
-          size="sm"
-          className="gap-2"
-        >
-          {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-          {voiceEnabled ? 'Ovoz yoqilgan' : 'Ovoz o\'chirilgan'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setVoiceEnabled(!voiceEnabled)}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          </Button>
+          {user && (
+            <Button
+              onClick={() => setShowStats(true)}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              Statistika
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Mini statistika */}
+      {user && stats.totalProblems > 0 && (
+        <div className="grid grid-cols-4 gap-2 text-center">
+          <div className="p-2 bg-muted/50 rounded-lg">
+            <p className="text-lg font-bold">{stats.totalProblems}</p>
+            <p className="text-xs text-muted-foreground">Jami</p>
+          </div>
+          <div className="p-2 bg-muted/50 rounded-lg">
+            <p className="text-lg font-bold text-green-500">{accuracy}%</p>
+            <p className="text-xs text-muted-foreground">Aniqlik</p>
+          </div>
+          <div className="p-2 bg-muted/50 rounded-lg">
+            <p className="text-lg font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+            <p className="text-xs text-muted-foreground">Vaqt</p>
+          </div>
+          <div className="p-2 bg-muted/50 rounded-lg">
+            <p className="text-lg font-bold text-amber-500">{stats.bestStreak}</p>
+            <p className="text-xs text-muted-foreground">Seriya</p>
+          </div>
+        </div>
+      )}
 
       {/* Misol turi */}
       <div className="space-y-3">
