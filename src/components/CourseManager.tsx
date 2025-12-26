@@ -107,6 +107,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
   const [uploadingLessonThumbnail, setUploadingLessonThumbnail] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isCourseThumbnailDragging, setIsCourseThumbnailDragging] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -167,24 +168,31 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     setCourseDialogOpen(true);
   };
 
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-
+  const processCourseThumbnail = async (file: File) => {
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Rasm hajmi 5MB dan oshmasligi kerak");
       return;
     }
 
+    if (!file.type.startsWith('image/')) {
+      toast.error("Faqat rasm fayllar qo'llab-quvvatlanadi");
+      return;
+    }
+
     setUploadingThumbnail(true);
     try {
-      const fileName = `thumbnails/${Date.now()}-${file.name}`;
+      const safeName = file.name.replace(/\s+/g, '_');
+      const fileName = `thumbnails/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from('course-videos')
         .upload(fileName, file);
 
-      if (error) throw error;
+      if (error) {
+        const errorDetail = (error as any)?.statusCode 
+          ? `Status: ${(error as any).statusCode} - ${error.message}`
+          : error.message;
+        throw new Error(errorDetail);
+      }
 
       const { data: publicUrl } = supabase.storage
         .from('course-videos')
@@ -194,9 +202,40 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
       toast.success("Rasm yuklandi");
     } catch (error) {
       console.error(error);
-      toast.error("Rasm yuklashda xatolik");
+      const message = error instanceof Error ? error.message : 'Rasm yuklashda xatolik';
+      toast.error(message);
     } finally {
       setUploadingThumbnail(false);
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    await processCourseThumbnail(file);
+  };
+
+  const handleCourseThumbnailDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseThumbnailDragging(true);
+  };
+
+  const handleCourseThumbnailDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseThumbnailDragging(false);
+  };
+
+  const handleCourseThumbnailDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseThumbnailDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      await processCourseThumbnail(files[0]);
     }
   };
 
@@ -360,10 +399,18 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
 
       setLessonForm((prev) => ({ ...prev, video_url: videoUrl }));
       toast.success("Video yuklandi");
-    } catch (error) {
-      console.error(error);
-      const message = error instanceof Error ? error.message : 'Video yuklashda xatolik';
-      toast.error(message);
+    } catch (error: any) {
+      console.error('Video upload error:', error);
+      let message = 'Video yuklashda xatolik';
+      if (error?.statusCode) {
+        message = `Xato ${error.statusCode}: ${error.message || 'Noma\'lum xato'}`;
+      } else if (error?.message) {
+        message = error.message;
+      }
+      if (error?.cause) {
+        console.error('Error cause:', error.cause);
+      }
+      toast.error(message, { duration: 6000 });
     } finally {
       setTimeout(() => {
         setUploadingVideo(false);
@@ -625,25 +672,46 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
                     className="w-full h-32 object-cover rounded-lg border"
                   />
                 )}
-                <div className="flex gap-2">
-                  <Input
-                    value={courseForm.thumbnail_url}
-                    onChange={(e) => setCourseForm(prev => ({ ...prev, thumbnail_url: e.target.value }))}
-                    placeholder="Rasm URL yoki yuklang..."
-                    className="flex-1"
-                  />
-                  <Button variant="outline" asChild disabled={uploadingThumbnail}>
-                    <label className="cursor-pointer">
-                      {uploadingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={handleThumbnailUpload}
-                      />
-                    </label>
-                  </Button>
+                
+                {/* Drag and Drop Zone for Course Thumbnail */}
+                <div
+                  onDragOver={handleCourseThumbnailDragOver}
+                  onDragLeave={handleCourseThumbnailDragLeave}
+                  onDrop={handleCourseThumbnailDrop}
+                  className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-all ${
+                    isCourseThumbnailDragging 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  } ${uploadingThumbnail ? 'pointer-events-none opacity-50' : ''}`}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className={`h-6 w-6 ${isCourseThumbnailDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Rasmni shu yerga tashlang yoki </span>
+                      <label className="text-primary cursor-pointer hover:underline">
+                        tanlang
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={handleThumbnailUpload}
+                          disabled={uploadingThumbnail}
+                        />
+                      </label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Maksimum 5MB</p>
+                    {uploadingThumbnail && (
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    )}
+                  </div>
                 </div>
+
+                {/* URL Input */}
+                <Input
+                  value={courseForm.thumbnail_url}
+                  onChange={(e) => setCourseForm(prev => ({ ...prev, thumbnail_url: e.target.value }))}
+                  placeholder="Yoki rasm URL kiriting..."
+                />
               </div>
             </div>
             <div>
