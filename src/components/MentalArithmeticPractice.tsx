@@ -59,13 +59,58 @@ const RULES_SMALL_FRIEND_1: Record<number, { add: number[]; subtract: number[] }
   9: { add: [], subtract: [] },
 };
 
+// Katta do'st +3/-3 formulasi
+const RULES_BIG_FRIEND_3: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [3], subtract: [] },
+  3: { add: [3], subtract: [] },
+  4: { add: [], subtract: [] },
+  5: { add: [], subtract: [] },
+  6: { add: [], subtract: [3] },
+  7: { add: [], subtract: [3] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// Katta do'st +4/-4 formulasi
+const RULES_BIG_FRIEND_4: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [4], subtract: [] },
+  2: { add: [4], subtract: [] },
+  3: { add: [4], subtract: [] },
+  4: { add: [], subtract: [] },
+  5: { add: [], subtract: [] },
+  6: { add: [], subtract: [4] },
+  7: { add: [], subtract: [4] },
+  8: { add: [], subtract: [4] },
+  9: { add: [], subtract: [] },
+};
+
+// Aralash formula - barcha formulalarni birlashtiradi
+const RULES_MIXED: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
+  1: { add: [1, 2, 3, 4, 5, 6, 7, 8], subtract: [1] },
+  2: { add: [1, 2, 3, 4, 5, 6, 7], subtract: [1, 2] },
+  3: { add: [1, 2, 3, 5, 6], subtract: [1, 2, 3] },
+  4: { add: [1, 2, 5], subtract: [1, 2, 3, 4] },
+  5: { add: [1, 2, 3, 4], subtract: [1, 2, 5] },
+  6: { add: [1, 2, 3], subtract: [1, 2, 3, 5, 6] },
+  7: { add: [1, 2], subtract: [1, 2, 3, 4, 5, 7] },
+  8: { add: [1], subtract: [1, 2, 3, 4, 5, 8] },
+  9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+};
+
 // Formula turlari
-type FormulaType = 'basic' | 'small_friend_1' | 'small_friend_2';
+type FormulaType = 'basic' | 'small_friend_1' | 'small_friend_2' | 'big_friend_3' | 'big_friend_4' | 'mixed';
 
 const FORMULA_CONFIG = {
   basic: { label: "Formulasiz", rules: RULES_BASIC },
   small_friend_1: { label: "Kichik do'st +1/-1", rules: RULES_SMALL_FRIEND_1 },
   small_friend_2: { label: "Kichik do'st +2/-2", rules: RULES_SMALL_FRIEND_2 },
+  big_friend_3: { label: "Katta do'st +3/-3", rules: RULES_BIG_FRIEND_3 },
+  big_friend_4: { label: "Katta do'st +4/-4", rules: RULES_BIG_FRIEND_4 },
+  mixed: { label: "Aralash (barcha formulalar)", rules: RULES_MIXED },
 };
 
 // Qiyinlik darajalari
@@ -418,6 +463,9 @@ export const MentalArithmeticPractice = () => {
                           <SelectItem value="basic">Formulasiz</SelectItem>
                           <SelectItem value="small_friend_1">Kichik do'st +1/-1</SelectItem>
                           <SelectItem value="small_friend_2">Kichik do'st +2/-2</SelectItem>
+                          <SelectItem value="big_friend_3">Katta do'st +3/-3</SelectItem>
+                          <SelectItem value="big_friend_4">Katta do'st +4/-4</SelectItem>
+                          <SelectItem value="mixed">Aralash (barcha)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
