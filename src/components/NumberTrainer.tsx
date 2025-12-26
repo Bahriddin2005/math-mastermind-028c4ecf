@@ -730,278 +730,375 @@ export const NumberTrainer = () => {
 
   // Sozlamalar sahifasi
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary-light/20">
       <NavbarComponent />
       
-      <div className="container py-6 px-4 md:px-8">
+      <div className="container py-8 px-4 md:px-8">
+        {/* Hero Section */}
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">
+            Mental Arifmetika <span className="text-gradient-primary">Treneri</span>
+          </h1>
+          <p className="text-muted-foreground max-w-lg mx-auto">
+            Aql hisoblash ko'nikmalarini rivojlantiring va o'z darajangizni oshiring
+          </p>
+        </div>
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 mb-6">
-            <TabsTrigger value="train" className="gap-1">
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 mb-8 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-2xl shadow-md">
+            <TabsTrigger value="train" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <Play className="h-4 w-4" />
-              <span className="hidden sm:inline">Mashq</span>
+              <span className="hidden sm:inline font-medium">Mashq</span>
             </TabsTrigger>
-            <TabsTrigger value="daily" className="gap-1">
+            <TabsTrigger value="daily" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-xl transition-all duration-300">
               <Flame className="h-4 w-4" />
-              <span className="hidden sm:inline">Kunlik</span>
+              <span className="hidden sm:inline font-medium">Kunlik</span>
             </TabsTrigger>
-            <TabsTrigger value="multiplayer" className="gap-1">
+            <TabsTrigger value="multiplayer" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Multiplayer</span>
+              <span className="hidden sm:inline font-medium">Multiplayer</span>
             </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="gap-1">
+            <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-warning data-[state=active]:text-warning-foreground rounded-xl transition-all duration-300">
               <Trophy className="h-4 w-4" />
-              <span className="hidden sm:inline">Reyting</span>
+              <span className="hidden sm:inline font-medium">Reyting</span>
             </TabsTrigger>
-            <TabsTrigger value="stats" className="gap-1">
+            <TabsTrigger value="stats" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Statistika</span>
+              <span className="hidden sm:inline font-medium">Statistika</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="daily" className="mt-0">
+          <TabsContent value="daily" className="mt-0 animate-fade-in">
             <div className="max-w-2xl mx-auto">
               <DailyChallenge />
             </div>
           </TabsContent>
 
-          <TabsContent value="multiplayer" className="mt-0">
+          <TabsContent value="multiplayer" className="mt-0 animate-fade-in">
             <MultiplayerMode onBack={() => setActiveTab('train')} />
           </TabsContent>
 
-          <TabsContent value="train" className="mt-0">
-            <div className="max-w-4xl mx-auto space-y-8">
+          <TabsContent value="train" className="mt-0 animate-fade-in">
+            <div className="max-w-4xl mx-auto space-y-6">
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div className="p-2 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-bold">{stats.totalProblems}</p>
-                    <p className="text-xs text-muted-foreground">Jami</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Target className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold text-foreground">{stats.totalProblems}</p>
+                        <p className="text-xs text-muted-foreground">Jami mashqlar</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-2 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-bold text-green-500">{accuracy}%</p>
-                    <p className="text-xs text-muted-foreground">Aniqlik</p>
+                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center">
+                        <Check className="h-5 w-5 text-success" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold text-success">{accuracy}%</p>
+                        <p className="text-xs text-muted-foreground">Aniqlik</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-2 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-                    <p className="text-xs text-muted-foreground">Vaqt</p>
+                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                        <Clock className="h-5 w-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                        <p className="text-xs text-muted-foreground">O'rtacha vaqt</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-2 bg-muted/50 rounded-lg">
-                    <p className="text-lg font-bold text-amber-500">{stats.bestStreak}</p>
-                    <p className="text-xs text-muted-foreground">Seriya</p>
+                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center">
+                        <Flame className="h-5 w-5 text-warning" />
+                      </div>
+                      <div>
+                        <p className="text-xl font-bold text-warning">{stats.bestStreak}</p>
+                        <p className="text-xs text-muted-foreground">Eng uzun seriya</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Misol turi */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Misol turi</Label>
-                <RadioGroup
-                  value={formulaType}
-                  onValueChange={(v) => setFormulaType(v as FormulaType)}
-                  className="flex flex-wrap gap-2"
-                >
-                  {[
-                    { value: 'oddiy', label: 'Oddiy' },
-                    { value: 'formula5', label: 'Formula 5' },
-                    { value: 'formula10plus', label: 'Formula 10+' },
-                    { value: 'formula10minus', label: 'Formula 10-' },
-                    { value: 'hammasi', label: 'hammasi' },
-                  ].map((item) => (
-                    <div key={item.value} className="flex items-center">
-                      <RadioGroupItem
-                        value={item.value}
-                        id={`formula-${item.value}`}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={`formula-${item.value}`}
-                        className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
-                      >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${formulaType === item.value ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                          {formulaType === item.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+              {/* Settings Cards */}
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Misol turi */}
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                  <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Square className="h-4 w-4 text-primary" />
+                      </div>
+                      Misol turi
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-3">
+                    <RadioGroup
+                      value={formulaType}
+                      onValueChange={(v) => setFormulaType(v as FormulaType)}
+                      className="grid grid-cols-2 gap-2"
+                    >
+                      {[
+                        { value: 'oddiy', label: 'Oddiy', icon: '📘' },
+                        { value: 'formula5', label: 'Formula 5', icon: '🔢' },
+                        { value: 'formula10plus', label: 'Formula 10+', icon: '➕' },
+                        { value: 'formula10minus', label: 'Formula 10-', icon: '➖' },
+                        { value: 'hammasi', label: 'Hammasi', icon: '🎯' },
+                      ].map((item) => (
+                        <div key={item.value} className="flex items-center">
+                          <RadioGroupItem
+                            value={item.value}
+                            id={`formula-${item.value}`}
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor={`formula-${item.value}`}
+                            className={`flex items-center gap-2 w-full px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 border-2 
+                              ${formulaType === item.value 
+                                ? 'bg-primary text-primary-foreground border-primary shadow-glow' 
+                                : 'bg-muted/50 border-transparent hover:bg-muted hover:border-border'
+                              }`}
+                          >
+                            <span className="text-lg">{item.icon}</span>
+                            <span className="font-medium text-sm">{item.label}</span>
+                          </Label>
                         </div>
-                        {item.label}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
+                      ))}
+                    </RadioGroup>
+                  </CardContent>
+                </Card>
+
+                {/* Son xonasi */}
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                  <CardHeader className="pb-3 bg-gradient-to-r from-accent/5 to-transparent">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                        <span className="text-accent font-bold">123</span>
+                      </div>
+                      Son xonasi
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-3">
+                    <RadioGroup
+                      value={String(digitCount)}
+                      onValueChange={(v) => setDigitCount(Number(v))}
+                      className="grid grid-cols-2 gap-2"
+                    >
+                      {[
+                        { value: 1, label: '1 xonali', desc: '1-9' },
+                        { value: 2, label: '2 xonali', desc: '10-99' },
+                        { value: 3, label: '3 xonali', desc: '100-999' },
+                        { value: 4, label: '4 xonali', desc: '1000-9999' },
+                      ].map((item) => (
+                        <div key={item.value} className="flex items-center">
+                          <RadioGroupItem
+                            value={String(item.value)}
+                            id={`digit-${item.value}`}
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor={`digit-${item.value}`}
+                            className={`flex flex-col w-full px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 border-2 
+                              ${digitCount === item.value 
+                                ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow' 
+                                : 'bg-muted/50 border-transparent hover:bg-muted hover:border-border'
+                              }`}
+                          >
+                            <span className="font-medium text-sm">{item.label}</span>
+                            <span className="text-xs opacity-70">{item.desc}</span>
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* Son xonasi */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Son xonasi</Label>
-                <RadioGroup
-                  value={String(digitCount)}
-                  onValueChange={(v) => setDigitCount(Number(v))}
-                  className="flex flex-wrap gap-2"
-                >
-                  {[1, 2, 3, 4].map((num) => (
-                    <div key={num} className="flex items-center">
-                      <RadioGroupItem
-                        value={String(num)}
-                        id={`digit-${num}`}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={`digit-${num}`}
-                        className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
-                      >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${digitCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                          {digitCount === num && <div className="w-2 h-2 rounded-full bg-primary" />}
-                        </div>
-                        {num} xonali
-                      </Label>
+              {/* Tezligi va Misollar soni */}
+              <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 via-accent/5 to-transparent">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Clock className="h-4 w-4 text-primary" />
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
+                    Tezlik va misollar soni
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-3 space-y-6">
+                  {/* Tezligi */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium text-muted-foreground">Tezligi (soniyada)</Label>
+                      <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">{speed}s</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map((s) => (
+                        <button
+                          key={s}
+                          onClick={() => setSpeed(s)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 
+                            ${speed === s 
+                              ? 'bg-primary text-primary-foreground shadow-glow' 
+                              : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                            }`}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Tezligi */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Tezligi</Label>
-                <RadioGroup
-                  value={String(speed)}
-                  onValueChange={(v) => setSpeed(Number(v))}
-                  className="flex flex-wrap gap-2"
-                >
-                  {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map((s) => (
-                    <div key={s} className="flex items-center">
-                      <RadioGroupItem
-                        value={String(s)}
-                        id={`speed-${s}`}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={`speed-${s}`}
-                        className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
-                      >
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${speed === s ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                          {speed === s && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                        </div>
-                        {s}
-                      </Label>
+                  {/* Misollar soni */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium text-muted-foreground">Misollar soni</Label>
+                      <span className="text-sm font-bold text-accent bg-accent/10 px-3 py-1 rounded-full">{problemCount} ta</span>
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
-
-              {/* Misollar soni */}
-              <div className="space-y-3">
-                <Label className="text-base font-medium">Misollar soni</Label>
-                <RadioGroup
-                  value={String(problemCount)}
-                  onValueChange={(v) => setProblemCount(Number(v))}
-                  className="flex flex-wrap gap-2"
-                >
-                  {Array.from({ length: 18 }, (_, i) => i + 3).map((num) => (
-                    <div key={num} className="flex items-center">
-                      <RadioGroupItem
-                        value={String(num)}
-                        id={`count-${num}`}
-                        className="peer sr-only"
-                      />
-                      <Label
-                        htmlFor={`count-${num}`}
-                        className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
-                      >
-                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${problemCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                          {problemCount === num && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                        </div>
-                        {num}
-                      </Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {Array.from({ length: 18 }, (_, i) => i + 3).map((num) => (
+                        <button
+                          key={num}
+                          onClick={() => setProblemCount(num)}
+                          className={`w-9 h-9 rounded-lg text-sm font-medium transition-all duration-200 
+                            ${problemCount === num 
+                              ? 'bg-accent text-accent-foreground shadow-accent-glow' 
+                              : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                            }`}
+                        >
+                          {num}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Boshlash tugmasi */}
-              <Button
-                onClick={startGame}
-                size="lg"
-                className="bg-red-600 hover:bg-red-700 text-white px-8"
-              >
-                Boshlash
-              </Button>
+              <div className="flex justify-center pt-4">
+                <Button
+                  onClick={startGame}
+                  size="lg"
+                  className="relative group bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-12 py-6 text-lg font-bold rounded-2xl shadow-glow transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                >
+                  <Play className="h-6 w-6 mr-3 group-hover:scale-110 transition-transform" />
+                  Mashqni boshlash
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" />
+                </Button>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="leaderboard" className="mt-0">
+          <TabsContent value="leaderboard" className="mt-0 animate-fade-in">
             <div className="max-w-2xl mx-auto">
               <Leaderboard currentUserId={user?.id} />
             </div>
           </TabsContent>
 
-          <TabsContent value="stats" className="mt-0">
+          <TabsContent value="stats" className="mt-0 animate-fade-in">
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Statistika kartalar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Target className="h-6 w-6 mx-auto mb-2 text-primary" />
-                    <p className="text-2xl font-bold">{stats.totalProblems}</p>
-                    <p className="text-sm text-muted-foreground">Jami mashqlar</p>
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow" />
+                  <CardContent className="p-5 text-center">
+                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                      <Target className="h-6 w-6 text-primary" />
+                    </div>
+                    <p className="text-3xl font-bold text-foreground">{stats.totalProblems}</p>
+                    <p className="text-sm text-muted-foreground mt-1">Jami mashqlar</p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-                    <p className="text-2xl font-bold text-green-500">{accuracy}%</p>
-                    <p className="text-sm text-muted-foreground">Aniqlik</p>
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success to-green-400" />
+                  <CardContent className="p-5 text-center">
+                    <div className="h-12 w-12 rounded-2xl bg-success/10 flex items-center justify-center mx-auto mb-3">
+                      <Check className="h-6 w-6 text-success" />
+                    </div>
+                    <p className="text-3xl font-bold text-success">{accuracy}%</p>
+                    <p className="text-sm text-muted-foreground mt-1">Aniqlik</p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-                    <p className="text-2xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-                    <p className="text-sm text-muted-foreground">O'rtacha vaqt</p>
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />
+                  <CardContent className="p-5 text-center">
+                    <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
+                      <Clock className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <p className="text-3xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                    <p className="text-sm text-muted-foreground mt-1">O'rtacha vaqt</p>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Trophy className="h-6 w-6 mx-auto mb-2 text-amber-500" />
-                    <p className="text-2xl font-bold text-amber-500">{stats.bestStreak}</p>
-                    <p className="text-sm text-muted-foreground">Eng uzun seriya</p>
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-warning to-amber-400" />
+                  <CardContent className="p-5 text-center">
+                    <div className="h-12 w-12 rounded-2xl bg-warning/10 flex items-center justify-center mx-auto mb-3">
+                      <Trophy className="h-6 w-6 text-warning" />
+                    </div>
+                    <p className="text-3xl font-bold text-warning">{stats.bestStreak}</p>
+                    <p className="text-sm text-muted-foreground mt-1">Eng uzun seriya</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Haftalik grafik */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
+              <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <BarChart3 className="h-5 w-5 text-primary" />
+                    </div>
                     Haftalik progress
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4">
                   {dailyData.length > 0 ? (
-                    <div className="h-64">
+                    <div className="h-72">
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={dailyData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <BarChart data={dailyData} barCategoryGap="20%">
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
                           <XAxis 
                             dataKey="name" 
                             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                            axisLine={{ stroke: 'hsl(var(--border))' }}
                           />
                           <YAxis 
                             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                            axisLine={{ stroke: 'hsl(var(--border))' }}
                           />
                           <Tooltip
                             contentStyle={{
-                              backgroundColor: 'hsl(var(--popover))',
+                              backgroundColor: 'hsl(var(--card))',
                               border: '1px solid hsl(var(--border))',
-                              borderRadius: '8px',
+                              borderRadius: '12px',
+                              boxShadow: 'var(--shadow-lg)',
                             }}
+                            labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                           />
-                          <Bar dataKey="total" fill="hsl(var(--muted))" name="Jami" radius={[4, 4, 0, 0]} />
-                          <Bar dataKey="correct" fill="hsl(var(--primary))" name="To'g'ri" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="total" fill="hsl(var(--muted))" name="Jami" radius={[6, 6, 0, 0]} />
+                          <Bar dataKey="correct" fill="hsl(var(--primary))" name="To'g'ri" radius={[6, 6, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
                   ) : (
-                    <p className="text-center text-muted-foreground py-8">
-                      Hali ma'lumot yo'q. Mashq qiling!
-                    </p>
+                    <div className="text-center py-12">
+                      <div className="h-16 w-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                        <BarChart3 className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <p className="text-muted-foreground">
+                        Hali ma'lumot yo'q. Mashq qiling!
+                      </p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
