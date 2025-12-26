@@ -7,7 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AbacusDisplay } from './AbacusDisplay';
 import { MentalArithmeticHistory } from './MentalArithmeticHistory';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3 } from 'lucide-react';
+import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
+import { AbacusFlashCard } from './AbacusFlashCard';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
@@ -320,14 +322,22 @@ export const MentalArithmeticPractice = () => {
       </div>
 
       <Tabs defaultValue="practice" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="practice" className="gap-2">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="practice" className="gap-1.5 text-xs sm:text-sm">
             <Zap className="h-4 w-4" />
-            Mashq
+            <span className="hidden sm:inline">Mashq</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-2">
+          <TabsTrigger value="flashcard" className="gap-1.5 text-xs sm:text-sm">
+            <Lightbulb className="h-4 w-4" />
+            <span className="hidden sm:inline">Flash Card</span>
+          </TabsTrigger>
+          <TabsTrigger value="leaderboard" className="gap-1.5 text-xs sm:text-sm">
+            <Trophy className="h-4 w-4" />
+            <span className="hidden sm:inline">Reyting</span>
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-1.5 text-xs sm:text-sm">
             <BarChart3 className="h-4 w-4" />
-            Tarix
+            <span className="hidden sm:inline">Tarix</span>
           </TabsTrigger>
         </TabsList>
 
@@ -469,6 +479,14 @@ export const MentalArithmeticPractice = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="flashcard" className="mt-4">
+          <AbacusFlashCard onComplete={() => setRefreshHistory(prev => prev + 1)} />
+        </TabsContent>
+
+        <TabsContent value="leaderboard" className="mt-4">
+          <MentalArithmeticLeaderboard />
         </TabsContent>
 
         <TabsContent value="history" className="mt-4">
