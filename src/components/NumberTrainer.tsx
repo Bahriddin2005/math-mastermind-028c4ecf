@@ -681,14 +681,14 @@ export const NumberTrainer = () => {
               </Button>
             </div>
           ) : (
-            <div className="space-y-6 animate-scale-in">
+            <div className={`space-y-6 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
               {/* Result card */}
               <div className={`p-8 rounded-3xl text-center ${
                 isCorrect 
                   ? 'bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30' 
                   : 'bg-gradient-to-br from-destructive/10 to-destructive/5 border-2 border-destructive/30'
               }`}>
-                <div className={`text-8xl mb-4 ${isCorrect ? 'animate-celebrate' : 'animate-shake'}`}>
+                <div className={`text-8xl mb-4 ${isCorrect ? 'animate-celebrate' : ''}`}>
                   {isCorrect ? '🎉' : '😔'}
                 </div>
                 <p className={`text-2xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
