@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { 
   ArrowLeft, 
   Play, 
@@ -16,7 +17,11 @@ import {
   Clock,
   BookOpen,
   Loader2,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  Users,
+  Award,
+  ArrowRight
 } from 'lucide-react';
 
 interface Course {
@@ -35,10 +40,10 @@ interface Lesson {
   completed?: boolean;
 }
 
-const difficultyLabels: Record<string, string> = {
-  beginner: "Boshlang'ich",
-  intermediate: "O'rta",
-  advanced: "Murakkab",
+const difficultyConfig: Record<string, { bg: string; text: string; label: string }> = {
+  beginner: { bg: 'bg-success/10', text: 'text-success', label: "Boshlang'ich" },
+  intermediate: { bg: 'bg-warning/10', text: 'text-warning', label: "O'rta" },
+  advanced: { bg: 'bg-destructive/10', text: 'text-destructive', label: "Murakkab" },
 };
 
 const CourseDetail = () => {
@@ -58,7 +63,6 @@ const CourseDetail = () => {
   }, [courseId, user]);
 
   const fetchCourseAndLessons = async () => {
-    // Fetch course
     const { data: courseData } = await supabase
       .from('courses')
       .select('*')
@@ -68,7 +72,6 @@ const CourseDetail = () => {
     if (courseData) {
       setCourse(courseData);
 
-      // Fetch lessons
       const { data: lessonsData } = await supabase
         .from('lessons')
         .select('*')
@@ -79,7 +82,6 @@ const CourseDetail = () => {
       if (lessonsData) {
         setLessons(lessonsData);
 
-        // Fetch user progress
         if (user) {
           const lessonIds = lessonsData.map(l => l.id);
           const { data: progressData } = await supabase
@@ -101,7 +103,10 @@ const CourseDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Kurs yuklanmoqda...</p>
+        </div>
       </div>
     );
   }
@@ -112,11 +117,13 @@ const CourseDetail = () => {
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-12 flex items-center justify-center">
           <div className="text-center">
-            <GraduationCap className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h1 className="text-2xl font-bold mb-2">Kurs topilmadi</h1>
-            <p className="text-muted-foreground mb-6">Bu kurs mavjud emas yoki o'chirilgan</p>
-            <Button onClick={() => navigate('/courses')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <div className="h-24 w-24 rounded-3xl bg-secondary flex items-center justify-center mx-auto mb-6">
+              <GraduationCap className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h1 className="text-2xl font-display font-bold mb-3">Kurs topilmadi</h1>
+            <p className="text-muted-foreground mb-6 max-w-md">Bu kurs mavjud emas yoki o'chirilgan</p>
+            <Button onClick={() => navigate('/courses')} size="lg" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
               Kurslarga qaytish
             </Button>
           </div>
@@ -128,54 +135,122 @@ const CourseDetail = () => {
 
   const completedCount = completedLessons.size;
   const totalCount = lessons.length;
+  const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const difficulty = difficultyConfig[course.difficulty] || difficultyConfig.beginner;
+  const totalDuration = lessons.reduce((acc, l) => acc + (l.duration_minutes || 0), 0);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-primary/10 to-primary/5 py-12">
-          <div className="container px-4">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 py-12 md:py-20">
+          {/* Background decorations */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+          </div>
+
+          {/* Floating icon */}
+          <div className="absolute top-20 right-20 opacity-10 hidden lg:block">
+            <GraduationCap className="h-40 w-40 text-primary" />
+          </div>
+
+          <div className="container px-4 relative">
             <Button 
               variant="ghost" 
-              className="mb-6"
+              className="mb-6 gap-2 hover:bg-secondary/50"
               onClick={() => navigate('/courses')}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="h-4 w-4" />
               Barcha kurslar
             </Button>
 
-            <div className="max-w-3xl">
-              <Badge className="mb-4">{difficultyLabels[course.difficulty]}</Badge>
-              <h1 className="text-3xl md:text-4xl font-display font-bold mb-4">
-                {course.title}
-              </h1>
-              <p className="text-lg text-muted-foreground mb-6">
-                {course.description}
-              </p>
-              <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                <span className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  {totalCount} dars
-                </span>
-                {user && (
-                  <span className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    {completedCount}/{totalCount} tugatilgan
-                  </span>
+            <div className="max-w-4xl">
+              {/* Badge */}
+              <div className="flex items-center gap-3 mb-4 opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
+                <Badge className={`${difficulty.bg} ${difficulty.text} font-semibold px-3 py-1`}>
+                  {difficulty.label}
+                </Badge>
+                {user && completedCount === totalCount && totalCount > 0 && (
+                  <Badge className="bg-success text-success-foreground gap-1">
+                    <Award className="h-3 w-3" />
+                    Tugatilgan
+                  </Badge>
                 )}
               </div>
+
+              {/* Title */}
+              <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                {course.title}
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+                {course.description}
+              </p>
+
+              {/* Stats */}
+              <div className="flex flex-wrap items-center gap-6 opacity-0 animate-slide-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground">{totalCount} dars</p>
+                    <p className="text-xs">Video darslar</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-accent" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-foreground">{totalDuration} daqiqa</p>
+                    <p className="text-xs">Umumiy vaqt</p>
+                  </div>
+                </div>
+                {user && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                      <CheckCircle2 className="h-5 w-5 text-success" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-foreground">{completedCount}/{totalCount}</p>
+                      <p className="text-xs">Tugatilgan</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar */}
+              {user && totalCount > 0 && (
+                <div className="mt-8 max-w-md opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">Jarayon</span>
+                    <span className="font-semibold">{Math.round(progressPercent)}%</span>
+                  </div>
+                  <Progress value={progressPercent} className="h-3" />
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Lessons List */}
-        <div className="container px-4 py-12">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Darslar ro'yxati</h2>
+        <div className="container px-4 py-12 md:py-16">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-display font-bold">Darslar ro'yxati</h2>
+                <p className="text-sm text-muted-foreground">Quyidagi darslarni bosqichma-bosqich o'rganing</p>
+              </div>
+            </div>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {lessons.map((lesson, index) => {
                 const isCompleted = completedLessons.has(lesson.id);
                 const isLocked = !user && index > 0;
@@ -183,41 +258,61 @@ const CourseDetail = () => {
                 return (
                   <Card 
                     key={lesson.id}
-                    className={`transition-all ${isLocked ? 'opacity-60' : 'hover:shadow-md cursor-pointer'}`}
+                    className={`group overflow-hidden border-border/40 transition-all duration-300 opacity-0 animate-slide-up ${
+                      isLocked 
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : 'hover:shadow-lg hover:-translate-y-1 cursor-pointer hover:border-primary/30'
+                    }`}
+                    style={{ animationDelay: `${500 + index * 80}ms`, animationFillMode: 'forwards' }}
                     onClick={() => !isLocked && navigate(`/lessons/${lesson.id}`)}
                   >
-                    <CardContent className="p-4 flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    <CardContent className="p-5 flex items-center gap-5">
+                      {/* Number/Status indicator */}
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
                         isCompleted 
-                          ? 'bg-green-500/10 text-green-500' 
+                          ? 'bg-success/10 text-success' 
                           : isLocked 
                             ? 'bg-muted text-muted-foreground'
-                            : 'bg-primary/10 text-primary'
+                            : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
                       }`}>
                         {isCompleted ? (
-                          <CheckCircle2 className="h-6 w-6" />
+                          <CheckCircle2 className="h-7 w-7" />
                         ) : isLocked ? (
-                          <Lock className="h-5 w-5" />
+                          <Lock className="h-6 w-6" />
                         ) : (
-                          <span className="font-bold">{index + 1}</span>
+                          <span className="text-xl font-display font-bold">{index + 1}</span>
                         )}
                       </div>
 
+                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold truncate">{lesson.title}</h3>
-                        <p className="text-sm text-muted-foreground truncate">
+                        <h3 className="font-display font-bold text-lg truncate group-hover:text-primary transition-colors">
+                          {lesson.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground truncate mt-1">
                           {lesson.description}
                         </p>
                       </div>
 
+                      {/* Duration & Action */}
                       <div className="flex items-center gap-4 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          {lesson.duration_minutes} daq
-                        </span>
+                        <div className="text-right hidden sm:block">
+                          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                            <Clock className="h-4 w-4" />
+                            {lesson.duration_minutes} daq
+                          </span>
+                        </div>
                         {!isLocked && (
-                          <Button size="sm" variant={isCompleted ? "secondary" : "default"}>
-                            <Play className="h-4 w-4" />
+                          <Button 
+                            size="icon" 
+                            variant={isCompleted ? "secondary" : "default"}
+                            className="h-10 w-10 rounded-xl"
+                          >
+                            {isCompleted ? (
+                              <Play className="h-4 w-4" />
+                            ) : (
+                              <ArrowRight className="h-4 w-4" />
+                            )}
                           </Button>
                         )}
                       </div>
@@ -227,17 +322,33 @@ const CourseDetail = () => {
               })}
             </div>
 
+            {/* Login CTA for guests */}
             {!user && lessons.length > 1 && (
-              <div className="mt-8 p-6 bg-primary/5 rounded-xl text-center">
-                <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
-                <h3 className="font-semibold mb-2">Barcha darslarga kirish</h3>
-                <p className="text-muted-foreground mb-4">
-                  Ro'yxatdan o'ting va barcha darslarga bepul kiring
-                </p>
-                <Button onClick={() => navigate('/auth')}>
-                  Ro'yxatdan o'tish
-                </Button>
-              </div>
+              <Card className="mt-10 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-accent/5 overflow-hidden">
+                <CardContent className="p-8 text-center relative">
+                  {/* Background decoration */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full" />
+                  
+                  <div className="relative z-10">
+                    <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 shadow-glow">
+                      <Lock className="h-8 w-8 text-primary-foreground" />
+                    </div>
+                    <h3 className="font-display font-bold text-xl mb-2">Barcha darslarga kirish</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      Ro'yxatdan o'ting va barcha video darslarga, mashqlarga hamda sertifikatlarga bepul ega bo'ling
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <Button onClick={() => navigate('/auth')} size="lg" className="gap-2">
+                        <Users className="h-4 w-4" />
+                        Ro'yxatdan o'tish
+                      </Button>
+                      <Button onClick={() => navigate('/auth')} variant="outline" size="lg">
+                        Kirish
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>
