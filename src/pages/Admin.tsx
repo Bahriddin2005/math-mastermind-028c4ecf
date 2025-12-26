@@ -33,6 +33,7 @@ import { ExamplesManager } from '@/components/ExamplesManager';
 import { FAQManager } from '@/components/FAQManager';
 import { ChatHistoryManager } from '@/components/ChatHistoryManager';
 import { AdminUserCharts } from '@/components/AdminUserCharts';
+import { FileManager } from '@/components/FileManager';
 import { 
   Mail, 
   FileText, 
@@ -54,7 +55,8 @@ import {
   GraduationCap,
   Calculator,
   HelpCircle,
-  MessageCircle
+  MessageCircle,
+  FolderOpen
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -480,7 +482,7 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-5xl grid-cols-7">
+            <TabsList className="grid w-full max-w-6xl grid-cols-8">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
@@ -488,6 +490,10 @@ const Admin = () => {
               <TabsTrigger value="courses" className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
                 <span className="hidden sm:inline">Kurslar</span>
+              </TabsTrigger>
+              <TabsTrigger value="files" className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Fayllar</span>
               </TabsTrigger>
               <TabsTrigger value="examples" className="flex items-center gap-2">
                 <Calculator className="h-4 w-4" />
@@ -577,6 +583,15 @@ const Admin = () => {
               <Card>
                 <CardContent className="p-6">
                   <CourseManager isAdmin={isAdmin} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Files Tab */}
+            <TabsContent value="files">
+              <Card>
+                <CardContent className="p-6">
+                  <FileManager isAdmin={isAdmin} />
                 </CardContent>
               </Card>
             </TabsContent>

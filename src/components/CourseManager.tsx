@@ -108,6 +108,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isCourseThumbnailDragging, setIsCourseThumbnailDragging] = useState(false);
+  const [isLessonThumbnailDragging, setIsLessonThumbnailDragging] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -310,24 +311,31 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     setLessonDialogOpen(true);
   };
 
-  const handleLessonThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-
+  const processLessonThumbnail = async (file: File) => {
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Rasm hajmi 5MB dan oshmasligi kerak");
       return;
     }
 
+    if (!file.type.startsWith('image/')) {
+      toast.error("Faqat rasm fayllar qo'llab-quvvatlanadi");
+      return;
+    }
+
     setUploadingLessonThumbnail(true);
     try {
-      const fileName = `lesson-thumbnails/${Date.now()}-${file.name}`;
+      const safeName = file.name.replace(/\s+/g, '_');
+      const fileName = `lesson-thumbnails/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from('course-videos')
         .upload(fileName, file);
 
-      if (error) throw error;
+      if (error) {
+        const errorDetail = (error as any)?.statusCode 
+          ? `Status: ${(error as any).statusCode} - ${error.message}`
+          : error.message;
+        throw new Error(errorDetail);
+      }
 
       const { data: publicUrl } = supabase.storage
         .from('course-videos')
@@ -337,9 +345,40 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
       toast.success("Rasm yuklandi");
     } catch (error) {
       console.error(error);
-      toast.error("Rasm yuklashda xatolik");
+      const message = error instanceof Error ? error.message : 'Rasm yuklashda xatolik';
+      toast.error(message);
     } finally {
       setUploadingLessonThumbnail(false);
+    }
+  };
+
+  const handleLessonThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    await processLessonThumbnail(file);
+  };
+
+  const handleLessonThumbnailDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLessonThumbnailDragging(true);
+  };
+
+  const handleLessonThumbnailDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLessonThumbnailDragging(false);
+  };
+
+  const handleLessonThumbnailDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLessonThumbnailDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      await processLessonThumbnail(files[0]);
     }
   };
 
@@ -783,25 +822,46 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
                     className="w-full h-24 object-cover rounded-lg border"
                   />
                 )}
-                <div className="flex gap-2">
-                  <Input
-                    value={lessonForm.thumbnail_url}
-                    onChange={(e) => setLessonForm(prev => ({ ...prev, thumbnail_url: e.target.value }))}
-                    placeholder="Rasm URL yoki yuklang..."
-                    className="flex-1"
-                  />
-                  <Button variant="outline" asChild disabled={uploadingLessonThumbnail}>
-                    <label className="cursor-pointer">
-                      {uploadingLessonThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
-                        onChange={handleLessonThumbnailUpload}
-                      />
-                    </label>
-                  </Button>
+                
+                {/* Drag and Drop Zone for Lesson Thumbnail */}
+                <div
+                  onDragOver={handleLessonThumbnailDragOver}
+                  onDragLeave={handleLessonThumbnailDragLeave}
+                  onDrop={handleLessonThumbnailDrop}
+                  className={`relative border-2 border-dashed rounded-lg p-3 text-center transition-all ${
+                    isLessonThumbnailDragging 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  } ${uploadingLessonThumbnail ? 'pointer-events-none opacity-50' : ''}`}
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <Upload className={`h-5 w-5 ${isLessonThumbnailDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <div className="text-xs">
+                      <span className="text-muted-foreground">Rasmni tashlang yoki </span>
+                      <label className="text-primary cursor-pointer hover:underline">
+                        tanlang
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={handleLessonThumbnailUpload}
+                          disabled={uploadingLessonThumbnail}
+                        />
+                      </label>
+                    </div>
+                    {uploadingLessonThumbnail && (
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    )}
+                  </div>
                 </div>
+
+                {/* URL Input */}
+                <Input
+                  value={lessonForm.thumbnail_url}
+                  onChange={(e) => setLessonForm(prev => ({ ...prev, thumbnail_url: e.target.value }))}
+                  placeholder="Yoki rasm URL kiriting..."
+                  className="text-xs"
+                />
               </div>
             </div>
             <div>
