@@ -11,6 +11,7 @@ import { Achievements } from '@/components/Achievements';
 import { StatsCharts } from '@/components/StatsCharts';
 import { GameHistoryItem } from '@/components/GameHistoryItem';
 import { Leaderboard } from '@/components/Leaderboard';
+import { InfoCarousel } from '@/components/InfoCarousel';
 import { GuestDashboard } from '@/components/GuestDashboard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -247,6 +248,9 @@ const Dashboard = () => {
               />
             </div>
           </div>
+
+          {/* Info Carousel */}
+          <InfoCarousel />
 
           {/* Tabs for History & Leaderboard */}
           <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
