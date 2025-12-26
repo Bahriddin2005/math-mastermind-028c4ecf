@@ -9,28 +9,42 @@ interface StatsCardProps {
   delay?: number;
 }
 
-const iconBgStyles = {
-  primary: 'gradient-primary',
-  accent: 'gradient-accent',
-  warning: 'bg-warning/20',
-  success: 'bg-success/10',
-  destructive: 'bg-destructive/10',
-};
-
-const iconStyles = {
-  primary: 'text-primary-foreground',
-  accent: 'text-accent-foreground',
-  warning: 'text-warning',
-  success: 'text-success',
-  destructive: 'text-destructive',
-};
-
-const valueStyles = {
-  primary: 'text-primary',
-  accent: 'text-accent',
-  warning: 'text-warning',
-  success: 'text-success',
-  destructive: 'text-destructive',
+const colorConfig = {
+  primary: {
+    iconBg: 'gradient-primary shadow-glow',
+    iconColor: 'text-primary-foreground',
+    valueBg: 'bg-primary/5',
+    valueColor: 'text-primary',
+    borderHover: 'hover:border-primary/50',
+  },
+  accent: {
+    iconBg: 'gradient-accent shadow-accent-glow',
+    iconColor: 'text-accent-foreground',
+    valueBg: 'bg-accent/5',
+    valueColor: 'text-accent',
+    borderHover: 'hover:border-accent/50',
+  },
+  warning: {
+    iconBg: 'bg-warning text-warning-foreground',
+    iconColor: 'text-warning-foreground',
+    valueBg: 'bg-warning/5',
+    valueColor: 'text-warning',
+    borderHover: 'hover:border-warning/50',
+  },
+  success: {
+    iconBg: 'bg-success',
+    iconColor: 'text-success-foreground',
+    valueBg: 'bg-success/5',
+    valueColor: 'text-success',
+    borderHover: 'hover:border-success/50',
+  },
+  destructive: {
+    iconBg: 'bg-destructive/20',
+    iconColor: 'text-destructive',
+    valueBg: 'bg-destructive/5',
+    valueColor: 'text-destructive',
+    borderHover: 'hover:border-destructive/50',
+  },
 };
 
 export const StatsCard = ({
@@ -40,18 +54,28 @@ export const StatsCard = ({
   iconBgColor,
   delay = 0,
 }: StatsCardProps) => {
+  const colors = colorConfig[iconBgColor];
+
   return (
     <Card
-      className="p-4 bg-gradient-to-br from-card to-secondary/20 border border-border/40 opacity-0 animate-slide-up hover:shadow-md transition-all duration-200"
+      className={`group relative overflow-hidden p-4 md:p-5 bg-gradient-to-br from-card via-card to-secondary/20 border border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all duration-300 hover:-translate-y-1 ${colors.borderHover}`}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
     >
-      <div className="flex items-center gap-3">
-        <div className={`h-12 w-12 rounded-xl ${iconBgStyles[iconBgColor]} flex items-center justify-center shrink-0`}>
-          <Icon className={`h-6 w-6 ${iconStyles[iconBgColor]}`} />
+      {/* Background decoration */}
+      <div className={`absolute -top-8 -right-8 w-24 h-24 ${colors.valueBg} rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition-opacity`} />
+      
+      <div className="relative flex items-center gap-4">
+        {/* Icon container */}
+        <div className={`h-12 w-12 md:h-14 md:w-14 rounded-xl ${colors.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className={`h-6 w-6 md:h-7 md:w-7 ${colors.iconColor}`} strokeWidth={2} />
         </div>
-        <div className="min-w-0">
-          <p className="text-xs text-muted-foreground font-medium truncate">{label}</p>
-          <p className={`text-2xl font-display font-bold ${valueStyles[iconBgColor]}`}>
+        
+        {/* Content */}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs md:text-sm text-muted-foreground font-medium truncate mb-0.5">
+            {label}
+          </p>
+          <p className={`text-2xl md:text-3xl font-display font-bold ${colors.valueColor} tracking-tight`}>
             {value}
           </p>
         </div>
