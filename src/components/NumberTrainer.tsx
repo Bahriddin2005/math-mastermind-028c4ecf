@@ -649,21 +649,6 @@ export const NumberTrainer = () => {
             <p className="text-muted-foreground text-sm">Javobingizni kiriting</p>
           </div>
           
-          {/* Shown numbers */}
-          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4">
-            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-2">
-              <BarChart3 className="h-3 w-3" />
-              Ko'rsatilgan sonlar
-            </p>
-            <p className="text-lg font-mono leading-relaxed">
-              {displayedNumbers.map((item, i) => (
-                <span key={i} className={i > 0 && !item.isAdd ? 'text-accent' : 'text-foreground'}>
-                  {i > 0 ? (item.isAdd ? ' + ' : ' − ') : ''}{item.num}
-                </span>
-              ))}
-            </p>
-          </div>
-
           {!showResult ? (
             <div className="space-y-4 animate-fade-in">
               <div className="relative">
