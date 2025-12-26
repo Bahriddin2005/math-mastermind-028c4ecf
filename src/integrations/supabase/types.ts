@@ -351,6 +351,59 @@ export type Database = {
           },
         ]
       }
+      math_examples: {
+        Row: {
+          answer: number
+          category: string
+          created_at: string
+          difficulty: string
+          explanation: string | null
+          hint: string | null
+          id: string
+          is_active: boolean | null
+          lesson_id: string | null
+          order_index: number | null
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: number
+          category?: string
+          created_at?: string
+          difficulty?: string
+          explanation?: string | null
+          hint?: string | null
+          id?: string
+          is_active?: boolean | null
+          lesson_id?: string | null
+          order_index?: number | null
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: number
+          category?: string
+          created_at?: string
+          difficulty?: string
+          explanation?: string | null
+          hint?: string | null
+          id?: string
+          is_active?: boolean | null
+          lesson_id?: string | null
+          order_index?: number | null
+          question?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "math_examples_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

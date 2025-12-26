@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Trophy, Medal, Award, User, Calendar, CalendarDays, CalendarRange } from 'lucide-react';
+import { Trophy, Medal, Award, User, CalendarDays, CalendarRange, Sparkles, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlayerProfileDialog } from './PlayerProfileDialog';
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs';
+import { Badge } from './ui/badge';
 
 interface LeaderboardEntry {
   id: string;
@@ -34,7 +35,6 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
       setLoading(true);
 
       if (timeFilter === 'all') {
-        // Fetch from profiles for all-time leaderboard
         const { data } = await supabase
           .from('profiles')
           .select('id, user_id, username, total_score, best_streak, avatar_url')
@@ -45,7 +45,6 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
           setEntries(data);
         }
       } else {
-        // Fetch from game_sessions for time-filtered leaderboard
         const now = new Date();
         let startDate: Date;
         
@@ -57,14 +56,12 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
           startDate.setMonth(now.getMonth() - 1);
         }
 
-        // First get aggregated scores from game_sessions
         const { data: sessionsData } = await supabase
           .from('game_sessions')
           .select('user_id, score, best_streak')
           .gte('created_at', startDate.toISOString());
 
         if (sessionsData) {
-          // Aggregate scores by user
           const userScores = new Map<string, { totalScore: number; bestStreak: number }>();
           
           sessionsData.forEach(session => {
@@ -75,7 +72,6 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
             });
           });
 
-          // Get user profiles for these users
           const userIds = Array.from(userScores.keys());
           
           if (userIds.length > 0) {
@@ -97,7 +93,6 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                 };
               });
 
-              // Sort by total_score descending
               leaderboardEntries.sort((a, b) => b.total_score - a.total_score);
               setEntries(leaderboardEntries.slice(0, 50));
             }
@@ -112,7 +107,6 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
 
     fetchLeaderboard();
 
-    // Subscribe to realtime updates
     const channel = supabase
       .channel('leaderboard-updates')
       .on(
@@ -141,34 +135,57 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return <Trophy className="h-6 w-6 text-yellow-500" />;
+        return (
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center shadow-lg">
+            <Trophy className="h-5 w-5 text-white" />
+          </div>
+        );
       case 2:
-        return <Medal className="h-6 w-6 text-gray-400" />;
+        return (
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center shadow-md">
+            <Medal className="h-5 w-5 text-white" />
+          </div>
+        );
       case 3:
-        return <Award className="h-6 w-6 text-amber-600" />;
+        return (
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-md">
+            <Award className="h-5 w-5 text-white" />
+          </div>
+        );
       default:
-        return <span className="text-lg font-bold text-muted-foreground w-6 text-center">{rank}</span>;
+        return (
+          <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
+            <span className="text-lg font-display font-bold text-muted-foreground">{rank}</span>
+          </div>
+        );
     }
   };
 
-  const getRankBg = (rank: number) => {
+  const getRankStyles = (rank: number, isCurrentUser: boolean) => {
+    const baseStyles = 'border transition-all duration-300 cursor-pointer hover:shadow-lg';
+    
+    if (isCurrentUser) {
+      return cn(baseStyles, 'ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5 border-primary/30');
+    }
+    
     switch (rank) {
       case 1:
-        return 'bg-gradient-to-r from-yellow-500/20 to-yellow-500/5 border-yellow-500/30';
+        return cn(baseStyles, 'bg-gradient-to-r from-yellow-500/10 via-amber-500/5 to-transparent border-yellow-500/30 hover:border-yellow-500/50');
       case 2:
-        return 'bg-gradient-to-r from-gray-400/20 to-gray-400/5 border-gray-400/30';
+        return cn(baseStyles, 'bg-gradient-to-r from-gray-400/10 via-gray-400/5 to-transparent border-gray-400/30 hover:border-gray-400/50');
       case 3:
-        return 'bg-gradient-to-r from-amber-600/20 to-amber-600/5 border-amber-600/30';
+        return cn(baseStyles, 'bg-gradient-to-r from-amber-600/10 via-amber-600/5 to-transparent border-amber-600/30 hover:border-amber-600/50');
       default:
-        return 'bg-secondary/50';
+        return cn(baseStyles, 'bg-card hover:bg-secondary/50 border-border/40');
     }
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+      <Card className="border-border/40 shadow-md">
+        <CardContent className="py-16 text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Reyting yuklanmoqda...</p>
         </CardContent>
       </Card>
     );
@@ -176,36 +193,51 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
 
   return (
     <>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" />
-            Eng yaxshi o'yinchilar
-          </CardTitle>
-          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)} className="mt-3">
-            <TabsList className="grid w-full grid-cols-3 bg-secondary/50">
-              <TabsTrigger value="all" className="flex items-center gap-1.5 text-xs">
+      <Card className="border-border/40 shadow-md overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-r from-warning/5 via-accent/5 to-transparent">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center">
+                <Trophy className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <div>
+                <span className="text-lg">Eng yaxshi o'yinchilar</span>
+                <p className="text-xs text-muted-foreground font-normal mt-0.5">
+                  {entries.length} ta o'yinchi
+                </p>
+              </div>
+            </CardTitle>
+          </div>
+          
+          <Tabs value={timeFilter} onValueChange={(v) => setTimeFilter(v as TimeFilter)} className="mt-4">
+            <TabsList className="grid w-full grid-cols-3 bg-secondary/60 p-1">
+              <TabsTrigger value="all" className="flex items-center gap-1.5 text-xs data-[state=active]:bg-card">
                 <Trophy className="h-3.5 w-3.5" />
                 Hammasi
               </TabsTrigger>
-              <TabsTrigger value="weekly" className="flex items-center gap-1.5 text-xs">
+              <TabsTrigger value="weekly" className="flex items-center gap-1.5 text-xs data-[state=active]:bg-card">
                 <CalendarDays className="h-3.5 w-3.5" />
                 Haftalik
               </TabsTrigger>
-              <TabsTrigger value="monthly" className="flex items-center gap-1.5 text-xs">
+              <TabsTrigger value="monthly" className="flex items-center gap-1.5 text-xs data-[state=active]:bg-card">
                 <CalendarRange className="h-3.5 w-3.5" />
                 Oylik
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </CardHeader>
-        <CardContent>
-        {entries.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>Hali o'yinchilar yo'q</p>
-          </div>
-        ) : (
-            <div className="space-y-2">
+        
+        <CardContent className="pt-4">
+          {entries.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="h-20 w-20 rounded-3xl bg-secondary flex items-center justify-center mx-auto mb-4">
+                <Trophy className="h-10 w-10 text-muted-foreground" />
+              </div>
+              <h3 className="font-display font-bold text-lg mb-2">Hali o'yinchilar yo'q</h3>
+              <p className="text-muted-foreground text-sm">Birinchi bo'lib reytingga kiring!</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
               {entries.map((entry, index) => {
                 const rank = index + 1;
                 const isCurrentUser = entry.user_id === currentUserId;
@@ -215,34 +247,46 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                     key={entry.id}
                     onClick={() => handlePlayerClick(entry.user_id)}
                     className={cn(
-                      'flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer hover:scale-[1.01] hover:shadow-md',
-                      getRankBg(rank),
-                      isCurrentUser && 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                      'flex items-center gap-4 p-4 rounded-2xl',
+                      getRankStyles(rank, isCurrentUser)
                     )}
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-8">
-                        {getRankIcon(rank)}
-                      </div>
-                      <Avatar className="h-10 w-10 border-2 border-border">
-                        <AvatarImage src={entry.avatar_url || undefined} alt={entry.username} />
-                        <AvatarFallback className="bg-primary/10">
-                          <User className="h-5 w-5 text-primary" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
+                    {/* Rank */}
+                    {getRankIcon(rank)}
+                    
+                    {/* Avatar */}
+                    <Avatar className="h-12 w-12 border-2 border-border shadow-sm">
+                      <AvatarImage src={entry.avatar_url || undefined} alt={entry.username} />
+                      <AvatarFallback className="bg-primary/10 font-semibold">
+                        {entry.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
                         <p className={cn(
-                          'font-semibold',
+                          'font-display font-bold truncate',
                           isCurrentUser && 'text-primary'
                         )}>
                           {entry.username}
-                          {isCurrentUser && ' (siz)'}
                         </p>
-                        <p className="text-sm text-muted-foreground">
-                          Eng uzun seriya: {entry.best_streak}
-                        </p>
+                        {isCurrentUser && (
+                          <Badge variant="secondary" className="text-xs">siz</Badge>
+                        )}
+                        {rank <= 3 && (
+                          <Sparkles className="h-4 w-4 text-warning" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Flame className="h-3 w-3 text-accent" />
+                          {entry.best_streak} seriya
+                        </span>
                       </div>
                     </div>
+                    
+                    {/* Score */}
                     <div className="text-right">
                       <p className="text-2xl font-display font-bold text-primary">
                         {entry.total_score.toLocaleString()}

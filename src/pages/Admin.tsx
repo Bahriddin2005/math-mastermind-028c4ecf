@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { CourseManager } from '@/components/CourseManager';
+import { ExamplesManager } from '@/components/ExamplesManager';
 import { 
   Mail, 
   FileText, 
@@ -47,7 +48,8 @@ import {
   Target,
   TrendingUp,
   Flame,
-  GraduationCap
+  GraduationCap,
+  Calculator
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -413,7 +415,7 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-2xl grid-cols-4">
+            <TabsList className="grid w-full max-w-3xl grid-cols-5">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
@@ -421,6 +423,10 @@ const Admin = () => {
               <TabsTrigger value="courses" className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
                 <span className="hidden sm:inline">Kurslar</span>
+              </TabsTrigger>
+              <TabsTrigger value="examples" className="flex items-center gap-2">
+                <Calculator className="h-4 w-4" />
+                <span className="hidden sm:inline">Misollar</span>
               </TabsTrigger>
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
@@ -477,6 +483,11 @@ const Admin = () => {
                   <CourseManager isAdmin={isAdmin} />
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Examples Tab */}
+            <TabsContent value="examples">
+              <ExamplesManager />
             </TabsContent>
 
             {/* Messages Tab */}
