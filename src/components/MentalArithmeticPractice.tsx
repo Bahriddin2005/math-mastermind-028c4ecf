@@ -12,7 +12,7 @@ import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
 import { AbacusFlashCard } from './AbacusFlashCard';
 import { AbacusTutorial } from './AbacusTutorial';
 import { MultiplayerCompetition } from './MultiplayerCompetition';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, GraduationCap, Swords } from 'lucide-react';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, GraduationCap, Swords, Square } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
@@ -106,12 +106,42 @@ const RULES_MIXED: Record<number, { add: number[]; subtract: number[] }> = {
 type FormulaType = 'basic' | 'small_friend_1' | 'small_friend_2' | 'big_friend_3' | 'big_friend_4' | 'mixed';
 
 const FORMULA_CONFIG = {
-  basic: { label: "Formulasiz", rules: RULES_BASIC },
-  small_friend_1: { label: "Kichik do'st +1/-1", rules: RULES_SMALL_FRIEND_1 },
-  small_friend_2: { label: "Kichik do'st +2/-2", rules: RULES_SMALL_FRIEND_2 },
-  big_friend_3: { label: "Katta do'st +3/-3", rules: RULES_BIG_FRIEND_3 },
-  big_friend_4: { label: "Katta do'st +4/-4", rules: RULES_BIG_FRIEND_4 },
-  mixed: { label: "Aralash (barcha formulalar)", rules: RULES_MIXED },
+  basic: { 
+    label: "Formulasiz", 
+    rules: RULES_BASIC,
+    example: "Natija 4 → +5, -1, -2, -3, -4 | Natija 6 → +1, +2, +3, -1, -5, -6",
+    description: "Abakusda formulasiz asosiy qo'shish va ayirish amallari"
+  },
+  small_friend_1: { 
+    label: "Kichik do'st +1/-1", 
+    rules: RULES_SMALL_FRIEND_1,
+    example: "Natija 4 → +1 (5-4=1) | Natija 5 → -1 (4+1=5)",
+    description: "4+1=5 yoki 5-1=4 formulasi orqali amal bajariladi"
+  },
+  small_friend_2: { 
+    label: "Kichik do'st +2/-2", 
+    rules: RULES_SMALL_FRIEND_2,
+    example: "Natija 3 → +2 (5-3=2) | Natija 6 → -2 (5+1=6)",
+    description: "3+2=5 yoki 6-2=4 formulasi orqali amal bajariladi"
+  },
+  big_friend_3: { 
+    label: "Katta do'st +3/-3", 
+    rules: RULES_BIG_FRIEND_3,
+    example: "Natija 2 → +3 (5-2=3) | Natija 7 → -3 (5+2=7)",
+    description: "2+3=5 yoki 7-3=4 formulasi orqali amal bajariladi"
+  },
+  big_friend_4: { 
+    label: "Katta do'st +4/-4", 
+    rules: RULES_BIG_FRIEND_4,
+    example: "Natija 1 → +4 (5-1=4) | Natija 8 → -4 (5+3=8)",
+    description: "1+4=5 yoki 8-4=4 formulasi orqali amal bajariladi"
+  },
+  mixed: { 
+    label: "Aralash (barcha formulalar)", 
+    rules: RULES_MIXED,
+    example: "Barcha formulalar aralashtirilgan holda",
+    description: "Formulasiz + Kichik do'st + Katta do'st formulalari birgalikda"
+  },
 };
 
 // Qiyinlik darajalari
@@ -143,6 +173,7 @@ export const MentalArithmeticPractice = () => {
   const [showAbacus, setShowAbacus] = useState(true);
   const [showSettings, setShowSettings] = useState(true);
   const [abacusColumns, setAbacusColumns] = useState(1);
+  const [continuousMode, setContinuousMode] = useState(false); // To'xtovsiz mashq rejimi
   const [currentProgress, setCurrentProgress] = useState(0);
   
   // O'yin holati
@@ -269,9 +300,56 @@ export const MentalArithmeticPractice = () => {
         }
         playSound('complete');
         setIsRunning(false);
-        setIsFinished(true);
         setCurrentNumber(null);
         setCurrentProgress(100);
+        
+        // To'xtovsiz rejimda avtomatik keyingi mashqqa o'tish
+        if (continuousMode) {
+          // 1.5 sekunddan keyin yangi mashq boshlash
+          setTimeout(() => {
+            const newInitialResult = Math.floor(Math.random() * 10);
+            runningResultRef.current = newInitialResult;
+            countRef.current = 1;
+            startTimeRef.current = Date.now();
+            
+            setCurrentNumber(newInitialResult);
+            setDisplayedNumbers([newInitialResult]);
+            setIsRunning(true);
+            setCurrentProgress((1 / customCount) * 100);
+
+            intervalRef.current = setInterval(() => {
+              countRef.current += 1;
+              
+              if (countRef.current > customCount) {
+                if (intervalRef.current) {
+                  clearInterval(intervalRef.current);
+                  intervalRef.current = null;
+                }
+                playSound('complete');
+                setIsRunning(false);
+                setCurrentNumber(null);
+                setCurrentProgress(100);
+                
+                // Rekursiv davom ettirish
+                if (continuousMode) {
+                  setTimeout(() => startGame(), 1500);
+                } else {
+                  setIsFinished(true);
+                }
+                return;
+              }
+
+              const nextNum = generateNextNumber();
+              if (nextNum !== null) {
+                setCurrentNumber(nextNum);
+                setDisplayedNumbers(prev => [...prev, nextNum]);
+                setCurrentProgress((countRef.current / customCount) * 100);
+              }
+            }, customSpeed);
+          }, 1500);
+        } else {
+          setIsFinished(true);
+        }
         return;
       }
 
@@ -282,7 +360,7 @@ export const MentalArithmeticPractice = () => {
         setCurrentProgress((countRef.current / customCount) * 100);
       }
     }, customSpeed);
-  }, [customCount, customSpeed, generateNextNumber, playSound]);
+  }, [customCount, customSpeed, generateNextNumber, playSound, continuousMode]);
 
   // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
@@ -458,6 +536,25 @@ export const MentalArithmeticPractice = () => {
                     <Settings2 className="h-4 w-4" />
                     Sozlamalar
                   </div>
+                  
+                  {/* Formula namunasi */}
+                  <Card className="bg-muted/50 border-primary/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Lightbulb className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-sm">{FORMULA_CONFIG[formulaType].label}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {FORMULA_CONFIG[formulaType].description}
+                          </p>
+                          <p className="text-xs text-primary mt-2 font-mono bg-background/50 px-2 py-1 rounded">
+                            {FORMULA_CONFIG[formulaType].example}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="space-y-2">
                       <Label>Formula turi</Label>
@@ -508,6 +605,18 @@ export const MentalArithmeticPractice = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
+                      <Label>To'xtovsiz rejim</Label>
+                      <Select value={continuousMode ? 'yes' : 'no'} onValueChange={(v) => setContinuousMode(v === 'yes')}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no">O'chirilgan</SelectItem>
+                          <SelectItem value="yes">Yoqilgan</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
                       <Label>Abacus ko'rsatish</Label>
                       <Select value={showAbacus ? 'yes' : 'no'} onValueChange={(v) => setShowAbacus(v === 'yes')}>
                         <SelectTrigger>
@@ -551,7 +660,7 @@ export const MentalArithmeticPractice = () => {
                     <div className="mb-6">
                       <div className="flex justify-between text-sm text-muted-foreground mb-2">
                         <span>Son: {countRef.current} / {customCount}</span>
-                        <span>{customSpeed}ms</span>
+                        <span>{continuousMode ? "To'xtovsiz rejim" : `${customSpeed}ms`}</span>
                       </div>
                       <Progress value={currentProgress} className="h-2" />
                     </div>
@@ -567,6 +676,19 @@ export const MentalArithmeticPractice = () => {
                       <div className="text-8xl font-bold text-primary animate-fade-in" key={displayedNumbers.length}>
                         {currentNumber}
                       </div>
+                    )}
+                    
+                    {/* To'xtovsiz rejimda to'xtatish tugmasi */}
+                    {continuousMode && (
+                      <Button 
+                        onClick={resetGame} 
+                        variant="destructive" 
+                        size="sm" 
+                        className="mt-6 gap-2"
+                      >
+                        <Square className="h-4 w-4" />
+                        To'xtatish
+                      </Button>
                     )}
                   </div>
                 )}
