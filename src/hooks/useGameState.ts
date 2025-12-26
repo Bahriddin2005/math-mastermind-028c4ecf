@@ -8,13 +8,25 @@ interface UseGameStateOptions {
   difficulty: Difficulty;
   mode: GameMode;
   timerDuration?: number;
+  targetProblems?: number;
   onCorrect?: () => void;
   onIncorrect?: () => void;
   onComplete?: () => void;
+  onStreakMilestone?: (streak: number) => void;
 }
 
 export const useGameState = (options: UseGameStateOptions) => {
-  const { section, difficulty, mode, timerDuration = 60, onCorrect, onIncorrect, onComplete } = options;
+  const { 
+    section, 
+    difficulty, 
+    mode, 
+    timerDuration = 60, 
+    targetProblems = 0,
+    onCorrect, 
+    onIncorrect, 
+    onComplete,
+    onStreakMilestone 
+  } = options;
 
   const [currentProblem, setCurrentProblem] = useState<MathProblem | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
@@ -32,6 +44,7 @@ export const useGameState = (options: UseGameStateOptions) => {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const problemStartRef = useRef<number>(0);
+  const lastStreakRef = useRef<number>(0);
 
   const generateNewProblem = useCallback(() => {
     const problem = MentalMathGenerator.generate(section, difficulty);
@@ -52,6 +65,7 @@ export const useGameState = (options: UseGameStateOptions) => {
       totalTime: 0,
       problems: 0,
     });
+    lastStreakRef.current = 0;
     generateNewProblem();
   }, [timerDuration, generateNewProblem]);
 
@@ -75,11 +89,18 @@ export const useGameState = (options: UseGameStateOptions) => {
 
     setStats(prev => {
       const newStreak = isCorrect ? prev.streak + 1 : 0;
+      const newBestStreak = Math.max(prev.bestStreak, newStreak);
+      
+      // Check for streak milestone
+      if (isCorrect && newStreak >= 5 && (newStreak === 5 || newStreak % 5 === 0)) {
+        onStreakMilestone?.(newStreak);
+      }
+      
       return {
         correct: prev.correct + (isCorrect ? 1 : 0),
         incorrect: prev.incorrect + (isCorrect ? 0 : 1),
         streak: newStreak,
-        bestStreak: Math.max(prev.bestStreak, newStreak),
+        bestStreak: newBestStreak,
         totalTime: prev.totalTime + problemTime,
         problems: prev.problems + 1,
       };
@@ -94,10 +115,18 @@ export const useGameState = (options: UseGameStateOptions) => {
     // Show feedback then move to next problem
     setTimeout(() => {
       if (isGameActive) {
+        // Check if target reached (practice mode with target)
+        if (mode === 'practice' && targetProblems > 0) {
+          const newProblems = stats.problems + 1;
+          if (newProblems >= targetProblems) {
+            endGame();
+            return;
+          }
+        }
         generateNewProblem();
       }
     }, isCorrect ? 500 : 1500);
-  }, [currentProblem, userAnswer, isGameActive, generateNewProblem, onCorrect, onIncorrect]);
+  }, [currentProblem, userAnswer, isGameActive, generateNewProblem, onCorrect, onIncorrect, onStreakMilestone, mode, targetProblems, stats.problems, endGame]);
 
   // Timer logic
   useEffect(() => {

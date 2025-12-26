@@ -14,7 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_sessions: {
+        Row: {
+          best_streak: number | null
+          correct: number | null
+          created_at: string
+          difficulty: string
+          id: string
+          incorrect: number | null
+          mode: string
+          problems_solved: number | null
+          score: number | null
+          section: string
+          target_problems: number | null
+          timer_duration: number | null
+          total_time: number | null
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number | null
+          correct?: number | null
+          created_at?: string
+          difficulty: string
+          id?: string
+          incorrect?: number | null
+          mode: string
+          problems_solved?: number | null
+          score?: number | null
+          section: string
+          target_problems?: number | null
+          timer_duration?: number | null
+          total_time?: number | null
+          user_id: string
+        }
+        Update: {
+          best_streak?: number | null
+          correct?: number | null
+          created_at?: string
+          difficulty?: string
+          id?: string
+          incorrect?: number | null
+          mode?: string
+          problems_solved?: number | null
+          score?: number | null
+          section?: string
+          target_problems?: number | null
+          timer_duration?: number | null
+          total_time?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          best_streak: number | null
+          created_at: string
+          id: string
+          total_problems_solved: number | null
+          total_score: number | null
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          best_streak?: number | null
+          created_at?: string
+          id?: string
+          total_problems_solved?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          best_streak?: number | null
+          created_at?: string
+          id?: string
+          total_problems_solved?: number | null
+          total_score?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

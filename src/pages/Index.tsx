@@ -1,17 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MathSection, Difficulty, getSectionInfo } from '@/lib/mathGenerator';
 import { useGameState, GameMode } from '@/hooks/useGameState';
 import { useSound } from '@/hooks/useSound';
+import { useConfetti } from '@/hooks/useConfetti';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
 import { SectionCard } from '@/components/SectionCard';
 import { DifficultyPicker } from '@/components/DifficultyPicker';
+import { TimerPicker } from '@/components/TimerPicker';
+import { TargetPicker } from '@/components/TargetPicker';
 import { ProblemDisplay } from '@/components/ProblemDisplay';
 import { StatsDisplay } from '@/components/StatsDisplay';
 import { TimerDisplay } from '@/components/TimerDisplay';
 import { GameResults } from '@/components/GameResults';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Timer, Play, ArrowLeft } from 'lucide-react';
+import { Timer, Play, ArrowLeft, Target } from 'lucide-react';
 
 type AppState = 'menu' | 'playing' | 'results';
 
@@ -20,8 +25,12 @@ const Index = () => {
   const [selectedSection, setSelectedSection] = useState<MathSection>('add-sub');
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const [gameMode, setGameMode] = useState<GameMode>('practice');
+  const [timerDuration, setTimerDuration] = useState(60);
+  const [targetProblems, setTargetProblems] = useState(10);
   
   const { soundEnabled, toggleSound, playSound } = useSound();
+  const { triggerStreakConfetti, triggerCompletionConfetti, resetStreak } = useConfetti();
+  const { user } = useAuth();
 
   const {
     currentProblem,
@@ -39,17 +48,68 @@ const Index = () => {
     section: selectedSection,
     difficulty,
     mode: gameMode,
-    timerDuration: 60,
+    timerDuration,
+    targetProblems: gameMode === 'practice' ? targetProblems : 0,
     onCorrect: () => playSound('correct'),
     onIncorrect: () => playSound('incorrect'),
     onComplete: () => {
       playSound('complete');
       setAppState('results');
     },
+    onStreakMilestone: (streak) => {
+      triggerStreakConfetti(streak);
+    },
   });
+
+  // Save game session when results are shown
+  useEffect(() => {
+    const saveSession = async () => {
+      if (appState === 'results' && user && stats.problems > 0) {
+        const score = stats.correct * 10 + stats.bestStreak * 5;
+        const accuracy = stats.correct / (stats.correct + stats.incorrect);
+        
+        // Trigger completion confetti
+        triggerCompletionConfetti(accuracy * 100);
+        
+        // Save game session
+        await supabase.from('game_sessions').insert({
+          user_id: user.id,
+          section: selectedSection,
+          difficulty: difficulty.toString(),
+          mode: gameMode,
+          correct: stats.correct,
+          incorrect: stats.incorrect,
+          best_streak: stats.bestStreak,
+          total_time: stats.totalTime,
+          problems_solved: stats.problems,
+          score,
+          timer_duration: gameMode === 'timer' ? timerDuration : null,
+          target_problems: gameMode === 'practice' ? targetProblems : null,
+        });
+
+        // Update profile stats
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('total_score, total_problems_solved, best_streak')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (profile) {
+          await supabase.from('profiles').update({
+            total_score: profile.total_score + score,
+            total_problems_solved: profile.total_problems_solved + stats.problems,
+            best_streak: Math.max(profile.best_streak, stats.bestStreak),
+          }).eq('user_id', user.id);
+        }
+      }
+    };
+
+    saveSession();
+  }, [appState, user, stats, selectedSection, difficulty, gameMode, timerDuration, targetProblems, triggerCompletionConfetti]);
 
   const handleStartGame = () => {
     playSound('start');
+    resetStreak();
     startGame();
     setAppState('playing');
   };
@@ -61,6 +121,7 @@ const Index = () => {
 
   const handlePlayAgain = () => {
     playSound('start');
+    resetStreak();
     startGame();
     setAppState('playing');
   };
@@ -127,9 +188,27 @@ const Index = () => {
                     onClick={() => setGameMode('timer')}
                   >
                     <Timer className="h-5 w-5 mr-2" />
-                    60 soniya
+                    Taymer
                   </Button>
                 </div>
+
+                {/* Mode-specific options */}
+                {gameMode === 'timer' && (
+                  <div className="space-y-2 text-center">
+                    <p className="text-sm text-muted-foreground">Vaqt davomiyligi</p>
+                    <TimerPicker value={timerDuration} onChange={setTimerDuration} />
+                  </div>
+                )}
+
+                {gameMode === 'practice' && (
+                  <div className="space-y-2 text-center">
+                    <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                      <Target className="h-4 w-4" />
+                      Misollar soni
+                    </p>
+                    <TargetPicker value={targetProblems} onChange={setTargetProblems} />
+                  </div>
+                )}
 
                 {/* Start button */}
                 <div className="text-center">
@@ -167,9 +246,24 @@ const Index = () => {
             {gameMode === 'timer' && isGameActive && (
               <TimerDisplay 
                 timeLeft={timeLeft} 
-                totalTime={60} 
+                totalTime={timerDuration} 
                 isActive={isGameActive} 
               />
+            )}
+
+            {/* Progress (if practice mode with target) */}
+            {gameMode === 'practice' && targetProblems > 0 && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Misol: {stats.problems + 1} / {targetProblems}
+                </p>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden mt-2">
+                  <div
+                    className="h-full gradient-primary rounded-full transition-all duration-300"
+                    style={{ width: `${((stats.problems) / targetProblems) * 100}%` }}
+                  />
+                </div>
+              </div>
             )}
 
             {/* Stats */}
@@ -191,8 +285,8 @@ const Index = () => {
               disabled={!isGameActive}
             />
 
-            {/* End practice button (for practice mode) */}
-            {gameMode === 'practice' && isGameActive && stats.problems >= 5 && (
+            {/* End practice button (for practice mode without target) */}
+            {gameMode === 'practice' && isGameActive && targetProblems === 0 && stats.problems >= 5 && (
               <div className="text-center">
                 <Button
                   variant="outline"
@@ -215,6 +309,7 @@ const Index = () => {
               stats={stats}
               onPlayAgain={handlePlayAgain}
               onGoHome={handleBackToMenu}
+              isLoggedIn={!!user}
             />
           </div>
         )}

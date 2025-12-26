@@ -1,15 +1,17 @@
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { GameStats } from '@/lib/mathGenerator';
-import { Trophy, Target, Clock, Flame, RotateCcw, Home } from 'lucide-react';
+import { Trophy, Target, Clock, Flame, RotateCcw, Home, LogIn } from 'lucide-react';
 
 interface GameResultsProps {
   stats: GameStats;
   onPlayAgain: () => void;
   onGoHome: () => void;
+  isLoggedIn?: boolean;
 }
 
-export const GameResults = ({ stats, onPlayAgain, onGoHome }: GameResultsProps) => {
+export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameResultsProps) => {
   const accuracy = stats.correct + stats.incorrect > 0
     ? Math.round((stats.correct / (stats.correct + stats.incorrect)) * 100)
     : 0;
@@ -17,6 +19,8 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome }: GameResultsProps) 
   const avgTime = stats.problems > 0
     ? (stats.totalTime / stats.problems).toFixed(1)
     : '0';
+
+  const score = stats.correct * 10 + stats.bestStreak * 5;
 
   // Determine result message based on accuracy
   let resultMessage = '';
@@ -40,6 +44,11 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome }: GameResultsProps) 
       <CardHeader className="text-center pb-2">
         <div className="text-6xl mb-4">{resultEmoji}</div>
         <CardTitle className="text-3xl">{resultMessage}</CardTitle>
+        {isLoggedIn && (
+          <p className="text-2xl font-display font-bold text-primary mt-2">
+            +{score} ball
+          </p>
+        )}
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -83,6 +92,22 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome }: GameResultsProps) 
             />
           </div>
         </div>
+
+        {/* Login prompt if not logged in */}
+        {!isLoggedIn && (
+          <div className="text-center p-4 rounded-xl bg-primary/5 border border-primary/20">
+            <Trophy className="h-8 w-8 mx-auto mb-2 text-primary" />
+            <p className="text-sm text-muted-foreground mb-3">
+              Natijalaringizni saqlash va reytingda qatnashish uchun tizimga kiring
+            </p>
+            <Link to="/auth">
+              <Button variant="secondary" size="sm" className="gap-2">
+                <LogIn className="h-4 w-4" />
+                Kirish
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-3 pt-4">
