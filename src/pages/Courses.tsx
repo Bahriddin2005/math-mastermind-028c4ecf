@@ -11,12 +11,14 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Play, 
-  Clock, 
   BookOpen, 
-  CheckCircle2,
   Loader2,
   GraduationCap,
-  Award
+  Award,
+  Sparkles,
+  ArrowRight,
+  Users,
+  Clock
 } from 'lucide-react';
 
 interface Course {
@@ -29,16 +31,10 @@ interface Course {
   completed_lessons?: number;
 }
 
-const difficultyColors: Record<string, string> = {
-  beginner: 'bg-green-500/10 text-green-600',
-  intermediate: 'bg-yellow-500/10 text-yellow-600',
-  advanced: 'bg-red-500/10 text-red-600',
-};
-
-const difficultyLabels: Record<string, string> = {
-  beginner: "Boshlang'ich",
-  intermediate: "O'rta",
-  advanced: "Murakkab",
+const difficultyConfig: Record<string, { bg: string; text: string; label: string }> = {
+  beginner: { bg: 'bg-success/10', text: 'text-success', label: "Boshlang'ich" },
+  intermediate: { bg: 'bg-warning/10', text: 'text-warning', label: "O'rta" },
+  advanced: { bg: 'bg-destructive/10', text: 'text-destructive', label: "Murakkab" },
 };
 
 const Courses = () => {
@@ -61,7 +57,6 @@ const Courses = () => {
       .order('order_index', { ascending: true });
 
     if (coursesData) {
-      // Get lessons count for each course
       const coursesWithLessons = await Promise.all(
         coursesData.map(async (course) => {
           const { count } = await supabase
@@ -76,7 +71,6 @@ const Courses = () => {
 
       setCourses(coursesWithLessons);
 
-      // Get user progress if logged in
       if (user) {
         const progressMap: Record<string, { total: number; completed: number }> = {};
         
@@ -112,102 +106,203 @@ const Courses = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      <main className="flex-1 container px-4 py-8 md:py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 bg-primary/10 text-primary hover:bg-primary/20">
-              <GraduationCap className="h-3 w-3 mr-1" />
-              Video darsliklar
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-foreground mb-4">
-              O'quv kurslari
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Mental arifmetika bo'yicha video darslarni ko'ring, mashq qiling va savollaringizga javob oling.
-            </p>
+      <main className="flex-1">
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 py-16 md:py-24">
+          {/* Background decorations */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+          </div>
+          
+          {/* Floating icons */}
+          <div className="absolute top-20 right-20 opacity-20 hidden lg:block">
+            <GraduationCap className="h-24 w-24 text-primary animate-bounce-soft" />
+          </div>
+          <div className="absolute bottom-20 left-20 opacity-10 hidden lg:block">
+            <BookOpen className="h-20 w-20 text-accent" />
           </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : courses.length === 0 ? (
-            <div className="text-center py-12">
-              <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Kurslar hali mavjud emas</h2>
-              <p className="text-muted-foreground">Tez orada yangi kurslar qo'shiladi</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => {
-                const progress = userProgress[course.id];
-                const progressPercent = progress ? (progress.completed / progress.total) * 100 : 0;
-                const isCompleted = progress && progress.completed === progress.total && progress.total > 0;
+          <div className="container px-4 relative">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6 opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
+                <Sparkles className="h-4 w-4" />
+                <span className="text-sm font-semibold">Professional video darsliklar</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                Mental arifmetika
+                <span className="text-gradient-primary"> kurslari</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+                Boshlang'ich darajadan professional darajagacha video darslarni ko'ring, 
+                mashq qiling va natijalaringizni kuzating.
+              </p>
 
-                return (
-                  <Card 
-                    key={course.id} 
-                    className="group border-border/40 shadow-lg hover:shadow-xl transition-all overflow-hidden cursor-pointer"
-                    onClick={() => navigate(`/courses/${course.id}`)}
-                  >
-                    <div className="h-40 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative">
-                      {course.thumbnail_url ? (
-                        <img 
-                          src={course.thumbnail_url} 
-                          alt={course.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <GraduationCap className="h-16 w-16 text-primary/40" />
-                      )}
-                      {isCompleted && (
-                        <div className="absolute top-3 right-3">
-                          <Badge className="bg-green-500 text-white">
-                            <Award className="h-3 w-3 mr-1" />
-                            Tugatilgan
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className={difficultyColors[course.difficulty]}>
-                          {difficultyLabels[course.difficulty]}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BookOpen className="h-3 w-3" />
-                          {course.lessons_count} dars
-                        </span>
-                      </div>
-                      <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
-                        {course.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="line-clamp-2 mb-4">
-                        {course.description}
-                      </CardDescription>
-                      
-                      {user && progress && (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Jarayon</span>
-                            <span className="font-medium">{progress.completed}/{progress.total}</span>
+              {/* Stats */}
+              <div className="flex flex-wrap items-center justify-center gap-8 text-muted-foreground opacity-0 animate-slide-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+                <div className="flex items-center gap-2">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-foreground">{courses.length}+ kurs</p>
+                    <p className="text-xs">Mavjud</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-accent" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-foreground">1000+</p>
+                    <p className="text-xs">O'quvchilar</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-success" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold text-foreground">50+ soat</p>
+                    <p className="text-xs">Video darslar</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Courses Grid */}
+        <div className="container px-4 py-12 md:py-16">
+          <div className="max-w-6xl mx-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+                  <p className="text-muted-foreground">Kurslar yuklanmoqda...</p>
+                </div>
+              </div>
+            ) : courses.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center mx-auto mb-6">
+                  <BookOpen className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <h2 className="text-2xl font-display font-bold mb-3">Kurslar hali mavjud emas</h2>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Tez orada yangi professional video darslar qo'shiladi. Kuzatib boring!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {courses.map((course, index) => {
+                  const progress = userProgress[course.id];
+                  const progressPercent = progress ? (progress.completed / progress.total) * 100 : 0;
+                  const isCompleted = progress && progress.completed === progress.total && progress.total > 0;
+                  const difficulty = difficultyConfig[course.difficulty] || difficultyConfig.beginner;
+
+                  return (
+                    <Card 
+                      key={course.id} 
+                      className="group relative overflow-hidden border-border/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 opacity-0 animate-slide-up"
+                      style={{ animationDelay: `${400 + index * 100}ms`, animationFillMode: 'forwards' }}
+                      onClick={() => navigate(`/courses/${course.id}`)}
+                    >
+                      {/* Thumbnail */}
+                      <div className="relative h-48 bg-gradient-to-br from-primary/20 via-primary/10 to-accent/5 overflow-hidden">
+                        {course.thumbnail_url ? (
+                          <img 
+                            src={course.thumbnail_url} 
+                            alt={course.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <GraduationCap className="h-20 w-20 text-primary/30 group-hover:scale-110 transition-transform duration-300" />
                           </div>
-                          <Progress value={progressPercent} className="h-2" />
+                        )}
+                        
+                        {/* Overlay gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        
+                        {/* Completed badge */}
+                        {isCompleted && (
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-success text-success-foreground shadow-lg gap-1">
+                              <Award className="h-3 w-3" />
+                              Tugatilgan
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {/* Play button overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <div className="h-16 w-16 rounded-full gradient-primary flex items-center justify-center shadow-glow transform scale-90 group-hover:scale-100 transition-transform">
+                            <Play className="h-8 w-8 text-primary-foreground ml-1" />
+                          </div>
                         </div>
-                      )}
+                      </div>
+                      
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge className={`${difficulty.bg} ${difficulty.text} font-semibold`}>
+                            {difficulty.label}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <BookOpen className="h-3 w-3" />
+                            {course.lessons_count} dars
+                          </span>
+                        </div>
+                        <CardTitle className="text-xl line-clamp-2 group-hover:text-primary transition-colors">
+                          {course.title}
+                        </CardTitle>
+                      </CardHeader>
+                      
+                      <CardContent className="pt-0">
+                        <CardDescription className="line-clamp-2 mb-5">
+                          {course.description}
+                        </CardDescription>
+                        
+                        {/* Progress */}
+                        {user && progress && (
+                          <div className="space-y-2 mb-5">
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-muted-foreground">Jarayon</span>
+                              <span className="font-semibold text-foreground">{progress.completed}/{progress.total}</span>
+                            </div>
+                            <Progress value={progressPercent} className="h-2" />
+                          </div>
+                        )}
 
-                      <Button className="w-full mt-4" variant={isCompleted ? "secondary" : "default"}>
-                        <Play className="h-4 w-4 mr-2" />
-                        {isCompleted ? "Qayta ko'rish" : progress?.completed ? "Davom ettirish" : "Boshlash"}
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+                        <Button 
+                          className="w-full gap-2 group-hover:gap-3 transition-all" 
+                          variant={isCompleted ? "secondary" : "default"}
+                        >
+                          {isCompleted ? (
+                            <>
+                              Qayta ko'rish
+                              <ArrowRight className="h-4 w-4" />
+                            </>
+                          ) : progress?.completed ? (
+                            <>
+                              Davom ettirish
+                              <ArrowRight className="h-4 w-4" />
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-4 w-4" />
+                              Boshlash
+                            </>
+                          )}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
