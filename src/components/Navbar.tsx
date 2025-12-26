@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, BarChart3 } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Volume2, VolumeX, User, LogOut, BarChart3, Play, Home } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,6 +19,9 @@ interface NavbarProps {
 export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const isTrainPage = location.pathname === '/train';
 
   const handleSignOut = async () => {
     await signOut();
@@ -32,7 +35,30 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           <Logo size="md" />
         </Link>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Navigation buttons */}
+          {isTrainPage ? (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => navigate('/')}
+              className="gap-2"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Bosh sahifa</span>
+            </Button>
+          ) : (
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => navigate('/train')}
+              className="gap-2"
+            >
+              <Play className="h-4 w-4" />
+              <span className="hidden sm:inline">Mashq</span>
+            </Button>
+          )}
+
           <Button 
             variant="icon" 
             size="icon"
@@ -55,9 +81,13 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate('/dashboard')} className="gap-2">
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
+                <DropdownMenuItem onClick={() => navigate('/')} className="gap-2">
+                  <Home className="h-4 w-4" />
+                  Bosh sahifa
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/train')} className="gap-2">
+                  <Play className="h-4 w-4" />
+                  Mashq qilish
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-destructive">

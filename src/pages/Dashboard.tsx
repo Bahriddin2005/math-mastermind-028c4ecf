@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSound } from '@/hooks/useSound';
 import {
-  ArrowLeft,
   Trophy,
   Target,
   Flame,
@@ -24,7 +23,6 @@ import {
   Play,
   Timer,
   BarChart3,
-  Users,
   Zap,
 } from 'lucide-react';
 
@@ -136,17 +134,6 @@ const Dashboard = () => {
 
       <main className="flex-1 container px-4 py-6 md:py-8">
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Back button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="opacity-0 animate-fade-in"
-            style={{ animationFillMode: 'forwards' }}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Orqaga
-          </Button>
 
           {/* Welcome Hero */}
           <WelcomeHero username={profile?.username} />
@@ -218,7 +205,7 @@ const Dashboard = () => {
                 buttonText="Boshlash"
                 icon={Play}
                 iconBgColor="primary"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/train')}
                 delay={500}
               />
               <FeatureCard
@@ -228,7 +215,7 @@ const Dashboard = () => {
                 buttonText="Sekundomer rejimi"
                 icon={Timer}
                 iconBgColor="accent"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/train')}
                 delay={550}
               />
             </div>

@@ -16,7 +16,8 @@ import { TimerDisplay } from '@/components/TimerDisplay';
 import { GameResults } from '@/components/GameResults';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Timer, Play, ArrowLeft, Target } from 'lucide-react';
+import { Timer, Play, ArrowLeft, Target, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 type AppState = 'menu' | 'playing' | 'results';
 
@@ -31,6 +32,7 @@ const Index = () => {
   const { soundEnabled, toggleSound, playSound } = useSound();
   const { triggerStreakConfetti, triggerCompletionConfetti, resetStreak } = useConfetti();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const {
     currentProblem,
@@ -135,6 +137,18 @@ const Index = () => {
       <main className="flex-1 container px-4 py-6 md:py-8">
         {appState === 'menu' && (
           <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+            {/* Back to dashboard */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="opacity-0 animate-fade-in"
+              style={{ animationFillMode: 'forwards' }}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Bosh sahifa
+            </Button>
+
             {/* Welcome section */}
             <div className="text-center space-y-3">
               <h1 className="text-3xl md:text-4xl font-display font-black">
@@ -308,7 +322,7 @@ const Index = () => {
             <GameResults
               stats={stats}
               onPlayAgain={handlePlayAgain}
-              onGoHome={handleBackToMenu}
+              onGoHome={() => navigate('/')}
               isLoggedIn={!!user}
             />
           </div>
