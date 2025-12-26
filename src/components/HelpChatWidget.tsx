@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -29,6 +29,19 @@ interface FAQItem {
   icon: string;
 }
 
+interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  difficulty: string;
+}
+
+interface Lesson {
+  id: string;
+  title: string;
+  course_id: string;
+}
+
 const iconMap: Record<string, React.ReactNode> = {
   HelpCircle: <HelpCircle className="h-4 w-4" />,
   Calculator: <Calculator className="h-4 w-4" />,
@@ -45,21 +58,30 @@ interface ChatMessage {
   content: string;
 }
 
+// Generate a unique session ID
+const generateSessionId = () => {
+  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
 export const HelpChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFaq, setSelectedFaq] = useState<FAQItem | null>(null);
   const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [loadingFaqs, setLoadingFaqs] = useState(true);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   
   // AI Chat state
   const [chatMode, setChatMode] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const sessionIdRef = useRef<string>(generateSessionId());
 
   useEffect(() => {
     fetchFAQs();
+    fetchCoursesAndLessons();
   }, []);
 
   const fetchFAQs = async () => {
@@ -75,6 +97,16 @@ export const HelpChatWidget = () => {
     setLoadingFaqs(false);
   };
 
+  const fetchCoursesAndLessons = async () => {
+    const [coursesRes, lessonsRes] = await Promise.all([
+      supabase.from('courses').select('id, title, description, difficulty').eq('is_published', true),
+      supabase.from('lessons').select('id, title, course_id').eq('is_published', true)
+    ]);
+    
+    if (coursesRes.data) setCourses(coursesRes.data);
+    if (lessonsRes.data) setLessons(lessonsRes.data);
+  };
+
   const filteredFaqs = faqItems.filter(faq => 
     faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
     faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
@@ -87,14 +119,38 @@ export const HelpChatWidget = () => {
     setChatMode(false);
     setMessages([]);
     setInputMessage('');
+    // Generate new session ID for next chat
+    sessionIdRef.current = generateSessionId();
   };
 
-  const startChatMode = () => {
+  const saveMessageToDb = async (role: 'user' | 'assistant', content: string) => {
+    try {
+      await supabase.from('chat_messages').insert({
+        session_id: sessionIdRef.current,
+        role,
+        content
+      });
+    } catch (error) {
+      console.error('Failed to save message:', error);
+    }
+  };
+
+  const startChatMode = async () => {
     setChatMode(true);
-    setMessages([{
-      role: 'assistant',
-      content: "Salom! Men IQroMax yordamchisiman. Sizga qanday yordam bera olaman?"
-    }]);
+    const welcomeMessage = "Salom! Men IQroMax yordamchisiman. Sizga qanday yordam bera olaman?";
+    setMessages([{ role: 'assistant', content: welcomeMessage }]);
+    
+    // Create session and save welcome message
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('chat_sessions').insert({
+        session_id: sessionIdRef.current,
+        user_id: user?.id || null
+      });
+      await saveMessageToDb('assistant', welcomeMessage);
+    } catch (error) {
+      console.error('Failed to create session:', error);
+    }
   };
 
   const sendMessage = async () => {
@@ -105,9 +161,23 @@ export const HelpChatWidget = () => {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
+    // Save user message to database
+    await saveMessageToDb('user', userMessage);
+
     try {
       // Create FAQ context for AI
       const faqContext = faqItems.map(f => `Savol: ${f.question}\nJavob: ${f.answer}`).join('\n\n');
+      
+      // Create courses context
+      const coursesContext = courses.map(c => 
+        `Kurs: ${c.title} (${c.difficulty} daraja)${c.description ? ` - ${c.description}` : ''}`
+      ).join('\n');
+      
+      // Create lessons context
+      const lessonsContext = lessons.map(l => {
+        const course = courses.find(c => c.id === l.course_id);
+        return `Dars: ${l.title}${course ? ` (${course.title} kursidan)` : ''}`;
+      }).join('\n');
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/help-chat`,
@@ -120,7 +190,9 @@ export const HelpChatWidget = () => {
           },
           body: JSON.stringify({ 
             message: userMessage,
-            faqContext 
+            faqContext,
+            coursesContext,
+            lessonsContext
           }),
         }
       );
@@ -131,13 +203,16 @@ export const HelpChatWidget = () => {
         throw new Error(data.error || 'Xatolik yuz berdi');
       }
 
-      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+      const assistantMessage = data.response;
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
+      
+      // Save assistant message to database
+      await saveMessageToDb('assistant', assistantMessage);
     } catch (error) {
       console.error('Chat error:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: "Kechirasiz, hozirda javob bera olmadim. Iltimos, keyinroq urinib ko'ring yoki /contact sahifasidan biz bilan bog'laning." 
-      }]);
+      const errorMessage = "Kechirasiz, hozirda javob bera olmadim. Iltimos, keyinroq urinib ko'ring yoki /contact sahifasidan biz bilan bog'laning.";
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
+      await saveMessageToDb('assistant', errorMessage);
     } finally {
       setIsLoading(false);
     }
