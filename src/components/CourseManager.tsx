@@ -102,6 +102,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
   const [savingLesson, setSavingLesson] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
@@ -263,12 +264,14 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     setLessonDialogOpen(true);
   };
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processVideoFile = async (file: File) => {
     if (file.size > 100 * 1024 * 1024) {
       toast.error("Video hajmi 100MB dan oshmasligi kerak");
+      return;
+    }
+
+    if (!file.type.startsWith('video/')) {
+      toast.error("Faqat video fayllar qo'llab-quvvatlanadi");
       return;
     }
 
@@ -278,7 +281,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     try {
       const fileName = `${Date.now()}-${file.name}`;
       
-      // Simulate progress for better UX (Supabase doesn't provide native progress)
+      // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -313,6 +316,35 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
         setUploadingVideo(false);
         setUploadProgress(0);
       }, 500);
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processVideoFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      await processVideoFile(files[0]);
     }
   };
 
@@ -625,25 +657,48 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
                 {lessonForm.video_url && (
                   <video src={lessonForm.video_url} className="w-full h-32 object-cover rounded-lg" controls />
                 )}
+                
+                {/* Drag and Drop Zone */}
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`relative border-2 border-dashed rounded-lg p-4 text-center transition-all ${
+                    isDragging 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-border hover:border-primary/50'
+                  } ${uploadingVideo ? 'pointer-events-none opacity-50' : ''}`}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className={`h-8 w-8 ${isDragging ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Videoni shu yerga tashlang yoki </span>
+                      <label className="text-primary cursor-pointer hover:underline">
+                        tanlang
+                        <input 
+                          type="file" 
+                          accept="video/*" 
+                          className="hidden" 
+                          onChange={handleVideoUpload}
+                          disabled={uploadingVideo}
+                        />
+                      </label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Maksimum 100MB</p>
+                  </div>
+                </div>
+
+                {/* URL Input */}
                 <div className="flex gap-2">
                   <Input
                     value={lessonForm.video_url}
                     onChange={(e) => setLessonForm(prev => ({ ...prev, video_url: e.target.value }))}
-                    placeholder="Video URL yoki yuklang..."
+                    placeholder="Yoki video URL kiriting..."
                     className="flex-1"
                   />
-                  <Button variant="outline" asChild disabled={uploadingVideo}>
-                    <label className="cursor-pointer">
-                      {uploadingVideo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      <input 
-                        type="file" 
-                        accept="video/*" 
-                        className="hidden" 
-                        onChange={handleVideoUpload}
-                      />
-                    </label>
-                  </Button>
                 </div>
+                
+                {/* Progress Bar */}
                 {uploadingVideo && (
                   <div className="space-y-1">
                     <Progress value={uploadProgress} className="h-2" />
