@@ -63,38 +63,42 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </Link>
         
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Video darslar button */}
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => navigate('/courses')}
-            className="gap-2 hidden md:flex"
-          >
-            <GraduationCap className="h-4 w-4" />
-            <span>Darslar</span>
-          </Button>
-
-          {/* Navigation buttons */}
-          {isTrainPage ? (
+          {/* Video darslar button - only for logged in users */}
+          {user && (
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/')}
-              className="gap-2"
+              onClick={() => navigate('/courses')}
+              className="gap-2 hidden md:flex"
             >
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Bosh sahifa</span>
+              <GraduationCap className="h-4 w-4" />
+              <span>Darslar</span>
             </Button>
-          ) : (
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={() => navigate('/train')}
-              className="gap-2"
-            >
-              <Play className="h-4 w-4" />
-              <span className="hidden sm:inline">Mashq</span>
-            </Button>
+          )}
+
+          {/* Navigation buttons - only for logged in users */}
+          {user && (
+            isTrainPage ? (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/')}
+                className="gap-2"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Bosh sahifa</span>
+              </Button>
+            ) : (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => navigate('/train')}
+                className="gap-2"
+              >
+                <Play className="h-4 w-4" />
+                <span className="hidden sm:inline">Mashq</span>
+              </Button>
+            )
           )}
 
           {/* Theme toggle */}
