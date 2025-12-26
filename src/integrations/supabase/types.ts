@@ -250,6 +250,89 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_challenge_results: {
+        Row: {
+          answer: number | null
+          avatar_url: string | null
+          challenge_id: string
+          completion_time: number
+          correct_answer: number
+          created_at: string
+          id: string
+          is_correct: boolean
+          score: number
+          user_id: string
+          username: string
+        }
+        Insert: {
+          answer?: number | null
+          avatar_url?: string | null
+          challenge_id: string
+          completion_time: number
+          correct_answer: number
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          score?: number
+          user_id: string
+          username: string
+        }
+        Update: {
+          answer?: number | null
+          avatar_url?: string | null
+          challenge_id?: string
+          completion_time?: number
+          correct_answer?: number
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          score?: number
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_challenge_results_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "daily_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_challenges: {
+        Row: {
+          challenge_date: string
+          created_at: string
+          digit_count: number
+          formula_type: string
+          id: string
+          problem_count: number
+          seed: number
+          speed: number
+        }
+        Insert: {
+          challenge_date?: string
+          created_at?: string
+          digit_count?: number
+          formula_type?: string
+          id?: string
+          problem_count?: number
+          seed?: number
+          speed?: number
+        }
+        Update: {
+          challenge_date?: string
+          created_at?: string
+          digit_count?: number
+          formula_type?: string
+          id?: string
+          problem_count?: number
+          seed?: number
+          speed?: number
+        }
+        Relationships: []
+      }
       faq_items: {
         Row: {
           answer: string
@@ -701,6 +784,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_or_create_daily_challenge: {
+        Args: never
+        Returns: {
+          challenge_date: string
+          created_at: string
+          digit_count: number
+          formula_type: string
+          id: string
+          problem_count: number
+          seed: number
+          speed: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "daily_challenges"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
