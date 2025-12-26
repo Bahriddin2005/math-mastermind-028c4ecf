@@ -15,6 +15,7 @@ const footerLinks = {
   platform: [
     { label: 'Bosh sahifa', href: '/' },
     { label: 'Mashq qilish', href: '/train' },
+    { label: 'Video darslar', href: '/courses' },
     { label: 'Tariflar', href: '/pricing' },
     { label: 'Blog', href: '/blog' },
   ],

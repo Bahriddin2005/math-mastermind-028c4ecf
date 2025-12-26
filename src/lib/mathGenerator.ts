@@ -196,3 +196,29 @@ export const getDifficultyLabel = (level: Difficulty): string => {
   };
   return labels[level];
 };
+
+// Helper function for lesson practice
+export const generateProblem = (difficulty: 'easy' | 'medium' | 'hard', section: string = 'mixed') => {
+  const levelMap: Record<string, Difficulty> = {
+    easy: 1,
+    medium: 2,
+    hard: 3
+  };
+  const level = levelMap[difficulty] || 1;
+  
+  const sectionMap: Record<string, MathSection> = {
+    addition: 'add-sub',
+    subtraction: 'add-sub',
+    multiplication: 'multiply',
+    division: 'divide',
+    mixed: 'mix'
+  };
+  const mathSection = sectionMap[section] || 'mix';
+  
+  const problem = MentalMathGenerator.generate(mathSection, level);
+  
+  return {
+    question: problem.display,
+    correctAnswer: problem.answer
+  };
+};
