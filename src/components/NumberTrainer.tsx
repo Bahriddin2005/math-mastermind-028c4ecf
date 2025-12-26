@@ -14,6 +14,7 @@ import { useTheme } from 'next-themes';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from './Logo';
 import { Leaderboard } from './Leaderboard';
+import { useConfetti } from '@/hooks/useConfetti';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -402,6 +403,8 @@ export const NumberTrainer = () => {
     setDisplayedNumbers([]);
   }, []);
 
+  const { triggerLevelUpConfetti } = useConfetti();
+
   // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
     const userNum = parseInt(userAnswer, 10);
@@ -413,6 +416,11 @@ export const NumberTrainer = () => {
     setIsCorrect(correct);
     setShowResult(true);
     setAnswerTime(answerDuration);
+    
+    // Trigger confetti if correct
+    if (correct) {
+      triggerLevelUpConfetti();
+    }
     
     if (timerRef.current) {
       clearInterval(timerRef.current);
