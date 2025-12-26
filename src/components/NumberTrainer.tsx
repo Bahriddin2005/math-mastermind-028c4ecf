@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { Logo } from './Logo';
 import { Leaderboard } from './Leaderboard';
 import { useConfetti } from '@/hooks/useConfetti';
+import { useSound } from '@/hooks/useSound';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -404,6 +405,7 @@ export const NumberTrainer = () => {
   }, []);
 
   const { triggerLevelUpConfetti } = useConfetti();
+  const { playSound } = useSound();
 
   // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
@@ -417,9 +419,12 @@ export const NumberTrainer = () => {
     setShowResult(true);
     setAnswerTime(answerDuration);
     
-    // Trigger confetti if correct
+    // Play sound and trigger confetti
     if (correct) {
+      playSound('correct');
       triggerLevelUpConfetti();
+    } else {
+      playSound('incorrect');
     }
     
     if (timerRef.current) {
