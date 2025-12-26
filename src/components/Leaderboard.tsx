@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy, Medal, Award, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 interface LeaderboardEntry {
   id: string;
@@ -10,6 +11,7 @@ interface LeaderboardEntry {
   username: string;
   total_score: number;
   best_streak: number;
+  avatar_url: string | null;
 }
 
 interface LeaderboardProps {
@@ -24,7 +26,7 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
     const fetchLeaderboard = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, user_id, username, total_score, best_streak')
+        .select('id, user_id, username, total_score, best_streak, avatar_url')
         .order('total_score', { ascending: false })
         .limit(50);
 
@@ -125,6 +127,12 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                     <div className="flex items-center justify-center w-8">
                       {getRankIcon(rank)}
                     </div>
+                    <Avatar className="h-10 w-10 border-2 border-border">
+                      <AvatarImage src={entry.avatar_url || undefined} alt={entry.username} />
+                      <AvatarFallback className="bg-primary/10">
+                        <User className="h-5 w-5 text-primary" />
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <p className={cn(
                         'font-semibold',
