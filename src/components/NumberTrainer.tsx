@@ -290,7 +290,7 @@ export const NumberTrainer = () => {
     loadStats();
   }, [user, showResult]);
 
-  const { playSound } = useSound();
+  const { playSound, soundEnabled, toggleSound } = useSound();
 
   // Sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
@@ -802,17 +802,33 @@ export const NumberTrainer = () => {
             </Button>
           )}
 
-          {/* Ovoz */}
+          {/* Ovoz effektlari */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={toggleSound}
+            aria-label={soundEnabled ? "Ovoz effektlarini o'chirish" : "Ovoz effektlarini yoqish"}
+            title={soundEnabled ? "Ovoz effektlari yoniq" : "Ovoz effektlari o'chiq"}
+          >
+            {soundEnabled ? (
+              <Volume2 className="h-5 w-5 text-primary" />
+            ) : (
+              <VolumeX className="h-5 w-5 text-muted-foreground" />
+            )}
+          </Button>
+
+          {/* Nutq sintezi */}
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setVoiceEnabled(!voiceEnabled)}
-            aria-label={voiceEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+            aria-label={voiceEnabled ? "Nutqni o'chirish" : "Nutqni yoqish"}
+            title={voiceEnabled ? "Nutq yoniq" : "Nutq o'chiq"}
           >
             {voiceEnabled ? (
-              <Volume2 className="h-5 w-5" />
+              <span className="text-lg">🔊</span>
             ) : (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
+              <span className="text-lg opacity-50">🔇</span>
             )}
           </Button>
 
