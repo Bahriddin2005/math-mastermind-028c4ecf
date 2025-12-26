@@ -3,33 +3,41 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, LogIn, UserPlus } from 'lucide-react';
+import { toast } from 'sonner';
+import { Loader2, LogIn, UserPlus, Mail, ArrowLeft, Check } from 'lucide-react';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email('Noto\'g\'ri email format'),
-  password: z.string().min(6, 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak'),
+  email: z.string().email("Noto'g'ri email format"),
+  password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
 });
 
 const signupSchema = loginSchema.extend({
-  username: z.string().min(2, 'Ism kamida 2 ta belgidan iborat bo\'lishi kerak'),
+  username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
 });
 
+const emailSchema = z.object({
+  email: z.string().email("Noto'g'ri email format"),
+});
+
+type AuthMode = 'login' | 'signup' | 'forgot-password';
+
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { toast: toastHook } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -39,10 +47,12 @@ const Auth = () => {
 
   const validateForm = () => {
     try {
-      if (isLogin) {
+      if (mode === 'login') {
         loginSchema.parse({ email, password });
-      } else {
+      } else if (mode === 'signup') {
         signupSchema.parse({ email, password, username });
+      } else {
+        emailSchema.parse({ email });
       }
       setErrors({});
       return true;
@@ -68,49 +78,101 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      if (isLogin) {
+      if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) {
-          toast({
+          toastHook({
             variant: 'destructive',
             title: 'Xatolik',
             description: error.message === 'Invalid login credentials' 
-              ? 'Email yoki parol noto\'g\'ri' 
+              ? "Email yoki parol noto'g'ri" 
               : error.message,
           });
         } else {
-          toast({
+          toastHook({
             title: 'Muvaffaqiyat!',
             description: 'Tizimga kirdingiz',
           });
         }
-      } else {
+      } else if (mode === 'signup') {
         const { error } = await signUp(email, password, username);
         if (error) {
           if (error.message.includes('already registered')) {
-            toast({
+            toastHook({
               variant: 'destructive',
               title: 'Xatolik',
-              description: 'Bu email allaqachon ro\'yxatdan o\'tgan',
+              description: "Bu email allaqachon ro'yxatdan o'tgan",
             });
           } else {
-            toast({
+            toastHook({
               variant: 'destructive',
               title: 'Xatolik',
               description: error.message,
             });
           }
         } else {
-          toast({
+          toastHook({
             title: 'Muvaffaqiyat!',
             description: 'Akkaunt yaratildi. Tizimga kiring.',
           });
+        }
+      } else if (mode === 'forgot-password') {
+        const { error } = await resetPassword(email);
+        if (error) {
+          toastHook({
+            variant: 'destructive',
+            title: 'Xatolik',
+            description: error.message,
+          });
+        } else {
+          setResetEmailSent(true);
+          toast.success('Parolni tiklash havolasi emailingizga yuborildi');
         }
       }
     } finally {
       setLoading(false);
     }
   };
+
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode);
+    setErrors({});
+    setResetEmailSent(false);
+  };
+
+  // Reset email sent success state
+  if (resetEmailSent) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <Logo size="lg" className="mx-auto" />
+          </div>
+
+          <Card className="animate-fade-in">
+            <CardContent className="pt-8 pb-8 text-center">
+              <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
+                <Check className="h-8 w-8 text-success" />
+              </div>
+              <h2 className="text-2xl font-display font-bold mb-2">Email yuborildi!</h2>
+              <p className="text-muted-foreground mb-6">
+                Parolni tiklash havolasi <strong>{email}</strong> emailiga yuborildi. 
+                Spam papkasini ham tekshiring.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => switchMode('login')}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Kirish sahifasiga qaytish
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
@@ -124,13 +186,25 @@ const Auth = () => {
 
         <Card className="animate-fade-in">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-display">
-              {isLogin ? 'Kirish' : 'Ro\'yxatdan o\'tish'}
-            </CardTitle>
+            {mode === 'forgot-password' ? (
+              <>
+                <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mx-auto mb-2">
+                  <Mail className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <CardTitle className="text-2xl font-display">Parolni tiklash</CardTitle>
+                <CardDescription>
+                  Email manzilingizni kiriting, parolni tiklash havolasini yuboramiz
+                </CardDescription>
+              </>
+            ) : (
+              <CardTitle className="text-2xl font-display">
+                {mode === 'login' ? 'Kirish' : "Ro'yxatdan o'tish"}
+              </CardTitle>
+            )}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
+              {mode === 'signup' && (
                 <div className="space-y-2">
                   <Label htmlFor="username">Ism</Label>
                   <Input
@@ -164,21 +238,34 @@ const Auth = () => {
                 )}
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password">Parol</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  className={errors.password ? 'border-destructive' : ''}
-                />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
-              </div>
+              {mode !== 'forgot-password' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Parol</Label>
+                    {mode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => switchMode('forgot-password')}
+                        className="text-xs text-primary hover:underline"
+                      >
+                        Parolni unutdingizmi?
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className={errors.password ? 'border-destructive' : ''}
+                  />
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
+                  )}
+                </div>
+              )}
 
               <Button 
                 type="submit" 
@@ -189,34 +276,48 @@ const Auth = () => {
               >
                 {loading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
-                ) : isLogin ? (
+                ) : mode === 'login' ? (
                   <>
                     <LogIn className="h-5 w-5 mr-2" />
                     Kirish
                   </>
-                ) : (
+                ) : mode === 'signup' ? (
                   <>
                     <UserPlus className="h-5 w-5 mr-2" />
                     Ro'yxatdan o'tish
+                  </>
+                ) : (
+                  <>
+                    <Mail className="h-5 w-5 mr-2" />
+                    Havola yuborish
                   </>
                 )}
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setErrors({});
-                }}
-                className="text-primary hover:underline text-sm"
-                disabled={loading}
-              >
-                {isLogin 
-                  ? "Akkauntingiz yo'qmi? Ro'yxatdan o'ting" 
-                  : "Akkauntingiz bormi? Kirish"}
-              </button>
+            <div className="mt-6 text-center space-y-2">
+              {mode === 'forgot-password' ? (
+                <button
+                  type="button"
+                  onClick={() => switchMode('login')}
+                  className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+                  disabled={loading}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Kirish sahifasiga qaytish
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
+                  className="text-primary hover:underline text-sm"
+                  disabled={loading}
+                >
+                  {mode === 'login' 
+                    ? "Akkauntingiz yo'qmi? Ro'yxatdan o'ting" 
+                    : "Akkauntingiz bormi? Kirish"}
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>

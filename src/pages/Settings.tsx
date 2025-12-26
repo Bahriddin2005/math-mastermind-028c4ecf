@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarCropDialog } from '@/components/AvatarCropDialog';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -17,12 +18,12 @@ import {
   Camera,
   Save,
   Loader2,
+  Crop,
 } from 'lucide-react';
-import { useEffect } from 'react';
 
 const usernameSchema = z.string()
-  .min(2, 'Ism kamida 2 ta belgi bo\'lishi kerak')
-  .max(30, 'Ism 30 ta belgidan oshmasligi kerak')
+  .min(2, "Ism kamida 2 ta belgi bo'lishi kerak")
+  .max(30, "Ism 30 ta belgidan oshmasligi kerak")
   .regex(/^[a-zA-Z0-9_\s]+$/, 'Faqat harflar, raqamlar va _ ishlatish mumkin');
 
 const Settings = () => {
@@ -36,6 +37,11 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  
+  // Crop dialog state
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -60,36 +66,60 @@ const Settings = () => {
     fetchProfile();
   }, [user, navigate]);
 
+  // Update preview URL when file is selected
+  useEffect(() => {
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  }, [selectedFile]);
+
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
     // Validate file size (2MB max)
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Rasm hajmi 2MB dan oshmasligi kerak');
+      toast.error("Rasm hajmi 2MB dan oshmasligi kerak");
       return;
     }
 
     // Validate file type
     if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-      toast.error('Faqat JPG, PNG, GIF yoki WebP formatlar qo\'llab-quvvatlanadi');
+      toast.error("Faqat JPG, PNG, GIF yoki WebP formatlar qo'llab-quvvatlanadi");
       return;
     }
 
+    // Open crop dialog
+    setSelectedFile(file);
+    setCropDialogOpen(true);
+    
+    // Reset input
+    e.target.value = '';
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+    
     setUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/avatar.${fileExt}`;
+      const fileName = `${user.id}/avatar.jpg`;
 
-      // Upload to storage
+      // Upload cropped image to storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { 
+          upsert: true,
+          contentType: 'image/jpeg'
+        });
 
       if (uploadError) throw uploadError;
 
@@ -112,6 +142,8 @@ const Settings = () => {
       toast.error('Avatar yuklanmadi: ' + error.message);
     } finally {
       setUploading(false);
+      setSelectedFile(null);
+      setPreviewUrl(null);
     }
   };
 
@@ -183,7 +215,7 @@ const Settings = () => {
                 Profil rasmi
               </CardTitle>
               <CardDescription>
-                Profilingiz uchun rasm tanlang (max 2MB)
+                Profilingiz uchun rasm tanlang (max 2MB). Rasm avtomatik kesiladi.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -203,7 +235,7 @@ const Settings = () => {
                     {uploading ? (
                       <Loader2 className="h-6 w-6 text-background animate-spin" />
                     ) : (
-                      <Camera className="h-6 w-6 text-background" />
+                      <Crop className="h-6 w-6 text-background" />
                     )}
                   </button>
                   <input
@@ -222,16 +254,16 @@ const Settings = () => {
                     size="sm"
                     onClick={handleAvatarClick}
                     disabled={uploading}
-                    className="mt-3"
+                    className="mt-3 gap-2"
                   >
                     {uploading ? (
                       <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                         Yuklanmoqda...
                       </>
                     ) : (
                       <>
-                        <Camera className="h-4 w-4 mr-2" />
+                        <Camera className="h-4 w-4" />
                         Rasm yuklash
                       </>
                     )}
@@ -283,6 +315,14 @@ const Settings = () => {
           </Card>
         </div>
       </main>
+
+      {/* Avatar Crop Dialog */}
+      <AvatarCropDialog
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageFile={selectedFile}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };
