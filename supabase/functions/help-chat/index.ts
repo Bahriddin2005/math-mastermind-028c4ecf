@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, faqContext } = await req.json();
+    const { message, faqContext, coursesContext, lessonsContext } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -32,7 +32,16 @@ Platforma haqida ma'lumot:
 - Achievements (yutuqlar) tizimi bor
 
 FAQ ma'lumotlar:
-${faqContext}
+${faqContext || 'Mavjud emas'}
+
+Mavjud kurslar:
+${coursesContext || 'Hozircha kurslar yo\'q'}
+
+Mavjud darslar:
+${lessonsContext || 'Hozircha darslar yo\'q'}
+
+Foydalanuvchi kurslar yoki darslar haqida so'rasa, yuqoridagi ma'lumotlardan foydalanib javob ber.
+Agar kurs yoki dars nomi so'ralsa, /courses sahifasiga yo'naltir.
 
 Har doim do'stona va yordam beruvchi bo'l!`;
 
