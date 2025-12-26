@@ -290,6 +290,8 @@ export const NumberTrainer = () => {
     loadStats();
   }, [user, showResult]);
 
+  const { playSound } = useSound();
+
   // Sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
@@ -349,6 +351,9 @@ export const NumberTrainer = () => {
     setElapsedTime(0);
     setAnswerTime(0);
 
+    // Start sound
+    playSound('start');
+
     // Taymer
     timerRef.current = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 100) / 10);
@@ -372,6 +377,8 @@ export const NumberTrainer = () => {
         setIsRunning(false);
         setIsFinished(true);
         setCurrentDisplay(null);
+        // Complete sound when game ends
+        playSound('complete');
         return;
       }
 
@@ -385,7 +392,7 @@ export const NumberTrainer = () => {
         }
       }
     }, speedMs);
-  }, [digitCount, speed, problemCount, generateNextNumber, voiceEnabled]);
+  }, [digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
@@ -405,7 +412,6 @@ export const NumberTrainer = () => {
   }, []);
 
   const { triggerLevelUpConfetti } = useConfetti();
-  const { playSound } = useSound();
 
   // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
