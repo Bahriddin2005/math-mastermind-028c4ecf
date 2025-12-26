@@ -463,14 +463,14 @@ export const ExamplesManager = () => {
               <div className="space-y-2">
                 <Label>Darsga biriktirish (ixtiyoriy)</Label>
                 <Select
-                  value={formData.lesson_id}
-                  onValueChange={(v) => setFormData({ ...formData, lesson_id: v })}
+                  value={formData.lesson_id || "none"}
+                  onValueChange={(v) => setFormData({ ...formData, lesson_id: v === "none" ? "" : v })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Dars tanlang" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Biriktirilmagan</SelectItem>
+                    <SelectItem value="none">Biriktirilmagan</SelectItem>
                     {lessons.map((lesson) => (
                       <SelectItem key={lesson.id} value={lesson.id}>
                         {lesson.title}
