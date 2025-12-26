@@ -1,8 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Square } from 'lucide-react';
+import { Square, Volume2, VolumeX, RotateCcw, Check } from 'lucide-react';
 
 // Formulasiz qoidalar
 const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
@@ -84,17 +85,61 @@ const FORMULA_RULES: Record<FormulaType, Record<number, { add: number[]; subtrac
   hammasi: RULES_ALL,
 };
 
+// Ovozli o'qish funksiyasi
+const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel(); // Oldingi ovozni to'xtatish
+    
+    let text = number;
+    if (!isFirst) {
+      text = isAddition ? `qo'sh ${number}` : `ayir ${number}`;
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'uz-UZ'; // O'zbek tili
+    utterance.rate = 1.2; // Tezroq gapirish
+    utterance.pitch = 1;
+    
+    // Agar o'zbek tili topilmasa, rus tilida gapirish
+    const voices = window.speechSynthesis.getVoices();
+    const uzVoice = voices.find(v => v.lang.startsWith('uz'));
+    const ruVoice = voices.find(v => v.lang.startsWith('ru'));
+    
+    if (uzVoice) {
+      utterance.voice = uzVoice;
+    } else if (ruVoice) {
+      utterance.voice = ruVoice;
+      // Rus tilida sonlarni aytish
+      if (!isFirst) {
+        utterance.text = isAddition ? `плюс ${number}` : `минус ${number}`;
+      } else {
+        utterance.text = number;
+      }
+    }
+    
+    window.speechSynthesis.speak(utterance);
+  }
+};
+
 export const NumberTrainer = () => {
   // Sozlamalar
   const [formulaType, setFormulaType] = useState<FormulaType>('oddiy');
-  const [digitCount, setDigitCount] = useState(1); // 1-4 xonali
-  const [speed, setSpeed] = useState(0.5); // sekundlarda
-  const [problemCount, setProblemCount] = useState(5); // misollar soni
+  const [digitCount, setDigitCount] = useState(1);
+  const [speed, setSpeed] = useState(0.5);
+  const [problemCount, setProblemCount] = useState(5);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   // O'yin holati
   const [isRunning, setIsRunning] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
   const [isAddition, setIsAddition] = useState(true);
+  const [displayedNumbers, setDisplayedNumbers] = useState<{ num: string; isAdd: boolean }[]>([]);
+  
+  // Natija
+  const [userAnswer, setUserAnswer] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
@@ -103,7 +148,7 @@ export const NumberTrainer = () => {
   // Sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
-    const lastDigit = currentResult % 10;
+    const lastDigit = Math.abs(currentResult) % 10;
     const rules = FORMULA_RULES[formulaType][lastDigit];
 
     if (!rules) return null;
@@ -122,7 +167,6 @@ export const NumberTrainer = () => {
 
     const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
 
-    // Ko'p xonali sonlar uchun raqamni kengaytirish
     let finalNumber = randomOp.number;
     if (digitCount > 1) {
       const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
@@ -136,12 +180,11 @@ export const NumberTrainer = () => {
     }
 
     setIsAddition(randomOp.isAdd);
-    return finalNumber;
+    return { num: finalNumber, isAdd: randomOp.isAdd };
   }, [formulaType, digitCount]);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
-    // Boshlang'ich son
     const maxInitial = Math.pow(10, digitCount) - 1;
     const minInitial = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
     const initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
@@ -150,8 +193,18 @@ export const NumberTrainer = () => {
     countRef.current = 1;
 
     setCurrentDisplay(String(initialResult));
+    setDisplayedNumbers([{ num: String(initialResult), isAdd: true }]);
     setIsRunning(true);
+    setIsFinished(false);
     setIsAddition(true);
+    setUserAnswer('');
+    setShowResult(false);
+    setIsCorrect(null);
+
+    // Birinchi sonni o'qish
+    if (voiceEnabled) {
+      speakNumber(String(initialResult), true, true);
+    }
 
     const speedMs = speed * 1000;
 
@@ -164,16 +217,23 @@ export const NumberTrainer = () => {
           intervalRef.current = null;
         }
         setIsRunning(false);
+        setIsFinished(true);
         setCurrentDisplay(null);
         return;
       }
 
-      const nextNum = generateNextNumber();
-      if (nextNum !== null) {
-        setCurrentDisplay(String(nextNum));
+      const result = generateNextNumber();
+      if (result !== null) {
+        setCurrentDisplay(String(result.num));
+        setDisplayedNumbers(prev => [...prev, { num: String(result.num), isAdd: result.isAdd }]);
+        
+        // Sonni o'qish
+        if (voiceEnabled) {
+          speakNumber(String(result.num), result.isAdd, false);
+        }
       }
     }, speedMs);
-  }, [digitCount, speed, problemCount, generateNextNumber]);
+  }, [digitCount, speed, problemCount, generateNextNumber, voiceEnabled]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
@@ -181,8 +241,30 @@ export const NumberTrainer = () => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    window.speechSynthesis.cancel();
     setIsRunning(false);
+    setIsFinished(false);
     setCurrentDisplay(null);
+    setDisplayedNumbers([]);
+  }, []);
+
+  // Javobni tekshirish
+  const checkAnswer = useCallback(() => {
+    const userNum = parseInt(userAnswer, 10);
+    const correctAnswer = runningResultRef.current;
+    const correct = userNum === correctAnswer;
+    setIsCorrect(correct);
+    setShowResult(true);
+  }, [userAnswer]);
+
+  // Qayta boshlash
+  const resetGame = useCallback(() => {
+    setIsFinished(false);
+    setCurrentDisplay(null);
+    setDisplayedNumbers([]);
+    setUserAnswer('');
+    setShowResult(false);
+    setIsCorrect(null);
   }, []);
 
   useEffect(() => {
@@ -190,6 +272,7 @@ export const NumberTrainer = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      window.speechSynthesis.cancel();
     };
   }, []);
 
@@ -203,15 +286,110 @@ export const NumberTrainer = () => {
         >
           {!isAddition && countRef.current > 1 ? '-' : ''}{currentDisplay}
         </div>
-        <Button
-          onClick={stopGame}
-          variant="destructive"
-          size="lg"
-          className="absolute bottom-10 gap-2"
-        >
-          <Square className="h-5 w-5" />
-          To'xtatish
-        </Button>
+        <div className="absolute bottom-10 flex gap-4">
+          <Button
+            onClick={() => setVoiceEnabled(!voiceEnabled)}
+            variant="outline"
+            size="lg"
+            className="gap-2"
+          >
+            {voiceEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+          </Button>
+          <Button
+            onClick={stopGame}
+            variant="destructive"
+            size="lg"
+            className="gap-2"
+          >
+            <Square className="h-5 w-5" />
+            To'xtatish
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Natija sahifasi
+  if (isFinished) {
+    return (
+      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-6">
+        <div className="max-w-md w-full space-y-8 text-center">
+          <h2 className="text-2xl font-bold text-foreground">Mashq tugadi!</h2>
+          
+          {/* Ko'rsatilgan sonlar */}
+          <div className="bg-muted/50 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
+            <p className="text-lg font-mono">
+              {displayedNumbers.map((item, i) => (
+                <span key={i}>
+                  {i > 0 ? (item.isAdd ? ' + ' : ' - ') : ''}{item.num}
+                </span>
+              ))}
+            </p>
+          </div>
+
+          {!showResult ? (
+            <div className="space-y-4">
+              <p className="text-lg text-muted-foreground">Natijani kiriting:</p>
+              <Input
+                type="number"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
+                placeholder="Javob"
+                className="text-center text-3xl h-16"
+                autoFocus
+              />
+              <Button
+                onClick={checkAnswer}
+                disabled={!userAnswer}
+                size="lg"
+                className="w-full gap-2"
+              >
+                <Check className="h-5 w-5" />
+                Tekshirish
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className={`text-6xl font-bold ${isCorrect ? 'text-green-500' : 'text-red-500'}`}>
+                {isCorrect ? '✓' : '✗'}
+              </div>
+              <div>
+                <p className="text-lg">
+                  {isCorrect ? "To'g'ri javob!" : "Noto'g'ri"}
+                </p>
+                <p className="text-3xl font-bold mt-2">
+                  To'g'ri javob: {runningResultRef.current}
+                </p>
+                {!isCorrect && (
+                  <p className="text-muted-foreground mt-1">
+                    Sizning javobingiz: {userAnswer}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-4 justify-center pt-4">
+            <Button
+              onClick={resetGame}
+              variant="outline"
+              size="lg"
+              className="gap-2"
+            >
+              <RotateCcw className="h-5 w-5" />
+              Orqaga
+            </Button>
+            <Button
+              onClick={startGame}
+              size="lg"
+              className="bg-red-600 hover:bg-red-700 text-white gap-2"
+            >
+              Yangi mashq
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -219,7 +397,18 @@ export const NumberTrainer = () => {
   // Sozlamalar sahifasi
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-foreground">Test turini sozlang</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-foreground">Test turini sozlang</h1>
+        <Button
+          onClick={() => setVoiceEnabled(!voiceEnabled)}
+          variant="outline"
+          size="sm"
+          className="gap-2"
+        >
+          {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+          {voiceEnabled ? 'Ovoz yoqilgan' : 'Ovoz o\'chirilgan'}
+        </Button>
+      </div>
 
       {/* Misol turi */}
       <div className="space-y-3">
