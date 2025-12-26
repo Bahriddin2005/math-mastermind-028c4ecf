@@ -31,6 +31,7 @@ import { toast } from 'sonner';
 import { CourseManager } from '@/components/CourseManager';
 import { ExamplesManager } from '@/components/ExamplesManager';
 import { FAQManager } from '@/components/FAQManager';
+import { ChatHistoryManager } from '@/components/ChatHistoryManager';
 import { 
   Mail, 
   FileText, 
@@ -51,7 +52,8 @@ import {
   Flame,
   GraduationCap,
   Calculator,
-  HelpCircle
+  HelpCircle,
+  MessageCircle
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -417,7 +419,7 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-4xl grid-cols-6">
+            <TabsList className="grid w-full max-w-5xl grid-cols-7">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
@@ -433,6 +435,10 @@ const Admin = () => {
               <TabsTrigger value="faq" className="flex items-center gap-2">
                 <HelpCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">FAQ</span>
+              </TabsTrigger>
+              <TabsTrigger value="chats" className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Chatlar</span>
               </TabsTrigger>
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
@@ -499,6 +505,11 @@ const Admin = () => {
             {/* FAQ Tab */}
             <TabsContent value="faq">
               <FAQManager />
+            </TabsContent>
+
+            {/* Chat History Tab */}
+            <TabsContent value="chats">
+              <ChatHistoryManager />
             </TabsContent>
 
             {/* Messages Tab */}

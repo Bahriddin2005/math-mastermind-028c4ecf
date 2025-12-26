@@ -42,6 +42,15 @@ interface Lesson {
   course_id: string;
 }
 
+interface UserProgress {
+  username: string;
+  total_score: number;
+  total_problems_solved: number;
+  best_streak: number;
+  current_streak: number;
+  daily_goal: number;
+}
+
 const iconMap: Record<string, React.ReactNode> = {
   HelpCircle: <HelpCircle className="h-4 w-4" />,
   Calculator: <Calculator className="h-4 w-4" />,
@@ -71,6 +80,7 @@ export const HelpChatWidget = () => {
   const [loadingFaqs, setLoadingFaqs] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   
   // AI Chat state
   const [chatMode, setChatMode] = useState(false);
@@ -82,6 +92,7 @@ export const HelpChatWidget = () => {
   useEffect(() => {
     fetchFAQs();
     fetchCoursesAndLessons();
+    fetchUserProgress();
   }, []);
 
   const fetchFAQs = async () => {
@@ -105,6 +116,19 @@ export const HelpChatWidget = () => {
     
     if (coursesRes.data) setCourses(coursesRes.data);
     if (lessonsRes.data) setLessons(lessonsRes.data);
+  };
+
+  const fetchUserProgress = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, total_score, total_problems_solved, best_streak, current_streak, daily_goal')
+      .eq('user_id', user.id)
+      .single();
+
+    if (data) setUserProgress(data);
   };
 
   const filteredFaqs = faqItems.filter(faq => 
@@ -179,6 +203,16 @@ export const HelpChatWidget = () => {
         return `Dars: ${l.title}${course ? ` (${course.title} kursidan)` : ''}`;
       }).join('\n');
 
+      // Create user progress context
+      const userProgressContext = userProgress 
+        ? `Foydalanuvchi: ${userProgress.username}
+Jami ball: ${userProgress.total_score}
+Yechilgan masalalar: ${userProgress.total_problems_solved}
+Eng yaxshi seriya: ${userProgress.best_streak}
+Hozirgi seriya: ${userProgress.current_streak}
+Kunlik maqsad: ${userProgress.daily_goal} masala`
+        : 'Foydalanuvchi tizimga kirmagan';
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/help-chat`,
         {
@@ -192,7 +226,8 @@ export const HelpChatWidget = () => {
             message: userMessage,
             faqContext,
             coursesContext,
-            lessonsContext
+            lessonsContext,
+            userProgressContext
           }),
         }
       );

@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, faqContext, coursesContext, lessonsContext } = await req.json();
+    const { message, faqContext, coursesContext, lessonsContext, userProgressContext } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -40,8 +40,12 @@ ${coursesContext || 'Hozircha kurslar yo\'q'}
 Mavjud darslar:
 ${lessonsContext || 'Hozircha darslar yo\'q'}
 
+Foydalanuvchi progressi:
+${userProgressContext || 'Ma\'lumot yo\'q'}
+
 Foydalanuvchi kurslar yoki darslar haqida so'rasa, yuqoridagi ma'lumotlardan foydalanib javob ber.
 Agar kurs yoki dars nomi so'ralsa, /courses sahifasiga yo'naltir.
+Foydalanuvchi o'z statistikasi, balli, yechgan masalalari, seriyasi haqida so'rasa - yuqoridagi progressdan javob ber.
 
 Har doim do'stona va yordam beruvchi bo'l!`;
 
