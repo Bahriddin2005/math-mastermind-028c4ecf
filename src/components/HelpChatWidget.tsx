@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
+import { toast } from 'sonner';
 import { 
   MessageCircle, 
   X, 
@@ -21,7 +22,9 @@ import {
   Bot,
   ArrowLeft,
   Volume2,
-  VolumeX
+  VolumeX,
+  Mic,
+  MicOff
 } from 'lucide-react';
 
 interface FAQItem {
@@ -92,8 +95,11 @@ export const HelpChatWidget = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const sessionIdRef = useRef<string>(generateSessionId());
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     fetchFAQs();
@@ -207,6 +213,78 @@ export const HelpChatWidget = () => {
     } catch (error) {
       console.error('TTS error:', error);
       setIsPlayingAudio(false);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        stream.getTracks().forEach(track => track.stop());
+        await transcribeAudio(audioBlob);
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+      toast.error("Mikrofonga ruxsat berilmadi");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const transcribeAudio = async (audioBlob: Blob) => {
+    setIsLoading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-stt`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Transcription failed');
+      }
+
+      if (data.text && data.text.trim()) {
+        setInputMessage(data.text);
+      } else {
+        toast.error("Ovoz aniqlanmadi, qaytadan urinib ko'ring");
+      }
+    } catch (error) {
+      console.error('Transcription error:', error);
+      toast.error("Ovozni aniqlashda xatolik");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -446,12 +524,26 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                 {/* Input */}
                 <div className="p-4 border-t">
                   <div className="flex gap-2">
+                    <Button
+                      variant={isRecording ? "destructive" : "outline"}
+                      size="icon"
+                      onClick={isRecording ? stopRecording : startRecording}
+                      disabled={isLoading}
+                      title={isRecording ? "Yozishni to'xtatish" : "Ovoz bilan so'rash"}
+                      className={isRecording ? "animate-pulse" : ""}
+                    >
+                      {isRecording ? (
+                        <MicOff className="h-4 w-4" />
+                      ) : (
+                        <Mic className="h-4 w-4" />
+                      )}
+                    </Button>
                     <Input
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Savolingizni yozing..."
-                      disabled={isLoading}
+                      placeholder={isRecording ? "Gapiring..." : "Savolingizni yozing..."}
+                      disabled={isLoading || isRecording}
                       className="flex-1"
                     />
                     <Button 

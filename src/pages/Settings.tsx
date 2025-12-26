@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarCropDialog } from '@/components/AvatarCropDialog';
+import { UserChatHistory } from '@/components/UserChatHistory';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -313,6 +314,9 @@ const Settings = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Chat History Section */}
+          <UserChatHistory />
         </div>
       </main>
 
