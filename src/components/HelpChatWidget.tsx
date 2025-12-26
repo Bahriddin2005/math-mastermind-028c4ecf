@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -13,47 +14,66 @@ import {
   GraduationCap,
   Trophy,
   Settings,
-  ChevronRight
+  ChevronRight,
+  User,
+  Target,
+  Loader2,
+  Bot,
+  ArrowLeft
 } from 'lucide-react';
 
 interface FAQItem {
+  id: string;
   question: string;
   answer: string;
-  icon: React.ReactNode;
+  icon: string;
 }
 
-const faqItems: FAQItem[] = [
-  {
-    question: "Mashq qanday ishlaydi?",
-    answer: "Dashboard'da 'Mashq qilish' bo'limiga o'ting. Qiyinlik darajasini tanlang, vaqt yoki masalalar sonini belgilang va boshlang. Har bir to'g'ri javob uchun ball olasiz!",
-    icon: <Calculator className="h-4 w-4" />
-  },
-  {
-    question: "Kurslarni qanday ko'raman?",
-    answer: "Menyudan 'Kurslar' bo'limini tanlang. Video darslarni ko'ring, mashq qiling va progressingizni kuzating.",
-    icon: <GraduationCap className="h-4 w-4" />
-  },
-  {
-    question: "Leaderboard nima?",
-    answer: "Leaderboard - bu haftalik eng yaxshi o'yinchilar ro'yxati. Ko'proq mashq qilsangiz, yuqori o'rinlarni egallaysiz!",
-    icon: <Trophy className="h-4 w-4" />
-  },
-  {
-    question: "Profilimni qanday o'zgartiraman?",
-    answer: "Yuqori o'ng burchakdagi profil rasminni bosing va 'Sozlamalar' bo'limiga o'ting. U yerda ism, rasm va boshqa ma'lumotlarni o'zgartirishingiz mumkin.",
-    icon: <Settings className="h-4 w-4" />
-  },
-  {
-    question: "Kunlik maqsad nima?",
-    answer: "Kunlik maqsad - har kuni yechishni rejalashtirgan masalalar soni. Bu sizga doimiy mashq qilishga yordam beradi.",
-    icon: <BookOpen className="h-4 w-4" />
-  }
-];
+const iconMap: Record<string, React.ReactNode> = {
+  HelpCircle: <HelpCircle className="h-4 w-4" />,
+  Calculator: <Calculator className="h-4 w-4" />,
+  GraduationCap: <GraduationCap className="h-4 w-4" />,
+  Trophy: <Trophy className="h-4 w-4" />,
+  Settings: <Settings className="h-4 w-4" />,
+  BookOpen: <BookOpen className="h-4 w-4" />,
+  Target: <Target className="h-4 w-4" />,
+  User: <User className="h-4 w-4" />,
+};
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export const HelpChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFaq, setSelectedFaq] = useState<FAQItem | null>(null);
+  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
+  const [loadingFaqs, setLoadingFaqs] = useState(true);
+  
+  // AI Chat state
+  const [chatMode, setChatMode] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchFAQs();
+  }, []);
+
+  const fetchFAQs = async () => {
+    const { data } = await supabase
+      .from('faq_items')
+      .select('id, question, answer, icon')
+      .eq('is_active', true)
+      .order('order_index', { ascending: true });
+    
+    if (data) {
+      setFaqItems(data);
+    }
+    setLoadingFaqs(false);
+  };
 
   const filteredFaqs = faqItems.filter(faq => 
     faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -64,6 +84,70 @@ export const HelpChatWidget = () => {
     setIsOpen(false);
     setSelectedFaq(null);
     setSearchQuery('');
+    setChatMode(false);
+    setMessages([]);
+    setInputMessage('');
+  };
+
+  const startChatMode = () => {
+    setChatMode(true);
+    setMessages([{
+      role: 'assistant',
+      content: "Salom! Men IQroMax yordamchisiman. Sizga qanday yordam bera olaman?"
+    }]);
+  };
+
+  const sendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return;
+
+    const userMessage = inputMessage.trim();
+    setInputMessage('');
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      // Create FAQ context for AI
+      const faqContext = faqItems.map(f => `Savol: ${f.question}\nJavob: ${f.answer}`).join('\n\n');
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/help-chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ 
+            message: userMessage,
+            faqContext 
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Xatolik yuz berdi');
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+    } catch (error) {
+      console.error('Chat error:', error);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "Kechirasiz, hozirda javob bera olmadim. Iltimos, keyinroq urinib ko'ring yoki /contact sahifasidan biz bilan bog'laning." 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   return (
@@ -95,11 +179,15 @@ export const HelpChatWidget = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-primary-foreground/20 rounded-full">
-                  <HelpCircle className="h-5 w-5" />
+                  {chatMode ? <Bot className="h-5 w-5" /> : <HelpCircle className="h-5 w-5" />}
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Yordam markazi</CardTitle>
-                  <p className="text-sm text-primary-foreground/80">Savolingiz bormi?</p>
+                  <CardTitle className="text-lg">
+                    {chatMode ? "AI Yordamchi" : "Yordam markazi"}
+                  </CardTitle>
+                  <p className="text-sm text-primary-foreground/80">
+                    {chatMode ? "Savolingizga javob beraman" : "Savolingiz bormi?"}
+                  </p>
                 </div>
               </div>
               <Button 
@@ -114,7 +202,76 @@ export const HelpChatWidget = () => {
           </CardHeader>
 
           <CardContent className="p-0">
-            {selectedFaq ? (
+            {chatMode ? (
+              /* AI Chat Mode */
+              <div className="flex flex-col h-[400px]">
+                {/* Back button */}
+                <div className="p-2 border-b">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setChatMode(false);
+                      setMessages([]);
+                    }}
+                    className="text-muted-foreground"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    FAQ ga qaytish
+                  </Button>
+                </div>
+
+                {/* Messages */}
+                <ScrollArea className="flex-1 p-4">
+                  <div className="space-y-4">
+                    {messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`max-w-[85%] px-4 py-2 rounded-2xl ${
+                            msg.role === 'user'
+                              ? 'bg-primary text-primary-foreground rounded-br-md'
+                              : 'bg-secondary rounded-bl-md'
+                          }`}
+                        >
+                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="bg-secondary px-4 py-2 rounded-2xl rounded-bl-md">
+                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+
+                {/* Input */}
+                <div className="p-4 border-t">
+                  <div className="flex gap-2">
+                    <Input
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Savolingizni yozing..."
+                      disabled={isLoading}
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={sendMessage} 
+                      disabled={!inputMessage.trim() || isLoading}
+                      size="icon"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : selectedFaq ? (
               /* Answer View */
               <div className="p-4">
                 <Button 
@@ -123,12 +280,13 @@ export const HelpChatWidget = () => {
                   onClick={() => setSelectedFaq(null)}
                   className="mb-3 -ml-2 text-muted-foreground"
                 >
-                  ← Orqaga
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Orqaga
                 </Button>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg shrink-0">
-                      {selectedFaq.icon}
+                      {iconMap[selectedFaq.icon] || <HelpCircle className="h-4 w-4" />}
                     </div>
                     <h3 className="font-semibold text-lg">{selectedFaq.question}</h3>
                   </div>
@@ -154,23 +312,27 @@ export const HelpChatWidget = () => {
                 </div>
 
                 {/* FAQ List */}
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-[250px]">
                   <div className="p-2">
-                    {filteredFaqs.length === 0 ? (
+                    {loadingFaqs ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : filteredFaqs.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <HelpCircle className="h-10 w-10 mx-auto mb-2 opacity-50" />
                         <p>Savol topilmadi</p>
                         <p className="text-sm">Boshqa so'z bilan qidirib ko'ring</p>
                       </div>
                     ) : (
-                      filteredFaqs.map((faq, index) => (
+                      filteredFaqs.map((faq) => (
                         <button
-                          key={index}
+                          key={faq.id}
                           onClick={() => setSelectedFaq(faq)}
                           className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/80 transition-colors text-left group"
                         >
                           <div className="p-2 bg-primary/10 rounded-lg shrink-0 group-hover:bg-primary/20 transition-colors">
-                            {faq.icon}
+                            {iconMap[faq.icon] || <HelpCircle className="h-4 w-4" />}
                           </div>
                           <span className="flex-1 font-medium text-sm">{faq.question}</span>
                           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -180,8 +342,16 @@ export const HelpChatWidget = () => {
                   </div>
                 </ScrollArea>
 
-                {/* Footer */}
-                <div className="p-4 border-t bg-secondary/30">
+                {/* Footer with AI Chat button */}
+                <div className="p-4 border-t bg-secondary/30 space-y-3">
+                  <Button 
+                    onClick={startChatMode}
+                    className="w-full gap-2"
+                    variant="default"
+                  >
+                    <Bot className="h-4 w-4" />
+                    AI bilan suhbatlashing
+                  </Button>
                   <p className="text-center text-sm text-muted-foreground">
                     Javob topmadingizmi?{' '}
                     <a href="/contact" className="text-primary hover:underline font-medium">

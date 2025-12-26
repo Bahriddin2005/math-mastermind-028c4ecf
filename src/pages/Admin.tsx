@@ -30,6 +30,7 @@ import {
 import { toast } from 'sonner';
 import { CourseManager } from '@/components/CourseManager';
 import { ExamplesManager } from '@/components/ExamplesManager';
+import { FAQManager } from '@/components/FAQManager';
 import { 
   Mail, 
   FileText, 
@@ -49,7 +50,8 @@ import {
   TrendingUp,
   Flame,
   GraduationCap,
-  Calculator
+  Calculator,
+  HelpCircle
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -415,7 +417,7 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-3xl grid-cols-5">
+            <TabsList className="grid w-full max-w-4xl grid-cols-6">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
@@ -427,6 +429,10 @@ const Admin = () => {
               <TabsTrigger value="examples" className="flex items-center gap-2">
                 <Calculator className="h-4 w-4" />
                 <span className="hidden sm:inline">Misollar</span>
+              </TabsTrigger>
+              <TabsTrigger value="faq" className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">FAQ</span>
               </TabsTrigger>
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
@@ -488,6 +494,11 @@ const Admin = () => {
             {/* Examples Tab */}
             <TabsContent value="examples">
               <ExamplesManager />
+            </TabsContent>
+
+            {/* FAQ Tab */}
+            <TabsContent value="faq">
+              <FAQManager />
             </TabsContent>
 
             {/* Messages Tab */}
