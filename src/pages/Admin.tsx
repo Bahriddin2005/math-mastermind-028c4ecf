@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { CourseManager } from '@/components/CourseManager';
 import { 
   Mail, 
   FileText, 
@@ -45,7 +46,8 @@ import {
   Trophy,
   Target,
   TrendingUp,
-  Flame
+  Flame,
+  GraduationCap
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -411,19 +413,23 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-lg grid-cols-3">
+            <TabsList className="grid w-full max-w-2xl grid-cols-4">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Foydalanuvchilar
+                <span className="hidden sm:inline">Foydalanuvchilar</span>
+              </TabsTrigger>
+              <TabsTrigger value="courses" className="flex items-center gap-2">
+                <GraduationCap className="h-4 w-4" />
+                <span className="hidden sm:inline">Kurslar</span>
               </TabsTrigger>
               <TabsTrigger value="messages" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                Xabarlar
+                <span className="hidden sm:inline">Xabarlar</span>
                 {unreadCount > 0 && <Badge variant="destructive" className="ml-1 h-5 px-1.5">{unreadCount}</Badge>}
               </TabsTrigger>
               <TabsTrigger value="blog" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Maqolalar
+                <span className="hidden sm:inline">Maqolalar</span>
               </TabsTrigger>
             </TabsList>
 
@@ -460,6 +466,15 @@ const Admin = () => {
                       ))}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Courses Tab */}
+            <TabsContent value="courses">
+              <Card>
+                <CardContent className="p-6">
+                  <CourseManager isAdmin={isAdmin} />
                 </CardContent>
               </Card>
             </TabsContent>

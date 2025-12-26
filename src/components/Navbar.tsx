@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -63,6 +63,17 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </Link>
         
         <div className="flex items-center gap-2 md:gap-3">
+          {/* Video darslar button */}
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate('/courses')}
+            className="gap-2 hidden md:flex"
+          >
+            <GraduationCap className="h-4 w-4" />
+            <span>Darslar</span>
+          </Button>
+
           {/* Navigation buttons */}
           {isTrainPage ? (
             <Button 
@@ -132,6 +143,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                 <DropdownMenuItem onClick={() => navigate('/train')} className="gap-2">
                   <Play className="h-4 w-4" />
                   Mashq qilish
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/courses')} className="gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  Video darslar
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-2">
                   <Settings className="h-4 w-4" />

@@ -16,8 +16,9 @@ import { StatsDisplay } from '@/components/StatsDisplay';
 import { TimerDisplay } from '@/components/TimerDisplay';
 import { GameResults } from '@/components/GameResults';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Timer, Play, ArrowLeft, Target, Home } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Timer, Play, ArrowLeft, Target, Zap, Brain, Sparkles, Trophy, Flame } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type AppState = 'menu' | 'playing' | 'results';
@@ -71,10 +72,8 @@ const Index = () => {
         const score = stats.correct * 10 + stats.bestStreak * 5;
         const accuracy = stats.correct / (stats.correct + stats.incorrect);
         
-        // Trigger completion confetti
         triggerCompletionConfetti(accuracy * 100);
         
-        // Save game session
         await supabase.from('game_sessions').insert({
           user_id: user.id,
           section: selectedSection,
@@ -90,7 +89,6 @@ const Index = () => {
           target_problems: gameMode === 'practice' ? targetProblems : null,
         });
 
-        // Update profile stats
         const { data: profile } = await supabase
           .from('profiles')
           .select('total_score, total_problems_solved, best_streak')
@@ -132,132 +130,189 @@ const Index = () => {
   const sections: MathSection[] = ['add-sub', 'multiply', 'divide', 'mix'];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-primary/5 to-background">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
       
       <main className="flex-1 container px-4 py-6 md:py-8">
         {appState === 'menu' && (
-          <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-            {/* Back to dashboard */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="opacity-0 animate-fade-in"
-              style={{ animationFillMode: 'forwards' }}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Bosh sahifa
-            </Button>
+          <div className="max-w-5xl mx-auto space-y-10 animate-fade-in">
+            {/* Hero Section */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-primary-glow p-8 md:p-12 text-white">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
+              
+              <div className="relative z-10">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/')}
+                  className="mb-6 text-white/80 hover:text-white hover:bg-white/10"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Bosh sahifa
+                </Button>
 
-            {/* Welcome section */}
-            <div className="text-center space-y-3">
-              <h1 className="text-3xl md:text-4xl font-display font-black">
-                Mental Matematika
-              </h1>
-              <p className="text-muted-foreground text-lg">
-                Bo'limni tanlang va mashq qilishni boshlang
-              </p>
-            </div>
-
-            {/* Section selection */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {sections.map((section, index) => (
-                <div key={section} className={`animate-slide-up stagger-${index + 1}`}>
-                  <SectionCard
-                    section={section}
-                    onClick={() => setSelectedSection(section)}
-                    isActive={selectedSection === section}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Selected section info */}
-            <Card className="p-6">
-              <div className="space-y-6">
-                <div className="text-center">
-                  <h2 className="text-xl font-display font-bold mb-2">
-                    {getSectionInfo(selectedSection).name}
-                  </h2>
-                  <p className="text-muted-foreground">
-                    Murakkablik darajasini tanlang
-                  </p>
-                </div>
-
-                <DifficultyPicker value={difficulty} onChange={setDifficulty} />
-
-                {/* Game mode selection */}
-                <div className="flex justify-center gap-3">
-                  <Button
-                    variant={gameMode === 'practice' ? 'default' : 'secondary'}
-                    size="lg"
-                    onClick={() => setGameMode('practice')}
-                  >
-                    <Play className="h-5 w-5 mr-2" />
-                    Mashq
-                  </Button>
-                  <Button
-                    variant={gameMode === 'timer' ? 'accent' : 'secondary'}
-                    size="lg"
-                    onClick={() => setGameMode('timer')}
-                  >
-                    <Timer className="h-5 w-5 mr-2" />
-                    Taymer
-                  </Button>
-                </div>
-
-                {/* Mode-specific options */}
-                {gameMode === 'timer' && (
-                  <div className="space-y-2 text-center">
-                    <p className="text-sm text-muted-foreground">Vaqt davomiyligi</p>
-                    <TimerPicker value={timerDuration} onChange={setTimerDuration} />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm">
+                    <Brain className="h-8 w-8" />
                   </div>
-                )}
-
-                {gameMode === 'practice' && (
-                  <div className="space-y-2 text-center">
-                    <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
-                      <Target className="h-4 w-4" />
-                      Misollar soni
-                    </p>
-                    <TargetPicker value={targetProblems} onChange={setTargetProblems} />
-                  </div>
-                )}
-
-                {/* Start button */}
-                <div className="text-center">
-                  <Button
-                    variant="game"
-                    size="xl"
-                    onClick={handleStartGame}
-                    className="px-12"
-                  >
-                    Boshlash
-                  </Button>
+                  <Badge className="bg-white/20 text-white border-0 text-sm">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Mental Matematika
+                  </Badge>
                 </div>
+
+                <h1 className="text-3xl md:text-5xl font-display font-black mb-4 leading-tight">
+                  Miyangizni <br className="hidden md:block" />
+                  <span className="text-accent">rivojlantiring</span>
+                </h1>
+                <p className="text-lg text-white/80 max-w-lg">
+                  Bo'limni tanlang, qiyinchilik darajasini belgilang va mashq qilishni boshlang!
+                </p>
               </div>
+            </div>
+
+            {/* Section Selection */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-bold">Bo'limni tanlang</h2>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {sections.map((section, index) => (
+                  <div 
+                    key={section} 
+                    className="animate-slide-up" 
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <SectionCard
+                      section={section}
+                      onClick={() => setSelectedSection(section)}
+                      isActive={selectedSection === section}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Game Settings */}
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 overflow-hidden">
+              <CardContent className="p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 rounded-xl bg-primary/10">
+                    <Target className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">{getSectionInfo(selectedSection).name}</h2>
+                    <p className="text-sm text-muted-foreground">{getSectionInfo(selectedSection).description}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  {/* Difficulty */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-warning" />
+                      <span className="font-medium">Qiyinchilik darajasi</span>
+                    </div>
+                    <DifficultyPicker value={difficulty} onChange={setDifficulty} />
+                  </div>
+
+                  {/* Game Mode */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Flame className="h-4 w-4 text-accent" />
+                      <span className="font-medium">O'yin rejimi</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => setGameMode('practice')}
+                        className={`p-4 rounded-2xl border-2 transition-all text-left ${
+                          gameMode === 'practice' 
+                            ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20' 
+                            : 'border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-xl w-fit mb-2 ${gameMode === 'practice' ? 'bg-primary text-white' : 'bg-secondary'}`}>
+                          <Play className="h-5 w-5" />
+                        </div>
+                        <p className="font-semibold">Mashq rejimi</p>
+                        <p className="text-xs text-muted-foreground">Belgilangan misollar soni</p>
+                      </button>
+                      
+                      <button
+                        onClick={() => setGameMode('timer')}
+                        className={`p-4 rounded-2xl border-2 transition-all text-left ${
+                          gameMode === 'timer' 
+                            ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
+                            : 'border-border hover:border-accent/50'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-xl w-fit mb-2 ${gameMode === 'timer' ? 'bg-accent text-white' : 'bg-secondary'}`}>
+                          <Timer className="h-5 w-5" />
+                        </div>
+                        <p className="font-semibold">Taymer rejimi</p>
+                        <p className="text-xs text-muted-foreground">Vaqt cheklangan</p>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mode Options */}
+                  <div className="p-4 rounded-2xl bg-secondary/50 space-y-3">
+                    {gameMode === 'timer' ? (
+                      <>
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                          <Timer className="h-4 w-4" />
+                          Vaqt davomiyligi
+                        </p>
+                        <TimerPicker value={timerDuration} onChange={setTimerDuration} />
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          Misollar soni
+                        </p>
+                        <TargetPicker value={targetProblems} onChange={setTargetProblems} />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Start Button */}
+                  <Button
+                    onClick={handleStartGame}
+                    size="xl"
+                    className={`w-full text-lg font-bold py-6 rounded-2xl transition-all shadow-lg hover:shadow-xl ${
+                      gameMode === 'timer' 
+                        ? 'bg-accent hover:bg-accent/90 shadow-accent/30' 
+                        : 'gradient-primary shadow-primary/30'
+                    }`}
+                  >
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Mashqni boshlash
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}
 
         {appState === 'playing' && (
           <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-            {/* Header with back button and timer */}
+            {/* Header */}
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="sm" onClick={handleBackToMenu}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
+              <Button variant="ghost" size="sm" onClick={handleBackToMenu} className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
                 Orqaga
               </Button>
-              <div className="text-center">
-                <h2 className="font-display font-bold">
-                  {getSectionInfo(selectedSection).name}
-                </h2>
-              </div>
-              <div className="w-20" /> {/* Spacer for alignment */}
+              <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium">
+                {getSectionInfo(selectedSection).name}
+              </Badge>
+              <div className="w-20" />
             </div>
 
-            {/* Timer (if timer mode) */}
+            {/* Timer */}
             {gameMode === 'timer' && isGameActive && (
               <TimerDisplay 
                 timeLeft={timeLeft} 
@@ -266,19 +321,20 @@ const Index = () => {
               />
             )}
 
-            {/* Progress (if practice mode with target) */}
+            {/* Progress */}
             {gameMode === 'practice' && targetProblems > 0 && (
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  Misol: {stats.problems + 1} / {targetProblems}
-                </p>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden mt-2">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Jarayon</span>
+                  <span className="text-sm text-muted-foreground">{stats.problems} / {targetProblems}</span>
+                </div>
+                <div className="h-3 bg-secondary rounded-full overflow-hidden">
                   <div
-                    className="h-full gradient-primary rounded-full transition-all duration-300"
-                    style={{ width: `${((stats.problems) / targetProblems) * 100}%` }}
+                    className="h-full gradient-primary rounded-full transition-all duration-500 ease-out"
+                    style={{ width: `${(stats.problems / targetProblems) * 100}%` }}
                   />
                 </div>
-              </div>
+              </Card>
             )}
 
             {/* Stats */}
@@ -290,17 +346,19 @@ const Index = () => {
             />
 
             {/* Problem */}
-            <ProblemDisplay
-              problem={currentProblem}
-              userAnswer={userAnswer}
-              onAnswerChange={setUserAnswer}
-              onSubmit={checkAnswer}
-              onSkip={skipProblem}
-              feedback={feedback}
-              disabled={!isGameActive}
-            />
+            <Card className="p-6 md:p-8 border-2 border-primary/20">
+              <ProblemDisplay
+                problem={currentProblem}
+                userAnswer={userAnswer}
+                onAnswerChange={setUserAnswer}
+                onSubmit={checkAnswer}
+                onSkip={skipProblem}
+                feedback={feedback}
+                disabled={!isGameActive}
+              />
+            </Card>
 
-            {/* End practice button (for practice mode without target) */}
+            {/* End button */}
             {gameMode === 'practice' && isGameActive && targetProblems === 0 && stats.problems >= 5 && (
               <div className="text-center">
                 <Button
