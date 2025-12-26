@@ -4,9 +4,21 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target, Play, Home, Moon, Sun, User, LogOut, Settings, ShieldCheck, GraduationCap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from 'next-themes';
+import { useNavigate } from 'react-router-dom';
+import { Logo } from './Logo';
+import { Leaderboard } from './Leaderboard';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 import {
   BarChart,
   Bar,
@@ -145,7 +157,12 @@ interface DailyData {
 }
 
 export const NumberTrainer = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [activeTab, setActiveTab] = useState('train');
   
   // Sozlamalar
   const [formulaType, setFormulaType] = useState<FormulaType>('oddiy');
@@ -187,6 +204,33 @@ export const NumberTrainer = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const answerStartTimeRef = useRef<number>(0);
+
+  // Mount va admin tekshirish
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      setIsAdmin(!!data);
+    };
+    checkAdmin();
+  }, [user]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   // Statistikani yuklash
   useEffect(() => {
@@ -444,92 +488,6 @@ export const NumberTrainer = () => {
     ? Math.round((stats.correctAnswers / stats.totalProblems) * 100) 
     : 0;
 
-  // Statistika sahifasi
-  if (showStats) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Statistika</h1>
-          <Button variant="outline" onClick={() => setShowStats(false)}>
-            Orqaga
-          </Button>
-        </div>
-
-        {/* Statistika kartalar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Target className="h-6 w-6 mx-auto mb-2 text-primary" />
-              <p className="text-2xl font-bold">{stats.totalProblems}</p>
-              <p className="text-sm text-muted-foreground">Jami mashqlar</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
-              <p className="text-2xl font-bold text-green-500">{accuracy}%</p>
-              <p className="text-sm text-muted-foreground">Aniqlik</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
-              <p className="text-2xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-              <p className="text-sm text-muted-foreground">O'rtacha vaqt</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <Trophy className="h-6 w-6 mx-auto mb-2 text-amber-500" />
-              <p className="text-2xl font-bold text-amber-500">{stats.bestStreak}</p>
-              <p className="text-sm text-muted-foreground">Eng uzun seriya</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Haftalik grafik */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              Haftalik progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {dailyData.length > 0 ? (
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dailyData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis 
-                      dataKey="name" 
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    />
-                    <YAxis 
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'hsl(var(--popover))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                      }}
-                    />
-                    <Bar dataKey="total" fill="hsl(var(--muted))" name="Jami" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="correct" fill="hsl(var(--primary))" name="To'g'ri" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <p className="text-center text-muted-foreground py-8">
-                Hali ma'lumot yo'q. Mashq qiling!
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   // O'yin davomida
   if (isRunning && currentDisplay !== null) {
@@ -662,186 +620,375 @@ export const NumberTrainer = () => {
     );
   }
 
-  // Sozlamalar sahifasi
-  return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="text-3xl font-bold text-foreground">Test turini sozlang</h1>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => setVoiceEnabled(!voiceEnabled)}
-            variant="outline"
+  // Navbar komponenti
+  const NavbarComponent = () => (
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
+      <div className="container flex h-16 items-center justify-between px-4 md:px-8">
+        <div onClick={() => navigate('/')} className="cursor-pointer">
+          <Logo size="md" />
+        </div>
+        
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Video darslar button */}
+          <Button 
+            variant="ghost" 
             size="sm"
+            onClick={() => navigate('/courses')}
+            className="gap-2 hidden md:flex"
+          >
+            <GraduationCap className="h-4 w-4" />
+            <span>Darslar</span>
+          </Button>
+
+          {/* Bosh sahifa */}
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={() => navigate('/')}
             className="gap-2"
           >
-            {voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Bosh sahifa</span>
           </Button>
-          {user && (
-            <Button
-              onClick={() => setShowStats(true)}
-              variant="outline"
-              size="sm"
-              className="gap-2"
+
+          {/* Theme toggle */}
+          {mounted && (
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
             >
-              <BarChart3 className="h-4 w-4" />
-              Statistika
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5 text-warning" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+          )}
+
+          {/* Ovoz */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setVoiceEnabled(!voiceEnabled)}
+            aria-label={voiceEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+          >
+            {voiceEnabled ? (
+              <Volume2 className="h-5 w-5" />
+            ) : (
+              <VolumeX className="h-5 w-5 text-muted-foreground" />
+            )}
+          </Button>
+
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="sm" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">Profil</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate('/')} className="gap-2">
+                  <Home className="h-4 w-4" />
+                  Bosh sahifa
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/courses')} className="gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  Video darslar
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-2">
+                  <Settings className="h-4 w-4" />
+                  Sozlamalar
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-2 text-primary">
+                    <ShieldCheck className="h-4 w-4" />
+                    Admin panel
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-destructive">
+                  <LogOut className="h-4 w-4" />
+                  Chiqish
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="secondary" size="sm" onClick={() => navigate('/auth')}>
+              <User className="h-4 w-4 mr-2" />
+              Kirish
             </Button>
           )}
         </div>
       </div>
+    </header>
+  );
 
-      {/* Mini statistika */}
-      {user && stats.totalProblems > 0 && (
-        <div className="grid grid-cols-4 gap-2 text-center">
-          <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold">{stats.totalProblems}</p>
-            <p className="text-xs text-muted-foreground">Jami</p>
-          </div>
-          <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-green-500">{accuracy}%</p>
-            <p className="text-xs text-muted-foreground">Aniqlik</p>
-          </div>
-          <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-            <p className="text-xs text-muted-foreground">Vaqt</p>
-          </div>
-          <div className="p-2 bg-muted/50 rounded-lg">
-            <p className="text-lg font-bold text-amber-500">{stats.bestStreak}</p>
-            <p className="text-xs text-muted-foreground">Seriya</p>
-          </div>
-        </div>
-      )}
+  // Sozlamalar sahifasi
+  return (
+    <div className="min-h-screen bg-background">
+      <NavbarComponent />
+      
+      <div className="container py-6 px-4 md:px-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-6">
+            <TabsTrigger value="train" className="gap-2">
+              <Play className="h-4 w-4" />
+              Mashq
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="gap-2">
+              <Trophy className="h-4 w-4" />
+              Reyting
+            </TabsTrigger>
+            <TabsTrigger value="stats" className="gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Statistika
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Misol turi */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">Misol turi</Label>
-        <RadioGroup
-          value={formulaType}
-          onValueChange={(v) => setFormulaType(v as FormulaType)}
-          className="flex flex-wrap gap-2"
-        >
-          {[
-            { value: 'oddiy', label: 'Oddiy' },
-            { value: 'formula5', label: 'Formula 5' },
-            { value: 'formula10plus', label: 'Formula 10+' },
-            { value: 'formula10minus', label: 'Formula 10-' },
-            { value: 'hammasi', label: 'hammasi' },
-          ].map((item) => (
-            <div key={item.value} className="flex items-center">
-              <RadioGroupItem
-                value={item.value}
-                id={`formula-${item.value}`}
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor={`formula-${item.value}`}
-                className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
-              >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${formulaType === item.value ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                  {formulaType === item.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+          <TabsContent value="train" className="mt-0">
+            <div className="max-w-4xl mx-auto space-y-8">
+              {/* Mini statistika */}
+              {user && stats.totalProblems > 0 && (
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold">{stats.totalProblems}</p>
+                    <p className="text-xs text-muted-foreground">Jami</p>
+                  </div>
+                  <div className="p-2 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-green-500">{accuracy}%</p>
+                    <p className="text-xs text-muted-foreground">Aniqlik</p>
+                  </div>
+                  <div className="p-2 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                    <p className="text-xs text-muted-foreground">Vaqt</p>
+                  </div>
+                  <div className="p-2 bg-muted/50 rounded-lg">
+                    <p className="text-lg font-bold text-amber-500">{stats.bestStreak}</p>
+                    <p className="text-xs text-muted-foreground">Seriya</p>
+                  </div>
                 </div>
-                {item.label}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </div>
+              )}
 
-      {/* Son xonasi */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">Son xonasi</Label>
-        <RadioGroup
-          value={String(digitCount)}
-          onValueChange={(v) => setDigitCount(Number(v))}
-          className="flex flex-wrap gap-2"
-        >
-          {[1, 2, 3, 4].map((num) => (
-            <div key={num} className="flex items-center">
-              <RadioGroupItem
-                value={String(num)}
-                id={`digit-${num}`}
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor={`digit-${num}`}
-                className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
+              {/* Misol turi */}
+              <div className="space-y-3">
+                <Label className="text-base font-medium">Misol turi</Label>
+                <RadioGroup
+                  value={formulaType}
+                  onValueChange={(v) => setFormulaType(v as FormulaType)}
+                  className="flex flex-wrap gap-2"
+                >
+                  {[
+                    { value: 'oddiy', label: 'Oddiy' },
+                    { value: 'formula5', label: 'Formula 5' },
+                    { value: 'formula10plus', label: 'Formula 10+' },
+                    { value: 'formula10minus', label: 'Formula 10-' },
+                    { value: 'hammasi', label: 'hammasi' },
+                  ].map((item) => (
+                    <div key={item.value} className="flex items-center">
+                      <RadioGroupItem
+                        value={item.value}
+                        id={`formula-${item.value}`}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={`formula-${item.value}`}
+                        className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${formulaType === item.value ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
+                          {formulaType === item.value && <div className="w-2 h-2 rounded-full bg-primary" />}
+                        </div>
+                        {item.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Son xonasi */}
+              <div className="space-y-3">
+                <Label className="text-base font-medium">Son xonasi</Label>
+                <RadioGroup
+                  value={String(digitCount)}
+                  onValueChange={(v) => setDigitCount(Number(v))}
+                  className="flex flex-wrap gap-2"
+                >
+                  {[1, 2, 3, 4].map((num) => (
+                    <div key={num} className="flex items-center">
+                      <RadioGroupItem
+                        value={String(num)}
+                        id={`digit-${num}`}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={`digit-${num}`}
+                        className="flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted"
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${digitCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
+                          {digitCount === num && <div className="w-2 h-2 rounded-full bg-primary" />}
+                        </div>
+                        {num} xonali
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Tezligi */}
+              <div className="space-y-3">
+                <Label className="text-base font-medium">Tezligi</Label>
+                <RadioGroup
+                  value={String(speed)}
+                  onValueChange={(v) => setSpeed(Number(v))}
+                  className="flex flex-wrap gap-2"
+                >
+                  {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map((s) => (
+                    <div key={s} className="flex items-center">
+                      <RadioGroupItem
+                        value={String(s)}
+                        id={`speed-${s}`}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={`speed-${s}`}
+                        className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
+                      >
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${speed === s ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
+                          {speed === s && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                        </div>
+                        {s}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Misollar soni */}
+              <div className="space-y-3">
+                <Label className="text-base font-medium">Misollar soni</Label>
+                <RadioGroup
+                  value={String(problemCount)}
+                  onValueChange={(v) => setProblemCount(Number(v))}
+                  className="flex flex-wrap gap-2"
+                >
+                  {Array.from({ length: 18 }, (_, i) => i + 3).map((num) => (
+                    <div key={num} className="flex items-center">
+                      <RadioGroupItem
+                        value={String(num)}
+                        id={`count-${num}`}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={`count-${num}`}
+                        className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
+                      >
+                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${problemCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
+                          {problemCount === num && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
+                        </div>
+                        {num}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Boshlash tugmasi */}
+              <Button
+                onClick={startGame}
+                size="lg"
+                className="bg-red-600 hover:bg-red-700 text-white px-8"
               >
-                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${digitCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                  {digitCount === num && <div className="w-2 h-2 rounded-full bg-primary" />}
-                </div>
-                {num} xonali
-              </Label>
+                Boshlash
+              </Button>
             </div>
-          ))}
-        </RadioGroup>
-      </div>
+          </TabsContent>
 
-      {/* Tezligi */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">Tezligi</Label>
-        <RadioGroup
-          value={String(speed)}
-          onValueChange={(v) => setSpeed(Number(v))}
-          className="flex flex-wrap gap-2"
-        >
-          {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map((s) => (
-            <div key={s} className="flex items-center">
-              <RadioGroupItem
-                value={String(s)}
-                id={`speed-${s}`}
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor={`speed-${s}`}
-                className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
-              >
-                <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${speed === s ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                  {speed === s && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                </div>
-                {s}
-              </Label>
+          <TabsContent value="leaderboard" className="mt-0">
+            <div className="max-w-2xl mx-auto">
+              <Leaderboard currentUserId={user?.id} />
             </div>
-          ))}
-        </RadioGroup>
-      </div>
+          </TabsContent>
 
-      {/* Misollar soni */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">Misollar soni</Label>
-        <RadioGroup
-          value={String(problemCount)}
-          onValueChange={(v) => setProblemCount(Number(v))}
-          className="flex flex-wrap gap-2"
-        >
-          {Array.from({ length: 18 }, (_, i) => i + 3).map((num) => (
-            <div key={num} className="flex items-center">
-              <RadioGroupItem
-                value={String(num)}
-                id={`count-${num}`}
-                className="peer sr-only"
-              />
-              <Label
-                htmlFor={`count-${num}`}
-                className="flex items-center gap-2 px-3 py-2 border rounded-full cursor-pointer transition-colors peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary hover:bg-muted text-sm"
-              >
-                <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${problemCount === num ? 'border-primary-foreground bg-primary-foreground' : 'border-muted-foreground'}`}>
-                  {problemCount === num && <div className="w-1.5 h-1.5 rounded-full bg-primary" />}
-                </div>
-                {num}
-              </Label>
+          <TabsContent value="stats" className="mt-0">
+            <div className="max-w-4xl mx-auto space-y-6">
+              {/* Statistika kartalar */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <Target className="h-6 w-6 mx-auto mb-2 text-primary" />
+                    <p className="text-2xl font-bold">{stats.totalProblems}</p>
+                    <p className="text-sm text-muted-foreground">Jami mashqlar</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <Check className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                    <p className="text-2xl font-bold text-green-500">{accuracy}%</p>
+                    <p className="text-sm text-muted-foreground">Aniqlik</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <Clock className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                    <p className="text-2xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                    <p className="text-sm text-muted-foreground">O'rtacha vaqt</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <Trophy className="h-6 w-6 mx-auto mb-2 text-amber-500" />
+                    <p className="text-2xl font-bold text-amber-500">{stats.bestStreak}</p>
+                    <p className="text-sm text-muted-foreground">Eng uzun seriya</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Haftalik grafik */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                    Haftalik progress
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {dailyData.length > 0 ? (
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={dailyData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                          <XAxis 
+                            dataKey="name" 
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                          />
+                          <YAxis 
+                            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: 'hsl(var(--popover))',
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px',
+                            }}
+                          />
+                          <Bar dataKey="total" fill="hsl(var(--muted))" name="Jami" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="correct" fill="hsl(var(--primary))" name="To'g'ri" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <p className="text-center text-muted-foreground py-8">
+                      Hali ma'lumot yo'q. Mashq qiling!
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
-          ))}
-        </RadioGroup>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Boshlash tugmasi */}
-      <Button
-        onClick={startGame}
-        size="lg"
-        className="bg-red-600 hover:bg-red-700 text-white px-8"
-      >
-        Boshlash
-      </Button>
     </div>
   );
 };
