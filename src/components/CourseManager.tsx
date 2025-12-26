@@ -182,7 +182,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
 
     setUploadingThumbnail(true);
     try {
-      const safeName = file.name.replace(/\s+/g, '_');
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_');
       const fileName = `thumbnails/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from('course-videos')
@@ -324,7 +324,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
 
     setUploadingLessonThumbnail(true);
     try {
-      const safeName = file.name.replace(/\s+/g, '_');
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_');
       const fileName = `lesson-thumbnails/${Date.now()}-${safeName}`;
       const { error } = await supabase.storage
         .from('course-videos')
@@ -399,7 +399,7 @@ export const CourseManager = ({ isAdmin }: CourseManagerProps) => {
     setUploadProgress(0);
 
     try {
-      const safeName = file.name.replace(/\s+/g, '_');
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]+/g, '_');
       const objectName = `videos/${Date.now()}-${safeName}`;
 
       let videoUrl: string;

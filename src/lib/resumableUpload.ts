@@ -9,6 +9,33 @@ type ResumableUploadOptions = {
   upsert?: boolean;
 };
 
+function sanitizeStorageObjectName(objectName: string): string {
+  // Preserve folders but sanitize each segment so Storage accepts the key.
+  return objectName
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => {
+      const extMatch = segment.match(/(\.[a-zA-Z0-9]{1,10})$/);
+      const ext = extMatch?.[1] ?? "";
+      const base = ext ? segment.slice(0, -ext.length) : segment;
+
+      const safeBase =
+        base
+          .normalize("NFKD")
+          .replace(/[^a-zA-Z0-9._-]+/g, "-")
+          .replace(/-+/g, "-")
+          .replace(/^[-_.]+|[-_.]+$/g, "") || "file";
+
+      const safeExt = ext
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9.]+/g, "")
+        .toLowerCase();
+
+      return `${safeBase}${safeExt}`;
+    })
+    .join("/");
+}
+
 export async function uploadResumableToPublicBucket({
   bucket,
   objectName,
@@ -16,6 +43,8 @@ export async function uploadResumableToPublicBucket({
   onProgress,
   upsert = true,
 }: ResumableUploadOptions): Promise<string> {
+  const safeObjectName = sanitizeStorageObjectName(objectName);
+
   const {
     data: { session },
     error: sessionError,
@@ -44,7 +73,7 @@ export async function uploadResumableToPublicBucket({
       removeFingerprintOnSuccess: true,
       metadata: {
         bucketName: bucket,
-        objectName,
+        objectName: safeObjectName,
         contentType: file.type,
         cacheControl: "3600",
       },
@@ -65,6 +94,6 @@ export async function uploadResumableToPublicBucket({
     });
   });
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(objectName);
+  const { data } = supabase.storage.from(bucket).getPublicUrl(safeObjectName);
   return data.publicUrl;
 }
