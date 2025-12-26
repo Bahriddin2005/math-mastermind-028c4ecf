@@ -54,7 +54,7 @@ interface Lesson {
   title: string;
   description: string;
   video_url: string | null;
-  thumbnail_url: string | null;
+  thumbnail_url?: string | null;
   duration_minutes: number;
   order_index: number;
   is_published: boolean;
