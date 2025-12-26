@@ -9,7 +9,9 @@ import { AbacusDisplay } from './AbacusDisplay';
 import { MentalArithmeticHistory } from './MentalArithmeticHistory';
 import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
 import { AbacusFlashCard } from './AbacusFlashCard';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb } from 'lucide-react';
+import { AbacusTutorial } from './AbacusTutorial';
+import { MultiplayerCompetition } from './MultiplayerCompetition';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, GraduationCap, Swords } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
@@ -322,14 +324,22 @@ export const MentalArithmeticPractice = () => {
       </div>
 
       <Tabs defaultValue="practice" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="practice" className="gap-1.5 text-xs sm:text-sm">
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">Mashq</span>
           </TabsTrigger>
+          <TabsTrigger value="tutorial" className="gap-1.5 text-xs sm:text-sm">
+            <GraduationCap className="h-4 w-4" />
+            <span className="hidden sm:inline">Tutorial</span>
+          </TabsTrigger>
           <TabsTrigger value="flashcard" className="gap-1.5 text-xs sm:text-sm">
             <Lightbulb className="h-4 w-4" />
             <span className="hidden sm:inline">Flash Card</span>
+          </TabsTrigger>
+          <TabsTrigger value="multiplayer" className="gap-1.5 text-xs sm:text-sm">
+            <Swords className="h-4 w-4" />
+            <span className="hidden sm:inline">Musobaqa</span>
           </TabsTrigger>
           <TabsTrigger value="leaderboard" className="gap-1.5 text-xs sm:text-sm">
             <Trophy className="h-4 w-4" />
@@ -481,8 +491,16 @@ export const MentalArithmeticPractice = () => {
           </Card>
         </TabsContent>
 
+        <TabsContent value="tutorial" className="mt-4">
+          <AbacusTutorial />
+        </TabsContent>
+
         <TabsContent value="flashcard" className="mt-4">
           <AbacusFlashCard onComplete={() => setRefreshHistory(prev => prev + 1)} />
+        </TabsContent>
+
+        <TabsContent value="multiplayer" className="mt-4">
+          <MultiplayerCompetition />
         </TabsContent>
 
         <TabsContent value="leaderboard" className="mt-4">
