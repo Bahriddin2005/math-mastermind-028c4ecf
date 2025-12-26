@@ -28,6 +28,8 @@ import {
   Timer,
   BarChart3,
   Zap,
+  Sparkles,
+  GraduationCap,
 } from 'lucide-react';
 
 interface Profile {
@@ -162,162 +164,200 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      <main className="flex-1 container px-4 py-6 md:py-8">
-        <div className="max-w-5xl mx-auto space-y-6">
-
-          {/* Welcome Hero */}
-          <WelcomeHero username={profile?.username} />
-
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            <StatsCard
-              icon={Trophy}
-              label="Jami ball"
-              value={profile?.total_score || 0}
-              iconBgColor="primary"
-              delay={100}
-            />
-            <StatsCard
-              icon={Target}
-              label="Yechilgan"
-              value={profile?.total_problems_solved || 0}
-              iconBgColor="accent"
-              delay={150}
-            />
-            <StatsCard
-              icon={Flame}
-              label="Eng uzun seriya"
-              value={profile?.best_streak || 0}
-              iconBgColor="warning"
-              delay={200}
-            />
-            <StatsCard
-              icon={TrendingUp}
-              label="Aniqlik"
-              value={`${stats.avgAccuracy}%`}
-              iconBgColor="success"
-              delay={250}
-            />
+      <main className="flex-1">
+        {/* Hero Section with gradient */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5">
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
           </div>
-
-          {/* Daily Goals & Achievements Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {user && profile && (
-              <DailyGoals
-                userId={user.id}
-                dailyGoal={profile.daily_goal}
-                todaySolved={todaySolved}
-                currentStreak={profile.current_streak}
-                onGoalChange={(newGoal) => setProfile({ ...profile, daily_goal: newGoal })}
-              />
-            )}
-            <Achievements
-              totalProblems={profile?.total_problems_solved || 0}
-              bestStreak={profile?.best_streak || 0}
-              totalScore={profile?.total_score || 0}
-              totalGames={stats.totalGames}
-            />
-          </div>
-
-          {/* Statistics Charts */}
-          <StatsCharts sessions={sessions} />
-
-          {/* Feature Cards */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-display font-bold text-foreground opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
-              Tez kirish
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FeatureCard
-                category="TRENING"
-                title="Mashqni boshlash"
-                description="Darajangizga mos modulni tanlab, mental arifmetika mashqlarini boshlang."
-                buttonText="Boshlash"
-                icon={Play}
-                iconBgColor="primary"
-                onClick={() => navigate('/train')}
-                delay={500}
-              />
-              <FeatureCard
-                category="VAQT REJIMI"
-                title="Vaqtga qarshi hisob"
-                description="Sanoq tezligini oshirish uchun dinamik timerli mashqlar."
-                buttonText="Sekundomer rejimi"
-                icon={Timer}
-                iconBgColor="accent"
-                onClick={() => navigate('/train')}
-                delay={550}
-              />
+          
+          <div className="container px-4 py-8 md:py-12 relative">
+            <div className="max-w-5xl mx-auto">
+              <WelcomeHero username={profile?.username} />
             </div>
           </div>
+        </div>
 
-          {/* Info Carousel */}
-          <InfoCarousel />
+        <div className="container px-4 py-6 md:py-8">
+          <div className="max-w-5xl mx-auto space-y-8">
 
-          {/* Tabs for History & Leaderboard */}
-          <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '600ms', animationFillMode: 'forwards' }}>
-            <TabsList className="grid w-full grid-cols-2 rounded-2xl p-1 bg-secondary/50">
-              <TabsTrigger
-                value="history"
-                className="flex items-center gap-2 rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-md"
-              >
-                <Zap className="h-4 w-4" />
-                Tarix
-              </TabsTrigger>
-              <TabsTrigger
-                value="leaderboard"
-                className="flex items-center gap-2 rounded-xl data-[state=active]:bg-card data-[state=active]:shadow-md"
-              >
-                <Trophy className="h-4 w-4" />
-                Reyting
-              </TabsTrigger>
-            </TabsList>
+            {/* Stats Overview - Enhanced Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <StatsCard
+                icon={Trophy}
+                label="Jami ball"
+                value={profile?.total_score || 0}
+                iconBgColor="primary"
+                delay={100}
+              />
+              <StatsCard
+                icon={Target}
+                label="Yechilgan"
+                value={profile?.total_problems_solved || 0}
+                iconBgColor="accent"
+                delay={150}
+              />
+              <StatsCard
+                icon={Flame}
+                label="Eng uzun seriya"
+                value={profile?.best_streak || 0}
+                iconBgColor="warning"
+                delay={200}
+              />
+              <StatsCard
+                icon={TrendingUp}
+                label="Aniqlik"
+                value={`${stats.avgAccuracy}%`}
+                iconBgColor="success"
+                delay={250}
+              />
+            </div>
 
-            <TabsContent value="history" className="mt-4">
-              <Card className="border-border/40 shadow-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-primary" />
-                    So'nggi o'yinlar
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {sessions.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center mx-auto mb-4">
-                        <Zap className="h-8 w-8 text-muted-foreground" />
+            {/* Daily Goals & Achievements Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {user && profile && (
+                <DailyGoals
+                  userId={user.id}
+                  dailyGoal={profile.daily_goal}
+                  todaySolved={todaySolved}
+                  currentStreak={profile.current_streak}
+                  onGoalChange={(newGoal) => setProfile({ ...profile, daily_goal: newGoal })}
+                />
+              )}
+              <Achievements
+                totalProblems={profile?.total_problems_solved || 0}
+                bestStreak={profile?.best_streak || 0}
+                totalScore={profile?.total_score || 0}
+                totalGames={stats.totalGames}
+              />
+            </div>
+
+            {/* Statistics Charts */}
+            <StatsCharts sessions={sessions} />
+
+            {/* Quick Access Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
+                <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-display font-bold text-foreground">Tez kirish</h2>
+                  <p className="text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FeatureCard
+                  category="TRENING"
+                  title="Mashqni boshlash"
+                  description="Darajangizga mos modulni tanlab, mental arifmetika mashqlarini boshlang."
+                  buttonText="Boshlash"
+                  icon={Play}
+                  iconBgColor="primary"
+                  onClick={() => navigate('/train')}
+                  delay={500}
+                />
+                <FeatureCard
+                  category="VAQT REJIMI"
+                  title="Vaqtga qarshi hisob"
+                  description="Sanoq tezligini oshirish uchun dinamik timerli mashqlar."
+                  buttonText="Sekundomer rejimi"
+                  icon={Timer}
+                  iconBgColor="accent"
+                  onClick={() => navigate('/train')}
+                  delay={550}
+                />
+                <FeatureCard
+                  category="VIDEO DARSLAR"
+                  title="O'rganishni boshlash"
+                  description="Professional video darslar bilan mental arifmetikani o'rganing."
+                  buttonText="Darslarni ko'rish"
+                  icon={GraduationCap}
+                  iconBgColor="success"
+                  onClick={() => navigate('/courses')}
+                  delay={600}
+                />
+              </div>
+            </div>
+
+            {/* Info Carousel */}
+            <InfoCarousel />
+
+            {/* Tabs for History & Leaderboard - Enhanced */}
+            <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '650ms', animationFillMode: 'forwards' }}>
+              <TabsList className="grid w-full grid-cols-2 rounded-2xl p-1.5 bg-secondary/60 backdrop-blur-sm">
+                <TabsTrigger
+                  value="history"
+                  className="flex items-center gap-2 rounded-xl font-semibold data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all"
+                >
+                  <Zap className="h-4 w-4" />
+                  Tarix
+                </TabsTrigger>
+                <TabsTrigger
+                  value="leaderboard"
+                  className="flex items-center gap-2 rounded-xl font-semibold data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all"
+                >
+                  <Trophy className="h-4 w-4" />
+                  Reyting
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="history" className="mt-6">
+                <Card className="border-border/40 shadow-md overflow-hidden">
+                  <CardHeader className="pb-4 bg-gradient-to-r from-secondary/50 to-transparent">
+                    <CardTitle className="text-lg flex items-center gap-3">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <BarChart3 className="h-5 w-5 text-primary" />
                       </div>
-                      <p className="text-muted-foreground mb-4">
-                        Hali o'yin o'ynalmagan
-                      </p>
-                      <Button variant="default" onClick={() => navigate('/train')}>
-                        <Play className="h-4 w-4 mr-2" />
-                        Birinchi o'yinni boshlash
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                      {sessions.slice(0, 10).map((session, index) => (
-                        <GameHistoryItem
-                          key={session.id}
-                          section={session.section}
-                          correct={session.correct}
-                          incorrect={session.incorrect}
-                          score={session.score}
-                          createdAt={session.created_at}
-                          delay={index * 50}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                      So'nggi o'yinlar
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    {sessions.length === 0 ? (
+                      <div className="text-center py-16">
+                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center mx-auto mb-6">
+                          <Zap className="h-10 w-10 text-muted-foreground" />
+                        </div>
+                        <h3 className="font-display font-bold text-lg mb-2">Hali o'yin o'ynalmagan</h3>
+                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                          Birinchi mashqingizni yakunlang va natijalaringizni bu yerda ko'ring
+                        </p>
+                        <Button 
+                          variant="default" 
+                          size="lg"
+                          onClick={() => navigate('/train')}
+                          className="gap-2"
+                        >
+                          <Play className="h-4 w-4" />
+                          Birinchi o'yinni boshlash
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2">
+                        {sessions.slice(0, 10).map((session, index) => (
+                          <GameHistoryItem
+                            key={session.id}
+                            section={session.section}
+                            correct={session.correct}
+                            incorrect={session.incorrect}
+                            score={session.score}
+                            createdAt={session.created_at}
+                            delay={index * 50}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
-            <TabsContent value="leaderboard" className="mt-4">
-              <Leaderboard currentUserId={user?.id} />
-            </TabsContent>
-          </Tabs>
+              <TabsContent value="leaderboard" className="mt-6">
+                <Leaderboard currentUserId={user?.id} />
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </main>
       <Footer />
