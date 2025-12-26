@@ -138,7 +138,7 @@ export const MentalArithmeticPractice = () => {
   // Sozlamalar
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
   const [formulaType, setFormulaType] = useState<FormulaType>('basic');
-  const [customSpeed, setCustomSpeed] = useState(1000); // ms
+  const [customSpeed, setCustomSpeed] = useState(500); // ms - default 0.5 sekund
   const [customCount, setCustomCount] = useState(5); // sonlar soni
   const [showAbacus, setShowAbacus] = useState(true);
   const [showSettings, setShowSettings] = useState(true);
