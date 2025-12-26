@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +31,13 @@ import {
   RefreshCw,
   Search,
   FolderOpen,
-  HardDrive
+  HardDrive,
+  ChevronDown,
+  ChevronRight,
+  AlertTriangle,
+  CheckSquare,
+  Square,
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface StorageFile {
@@ -38,6 +50,14 @@ interface StorageFile {
 
 interface FileManagerProps {
   isAdmin: boolean;
+}
+
+interface FolderGroup {
+  name: string;
+  displayName: string;
+  files: StorageFile[];
+  totalSize: number;
+  isOpen: boolean;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -54,17 +74,32 @@ const getFileIcon = (mimetype: string) => {
   return <FileIcon className="h-5 w-5 text-muted-foreground" />;
 };
 
+const FOLDER_NAMES: Record<string, string> = {
+  'videos': 'Videolar',
+  'thumbnails': 'Kurs rasmlari',
+  'lesson-thumbnails': 'Dars rasmlari',
+  'root': 'Boshqa fayllar',
+};
+
 export const FileManager = ({ isAdmin }: FileManagerProps) => {
   const [files, setFiles] = useState<StorageFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [deleteFile, setDeleteFile] = useState<StorageFile | null>(null);
+  const [deleteFiles, setDeleteFiles] = useState<StorageFile[]>([]);
   const [deleting, setDeleting] = useState(false);
   const [totalSize, setTotalSize] = useState(0);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [openFolders, setOpenFolders] = useState<Set<string>>(new Set(['videos', 'thumbnails', 'lesson-thumbnails', 'root']));
+  
+  // Orphan detection
+  const [usedUrls, setUsedUrls] = useState<Set<string>>(new Set());
+  const [showOrphansOnly, setShowOrphansOnly] = useState(false);
+  const [loadingOrphans, setLoadingOrphans] = useState(false);
 
   useEffect(() => {
     if (isAdmin) {
       fetchFiles();
+      fetchUsedUrls();
     }
   }, [isAdmin]);
 
@@ -80,7 +115,6 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
 
       if (error) throw error;
 
-      // Fetch files from subfolders too
       const folders = ['videos', 'thumbnails', 'lesson-thumbnails'];
       const allFiles: StorageFile[] = [];
 
@@ -104,7 +138,6 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
         }
       }
 
-      // Add root files
       if (data) {
         data.forEach(file => {
           if (!folders.includes(file.name) && file.name !== '.emptyFolderPlaceholder') {
@@ -123,34 +156,156 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteFile) return;
-
-    setDeleting(true);
+  const fetchUsedUrls = async () => {
+    setLoadingOrphans(true);
     try {
-      const { error } = await supabase.storage
-        .from('course-videos')
-        .remove([deleteFile.name]);
+      const [coursesRes, lessonsRes] = await Promise.all([
+        supabase.from('courses').select('thumbnail_url'),
+        supabase.from('lessons').select('video_url, thumbnail_url'),
+      ]);
 
-      if (error) throw error;
+      const urls = new Set<string>();
 
-      setFiles(prev => prev.filter(f => f.id !== deleteFile.id));
-      toast.success("Fayl o'chirildi");
+      coursesRes.data?.forEach(c => {
+        if (c.thumbnail_url) urls.add(c.thumbnail_url);
+      });
+
+      lessonsRes.data?.forEach(l => {
+        if (l.video_url) urls.add(l.video_url);
+        if (l.thumbnail_url) urls.add(l.thumbnail_url);
+      });
+
+      setUsedUrls(urls);
     } catch (error) {
-      console.error(error);
-      toast.error("Faylni o'chirishda xatolik");
+      console.error('Error fetching used URLs:', error);
     } finally {
-      setDeleting(false);
-      setDeleteFile(null);
+      setLoadingOrphans(false);
     }
   };
 
-  const filteredFiles = files.filter(file => 
-    file.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getFilePublicUrl = (fileName: string): string => {
+    const { data } = supabase.storage.from('course-videos').getPublicUrl(fileName);
+    return data.publicUrl;
+  };
+
+  const isOrphan = (file: StorageFile): boolean => {
+    const publicUrl = getFilePublicUrl(file.name);
+    return !usedUrls.has(publicUrl);
+  };
+
+  const handleDelete = async () => {
+    if (deleteFiles.length === 0) return;
+
+    setDeleting(true);
+    try {
+      const fileNames = deleteFiles.map(f => f.name);
+      const { error } = await supabase.storage
+        .from('course-videos')
+        .remove(fileNames);
+
+      if (error) throw error;
+
+      const deletedIds = new Set(deleteFiles.map(f => f.id));
+      setFiles(prev => prev.filter(f => !deletedIds.has(f.id)));
+      setSelectedFiles(new Set());
+      toast.success(`${deleteFiles.length} ta fayl o'chirildi`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Fayllarni o'chirishda xatolik");
+    } finally {
+      setDeleting(false);
+      setDeleteFiles([]);
+    }
+  };
+
+  const handleSelectAll = (folder: string, filesInFolder: StorageFile[]) => {
+    const allSelected = filesInFolder.every(f => selectedFiles.has(f.id));
+    const newSelected = new Set(selectedFiles);
+
+    if (allSelected) {
+      filesInFolder.forEach(f => newSelected.delete(f.id));
+    } else {
+      filesInFolder.forEach(f => newSelected.add(f.id));
+    }
+
+    setSelectedFiles(newSelected);
+  };
+
+  const handleSelectFile = (fileId: string) => {
+    const newSelected = new Set(selectedFiles);
+    if (newSelected.has(fileId)) {
+      newSelected.delete(fileId);
+    } else {
+      newSelected.add(fileId);
+    }
+    setSelectedFiles(newSelected);
+  };
+
+  const toggleFolder = (folder: string) => {
+    const newOpen = new Set(openFolders);
+    if (newOpen.has(folder)) {
+      newOpen.delete(folder);
+    } else {
+      newOpen.add(folder);
+    }
+    setOpenFolders(newOpen);
+  };
+
+  const deleteSelectedFiles = () => {
+    const filesToDelete = files.filter(f => selectedFiles.has(f.id));
+    setDeleteFiles(filesToDelete);
+  };
+
+  const deleteOrphanFiles = () => {
+    const orphanFiles = files.filter(f => isOrphan(f));
+    if (orphanFiles.length === 0) {
+      toast.info("Ishlatilmayotgan fayllar topilmadi");
+      return;
+    }
+    setDeleteFiles(orphanFiles);
+  };
+
+  // Group files by folder
+  const folderGroups = useMemo((): FolderGroup[] => {
+    const groups: Record<string, StorageFile[]> = {
+      'videos': [],
+      'thumbnails': [],
+      'lesson-thumbnails': [],
+      'root': [],
+    };
+
+    const filteredFiles = files.filter(file => {
+      const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesOrphan = !showOrphansOnly || isOrphan(file);
+      return matchesSearch && matchesOrphan;
+    });
+
+    filteredFiles.forEach(file => {
+      if (file.name.startsWith('videos/')) {
+        groups['videos'].push(file);
+      } else if (file.name.startsWith('thumbnails/')) {
+        groups['thumbnails'].push(file);
+      } else if (file.name.startsWith('lesson-thumbnails/')) {
+        groups['lesson-thumbnails'].push(file);
+      } else {
+        groups['root'].push(file);
+      }
+    });
+
+    return Object.entries(groups)
+      .filter(([_, files]) => files.length > 0)
+      .map(([name, files]) => ({
+        name,
+        displayName: FOLDER_NAMES[name] || name,
+        files,
+        totalSize: files.reduce((acc, f) => acc + (f.metadata?.size || 0), 0),
+        isOpen: openFolders.has(name),
+      }));
+  }, [files, searchQuery, showOrphansOnly, openFolders, usedUrls]);
 
   const videoCount = files.filter(f => f.metadata?.mimetype?.startsWith('video/')).length;
   const imageCount = files.filter(f => f.metadata?.mimetype?.startsWith('image/')).length;
+  const orphanCount = files.filter(f => isOrphan(f)).length;
 
   if (loading) {
     return (
@@ -167,14 +322,26 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
           <h3 className="text-lg font-semibold">Fayl boshqaruvi</h3>
           <p className="text-sm text-muted-foreground">Yuklangan video va rasmlarni boshqaring</p>
         </div>
-        <Button variant="outline" onClick={fetchFiles} className="gap-2">
-          <RefreshCw className="h-4 w-4" />
-          Yangilash
-        </Button>
+        <div className="flex gap-2">
+          {selectedFiles.size > 0 && (
+            <Button 
+              variant="destructive" 
+              onClick={deleteSelectedFiles}
+              className="gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              {selectedFiles.size} ta o'chirish
+            </Button>
+          )}
+          <Button variant="outline" onClick={fetchFiles} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Yangilash
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -219,7 +386,40 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
             </div>
           </CardContent>
         </Card>
+        <Card 
+          className={`cursor-pointer transition-colors ${showOrphansOnly ? 'ring-2 ring-destructive' : ''}`}
+          onClick={() => setShowOrphansOnly(!showOrphansOnly)}
+        >
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold">{loadingOrphans ? '...' : orphanCount}</p>
+              <p className="text-xs text-muted-foreground">Ishlatilmayotgan</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Orphan cleanup button */}
+      {orphanCount > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <div className="flex-1">
+            <p className="font-medium text-destructive">{orphanCount} ta ishlatilmayotgan fayl topildi</p>
+            <p className="text-sm text-muted-foreground">Bu fayllar hech qaysi kurs yoki darsda ishlatilmayapti</p>
+          </div>
+          <Button 
+            variant="destructive" 
+            onClick={deleteOrphanFiles}
+            className="gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            Hammasini tozalash
+          </Button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative">
@@ -232,63 +432,154 @@ export const FileManager = ({ isAdmin }: FileManagerProps) => {
         />
       </div>
 
-      {/* File List */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Fayllar ro'yxati</CardTitle>
-          <CardDescription>{filteredFiles.length} ta fayl topildi</CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          <ScrollArea className="h-[400px]">
-            {filteredFiles.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>Fayllar topilmadi</p>
-              </div>
-            ) : (
-              <div className="divide-y">
-                {filteredFiles.map((file) => (
-                  <div 
-                    key={file.id}
-                    className="flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {getFileIcon(file.metadata?.mimetype)}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{file.name}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <Badge variant="outline" className="text-xs">
-                            {formatFileSize(file.metadata?.size || 0)}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(file.created_at).toLocaleDateString('uz-UZ')}
-                          </span>
+      {/* File List by Folders */}
+      <div className="space-y-4">
+        {folderGroups.length === 0 ? (
+          <Card>
+            <CardContent className="p-8 text-center text-muted-foreground">
+              <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p>Fayllar topilmadi</p>
+            </CardContent>
+          </Card>
+        ) : (
+          folderGroups.map((group) => (
+            <Card key={group.name}>
+              <Collapsible open={group.isOpen} onOpenChange={() => toggleFolder(group.name)}>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover:bg-secondary/50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {group.isOpen ? (
+                          <ChevronDown className="h-5 w-5" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5" />
+                        )}
+                        <FolderOpen className="h-5 w-5 text-primary" />
+                        <div>
+                          <CardTitle className="text-base">{group.displayName}</CardTitle>
+                          <CardDescription>
+                            {group.files.length} ta fayl • {formatFileSize(group.totalSize)}
+                          </CardDescription>
                         </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectAll(group.name, group.files);
+                        }}
+                      >
+                        {group.files.every(f => selectedFiles.has(f.id)) ? (
+                          <CheckSquare className="h-4 w-4" />
+                        ) : (
+                          <Square className="h-4 w-4" />
+                        )}
+                        Barchasini tanlash
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteFile(file)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="p-0 border-t">
+                    <ScrollArea className="max-h-[400px]">
+                      <div className="divide-y">
+                        {group.files.map((file) => {
+                          const isImage = file.metadata?.mimetype?.startsWith('image/');
+                          const isVideo = file.metadata?.mimetype?.startsWith('video/');
+                          const fileUrl = getFilePublicUrl(file.name);
+                          const orphan = isOrphan(file);
+
+                          return (
+                            <div 
+                              key={file.id}
+                              className={`flex items-center gap-3 p-4 hover:bg-secondary/50 transition-colors ${
+                                orphan ? 'bg-destructive/5' : ''
+                              }`}
+                            >
+                              <Checkbox
+                                checked={selectedFiles.has(file.id)}
+                                onCheckedChange={() => handleSelectFile(file.id)}
+                              />
+                              
+                              {/* Preview / Icon */}
+                              <div className="h-12 w-12 rounded-lg overflow-hidden bg-secondary flex items-center justify-center flex-shrink-0">
+                                {isImage ? (
+                                  <img 
+                                    src={fileUrl} 
+                                    alt={file.name}
+                                    className="h-full w-full object-cover"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                      (e.target as HTMLImageElement).parentElement!.innerHTML = '<span class="text-muted-foreground"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></span>';
+                                    }}
+                                  />
+                                ) : isVideo ? (
+                                  <FileVideo className="h-6 w-6 text-primary" />
+                                ) : (
+                                  <FileIcon className="h-6 w-6 text-muted-foreground" />
+                                )}
+                              </div>
+
+                              {/* File info */}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm truncate">{file.name.split('/').pop()}</p>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  <Badge variant="outline" className="text-xs">
+                                    {formatFileSize(file.metadata?.size || 0)}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(file.created_at).toLocaleDateString('uz-UZ')}
+                                  </span>
+                                  {file.metadata?.mimetype && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {file.metadata.mimetype}
+                                    </span>
+                                  )}
+                                  {orphan && (
+                                    <Badge variant="destructive" className="text-xs">
+                                      Ishlatilmayapti
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => setDeleteFiles([file])}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          ))
+        )}
+      </div>
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteFile} onOpenChange={() => setDeleteFile(null)}>
+      <AlertDialog open={deleteFiles.length > 0} onOpenChange={() => setDeleteFiles([])}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Faylni o'chirish</AlertDialogTitle>
+            <AlertDialogTitle>
+              {deleteFiles.length === 1 ? "Faylni o'chirish" : `${deleteFiles.length} ta faylni o'chirish`}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              "{deleteFile?.name}" faylini o'chirishni xohlaysizmi? Bu amalni qaytarib bo'lmaydi.
+              {deleteFiles.length === 1 
+                ? `"${deleteFiles[0]?.name}" faylini o'chirishni xohlaysizmi?`
+                : `${deleteFiles.length} ta faylni o'chirishni xohlaysizmi?`
+              }
+              <br />
+              Bu amalni qaytarib bo'lmaydi.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

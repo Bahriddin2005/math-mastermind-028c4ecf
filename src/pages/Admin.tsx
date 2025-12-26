@@ -56,7 +56,8 @@ import {
   Calculator,
   HelpCircle,
   MessageCircle,
-  FolderOpen
+  FolderOpen,
+  Upload
 } from 'lucide-react';
 
 interface ContactMessage {
