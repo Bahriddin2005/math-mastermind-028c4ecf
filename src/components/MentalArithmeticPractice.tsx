@@ -17,8 +17,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
 
-// Qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
-const RULES: Record<number, { add: number[]; subtract: number[] }> = {
+// Formulasiz qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
+const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
   1: { add: [1, 2, 3, 5, 6, 7, 8], subtract: [1] },
   2: { add: [1, 2, 5, 6, 7], subtract: [1, 2] },
@@ -29,6 +29,43 @@ const RULES: Record<number, { add: number[]; subtract: number[] }> = {
   7: { add: [1, 2], subtract: [1, 2, 5, 7] },
   8: { add: [1], subtract: [1, 2, 3, 5, 8] },
   9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+};
+
+// Kichik do'st +2/-2 formulasi
+const RULES_SMALL_FRIEND_2: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [], subtract: [] },
+  3: { add: [2], subtract: [] },
+  4: { add: [2], subtract: [] },
+  5: { add: [], subtract: [2] },
+  6: { add: [], subtract: [2] },
+  7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// Kichik do'st +1/-1 formulasi
+const RULES_SMALL_FRIEND_1: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [], subtract: [] },
+  3: { add: [], subtract: [] },
+  4: { add: [1], subtract: [] },
+  5: { add: [], subtract: [1] },
+  6: { add: [], subtract: [] },
+  7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// Formula turlari
+type FormulaType = 'basic' | 'small_friend_1' | 'small_friend_2';
+
+const FORMULA_CONFIG = {
+  basic: { label: "Formulasiz", rules: RULES_BASIC },
+  small_friend_1: { label: "Kichik do'st +1/-1", rules: RULES_SMALL_FRIEND_1 },
+  small_friend_2: { label: "Kichik do'st +2/-2", rules: RULES_SMALL_FRIEND_2 },
 };
 
 // Qiyinlik darajalari
@@ -54,6 +91,7 @@ export const MentalArithmeticPractice = () => {
   
   // Sozlamalar
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
+  const [formulaType, setFormulaType] = useState<FormulaType>('basic');
   const [showAbacus, setShowAbacus] = useState(true);
   const [showSettings, setShowSettings] = useState(true);
   const [abacusColumns, setAbacusColumns] = useState(1);
@@ -124,7 +162,8 @@ export const MentalArithmeticPractice = () => {
   // Keyingi sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
-    const rules = RULES[currentResult];
+    const selectedRules = FORMULA_CONFIG[formulaType].rules;
+    const rules = selectedRules[currentResult];
     
     if (!rules) return null;
 
@@ -148,8 +187,9 @@ export const MentalArithmeticPractice = () => {
       runningResultRef.current -= randomOp.number;
     }
 
+    // Faqat sonni qaytarish (amal ko'rsatilmaydi)
     return randomOp.number;
-  }, []);
+  }, [formulaType]);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
@@ -367,7 +407,20 @@ export const MentalArithmeticPractice = () => {
                     <Settings2 className="h-4 w-4" />
                     Sozlamalar
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label>Formula turi</Label>
+                      <Select value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="basic">Formulasiz</SelectItem>
+                          <SelectItem value="small_friend_1">Kichik do'st +1/-1</SelectItem>
+                          <SelectItem value="small_friend_2">Kichik do'st +2/-2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="space-y-2">
                       <Label>Qiyinlik darajasi</Label>
                       <Select value={difficulty} onValueChange={(v) => setDifficulty(v as DifficultyLevel)}>
