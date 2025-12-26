@@ -4,10 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AbacusDisplay } from './AbacusDisplay';
-import { Play, RotateCcw, Check, Settings2, Zap } from 'lucide-react';
+import { MentalArithmeticHistory } from './MentalArithmeticHistory';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
 
 // Qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
@@ -43,11 +46,13 @@ interface PracticeStats {
 
 export const MentalArithmeticPractice = () => {
   const { user } = useAuth();
+  const { playSound } = useSound();
   
   // Sozlamalar
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
   const [showAbacus, setShowAbacus] = useState(true);
   const [showSettings, setShowSettings] = useState(true);
+  const [abacusColumns, setAbacusColumns] = useState(1);
   
   // O'yin holati
   const [isRunning, setIsRunning] = useState(false);
@@ -58,6 +63,7 @@ export const MentalArithmeticPractice = () => {
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(0);
+  const [refreshHistory, setRefreshHistory] = useState(0);
   
   // Statistika
   const [stats, setStats] = useState<PracticeStats>({
@@ -104,7 +110,12 @@ export const MentalArithmeticPractice = () => {
     };
     
     loadStats();
-  }, [user]);
+  }, [user, refreshHistory]);
+
+  // Boncuk harakati ovozi
+  const handleBeadMove = useCallback(() => {
+    playSound('bead');
+  }, [playSound]);
 
   // Keyingi sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
@@ -144,6 +155,8 @@ export const MentalArithmeticPractice = () => {
     countRef.current = 1;
     startTimeRef.current = Date.now();
     
+    playSound('start');
+    
     setCurrentNumber(initialResult);
     setDisplayedNumbers([initialResult]);
     setIsRunning(true);
@@ -161,6 +174,7 @@ export const MentalArithmeticPractice = () => {
           clearInterval(intervalRef.current);
           intervalRef.current = null;
         }
+        playSound('complete');
         setIsRunning(false);
         setIsFinished(true);
         setCurrentNumber(null);
@@ -173,7 +187,7 @@ export const MentalArithmeticPractice = () => {
         setDisplayedNumbers(prev => [...prev, nextNum]);
       }
     }, config.speed);
-  }, [difficulty, generateNextNumber]);
+  }, [difficulty, generateNextNumber, playSound]);
 
   // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
@@ -184,6 +198,8 @@ export const MentalArithmeticPractice = () => {
     
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     setShowResult(true);
+    
+    playSound(isCorrect ? 'correct' : 'incorrect');
     
     const newStreak = isCorrect ? currentStreak + 1 : 0;
     setCurrentStreak(newStreak);
@@ -231,6 +247,9 @@ export const MentalArithmeticPractice = () => {
             })
             .eq('user_id', user.id);
         }
+        
+        // Tarixni yangilash
+        setRefreshHistory(prev => prev + 1);
       } catch (error) {
         console.error('Error saving session:', error);
       }
@@ -239,7 +258,7 @@ export const MentalArithmeticPractice = () => {
     if (isCorrect) {
       toast.success("To'g'ri javob! 🎉", { duration: 2000 });
     }
-  }, [userAnswer, user, difficulty, currentStreak]);
+  }, [userAnswer, user, difficulty, currentStreak, playSound]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
@@ -300,121 +319,162 @@ export const MentalArithmeticPractice = () => {
         </Card>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 pb-4">
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            Mental Arifmetika Mashqi
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
-          {/* Sozlamalar */}
-          {showSettings && !isRunning && !isFinished && (
-            <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Settings2 className="h-4 w-4" />
-                Sozlamalar
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Qiyinlik darajasi</Label>
-                  <Select value={difficulty} onValueChange={(v) => setDifficulty(v as DifficultyLevel)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="easy">Oson (3 son, 1.5s)</SelectItem>
-                      <SelectItem value="medium">O'rta (5 son, 1s)</SelectItem>
-                      <SelectItem value="hard">Qiyin (10 son, 0.7s)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Abacus ko'rsatish</Label>
-                  <Select value={showAbacus ? 'yes' : 'no'} onValueChange={(v) => setShowAbacus(v === 'yes')}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="yes">Ha</SelectItem>
-                      <SelectItem value="no">Yo'q</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          )}
+      <Tabs defaultValue="practice" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="practice" className="gap-2">
+            <Zap className="h-4 w-4" />
+            Mashq
+          </TabsTrigger>
+          <TabsTrigger value="history" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Tarix
+          </TabsTrigger>
+        </TabsList>
 
-          {/* O'yin maydoni */}
-          <div className="flex flex-col items-center justify-center min-h-[300px]">
-            {!isRunning && !isFinished && (
-              <Button onClick={startGame} size="lg" className="gap-2">
-                <Play className="h-5 w-5" />
-                Boshlash
-              </Button>
-            )}
+        <TabsContent value="practice" className="mt-4">
+          <Card className="overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-primary/10 to-accent/10 pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5 text-primary" />
+                Mental Arifmetika Mashqi
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {/* Sozlamalar */}
+              {showSettings && !isRunning && !isFinished && (
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Settings2 className="h-4 w-4" />
+                    Sozlamalar
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Qiyinlik darajasi</Label>
+                      <Select value={difficulty} onValueChange={(v) => setDifficulty(v as DifficultyLevel)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="easy">Oson (3 son, 1.5s)</SelectItem>
+                          <SelectItem value="medium">O'rta (5 son, 1s)</SelectItem>
+                          <SelectItem value="hard">Qiyin (10 son, 0.7s)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Abacus ko'rsatish</Label>
+                      <Select value={showAbacus ? 'yes' : 'no'} onValueChange={(v) => setShowAbacus(v === 'yes')}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="yes">Ha</SelectItem>
+                          <SelectItem value="no">Yo'q</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Abacus ustunlari</Label>
+                      <Select value={String(abacusColumns)} onValueChange={(v) => setAbacusColumns(Number(v))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1">1 (Birliklar)</SelectItem>
+                          <SelectItem value="2">2 (O'nliklar)</SelectItem>
+                          <SelectItem value="3">3 (Yuzliklar)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-            {isRunning && currentNumber !== null && (
-              <div className="text-center">
-                {showAbacus ? (
-                  <AbacusDisplay number={currentNumber} size="lg" />
-                ) : (
-                  <div className="text-8xl font-bold text-primary animate-fade-in" key={displayedNumbers.length}>
-                    {currentNumber}
+              {/* O'yin maydoni */}
+              <div className="flex flex-col items-center justify-center min-h-[350px]">
+                {!isRunning && !isFinished && (
+                  <Button onClick={startGame} size="lg" className="gap-2">
+                    <Play className="h-5 w-5" />
+                    Boshlash
+                  </Button>
+                )}
+
+                {isRunning && currentNumber !== null && (
+                  <div className="text-center">
+                    {showAbacus ? (
+                      <AbacusDisplay 
+                        number={currentNumber} 
+                        size="lg" 
+                        columns={abacusColumns}
+                        onBeadMove={handleBeadMove}
+                      />
+                    ) : (
+                      <div className="text-8xl font-bold text-primary animate-fade-in" key={displayedNumbers.length}>
+                        {currentNumber}
+                      </div>
+                    )}
+                    <div className="mt-4 text-sm text-muted-foreground">
+                      {countRef.current} / {config.count}
+                    </div>
                   </div>
                 )}
-                <div className="mt-4 text-sm text-muted-foreground">
-                  {countRef.current} / {config.count}
-                </div>
-              </div>
-            )}
 
-            {isFinished && !showResult && (
-              <div className="space-y-6 text-center w-full max-w-xs">
-                <p className="text-lg text-muted-foreground">Natijani kiriting:</p>
-                <Input
-                  type="number"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Javob"
-                  className="text-center text-2xl h-16"
-                  autoFocus
-                />
-                <Button onClick={checkAnswer} disabled={!userAnswer} className="gap-2 w-full">
-                  <Check className="h-4 w-4" />
-                  Tekshirish
-                </Button>
-              </div>
-            )}
-
-            {showResult && (
-              <div className="space-y-4 text-center">
-                {showAbacus ? (
-                  <AbacusDisplay number={runningResultRef.current} size="md" />
-                ) : (
-                  <div className={`text-6xl font-bold ${feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                    {feedback === 'correct' ? '✓' : '✗'}
+                {isFinished && !showResult && (
+                  <div className="space-y-6 text-center w-full max-w-xs">
+                    <p className="text-lg text-muted-foreground">Natijani kiriting:</p>
+                    <Input
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Javob"
+                      className="text-center text-2xl h-16"
+                      autoFocus
+                    />
+                    <Button onClick={checkAnswer} disabled={!userAnswer} className="gap-2 w-full">
+                      <Check className="h-4 w-4" />
+                      Tekshirish
+                    </Button>
                   </div>
                 )}
-                <p className="text-lg">
-                  {feedback === 'correct' 
-                    ? "To'g'ri!" 
-                    : `Noto'g'ri. To'g'ri javob: ${runningResultRef.current}`
-                  }
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Sonlar: {displayedNumbers.join(' → ')}
-                </p>
-                <Button onClick={resetGame} variant="outline" className="gap-2">
-                  <RotateCcw className="h-4 w-4" />
-                  Qayta boshlash
-                </Button>
+
+                {showResult && (
+                  <div className="space-y-4 text-center">
+                    {showAbacus ? (
+                      <AbacusDisplay 
+                        number={runningResultRef.current} 
+                        size="md" 
+                        columns={abacusColumns}
+                      />
+                    ) : (
+                      <div className={`text-6xl font-bold ${feedback === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
+                        {feedback === 'correct' ? '✓' : '✗'}
+                      </div>
+                    )}
+                    <p className="text-lg">
+                      {feedback === 'correct' 
+                        ? "To'g'ri!" 
+                        : `Noto'g'ri. To'g'ri javob: ${runningResultRef.current}`
+                      }
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Sonlar: {displayedNumbers.join(' → ')}
+                    </p>
+                    <Button onClick={resetGame} variant="outline" className="gap-2">
+                      <RotateCcw className="h-4 w-4" />
+                      Qayta boshlash
+                    </Button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-4">
+          <MentalArithmeticHistory refreshTrigger={refreshHistory} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

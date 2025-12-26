@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start';
+type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh';
 
 // Web Audio API based sound generator
 const createAudioContext = () => {
@@ -95,6 +95,28 @@ export const useSound = () => {
           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
           oscillator.start(now);
           oscillator.stop(now + 0.2);
+          break;
+
+        case 'bead':
+          // Wooden bead click sound - low frequency
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(180, now);
+          oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+          gainNode.gain.setValueAtTime(0.15, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+          oscillator.start(now);
+          oscillator.stop(now + 0.1);
+          break;
+
+        case 'beadHigh':
+          // Higher pitch bead for top bead (5 value)
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(350, now);
+          oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+          gainNode.gain.setValueAtTime(0.12, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+          oscillator.start(now);
+          oscillator.stop(now + 0.12);
           break;
       }
     } catch (e) {
