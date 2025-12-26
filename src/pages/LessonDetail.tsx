@@ -1,29 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { LessonQA } from '@/components/LessonQA';
 import { LessonPractice } from '@/components/LessonPractice';
+import { VideoPlayer } from '@/components/VideoPlayer';
 import { useSound } from '@/hooks/useSound';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { 
   ArrowLeft, 
   ArrowRight,
-  Play, 
   CheckCircle2,
   Clock,
   MessageCircle,
   Target,
   Loader2,
   GraduationCap,
-  Sparkles,
-  Video
+  Sparkles
 } from 'lucide-react';
 
 interface PracticeConfig {
@@ -53,7 +52,6 @@ const LessonDetail = () => {
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { user } = useAuth();
-  const videoRef = useRef<HTMLVideoElement>(null);
   
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [course, setCourse] = useState<Course | null>(null);
@@ -239,26 +237,15 @@ const LessonDetail = () => {
           <div className="max-w-5xl mx-auto space-y-8">
             {/* Video Player Section */}
             <div className="space-y-4">
-              <div className="relative aspect-video bg-card rounded-2xl overflow-hidden shadow-2xl border border-border/40">
-                {lesson.video_url ? (
-                  <video
-                    ref={videoRef}
-                    src={lesson.video_url}
-                    controls
-                    className="w-full h-full"
-                    onEnded={markAsCompleted}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-secondary/50">
-                    <div className="text-center">
-                      <div className="h-20 w-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-                        <Video className="h-10 w-10 text-muted-foreground" />
-                      </div>
-                      <p className="text-muted-foreground font-medium">Video hali yuklanmagan</p>
-                      <p className="text-sm text-muted-foreground/70 mt-1">Tez orada qo'shiladi</p>
-                    </div>
-                  </div>
-                )}
+              <div className="shadow-2xl border border-border/40 rounded-2xl overflow-hidden">
+                <VideoPlayer
+                  src={lesson.video_url}
+                  onEnded={markAsCompleted}
+                  onPrevious={prevLesson ? () => navigate(`/lessons/${prevLesson.id}`) : undefined}
+                  onNext={nextLesson ? () => navigate(`/lessons/${nextLesson.id}`) : undefined}
+                  hasPrevious={!!prevLesson}
+                  hasNext={!!nextLesson}
+                />
               </div>
 
               {/* Lesson Info */}

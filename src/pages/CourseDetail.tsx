@@ -35,6 +35,7 @@ interface Lesson {
   id: string;
   title: string;
   description: string;
+  thumbnail_url?: string | null;
   duration_minutes: number;
   order_index: number;
   completed?: boolean;
@@ -266,30 +267,49 @@ const CourseDetail = () => {
                     style={{ animationDelay: `${500 + index * 80}ms`, animationFillMode: 'forwards' }}
                     onClick={() => !isLocked && navigate(`/lessons/${lesson.id}`)}
                   >
-                    <CardContent className="p-5 flex items-center gap-5">
-                      {/* Number/Status indicator */}
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                        isCompleted 
-                          ? 'bg-success/10 text-success' 
-                          : isLocked 
-                            ? 'bg-muted text-muted-foreground'
-                            : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
-                      }`}>
-                        {isCompleted ? (
-                          <CheckCircle2 className="h-7 w-7" />
-                        ) : isLocked ? (
-                          <Lock className="h-6 w-6" />
-                        ) : (
-                          <span className="text-xl font-display font-bold">{index + 1}</span>
-                        )}
-                      </div>
+                    <CardContent className="p-4 flex items-center gap-4">
+                      {/* Thumbnail */}
+                      {lesson.thumbnail_url ? (
+                        <img 
+                          src={lesson.thumbnail_url} 
+                          alt={lesson.title}
+                          className="w-24 h-16 md:w-32 md:h-20 object-cover rounded-lg flex-shrink-0"
+                        />
+                      ) : (
+                        <div className={`w-24 h-16 md:w-32 md:h-20 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
+                          isCompleted 
+                            ? 'bg-success/10 text-success' 
+                            : isLocked 
+                              ? 'bg-muted text-muted-foreground'
+                              : 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground'
+                        }`}>
+                          {isCompleted ? (
+                            <CheckCircle2 className="h-8 w-8" />
+                          ) : isLocked ? (
+                            <Lock className="h-6 w-6" />
+                          ) : (
+                            <span className="text-2xl font-display font-bold">{index + 1}</span>
+                          )}
+                        </div>
+                      )}
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-display font-bold text-lg truncate group-hover:text-primary transition-colors">
-                          {lesson.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate mt-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          {lesson.thumbnail_url && (
+                            <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                              isCompleted 
+                                ? 'bg-success/10 text-success' 
+                                : 'bg-primary/10 text-primary'
+                            }`}>
+                              {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : index + 1}
+                            </span>
+                          )}
+                          <h3 className="font-display font-bold text-lg truncate group-hover:text-primary transition-colors">
+                            {lesson.title}
+                          </h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground truncate">
                           {lesson.description}
                         </p>
                       </div>
