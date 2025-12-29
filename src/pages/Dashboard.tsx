@@ -12,6 +12,7 @@ import { StatsCharts } from '@/components/StatsCharts';
 import { GameHistoryItem } from '@/components/GameHistoryItem';
 import { Leaderboard } from '@/components/Leaderboard';
 import { InfoCarousel } from '@/components/InfoCarousel';
+import { TestimonialForm } from '@/components/TestimonialForm';
 import { GuestDashboard } from '@/components/GuestDashboard';
 import { Footer } from '@/components/Footer';
 import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice';
@@ -298,8 +299,13 @@ const Dashboard = () => {
               <MentalArithmeticPractice />
             </div>
 
-            {/* Info Carousel */}
-            <InfoCarousel />
+            {/* Info Carousel & Testimonial Form */}
+            <div className="space-y-4">
+              <InfoCarousel />
+              <div className="flex justify-center opacity-0 animate-slide-up" style={{ animationDelay: '620ms', animationFillMode: 'forwards' }}>
+                <TestimonialForm />
+              </div>
+            </div>
 
             {/* Tabs for History & Leaderboard - Enhanced */}
             <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '650ms', animationFillMode: 'forwards' }}>

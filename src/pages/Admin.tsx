@@ -35,6 +35,7 @@ import { ChatHistoryManager } from '@/components/ChatHistoryManager';
 import { AdminUserCharts } from '@/components/AdminUserCharts';
 import { FileManager } from '@/components/FileManager';
 import { TestimonialsManager } from '@/components/TestimonialsManager';
+import { AdminReports } from '@/components/AdminReports';
 import { 
   Mail, 
   FileText, 
@@ -59,7 +60,8 @@ import {
   MessageCircle,
   FolderOpen,
   Upload,
-  Quote
+  Quote,
+  BarChart2
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -485,10 +487,14 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-7xl grid-cols-9">
+            <TabsList className="grid w-full max-w-7xl grid-cols-10">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex items-center gap-2">
+                <BarChart2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Hisobotlar</span>
               </TabsTrigger>
               <TabsTrigger value="courses" className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
@@ -583,6 +589,11 @@ const Admin = () => {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Reports Tab */}
+            <TabsContent value="reports">
+              <AdminReports />
             </TabsContent>
 
             {/* Courses Tab */}

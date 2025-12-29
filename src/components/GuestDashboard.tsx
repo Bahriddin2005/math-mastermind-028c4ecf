@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -10,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious
 } from './ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 import { 
   Play, 
   Timer, 
@@ -315,6 +316,13 @@ export const GuestDashboard = () => {
                 align: "start",
                 loop: true,
               }}
+              plugins={[
+                Autoplay({
+                  delay: 4000,
+                  stopOnInteraction: true,
+                  stopOnMouseEnter: true,
+                }),
+              ]}
               className="w-full"
             >
               <CarouselContent className="-ml-2 md:-ml-4">
