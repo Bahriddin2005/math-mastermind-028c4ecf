@@ -4,6 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from './ui/carousel';
+import { 
   Play, 
   Timer, 
   Trophy, 
@@ -289,7 +296,7 @@ export const GuestDashboard = () => {
         </div>
       </div>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section with Carousel */}
       {testimonials.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '480ms', animationFillMode: 'forwards' }}>
@@ -302,41 +309,50 @@ export const GuestDashboard = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
-            {testimonials.map((testimonial, index) => (
-              <Card 
-                key={testimonial.id} 
-                className="p-6 border-border/40 hover:shadow-lg transition-all bg-gradient-to-br from-card to-secondary/20"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center shrink-0">
-                    {testimonial.avatar_url ? (
-                      <img 
-                        src={testimonial.avatar_url} 
-                        alt={testimonial.name} 
-                        className="h-12 w-12 rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-6 w-6 text-primary" />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-display font-bold">{testimonial.name}</h4>
-                        <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {testimonials.map((testimonial) => (
+                  <CarouselItem key={testimonial.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Card className="p-6 border-border/40 hover:shadow-lg transition-all bg-gradient-to-br from-card to-secondary/20 h-full">
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center shrink-0">
+                            {testimonial.avatar_url ? (
+                              <img 
+                                src={testimonial.avatar_url} 
+                                alt={testimonial.name} 
+                                className="h-12 w-12 rounded-full object-cover"
+                              />
+                            ) : (
+                              <User className="h-6 w-6 text-primary" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-display font-bold truncate">{testimonial.name}</h4>
+                            <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-0.5 mb-3">
+                          {renderStars(testimonial.rating)}
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                          "{testimonial.content}"
+                        </p>
                       </div>
-                      <div className="flex gap-0.5">
-                        {renderStars(testimonial.rating)}
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      "{testimonial.content}"
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex -left-4" />
+              <CarouselNext className="hidden md:flex -right-4" />
+            </Carousel>
           </div>
         </div>
       )}

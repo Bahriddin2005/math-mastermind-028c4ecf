@@ -34,6 +34,7 @@ import { FAQManager } from '@/components/FAQManager';
 import { ChatHistoryManager } from '@/components/ChatHistoryManager';
 import { AdminUserCharts } from '@/components/AdminUserCharts';
 import { FileManager } from '@/components/FileManager';
+import { TestimonialsManager } from '@/components/TestimonialsManager';
 import { 
   Mail, 
   FileText, 
@@ -57,7 +58,8 @@ import {
   HelpCircle,
   MessageCircle,
   FolderOpen,
-  Upload
+  Upload,
+  Quote
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -483,7 +485,7 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-6xl grid-cols-8">
+            <TabsList className="grid w-full max-w-7xl grid-cols-9">
               <TabsTrigger value="users" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Foydalanuvchilar</span>
@@ -503,6 +505,10 @@ const Admin = () => {
               <TabsTrigger value="faq" className="flex items-center gap-2">
                 <HelpCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">FAQ</span>
+              </TabsTrigger>
+              <TabsTrigger value="testimonials" className="flex items-center gap-2">
+                <Quote className="h-4 w-4" />
+                <span className="hidden sm:inline">Sharhlar</span>
               </TabsTrigger>
               <TabsTrigger value="chats" className="flex items-center gap-2">
                 <MessageCircle className="h-4 w-4" />
@@ -605,6 +611,11 @@ const Admin = () => {
             {/* FAQ Tab */}
             <TabsContent value="faq">
               <FAQManager />
+            </TabsContent>
+
+            {/* Testimonials Tab */}
+            <TabsContent value="testimonials">
+              <TestimonialsManager />
             </TabsContent>
 
             {/* Chat History Tab */}
