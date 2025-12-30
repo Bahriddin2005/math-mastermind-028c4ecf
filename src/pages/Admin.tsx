@@ -487,47 +487,95 @@ const Admin = () => {
           </div>
 
           <Tabs defaultValue="users" className="space-y-6">
-            <TabsList className="grid w-full max-w-7xl grid-cols-10">
-              <TabsTrigger value="users" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span className="hidden sm:inline">Foydalanuvchilar</span>
+            {/* Mobile: Card grid */}
+            <div className="block md:hidden">
+              <TabsList className="grid w-full grid-cols-4 gap-2 h-auto bg-transparent p-0">
+                <TabsTrigger value="users" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-blue-500/10 border border-blue-500/20 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                  <Users className="h-6 w-6 text-blue-500 data-[state=active]:text-white" />
+                  <span className="text-xs font-medium">Foydalanuvchilar</span>
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-purple-500/10 border border-purple-500/20 data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                  <BarChart2 className="h-6 w-6 text-purple-500" />
+                  <span className="text-xs font-medium">Hisobotlar</span>
+                </TabsTrigger>
+                <TabsTrigger value="courses" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-emerald-500/10 border border-emerald-500/20 data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                  <GraduationCap className="h-6 w-6 text-emerald-500" />
+                  <span className="text-xs font-medium">Kurslar</span>
+                </TabsTrigger>
+                <TabsTrigger value="files" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-amber-500/10 border border-amber-500/20 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+                  <FolderOpen className="h-6 w-6 text-amber-500" />
+                  <span className="text-xs font-medium">Fayllar</span>
+                </TabsTrigger>
+                <TabsTrigger value="examples" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-cyan-500/10 border border-cyan-500/20 data-[state=active]:bg-cyan-500 data-[state=active]:text-white">
+                  <Calculator className="h-6 w-6 text-cyan-500" />
+                  <span className="text-xs font-medium">Misollar</span>
+                </TabsTrigger>
+                <TabsTrigger value="faq" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-indigo-500/10 border border-indigo-500/20 data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+                  <HelpCircle className="h-6 w-6 text-indigo-500" />
+                  <span className="text-xs font-medium">FAQ</span>
+                </TabsTrigger>
+                <TabsTrigger value="testimonials" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-pink-500/10 border border-pink-500/20 data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+                  <Quote className="h-6 w-6 text-pink-500" />
+                  <span className="text-xs font-medium">Sharhlar</span>
+                </TabsTrigger>
+                <TabsTrigger value="chats" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-teal-500/10 border border-teal-500/20 data-[state=active]:bg-teal-500 data-[state=active]:text-white">
+                  <MessageCircle className="h-6 w-6 text-teal-500" />
+                  <span className="text-xs font-medium">Chatlar</span>
+                </TabsTrigger>
+                <TabsTrigger value="messages" className="relative flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-red-500/10 border border-red-500/20 data-[state=active]:bg-red-500 data-[state=active]:text-white">
+                  <Mail className="h-6 w-6 text-red-500" />
+                  <span className="text-xs font-medium">Xabarlar</span>
+                  {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 px-1.5">{unreadCount}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="blog" className="flex flex-col items-center gap-1.5 p-3 h-auto rounded-xl bg-orange-500/10 border border-orange-500/20 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+                  <FileText className="h-6 w-6 text-orange-500" />
+                  <span className="text-xs font-medium">Maqolalar</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            {/* Desktop: Horizontal tabs with colors */}
+            <TabsList className="hidden md:grid w-full max-w-7xl grid-cols-10 h-12">
+              <TabsTrigger value="users" className="flex items-center gap-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white">
+                <Users className="h-4 w-4 text-blue-500 group-data-[state=active]:text-white" />
+                <span className="hidden lg:inline">Foydalanuvchilar</span>
               </TabsTrigger>
-              <TabsTrigger value="reports" className="flex items-center gap-2">
-                <BarChart2 className="h-4 w-4" />
-                <span className="hidden sm:inline">Hisobotlar</span>
+              <TabsTrigger value="reports" className="flex items-center gap-2 data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                <BarChart2 className="h-4 w-4 text-purple-500" />
+                <span className="hidden lg:inline">Hisobotlar</span>
               </TabsTrigger>
-              <TabsTrigger value="courses" className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4" />
-                <span className="hidden sm:inline">Kurslar</span>
+              <TabsTrigger value="courses" className="flex items-center gap-2 data-[state=active]:bg-emerald-500 data-[state=active]:text-white">
+                <GraduationCap className="h-4 w-4 text-emerald-500" />
+                <span className="hidden lg:inline">Kurslar</span>
               </TabsTrigger>
-              <TabsTrigger value="files" className="flex items-center gap-2">
-                <FolderOpen className="h-4 w-4" />
-                <span className="hidden sm:inline">Fayllar</span>
+              <TabsTrigger value="files" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-white">
+                <FolderOpen className="h-4 w-4 text-amber-500" />
+                <span className="hidden lg:inline">Fayllar</span>
               </TabsTrigger>
-              <TabsTrigger value="examples" className="flex items-center gap-2">
-                <Calculator className="h-4 w-4" />
-                <span className="hidden sm:inline">Misollar</span>
+              <TabsTrigger value="examples" className="flex items-center gap-2 data-[state=active]:bg-cyan-500 data-[state=active]:text-white">
+                <Calculator className="h-4 w-4 text-cyan-500" />
+                <span className="hidden lg:inline">Misollar</span>
               </TabsTrigger>
-              <TabsTrigger value="faq" className="flex items-center gap-2">
-                <HelpCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">FAQ</span>
+              <TabsTrigger value="faq" className="flex items-center gap-2 data-[state=active]:bg-indigo-500 data-[state=active]:text-white">
+                <HelpCircle className="h-4 w-4 text-indigo-500" />
+                <span className="hidden lg:inline">FAQ</span>
               </TabsTrigger>
-              <TabsTrigger value="testimonials" className="flex items-center gap-2">
-                <Quote className="h-4 w-4" />
-                <span className="hidden sm:inline">Sharhlar</span>
+              <TabsTrigger value="testimonials" className="flex items-center gap-2 data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+                <Quote className="h-4 w-4 text-pink-500" />
+                <span className="hidden lg:inline">Sharhlar</span>
               </TabsTrigger>
-              <TabsTrigger value="chats" className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Chatlar</span>
+              <TabsTrigger value="chats" className="flex items-center gap-2 data-[state=active]:bg-teal-500 data-[state=active]:text-white">
+                <MessageCircle className="h-4 w-4 text-teal-500" />
+                <span className="hidden lg:inline">Chatlar</span>
               </TabsTrigger>
-              <TabsTrigger value="messages" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span className="hidden sm:inline">Xabarlar</span>
+              <TabsTrigger value="messages" className="flex items-center gap-2 data-[state=active]:bg-red-500 data-[state=active]:text-white">
+                <Mail className="h-4 w-4 text-red-500" />
+                <span className="hidden lg:inline">Xabarlar</span>
                 {unreadCount > 0 && <Badge variant="destructive" className="ml-1 h-5 px-1.5">{unreadCount}</Badge>}
               </TabsTrigger>
-              <TabsTrigger value="blog" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Maqolalar</span>
+              <TabsTrigger value="blog" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+                <FileText className="h-4 w-4 text-orange-500" />
+                <span className="hidden lg:inline">Maqolalar</span>
               </TabsTrigger>
             </TabsList>
 
