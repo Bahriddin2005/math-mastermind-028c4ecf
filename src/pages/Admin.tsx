@@ -61,7 +61,13 @@ import {
   FolderOpen,
   Upload,
   Quote,
-  BarChart2
+  BarChart2,
+  PlusCircle,
+  Zap,
+  RefreshCw,
+  Download,
+  Settings,
+  Bell
 } from 'lucide-react';
 
 interface ContactMessage {
@@ -485,6 +491,96 @@ const Admin = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Tez harakatlar (Quick Actions) */}
+          <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Zap className="h-5 w-5 text-yellow-500" />
+                Tez harakatlar
+              </CardTitle>
+              <CardDescription>Tez-tez ishlatiladigan amallar</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:scale-105 transition-all duration-300 group"
+                  onClick={() => openBlogDialog()}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
+                    <PlusCircle className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Yangi maqola</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 hover:scale-105 transition-all duration-300 group"
+                  onClick={() => {
+                    fetchUsers();
+                    fetchStats();
+                    toast.success("Ma'lumotlar yangilandi");
+                  }}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+                    <RefreshCw className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Yangilash</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500/50 hover:scale-105 transition-all duration-300 group"
+                  onClick={() => navigate('/courses')}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
+                    <GraduationCap className="h-5 w-5 text-purple-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Kurslarni ko'rish</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 hover:scale-105 transition-all duration-300 group"
+                  onClick={() => navigate('/blog')}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
+                    <FileText className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Blogni ko'rish</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 hover:scale-105 transition-all duration-300 group relative"
+                  onClick={() => {
+                    const messagesTab = document.querySelector('[value="messages"]') as HTMLElement;
+                    messagesTab?.click();
+                  }}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-red-500/20 flex items-center justify-center group-hover:bg-red-500/30 transition-colors">
+                    <Mail className="h-5 w-5 text-red-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Xabarlar</span>
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 px-1.5 animate-pulse">{unreadCount}</Badge>
+                  )}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:scale-105 transition-all duration-300 group"
+                  onClick={() => navigate('/settings')}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-500/30 transition-colors">
+                    <Settings className="h-5 w-5 text-cyan-500" />
+                  </div>
+                  <span className="text-xs font-medium text-center">Sozlamalar</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <Tabs defaultValue="users" className="space-y-6">
             {/* Mobile: Card grid */}
