@@ -1202,7 +1202,7 @@ export const NumberTrainer = () => {
               {/* Settings Cards */}
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Misol turi */}
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden h-[280px] flex flex-col">
                   <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -1248,7 +1248,7 @@ export const NumberTrainer = () => {
                 </Card>
 
                 {/* Son xonasi */}
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden h-[280px] flex flex-col">
                   <CardHeader className="pb-3 bg-gradient-to-r from-accent/5 to-transparent">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
@@ -1417,9 +1417,9 @@ export const NumberTrainer = () => {
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Statistika kartalar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow" />
-                  <CardContent className="p-5 text-center">
+                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
                     <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
                       <Target className="h-6 w-6 text-primary" />
                     </div>
@@ -1427,9 +1427,9 @@ export const NumberTrainer = () => {
                     <p className="text-sm text-muted-foreground mt-1">Jami mashqlar</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success to-green-400" />
-                  <CardContent className="p-5 text-center">
+                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
                     <div className="h-12 w-12 rounded-2xl bg-success/10 flex items-center justify-center mx-auto mb-3">
                       <Check className="h-6 w-6 text-success" />
                     </div>
@@ -1437,9 +1437,9 @@ export const NumberTrainer = () => {
                     <p className="text-sm text-muted-foreground mt-1">Aniqlik</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />
-                  <CardContent className="p-5 text-center">
+                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
                     <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
                       <Clock className="h-6 w-6 text-blue-500" />
                     </div>
@@ -1447,9 +1447,9 @@ export const NumberTrainer = () => {
                     <p className="text-sm text-muted-foreground mt-1">O'rtacha vaqt</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-warning to-amber-400" />
-                  <CardContent className="p-5 text-center">
+                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
                     <div className="h-12 w-12 rounded-2xl bg-warning/10 flex items-center justify-center mx-auto mb-3">
                       <Trophy className="h-6 w-6 text-warning" />
                     </div>
