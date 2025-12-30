@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Award, Trophy, Share2, Twitter, Facebook, Link2, Check } from "lucide-react";
+import { Award, Trophy, Share2, Twitter, Facebook, Link2, Check, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,6 +29,9 @@ interface UserBadge {
 const BADGE_DEFINITIONS = [
   // Competition badges
   { type: "daily_winner", name: "Kunlik g'olib", icon: "🥇", color: "from-yellow-500 to-amber-500", description: "Kunlik musobaqada 1-o'rin" },
+  { type: "weekly_gold", name: "Haftalik oltin", icon: "🥇", color: "from-yellow-400 to-yellow-600", description: "Haftalik musobaqada 1-o'rin" },
+  { type: "weekly_silver", name: "Haftalik kumush", icon: "🥈", color: "from-gray-300 to-gray-500", description: "Haftalik musobaqada 2-o'rin" },
+  { type: "weekly_bronze", name: "Haftalik bronza", icon: "🥉", color: "from-amber-600 to-amber-800", description: "Haftalik musobaqada 3-o'rin" },
   { type: "weekly_winner", name: "Haftalik chempion", icon: "🏆", color: "from-purple-500 to-pink-500", description: "Haftalik musobaqada 1-o'rin" },
   
   // Streak badges
@@ -62,6 +66,7 @@ const BADGE_DEFINITIONS = [
 
 export const UserBadges = ({ userId }: { userId?: string }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const targetUserId = userId || user?.id;
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -269,6 +274,16 @@ export const UserBadges = ({ userId }: { userId?: string }) => {
                     );
                   })}
                 </div>
+                {/* View All Button */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full mt-2 gap-1"
+                  onClick={() => navigate("/badges")}
+                >
+                  Barcha badge'larni ko'rish
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
             )}
           </div>

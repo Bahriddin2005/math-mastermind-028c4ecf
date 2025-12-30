@@ -16,6 +16,9 @@ interface BadgePayload {
 
 const BADGE_DISPLAY_INFO: Record<string, { icon: string; name: string; color: string }> = {
   daily_winner: { icon: "🥇", name: "Kunlik g'olib", color: "#f59e0b" },
+  weekly_gold: { icon: "🥇", name: "Haftalik oltin", color: "#eab308" },
+  weekly_silver: { icon: "🥈", name: "Haftalik kumush", color: "#9ca3af" },
+  weekly_bronze: { icon: "🥉", name: "Haftalik bronza", color: "#b45309" },
   weekly_winner: { icon: "🏆", name: "Haftalik chempion", color: "#a855f7" },
   streak_3: { icon: "🔥", name: "Uch kunlik seriya", color: "#f97316" },
   streak_5: { icon: "🔥", name: "Besh kunlik seriya", color: "#f97316" },
