@@ -12,8 +12,7 @@ import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
 import { AbacusFlashCard } from './AbacusFlashCard';
 
 import { MultiplayerCompetition } from './MultiplayerCompetition';
-import { AbacusSimulator } from './AbacusSimulator';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, Swords, Square, Gamepad2 } from 'lucide-react';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, Swords } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
@@ -493,12 +492,8 @@ export const MentalArithmeticPractice = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="games" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="games" className="gap-1.5 text-xs sm:text-sm">
-            <Gamepad2 className="h-4 w-4" />
-            <span className="hidden sm:inline">O'yinlar</span>
-          </TabsTrigger>
+      <Tabs defaultValue="flashcard" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="flashcard" className="gap-1.5 text-xs sm:text-sm">
             <Lightbulb className="h-4 w-4" />
             <span className="hidden sm:inline">Flash Card</span>
@@ -516,12 +511,6 @@ export const MentalArithmeticPractice = () => {
             <span className="hidden sm:inline">Tarix</span>
           </TabsTrigger>
         </TabsList>
-
-
-        <TabsContent value="games" className="mt-4">
-          <AbacusSimulator />
-        </TabsContent>
-
 
         <TabsContent value="flashcard" className="mt-4">
           <AbacusFlashCard onComplete={() => setRefreshHistory(prev => prev + 1)} />
