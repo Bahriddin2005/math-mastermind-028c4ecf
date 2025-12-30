@@ -18,6 +18,7 @@ import { Footer } from '@/components/Footer';
 import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice';
 import { WeeklyCompetition } from '@/components/WeeklyCompetition';
 import { UserBadges } from '@/components/UserBadges';
+import { ProgressVisualization } from '@/components/ProgressVisualization';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -295,8 +296,8 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Daily Stats & Achievements Row */}
-            <div className="grid grid-cols-1 gap-4 sm:gap-6">
+            {/* Daily Stats & Progress Visualization */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {user && profile && (
                 <DailyStats
                   todayStats={todayStats}
@@ -306,13 +307,24 @@ const Dashboard = () => {
                   chartData={chartData}
                 />
               )}
-              <Achievements
-                totalProblems={profile?.total_problems_solved || 0}
-                bestStreak={profile?.best_streak || 0}
-                totalScore={profile?.total_score || 0}
-                totalGames={stats.totalGames}
-              />
+              {user && profile && (
+                <ProgressVisualization
+                  dailyGoal={profile.daily_goal || 20}
+                  problemsSolved={todayStats.solved}
+                  accuracy={todayStats.accuracy}
+                  streak={profile.current_streak || 0}
+                  level={Math.floor((profile.total_score || 0) / 1000) + 1}
+                />
+              )}
             </div>
+
+            {/* Achievements */}
+            <Achievements
+              totalProblems={profile?.total_problems_solved || 0}
+              bestStreak={profile?.best_streak || 0}
+              totalScore={profile?.total_score || 0}
+              totalGames={stats.totalGames}
+            />
 
             {/* Weekly Competition & Badges */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
