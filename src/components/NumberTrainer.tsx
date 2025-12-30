@@ -1045,7 +1045,7 @@ export const NumberTrainer = () => {
                       <span className="text-sm font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">{speed}s</span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
-                      {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].map((s) => (
+                      {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.5, 2, 2.5, 3].map((s) => (
                         <button
                           key={s}
                           onClick={() => setSpeed(s)}
