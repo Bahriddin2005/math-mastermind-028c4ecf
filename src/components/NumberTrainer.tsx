@@ -751,33 +751,55 @@ export const NumberTrainer = () => {
 
   // Navbar komponenti
   const NavbarComponent = () => (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-8">
-        <div onClick={() => navigate('/')} className="cursor-pointer">
+    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-xl">
+      {/* Gradient line at top */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      
+      <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
+        {/* Logo with hover effect */}
+        <div onClick={() => navigate('/')} className="cursor-pointer group relative">
+          <div className="absolute -inset-2 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Logo size="md" />
         </div>
         
-        <div className="flex items-center gap-2 md:gap-3">
-          {/* Video darslar button */}
-          <Button 
-            variant="ghost" 
-            size="sm"
+        {/* Center Navigation - Desktop */}
+        <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 rounded-full px-1.5 py-1 border border-border/30">
+          <NavButtonItem 
+            active={false} 
+            onClick={() => navigate('/')}
+            icon={Home}
+            label="Bosh sahifa"
+          />
+          <NavButtonItem 
+            active={true} 
+            onClick={() => {}}
+            icon={Play}
+            label="Mashq"
+            highlight
+          />
+          <NavButtonItem 
+            active={false} 
             onClick={() => navigate('/courses')}
-            className="gap-2 hidden md:flex"
-          >
-            <GraduationCap className="h-4 w-4" />
-            <span>Darslar</span>
-          </Button>
-
-          {/* Bosh sahifa */}
+            icon={GraduationCap}
+            label="Darslar"
+          />
+          <NavButtonItem 
+            active={false} 
+            onClick={() => navigate('/weekly-game')}
+            icon={Trophy}
+            label="Musobaqa"
+          />
+        </nav>
+        
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Mobile Home Button */}
           <Button 
             variant="ghost" 
             size="sm"
             onClick={() => navigate('/')}
-            className="gap-2"
+            className="lg:hidden h-9 w-9 p-0 rounded-full hover:bg-secondary/80"
           >
             <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Bosh sahifa</span>
           </Button>
 
           {/* Theme toggle */}
@@ -787,11 +809,12 @@ export const NumberTrainer = () => {
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
+              className="h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
             >
               {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-warning" />
+                <Sun className="h-4 w-4 text-warning transition-transform hover:rotate-45" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-4 w-4 transition-transform hover:-rotate-12" />
               )}
             </Button>
           )}
@@ -802,12 +825,12 @@ export const NumberTrainer = () => {
             size="icon"
             onClick={toggleSound}
             aria-label={soundEnabled ? "Ovoz effektlarini o'chirish" : "Ovoz effektlarini yoqish"}
-            title={soundEnabled ? "Ovoz effektlari yoniq" : "Ovoz effektlari o'chiq"}
+            className="h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
           >
             {soundEnabled ? (
-              <Volume2 className="h-5 w-5 text-primary" />
+              <Volume2 className="h-4 w-4 text-primary" />
             ) : (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
+              <VolumeX className="h-4 w-4 text-muted-foreground" />
             )}
           </Button>
 
@@ -817,58 +840,117 @@ export const NumberTrainer = () => {
             size="icon"
             onClick={() => setVoiceEnabled(!voiceEnabled)}
             aria-label={voiceEnabled ? "Nutqni o'chirish" : "Nutqni yoqish"}
-            title={voiceEnabled ? "Nutq yoniq" : "Nutq o'chiq"}
+            className={`h-9 w-9 rounded-full transition-colors ${voiceEnabled ? 'bg-accent/10 hover:bg-accent/20' : 'hover:bg-secondary/80'}`}
           >
             {voiceEnabled ? (
-              <span className="text-lg">🔊</span>
+              <span className="text-base">🔊</span>
             ) : (
-              <span className="text-lg opacity-50">🔇</span>
+              <span className="text-base opacity-50">🔇</span>
             )}
           </Button>
 
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="sm" className="gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">Profil</span>
+                <Button 
+                  variant="ghost" 
+                  className="gap-2 h-10 px-2 pr-3 rounded-full bg-secondary/50 hover:bg-secondary/80 border border-border/30 transition-all"
+                >
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <span className="hidden sm:inline text-sm font-medium">Profil</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate('/')} className="gap-2">
-                  <Home className="h-4 w-4" />
-                  Bosh sahifa
+              <DropdownMenuContent align="end" className="w-56 p-2 bg-popover/95 backdrop-blur-xl border border-border/50">
+                {/* User info header */}
+                <div className="flex items-center gap-3 p-2 mb-2 rounded-lg bg-secondary/50">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">Profil</p>
+                    <div className="flex items-center gap-1">
+                      <Trophy className="h-3 w-3 text-warning" />
+                      <span className="text-xs text-muted-foreground">{stats.correctAnswers} to'g'ri</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <DropdownMenuItem onClick={() => navigate('/')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
+                  <Home className="h-4 w-4 text-muted-foreground" />
+                  <span>Bosh sahifa</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/courses')} className="gap-2">
-                  <GraduationCap className="h-4 w-4" />
-                  Video darslar
+                <DropdownMenuItem onClick={() => navigate('/courses')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
+                  <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                  <span>Video darslar</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Sozlamalar
+                <DropdownMenuItem onClick={() => navigate('/weekly-game')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
+                  <Trophy className="h-4 w-4 text-muted-foreground" />
+                  <span>Haftalik musobaqa</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
+                  <Settings className="h-4 w-4 text-muted-foreground" />
+                  <span>Sozlamalar</span>
                 </DropdownMenuItem>
                 {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-2 text-primary">
-                    <ShieldCheck className="h-4 w-4" />
-                    Admin panel
+                  <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
+                    <ShieldCheck className="h-4 w-4 text-primary" />
+                    <span className="text-primary font-medium">Admin panel</span>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut} className="gap-2 text-destructive">
+                <DropdownMenuSeparator className="my-2" />
+                <DropdownMenuItem onClick={handleSignOut} className="gap-3 py-2.5 rounded-lg cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="h-4 w-4" />
-                  Chiqish
+                  <span>Chiqish</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="secondary" size="sm" onClick={() => navigate('/auth')}>
-              <User className="h-4 w-4 mr-2" />
-              Kirish
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => navigate('/auth')} 
+              className="h-9 px-3 gap-2 rounded-full border border-border/30 bg-secondary/50 hover:bg-secondary/80"
+            >
+              <User className="h-4 w-4" />
+              <span className="hidden xs:inline text-sm">Kirish</span>
             </Button>
           )}
         </div>
       </div>
     </header>
+  );
+
+  // Navigation button component
+  const NavButtonItem = ({ 
+    active, 
+    onClick, 
+    icon: Icon, 
+    label, 
+    highlight 
+  }: { 
+    active: boolean; 
+    onClick: () => void; 
+    icon: React.ElementType; 
+    label: string;
+    highlight?: boolean;
+  }) => (
+    <button
+      onClick={onClick}
+      className={`
+        flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+        ${active 
+          ? 'bg-primary text-primary-foreground shadow-md' 
+          : highlight 
+            ? 'text-primary hover:bg-primary/10' 
+            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+        }
+      `}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{label}</span>
+    </button>
   );
 
   // Sozlamalar sahifasi
