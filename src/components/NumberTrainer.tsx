@@ -572,113 +572,76 @@ export const NumberTrainer = () => {
     );
   }
 
-  // Natija sahifasi
+  // Natija sahifasi - soddalashtirilgan
   if (isFinished) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6 overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-lg w-full space-y-6 animate-fade-in">
-          {/* Header card */}
-          <div className="bg-card/80 backdrop-blur-sm rounded-3xl border border-border/50 shadow-lg p-6 text-center">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-accent" />
-              </div>
-              <div className="text-left">
-                <p className="text-sm text-muted-foreground">Umumiy vaqt</p>
-                <p className="text-2xl font-bold font-mono text-accent">{elapsedTime.toFixed(1)}s</p>
-              </div>
+      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-6">
+        {!showResult ? (
+          // Javob kiritish
+          <div className="w-full max-w-md space-y-6 animate-fade-in">
+            <div className="text-center">
+              <p className="text-lg text-muted-foreground mb-2">Javobni kiriting</p>
+            </div>
+            <Input
+              type="number"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
+              placeholder="?"
+              className="text-center text-6xl h-24 border-2 border-border focus:border-primary font-light"
+              style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+              autoFocus
+            />
+            <Button
+              onClick={checkAnswer}
+              disabled={!userAnswer}
+              size="lg"
+              className="w-full h-14 text-lg font-medium"
+            >
+              Tekshirish
+            </Button>
+          </div>
+        ) : (
+          // Natija ko'rsatish
+          <div className="text-center space-y-8 animate-fade-in">
+            <div>
+              <p className={`text-2xl font-medium mb-4 ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                {isCorrect ? "To'g'ri!" : "Noto'g'ri"}
+              </p>
+              <p 
+                className="text-[120px] sm:text-[160px] font-light text-foreground"
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+              >
+                {runningResultRef.current}
+              </p>
+              {!isCorrect && (
+                <p className="text-xl text-muted-foreground mt-4">
+                  Sizning javobingiz: <span className="text-red-500">{userAnswer}</span>
+                </p>
+              )}
             </div>
             
-            <h2 className="text-2xl font-display font-bold text-foreground mb-2">Mashq tugadi!</h2>
-            <p className="text-muted-foreground text-sm">Javobingizni kiriting</p>
-          </div>
-          
-          {!showResult ? (
-            <div className="space-y-4 animate-fade-in">
-              <div className="relative">
-                <Input
-                  type="number"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
-                  placeholder="Javobni kiriting..."
-                  className="text-center text-3xl h-20 rounded-2xl bg-card/80 backdrop-blur-sm border-2 border-primary/20 focus:border-primary shadow-lg font-mono"
-                  autoFocus
-                />
-              </div>
+            <div className="flex gap-4 justify-center pt-4">
               <Button
-                onClick={checkAnswer}
-                disabled={!userAnswer}
+                onClick={resetGame}
+                variant="outline"
                 size="lg"
-                className="w-full gap-3 h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                className="gap-2 px-8"
               >
-                <Check className="h-6 w-6" />
-                Tekshirish
+                <RotateCcw className="h-5 w-5" />
+                Orqaga
+              </Button>
+              <Button
+                onClick={startGame}
+                size="lg"
+                className="gap-2 px-8"
+              >
+                <Play className="h-5 w-5" />
+                Yangi mashq
               </Button>
             </div>
-          ) : (
-            <div className={`space-y-6 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
-              {/* Result card */}
-              <div className={`p-8 rounded-3xl text-center ${
-                isCorrect 
-                  ? 'bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30' 
-                  : 'bg-gradient-to-br from-destructive/10 to-destructive/5 border-2 border-destructive/30'
-              }`}>
-                <div className={`text-8xl mb-4 ${isCorrect ? 'animate-celebrate' : ''}`}>
-                  {isCorrect ? '🎉' : '😔'}
-                </div>
-                <p className={`text-2xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
-                  {isCorrect ? "Zo'r! To'g'ri javob!" : "Noto'g'ri javob"}
-                </p>
-              </div>
-
-              {/* Answer details */}
-              <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">To'g'ri javob:</span>
-                  <span className="text-2xl font-bold text-foreground font-mono">{runningResultRef.current}</span>
-                </div>
-                {!isCorrect && (
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                    <span className="text-muted-foreground">Sizning javobingiz:</span>
-                    <span className="text-xl font-bold text-destructive font-mono">{userAnswer}</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                  <span className="text-muted-foreground">Javob vaqti:</span>
-                  <span className="text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div className="flex gap-4 pt-2">
-            <Button
-              onClick={resetGame}
-              variant="outline"
-              size="lg"
-              className="flex-1 gap-2 h-14 rounded-2xl bg-card/80 backdrop-blur-sm border-border/50 hover:bg-muted transition-all duration-300"
-            >
-              <RotateCcw className="h-5 w-5" />
-              Orqaga
-            </Button>
-            <Button
-              onClick={startGame}
-              size="lg"
-              className="flex-1 gap-2 h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <Play className="h-5 w-5" />
-              Yangi mashq
-            </Button>
           </div>
-        </div>
+        )}
       </div>
     );
   }
