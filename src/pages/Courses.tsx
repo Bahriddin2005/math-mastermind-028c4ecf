@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useSound } from '@/hooks/useSound';
@@ -103,7 +104,7 @@ const Courses = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
@@ -307,7 +308,7 @@ const Courses = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

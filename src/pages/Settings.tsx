@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
@@ -246,7 +247,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1 container px-3 sm:px-4 py-4 sm:py-8">
@@ -559,7 +560,7 @@ const Settings = () => {
         imageFile={selectedFile}
         onCropComplete={handleCropComplete}
       />
-    </div>
+    </PageBackground>
   );
 };
 

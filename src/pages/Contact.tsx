@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useSound } from '@/hooks/useSound';
@@ -140,7 +141,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1 container px-4 py-8 md:py-12">
@@ -305,7 +306,7 @@ const Contact = () => {
         </div>
       </main>
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { BlogComments } from '@/components/BlogComments';
@@ -89,7 +90,7 @@ const BlogPost = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-12 flex items-center justify-center">
           <div className="text-center">
@@ -103,14 +104,14 @@ const BlogPost = () => {
           </div>
         </main>
         <Footer />
-      </div>
+      </PageBackground>
     );
   }
 
   const Icon = ICON_MAP[post.icon] || BookOpen;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
@@ -196,7 +197,7 @@ const BlogPost = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

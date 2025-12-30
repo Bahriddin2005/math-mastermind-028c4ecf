@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
@@ -225,7 +226,7 @@ const Dashboard = () => {
   // Show guest dashboard if not logged in
   if (!user) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-6 md:py-8">
           <div className="max-w-5xl mx-auto">
@@ -233,12 +234,12 @@ const Dashboard = () => {
           </div>
         </main>
         <Footer />
-      </div>
+      </PageBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
@@ -489,7 +490,7 @@ const Dashboard = () => {
         </div>
       </main>
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

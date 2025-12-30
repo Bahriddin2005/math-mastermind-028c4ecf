@@ -1,3 +1,4 @@
+import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useSound } from '@/hooks/useSound';
@@ -107,7 +108,7 @@ const FAQ = () => {
   const { soundEnabled, toggleSound } = useSound();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1 container px-4 py-8 md:py-12">
@@ -168,7 +169,7 @@ const FAQ = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from "@/hooks/useAuth";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -119,7 +120,7 @@ const Badges = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
       
       <main className="flex-1 container px-4 py-6 md:py-8">
@@ -261,7 +262,7 @@ const Badges = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

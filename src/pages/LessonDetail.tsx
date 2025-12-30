@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { LessonQA } from '@/components/LessonQA';
@@ -181,7 +182,7 @@ const LessonDetail = () => {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-12 flex items-center justify-center">
           <div className="text-center">
@@ -197,12 +198,12 @@ const LessonDetail = () => {
           </div>
         </main>
         <Footer />
-      </div>
+      </PageBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-secondary/20">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
@@ -368,7 +369,7 @@ const LessonDetail = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 

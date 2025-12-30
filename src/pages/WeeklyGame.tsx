@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { PageBackground } from '@/components/layout/PageBackground';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -328,7 +329,7 @@ const WeeklyGame = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-8">
           <Card className="max-w-md mx-auto">
@@ -341,7 +342,7 @@ const WeeklyGame = () => {
           </Card>
         </main>
         <Footer />
-      </div>
+      </PageBackground>
     );
   }
 
@@ -355,7 +356,7 @@ const WeeklyGame = () => {
 
   if (!challenge) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
         <main className="flex-1 container px-4 py-8">
           <Card className="max-w-md mx-auto">
@@ -371,12 +372,12 @@ const WeeklyGame = () => {
           </Card>
         </main>
         <Footer />
-      </div>
+      </PageBackground>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-500/5 via-background to-pink-500/5">
+    <PageBackground className="flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1 container px-4 py-6">
@@ -579,7 +580,7 @@ const WeeklyGame = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageBackground>
   );
 };
 
