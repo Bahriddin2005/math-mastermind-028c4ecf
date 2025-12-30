@@ -110,6 +110,7 @@ export const HelpChatWidget = () => {
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [isVoiceProcessing, setIsVoiceProcessing] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
@@ -454,7 +455,7 @@ export const HelpChatWidget = () => {
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType });
         stream.getTracks().forEach(track => track.stop());
-        await transcribeAudio(audioBlob);
+        await processVoiceMessage(audioBlob);
       };
 
       mediaRecorder.start(100); // Collect data every 100ms
@@ -470,6 +471,108 @@ export const HelpChatWidget = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+    }
+  };
+
+  // Process voice message - transcribe and send directly to AI, get voice response
+  const processVoiceMessage = async (audioBlob: Blob) => {
+    setIsVoiceProcessing(true);
+    setIsLoading(true);
+    
+    try {
+      // Step 1: Transcribe the audio
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      const sttResponse = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-stt`,
+        {
+          method: 'POST',
+          headers: {
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: formData,
+        }
+      );
+
+      const sttData = await sttResponse.json();
+
+      if (!sttResponse.ok || !sttData.text?.trim()) {
+        throw new Error(sttData.error || "Ovoz aniqlanmadi");
+      }
+
+      const userText = sttData.text.trim();
+      
+      // Add user message (show as voice message)
+      setMessages(prev => [...prev, { 
+        role: 'user', 
+        content: `🎤 ${userText}`, 
+        timestamp: new Date() 
+      }]);
+      await saveMessageToDb('user', `🎤 ${userText}`);
+
+      // Step 2: Get AI response
+      const faqContext = faqItems.map(f => `Savol: ${f.question}\nJavob: ${f.answer}`).join('\n\n');
+      const coursesContext = courses.map(c => 
+        `Kurs: ${c.title} (${c.difficulty} daraja)${c.description ? ` - ${c.description}` : ''}`
+      ).join('\n');
+      const lessonsContext = lessons.map(l => {
+        const course = courses.find(c => c.id === l.course_id);
+        return `Dars: ${l.title}${course ? ` (${course.title} kursidan)` : ''}`;
+      }).join('\n');
+      const userProgressContext = userProgress 
+        ? `Foydalanuvchi: ${userProgress.username}, Jami ball: ${userProgress.total_score}, Yechilgan masalalar: ${userProgress.total_problems_solved}`
+        : 'Foydalanuvchi tizimga kirmagan';
+
+      const chatResponse = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/help-chat`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ 
+            message: userText,
+            faqContext,
+            coursesContext,
+            lessonsContext,
+            userProgressContext
+          }),
+        }
+      );
+
+      const chatData = await chatResponse.json();
+
+      if (!chatResponse.ok) {
+        throw new Error(chatData.error || 'AI javob bermadi');
+      }
+
+      const assistantMessage = chatData.response;
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: assistantMessage, 
+        timestamp: new Date() 
+      }]);
+      await saveMessageToDb('assistant', assistantMessage);
+
+      // Step 3: Play TTS for AI response
+      await playTTS(assistantMessage);
+
+    } catch (error) {
+      console.error('Voice processing error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Ovozli xabar yuborishda xatolik";
+      toast.error(errorMessage);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: "Kechirasiz, ovozli xabaringizni qayta ishlab bo'lmadi. Iltimos, qaytadan urinib ko'ring.", 
+        timestamp: new Date() 
+      }]);
+    } finally {
+      setIsVoiceProcessing(false);
+      setIsLoading(false);
     }
   };
 
@@ -896,6 +999,43 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                   </div>
                 )}
 
+                {/* Voice Recording Wave Animation */}
+                {isRecording && (
+                  <div className="px-4 py-3 border-t border-border/50 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="voice-wave-container">
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                      </div>
+                      <span className="text-sm font-medium text-primary animate-pulse">
+                        Gapiring...
+                      </span>
+                      <div className="voice-wave-container">
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                        <div className="voice-wave-bar" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Voice Processing Indicator */}
+                {isVoiceProcessing && !isRecording && (
+                  <div className="px-4 py-3 border-t border-border/50 bg-gradient-to-r from-accent/10 via-primary/10 to-accent/10">
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Ovoz qayta ishlanmoqda...
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Input */}
                 <div className="p-3 border-t border-border/50 bg-muted/30 dark:bg-muted/10">
                   <div className="flex gap-2">
@@ -919,6 +1059,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       onClick={() => pdfInputRef.current?.click()}
                       disabled={isLoading || isRecording || !!selectedImage}
                       title="PDF yuklash"
+                      className={isRecording ? "opacity-50" : ""}
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
@@ -928,6 +1069,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isLoading || isRecording || !!selectedPdf}
                       title="Rasm yuklash"
+                      className={isRecording ? "opacity-50" : ""}
                     >
                       <ImagePlus className="h-4 w-4" />
                     </Button>
@@ -935,9 +1077,9 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       variant={isRecording ? "destructive" : "outline"}
                       size="icon"
                       onClick={isRecording ? stopRecording : startRecording}
-                      disabled={isLoading}
-                      title={isRecording ? "Yozishni to'xtatish" : "Ovoz bilan so'rash"}
-                      className={isRecording ? "animate-pulse" : ""}
+                      disabled={isLoading || isVoiceProcessing}
+                      title={isRecording ? "Yozishni to'xtatish va yuborish" : "Ovoz bilan so'rash"}
+                      className={isRecording ? "animate-pulse ring-2 ring-destructive ring-offset-2" : ""}
                     >
                       {isRecording ? (
                         <MicOff className="h-4 w-4" />
@@ -949,13 +1091,13 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder={isRecording ? "Gapiring..." : selectedImage ? "Rasm haqida so'rang..." : selectedPdf ? "PDF haqida so'rang..." : "Savolingizni yozing..."}
-                      disabled={isLoading || isRecording}
-                      className="flex-1"
+                      placeholder={isRecording ? "Mikrofon yoqilgan..." : isVoiceProcessing ? "Qayta ishlanmoqda..." : selectedImage ? "Rasm haqida so'rang..." : selectedPdf ? "PDF haqida so'rang..." : "Savolingizni yozing..."}
+                      disabled={isLoading || isRecording || isVoiceProcessing}
+                      className={`flex-1 ${isRecording ? "opacity-50" : ""}`}
                     />
                     <Button 
                       onClick={sendMessage} 
-                      disabled={(!inputMessage.trim() && !selectedImage && !selectedPdf) || isLoading}
+                      disabled={(!inputMessage.trim() && !selectedImage && !selectedPdf) || isLoading || isRecording || isVoiceProcessing}
                       size="icon"
                     >
                       <Send className="h-4 w-4" />

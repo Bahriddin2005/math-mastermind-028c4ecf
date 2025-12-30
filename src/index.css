@@ -325,3 +325,38 @@
 .typing-dot:nth-child(3) {
   animation-delay: 0.4s;
 }
+
+/* Voice Recording Wave Animation */
+@keyframes voice-wave {
+  0%, 100% { 
+    transform: scaleY(0.3); 
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scaleY(1); 
+    opacity: 1;
+  }
+}
+
+.voice-wave-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 24px;
+}
+
+.voice-wave-bar {
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+  border-radius: 2px;
+  animation: voice-wave 0.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.voice-wave-bar:nth-child(1) { animation-delay: 0s; height: 60%; }
+.voice-wave-bar:nth-child(2) { animation-delay: 0.1s; height: 80%; }
+.voice-wave-bar:nth-child(3) { animation-delay: 0.2s; height: 100%; }
+.voice-wave-bar:nth-child(4) { animation-delay: 0.3s; height: 80%; }
+.voice-wave-bar:nth-child(5) { animation-delay: 0.15s; height: 60%; }
