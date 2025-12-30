@@ -182,11 +182,11 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="container px-4 py-6 md:py-8">
-          <div className="max-w-5xl mx-auto space-y-8">
+        <div className="container px-3 sm:px-4 py-4 sm:py-6 md:py-8">
+          <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
 
-            {/* Stats Overview - Enhanced Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Stats Overview - Mobile optimized Grid */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
               <StatsCard
                 icon={Trophy}
                 label="Jami ball"
@@ -218,7 +218,7 @@ const Dashboard = () => {
             </div>
 
             {/* Daily Goals & Achievements Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6">
               {user && profile && (
                 <DailyGoals
                   userId={user.id}
@@ -240,18 +240,18 @@ const Dashboard = () => {
             <StatsCharts sessions={sessions} />
 
             {/* Quick Access Section */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
-                <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-2 sm:gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl gradient-primary flex items-center justify-center">
+                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-display font-bold text-foreground">Tez kirish</h2>
-                  <p className="text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
+                  <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Tez kirish</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                 <FeatureCard
                   category="TRENING"
                   title="Mashqni boshlash"
@@ -286,14 +286,14 @@ const Dashboard = () => {
             </div>
 
             {/* Mental Arifmetika Mashqi */}
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                  <Calculator className="h-5 w-5 text-white" />
+            <div className="space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-2 sm:gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                  <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-display font-bold text-foreground">Mental Arifmetika</h2>
-                  <p className="text-sm text-muted-foreground">Abacus bilan mashq qiling</p>
+                  <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Mental Arifmetika</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Abacus bilan mashq qiling</p>
                 </div>
               </div>
               <MentalArithmeticPractice />
@@ -307,57 +307,57 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Tabs for History & Leaderboard - Enhanced */}
+            {/* Tabs for History & Leaderboard - Mobile optimized */}
             <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '650ms', animationFillMode: 'forwards' }}>
-              <TabsList className="grid w-full grid-cols-2 rounded-2xl p-1.5 bg-secondary/60 backdrop-blur-sm">
+              <TabsList className="grid w-full grid-cols-2 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 bg-secondary/60 backdrop-blur-sm">
                 <TabsTrigger
                   value="history"
-                  className="flex items-center gap-2 rounded-xl font-semibold data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all py-2 sm:py-2.5"
                 >
-                  <Zap className="h-4 w-4" />
-                  Tarix
+                  <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Tarix</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="leaderboard"
-                  className="flex items-center gap-2 rounded-xl font-semibold data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:text-primary transition-all py-2 sm:py-2.5"
                 >
-                  <Trophy className="h-4 w-4" />
-                  Reyting
+                  <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Reyting</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="history" className="mt-6">
+              <TabsContent value="history" className="mt-4 sm:mt-6">
                 <Card className="border-border/40 shadow-md overflow-hidden">
-                  <CardHeader className="pb-4 bg-gradient-to-r from-secondary/50 to-transparent">
-                    <CardTitle className="text-lg flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <BarChart3 className="h-5 w-5 text-primary" />
+                  <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6 bg-gradient-to-r from-secondary/50 to-transparent">
+                    <CardTitle className="text-base sm:text-lg flex items-center gap-2 sm:gap-3">
+                      <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       </div>
                       So'nggi o'yinlar
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-4">
+                  <CardContent className="pt-3 sm:pt-4 px-3 sm:px-6">
                     {sessions.length === 0 ? (
-                      <div className="text-center py-16">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center mx-auto mb-6">
-                          <Zap className="h-10 w-10 text-muted-foreground" />
+                      <div className="text-center py-10 sm:py-16">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                          <Zap className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
                         </div>
-                        <h3 className="font-display font-bold text-lg mb-2">Hali o'yin o'ynalmagan</h3>
-                        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                        <h3 className="font-display font-bold text-base sm:text-lg mb-2">Hali o'yin o'ynalmagan</h3>
+                        <p className="text-sm text-muted-foreground mb-4 sm:mb-6 max-w-sm mx-auto px-4">
                           Birinchi mashqingizni yakunlang va natijalaringizni bu yerda ko'ring
                         </p>
                         <Button 
                           variant="default" 
                           size="lg"
                           onClick={() => navigate('/train')}
-                          className="gap-2"
+                          className="gap-2 h-12 sm:h-10"
                         >
                           <Play className="h-4 w-4" />
                           Birinchi o'yinni boshlash
                         </Button>
                       </div>
                     ) : (
-                      <div className="space-y-3 max-h-[450px] overflow-y-auto pr-2">
+                      <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[450px] overflow-y-auto pr-1 sm:pr-2">
                         {sessions.slice(0, 10).map((session, index) => (
                           <GameHistoryItem
                             key={session.id}
@@ -375,7 +375,7 @@ const Dashboard = () => {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="leaderboard" className="mt-6">
+              <TabsContent value="leaderboard" className="mt-4 sm:mt-6">
                 <Leaderboard currentUserId={user?.id} />
               </TabsContent>
             </Tabs>
