@@ -155,27 +155,40 @@ const Settings = () => {
   };
 
   const handleCropComplete = async (croppedBlob: Blob) => {
-    if (!user) return;
+    if (!user) {
+      toast.error('Iltimos, avval tizimga kiring');
+      return;
+    }
     
     setUploading(true);
+    console.log('Starting avatar upload for user:', user.id);
+    console.log('Blob size:', croppedBlob.size);
 
     try {
       const fileName = `${user.id}/avatar.jpg`;
+      console.log('Uploading to path:', fileName);
 
       // Upload cropped image to storage
-      const { error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, croppedBlob, { 
           upsert: true,
           contentType: 'image/jpeg'
         });
 
-      if (uploadError) throw uploadError;
+      console.log('Upload response:', { uploadData, uploadError });
+
+      if (uploadError) {
+        console.error('Upload error details:', uploadError);
+        throw uploadError;
+      }
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
+
+      console.log('Public URL:', publicUrl);
 
       // Update profile with new avatar URL
       const { error: updateError } = await supabase
@@ -183,12 +196,16 @@ const Settings = () => {
         .update({ avatar_url: publicUrl })
         .eq('user_id', user.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
+      }
 
       setAvatarUrl(publicUrl + '?t=' + Date.now()); // Add cache buster
       toast.success('Avatar yangilandi!');
     } catch (error: any) {
-      toast.error('Avatar yuklanmadi: ' + error.message);
+      console.error('Full error:', error);
+      toast.error('Avatar yuklanmadi: ' + (error.message || 'Noma\'lum xato'));
     } finally {
       setUploading(false);
       setSelectedFile(null);
