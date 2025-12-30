@@ -1065,7 +1065,22 @@ export const NumberTrainer = () => {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label className="text-sm font-medium text-muted-foreground">Misollar soni</Label>
-                      <span className="text-sm font-bold text-accent bg-accent/10 px-3 py-1 rounded-full">{problemCount} ta</span>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={999}
+                          value={problemCount}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val) && val >= 1 && val <= 999) {
+                              setProblemCount(val);
+                            }
+                          }}
+                          className="w-20 h-8 text-center text-sm font-bold bg-accent/10 border-accent/30"
+                        />
+                        <span className="text-sm text-muted-foreground">ta</span>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40, 50].map((num) => (
