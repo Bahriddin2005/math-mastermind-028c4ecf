@@ -513,132 +513,24 @@ export const NumberTrainer = () => {
     : 0;
 
 
-  // O'yin davomida
+  // O'yin davomida - toza oq fon, markazda katta son
   if (isRunning && currentDisplay !== null) {
+    const displayNumber = countRef.current === 1 
+      ? currentDisplay 
+      : (isAddition ? currentDisplay : `-${currentDisplay}`);
+    
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 overflow-hidden">
-        {/* Animated background circles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-primary/10 rounded-full" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-primary/5 rounded-full" />
-        </div>
-
-        {/* Header info */}
-        <div className="absolute top-6 left-0 right-0 px-6 flex items-center justify-between">
-          {/* Progress */}
-          <div className="flex items-center gap-3 bg-card/80 backdrop-blur-sm px-4 py-2 rounded-2xl border border-border/50 shadow-md">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Target className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Misol</p>
-              <p className="text-lg font-bold text-foreground">{countRef.current} / {problemCount}</p>
-            </div>
-          </div>
-
-          {/* Timer */}
-          <div className="flex items-center gap-3 bg-card/80 backdrop-blur-sm px-4 py-2 rounded-2xl border border-border/50 shadow-md">
-            <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
-              <Clock className="h-4 w-4 text-accent" />
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Vaqt</p>
-              <p className="text-lg font-bold font-mono text-accent">{elapsedTime.toFixed(1)}s</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Main number display */}
-        <div className="relative">
-          {/* Glow effect behind number */}
-          <div 
-            className={`absolute inset-0 blur-3xl transition-colors duration-300 ${
-              isAddition ? 'bg-primary/20' : 'bg-accent/20'
-            }`} 
-          />
-          
-          {/* Number container */}
-          <div 
-            key={countRef.current}
-            className="relative animate-scale-in"
+      <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
+        <div 
+          key={countRef.current}
+          className="animate-fade-in"
+        >
+          <span 
+            className="text-[180px] sm:text-[220px] md:text-[280px] lg:text-[350px] font-light text-foreground tracking-tight"
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
-            {/* Operation indicator */}
-            {countRef.current > 1 && (
-              <div className={`absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-2 rounded-2xl ${
-                isAddition 
-                  ? 'bg-primary/10 text-primary border border-primary/20' 
-                  : 'bg-accent/10 text-accent border border-accent/20'
-              }`}>
-                {isAddition ? (
-                  <>
-                    <span className="text-2xl font-bold">+</span>
-                    <span className="font-medium">Qo'shish</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-2xl font-bold">−</span>
-                    <span className="font-medium">Ayirish</span>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* The number */}
-            <div 
-              className={`text-[140px] sm:text-[180px] md:text-[220px] lg:text-[280px] font-display font-bold transition-all duration-200 ${
-                isAddition || countRef.current === 1 ? 'text-foreground' : 'text-accent'
-              }`}
-              style={{
-                textShadow: isAddition || countRef.current === 1 
-                  ? '0 0 60px hsl(var(--primary) / 0.3)' 
-                  : '0 0 60px hsl(var(--accent) / 0.3)'
-              }}
-            >
-              {currentDisplay}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="absolute bottom-32 left-8 right-8 max-w-lg mx-auto">
-          <div className="h-2 bg-muted/50 rounded-full overflow-hidden backdrop-blur-sm">
-            <div 
-              className="h-full bg-gradient-to-r from-primary to-primary-glow rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${(countRef.current / problemCount) * 100}%` }}
-            />
-          </div>
-          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-            <span>Boshlash</span>
-            <span>Tugash</span>
-          </div>
-        </div>
-
-        {/* Bottom controls */}
-        <div className="absolute bottom-8 flex gap-4">
-          <Button
-            onClick={() => setVoiceEnabled(!voiceEnabled)}
-            variant="outline"
-            size="lg"
-            className="gap-2 bg-card/80 backdrop-blur-sm border-border/50 hover:bg-card rounded-xl px-6"
-          >
-            {voiceEnabled ? (
-              <Volume2 className="h-5 w-5 text-primary" />
-            ) : (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
-            )}
-            <span className="hidden sm:inline">{voiceEnabled ? 'Ovoz yoniq' : 'Ovoz o\'chiq'}</span>
-          </Button>
-          <Button
-            onClick={stopGame}
-            variant="destructive"
-            size="lg"
-            className="gap-2 rounded-xl px-6 shadow-lg"
-          >
-            <Square className="h-5 w-5" />
-            To'xtatish
-          </Button>
+            {displayNumber}
+          </span>
         </div>
       </div>
     );
