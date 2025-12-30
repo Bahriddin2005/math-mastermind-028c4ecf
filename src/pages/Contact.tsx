@@ -247,14 +247,14 @@ const Contact = () => {
             {/* Contact Info & Social Links */}
             <div className="space-y-6">
               {/* Contact Info */}
-              <Card className="border-border/40 shadow-lg">
-                <CardHeader>
+              <Card className="border-border/40 shadow-lg h-[280px] flex flex-col">
+                <CardHeader className="flex-shrink-0">
                   <CardTitle>Aloqa ma'lumotlari</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 flex-1 flex flex-col justify-center">
                   {contactInfo.map((info) => (
-                    <div key={info.label} className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <div key={info.label} className="flex items-center gap-4 h-[56px]">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <info.icon className="h-5 w-5 text-primary" />
                       </div>
                       <div>
@@ -276,26 +276,26 @@ const Contact = () => {
               </Card>
 
               {/* Social Links */}
-              <Card className="border-border/40 shadow-lg">
-                <CardHeader>
+              <Card className="border-border/40 shadow-lg h-[280px] flex flex-col">
+                <CardHeader className="flex-shrink-0">
                   <CardTitle>Ijtimoiy tarmoqlar</CardTitle>
                   <CardDescription>Bizni kuzatib boring</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-3 flex-1 flex flex-col justify-center">
                   {socialLinks.map((social) => (
                     <a
                       key={social.name}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-4 p-4 rounded-xl text-white transition-all ${social.color}`}
+                      className={`flex items-center gap-4 p-4 rounded-xl text-white transition-all h-[72px] ${social.color}`}
                     >
-                      <social.icon className="h-6 w-6" />
-                      <div className="flex-1">
+                      <social.icon className="h-6 w-6 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
                         <p className="font-semibold">{social.name}</p>
-                        <p className="text-sm text-white/80">{social.description}</p>
+                        <p className="text-sm text-white/80 truncate">{social.description}</p>
                       </div>
-                      <ExternalLink className="h-4 w-4" />
+                      <ExternalLink className="h-4 w-4 flex-shrink-0" />
                     </a>
                   ))}
                 </CardContent>

@@ -139,11 +139,11 @@ const FAQ = () => {
                   
                   <Accordion type="single" collapsible className="w-full">
                     {section.questions.map((item, qIndex) => (
-                      <AccordionItem key={qIndex} value={`item-${index}-${qIndex}`}>
-                        <AccordionTrigger className="text-left hover:no-underline">
+                      <AccordionItem key={qIndex} value={`item-${index}-${qIndex}`} className="border-b last:border-b-0">
+                        <AccordionTrigger className="text-left hover:no-underline min-h-[56px] py-4">
                           {item.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
+                        <AccordionContent className="text-muted-foreground pb-4">
                           {item.answer}
                         </AccordionContent>
                       </AccordionItem>
