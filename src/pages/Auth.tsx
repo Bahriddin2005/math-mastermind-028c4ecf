@@ -20,7 +20,11 @@ import {
   Target,
   Trophy,
   Lock,
-  User
+  User,
+  Zap,
+  Star,
+  ChevronRight,
+  GraduationCap
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -40,9 +44,16 @@ const emailSchema = z.object({
 type AuthMode = 'login' | 'signup' | 'forgot-password';
 
 const features = [
-  { icon: Brain, text: "Mental arifmetika mashqlari" },
-  { icon: Target, text: "Maqsadga yo'naltirilgan o'rganish" },
-  { icon: Trophy, text: "Yutuqlar va mukofotlar" },
+  { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
+  { icon: Target, text: "Maqsadga yo'naltirilgan o'rganish", color: "from-orange-500 to-amber-500" },
+  { icon: Trophy, text: "Yutuqlar va mukofotlar", color: "from-yellow-500 to-orange-500" },
+  { icon: GraduationCap, text: "Professional o'qituvchilar", color: "from-purple-500 to-pink-500" },
+];
+
+const stats = [
+  { value: "10K+", label: "Foydalanuvchilar" },
+  { value: "500K+", label: "Yechilgan misollar" },
+  { value: "50+", label: "Video darslar" },
 ];
 
 const Auth = () => {
@@ -165,15 +176,15 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
         {/* Background decorations */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
         <div className="w-full max-w-md relative z-10">
-          <Card className="border-border/40 shadow-2xl backdrop-blur-sm animate-scale-in">
+          <Card className="border-border/40 shadow-2xl backdrop-blur-sm animate-scale-in bg-card/80">
             <CardContent className="pt-10 pb-10 text-center">
-              <div className="h-20 w-20 rounded-3xl bg-success/10 flex items-center justify-center mx-auto mb-6">
-                <Check className="h-10 w-10 text-success" />
+              <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-success/30 animate-bounce-slow">
+                <Check className="h-10 w-10 text-white" />
               </div>
               <h2 className="text-2xl font-display font-bold mb-3">Email yuborildi!</h2>
               <p className="text-muted-foreground mb-8 leading-relaxed">
@@ -183,7 +194,7 @@ const Auth = () => {
               <Button 
                 variant="outline" 
                 onClick={() => switchMode('login')}
-                className="gap-2"
+                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Kirish sahifasiga qaytish
@@ -198,77 +209,111 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-primary-foreground p-12 flex-col justify-between overflow-hidden">
-        {/* Background decorations */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent" />
+        
+        {/* Animated shapes */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-40 left-10 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 right-40 w-40 h-40 bg-accent/30 rounded-full blur-2xl" />
-        </div>
-
-        {/* Floating sparkles */}
-        <div className="absolute top-32 right-32 opacity-40">
-          <Sparkles className="h-8 w-8 animate-pulse" />
-        </div>
-        <div className="absolute bottom-40 left-20 opacity-30">
-          <Sparkles className="h-6 w-6 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        </div>
-
-        <div className="relative z-10">
-          <Logo size="lg" className="mb-4" />
-          <p className="text-lg opacity-90">Mental Matematika Platformasi</p>
-        </div>
-
-        <div className="relative z-10 space-y-8">
-          <h1 className="text-4xl font-display font-bold leading-tight">
-            O'yin orqali
-            <br />
-            <span className="text-accent">matematik salohiyatingizni</span>
-            <br />
-            rivojlantiring
-          </h1>
+          <div className="absolute top-20 right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-40 left-10 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute -bottom-20 right-40 w-48 h-48 bg-accent/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
           
-          <div className="space-y-4">
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className="flex items-center gap-4 opacity-0 animate-slide-up"
-                style={{ animationDelay: `${300 + index * 100}ms`, animationFillMode: 'forwards' }}
-              >
-                <div className="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <feature.icon className="h-6 w-6" />
-                </div>
-                <span className="text-lg font-medium">{feature.text}</span>
-              </div>
-            ))}
-          </div>
+          {/* Floating geometric shapes */}
+          <div className="absolute top-1/4 right-1/4 w-4 h-4 bg-white/30 rotate-45 animate-float" />
+          <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-white/20 rounded-full animate-float" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute bottom-1/3 right-1/3 w-5 h-5 bg-white/25 rotate-12 animate-float" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="relative z-10 text-sm opacity-70">
-          © 2024 IQROMAX. Barcha huquqlar himoyalangan.
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground h-full w-full">
+          <div className="flex items-center gap-3">
+            <Logo size="lg" />
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-5xl font-display font-bold leading-tight mb-4">
+                O'yin orqali
+                <br />
+                <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">matematik</span>
+                <br />
+                <span className="text-accent">salohiyatingizni</span>
+                <br />
+                rivojlantiring
+              </h1>
+              <p className="text-lg opacity-80 max-w-md">
+                Eng zamonaviy mental arifmetika platformasiga qo'shiling va matematika ustasi bo'ling!
+              </p>
+            </div>
+            
+            {/* Features */}
+            <div className="space-y-3">
+              {features.map((feature, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-4 opacity-0 animate-slide-up group"
+                  style={{ animationDelay: `${300 + index * 100}ms`, animationFillMode: 'forwards' }}
+                >
+                  <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                  <span className="text-lg font-medium group-hover:translate-x-1 transition-transform">{feature.text}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats */}
+            <div className="flex gap-8 pt-4">
+              {stats.map((stat, index) => (
+                <div 
+                  key={index} 
+                  className="opacity-0 animate-fade-in"
+                  style={{ animationDelay: `${800 + index * 100}ms`, animationFillMode: 'forwards' }}
+                >
+                  <p className="text-3xl font-display font-bold">{stat.value}</p>
+                  <p className="text-sm opacity-70">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 text-sm opacity-70">
+            <Sparkles className="h-4 w-4" />
+            <span>© 2024 IQROMAX. Barcha huquqlar himoyalangan.</span>
+          </div>
         </div>
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 bg-gradient-to-br from-background via-background to-secondary/30">
-        {/* Mobile background decorations */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 lg:p-12 bg-gradient-to-br from-background via-background to-secondary/20 relative overflow-hidden">
+        {/* Mobile/Tablet background decorations */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
+
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:40px_40px] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)]" />
 
         <div className="w-full max-w-md relative z-10">
           {/* Mobile logo */}
           <div className="text-center mb-8 lg:hidden">
-            <Logo size="lg" className="mx-auto mb-2" />
-            <p className="text-muted-foreground">Mental Matematika mashqlari</p>
+            <Logo size="lg" className="mx-auto mb-3" />
+            <p className="text-muted-foreground text-sm">Mental Matematika Platformasi</p>
           </div>
 
-          <Card className="border-border/40 shadow-2xl backdrop-blur-sm animate-scale-in">
-            <CardHeader className="text-center pb-2">
+          <Card className="border-border/40 shadow-2xl backdrop-blur-sm animate-scale-in bg-card/80 overflow-hidden">
+            {/* Card top decoration */}
+            <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+            
+            <CardHeader className="text-center pb-4 pt-6">
               {mode === 'forgot-password' ? (
                 <>
-                  <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 shadow-glow">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30 animate-bounce-slow">
                     <Mail className="h-8 w-8 text-primary-foreground" />
                   </div>
                   <CardTitle className="text-2xl font-display">Parolni tiklash</CardTitle>
@@ -278,12 +323,15 @@ const Auth = () => {
                 </>
               ) : (
                 <>
-                  <div className="h-16 w-16 rounded-2xl gradient-primary flex items-center justify-center mx-auto mb-4 shadow-glow">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30 relative group">
                     {mode === 'login' ? (
-                      <LogIn className="h-8 w-8 text-primary-foreground" />
+                      <LogIn className="h-8 w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     ) : (
-                      <UserPlus className="h-8 w-8 text-primary-foreground" />
+                      <UserPlus className="h-8 w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     )}
+                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
+                      <Zap className="h-3 w-3 text-accent-foreground" />
+                    </div>
                   </div>
                   <CardTitle className="text-2xl font-display">
                     {mode === 'login' ? 'Xush kelibsiz!' : "Ro'yxatdan o'tish"}
@@ -297,13 +345,13 @@ const Auth = () => {
               )}
             </CardHeader>
             
-            <CardContent className="pt-4">
-              <form onSubmit={handleSubmit} className="space-y-5">
+            <CardContent className="pt-2 pb-6 px-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {mode === 'signup' && (
                   <div className="space-y-2">
                     <Label htmlFor="username" className="text-sm font-medium">Ism</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <div className="relative group">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="username"
                         type="text"
@@ -311,12 +359,12 @@ const Auth = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading}
-                        className={`pl-10 h-12 ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-10 h-12 transition-all focus:shadow-md focus:shadow-primary/10 ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.username && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="h-1 w-1 rounded-full bg-destructive" />
+                      <p className="text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                         {errors.username}
                       </p>
                     )}
@@ -325,8 +373,8 @@ const Auth = () => {
                 
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <div className="relative group">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="email"
                       type="email"
@@ -334,12 +382,12 @@ const Auth = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading}
-                      className={`pl-10 h-12 ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      className={`pl-10 h-12 transition-all focus:shadow-md focus:shadow-primary/10 ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                      <span className="h-1 w-1 rounded-full bg-destructive" />
+                    <p className="text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                       {errors.email}
                     </p>
                   )}
@@ -353,14 +401,14 @@ const Auth = () => {
                         <button
                           type="button"
                           onClick={() => switchMode('forgot-password')}
-                          className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                          className="text-xs text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
                         >
                           Parolni unutdingizmi?
                         </button>
                       )}
                     </div>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <div className="relative group">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
                         type="password"
@@ -368,12 +416,12 @@ const Auth = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className={`pl-10 h-12 ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-10 h-12 transition-all focus:shadow-md focus:shadow-primary/10 ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-destructive flex items-center gap-1">
-                        <span className="h-1 w-1 rounded-full bg-destructive" />
+                      <p className="text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                         {errors.password}
                       </p>
                     )}
@@ -383,39 +431,49 @@ const Auth = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="w-full h-12 text-base font-semibold gap-2"
+                  className="w-full h-12 text-base font-semibold gap-2 mt-6 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
                   disabled={loading}
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : mode === 'login' ? (
                     <>
-                      <LogIn className="h-5 w-5" />
                       Kirish
+                      <ChevronRight className="h-5 w-5" />
                     </>
                   ) : mode === 'signup' ? (
                     <>
-                      <UserPlus className="h-5 w-5" />
                       Ro'yxatdan o'tish
+                      <ChevronRight className="h-5 w-5" />
                     </>
                   ) : (
                     <>
-                      <Mail className="h-5 w-5" />
                       Havola yuborish
+                      <Mail className="h-5 w-5" />
                     </>
                   )}
                 </Button>
               </form>
 
-              <div className="mt-8 text-center">
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">yoki</span>
+                </div>
+              </div>
+
+              <div className="text-center">
                 {mode === 'forgot-password' ? (
                   <button
                     type="button"
                     onClick={() => switchMode('login')}
-                    className="text-primary hover:text-primary/80 text-sm font-medium inline-flex items-center gap-2 transition-colors"
+                    className="text-primary hover:text-primary/80 text-sm font-medium inline-flex items-center gap-2 transition-colors group"
                     disabled={loading}
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                     Kirish sahifasiga qaytish
                   </button>
                 ) : (
@@ -424,7 +482,7 @@ const Auth = () => {
                     <button
                       type="button"
                       onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')}
-                      className="text-primary hover:text-primary/80 font-semibold transition-colors"
+                      className="text-primary hover:text-primary/80 font-semibold transition-colors hover:underline"
                       disabled={loading}
                     >
                       {mode === 'login' ? "Ro'yxatdan o'ting" : "Kirish"}
@@ -439,11 +497,23 @@ const Auth = () => {
           <div className="mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               Bosh sahifaga qaytish
             </button>
+          </div>
+
+          {/* Trust indicators for mobile */}
+          <div className="mt-8 lg:hidden">
+            <div className="flex justify-center gap-6 text-center text-xs text-muted-foreground">
+              {stats.map((stat, index) => (
+                <div key={index}>
+                  <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                  <p>{stat.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

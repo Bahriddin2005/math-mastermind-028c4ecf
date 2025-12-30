@@ -29,8 +29,12 @@ import {
   MessageCircle,
   Shield,
   Mail,
-  Calendar
+  Calendar,
+  Sun,
+  Moon,
+  Palette
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const usernameSchema = z.string()
   .min(2, "Ism kamida 2 ta belgi bo'lishi kerak")
@@ -41,6 +45,8 @@ const Settings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [username, setUsername] = useState('');
@@ -62,6 +68,10 @@ const Settings = () => {
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -459,6 +469,67 @@ const Settings = () => {
                       )}
                     </Button>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+            {/* Theme Section */}
+            <Card className="opacity-0 animate-slide-up overflow-hidden" style={{ animationDelay: '175ms', animationFillMode: 'forwards' }}>
+              <CardHeader className="pb-3 bg-gradient-to-r from-yellow-500/10 to-transparent">
+                <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                    <Palette className="h-4 w-4 text-yellow-500" />
+                  </div>
+                  Mavzu sozlamalari
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                  Ilova ko'rinishini sozlang
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-border/50">
+                    <div className="flex items-center gap-3">
+                      {mounted && theme === 'dark' ? (
+                        <Moon className="h-5 w-5 text-blue-400" />
+                      ) : (
+                        <Sun className="h-5 w-5 text-yellow-500" />
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">Rejim</p>
+                        <p className="text-xs text-muted-foreground">
+                          {mounted ? (theme === 'dark' ? "Qorong'u rejim" : "Yorug' rejim") : "Yuklanmoqda..."}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1 p-1 rounded-lg bg-background border border-border/50">
+                      <button
+                        onClick={() => setTheme('light')}
+                        className={`p-2 rounded-md transition-all ${
+                          mounted && theme === 'light' 
+                            ? 'bg-primary text-primary-foreground shadow-sm' 
+                            : 'hover:bg-secondary text-muted-foreground'
+                        }`}
+                        aria-label="Yorug' rejim"
+                      >
+                        <Sun className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => setTheme('dark')}
+                        className={`p-2 rounded-md transition-all ${
+                          mounted && theme === 'dark' 
+                            ? 'bg-primary text-primary-foreground shadow-sm' 
+                            : 'hover:bg-secondary text-muted-foreground'
+                        }`}
+                        aria-label="Qorong'u rejim"
+                      >
+                        <Moon className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground">
+                    Rejimni o'zgartirish orqali ilovaning umumiy ko'rinishini o'zgartiring
+                  </p>
                 </div>
               </CardContent>
             </Card>
