@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { BarChart3, Trophy, Target, Flame, TrendingUp } from 'lucide-react';
+import { BarChart3, Trophy, Target, Flame, TrendingUp, Zap, Clock } from 'lucide-react';
 
 interface DailyStatsProps {
   todayScore: number;
   todaySolved: number;
   todayAccuracy: number;
   currentStreak: number;
+  todayBestStreak: number;
+  todayAvgTime: number;
 }
 
 export const DailyStats = ({
@@ -13,7 +15,17 @@ export const DailyStats = ({
   todaySolved,
   todayAccuracy,
   currentStreak,
+  todayBestStreak,
+  todayAvgTime,
 }: DailyStatsProps) => {
+  const formatTime = (seconds: number) => {
+    if (seconds === 0) return '0s';
+    if (seconds < 60) return `${seconds.toFixed(1)}s`;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.round(seconds % 60);
+    return `${mins}m ${secs}s`;
+  };
+
   return (
     <Card className="border-border/40 shadow-sm overflow-hidden opacity-0 animate-slide-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
       <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-accent/5">
@@ -60,6 +72,26 @@ export const DailyStats = ({
             </div>
             <p className="text-xl font-display font-bold text-success">{todayAccuracy}%</p>
             <span className="text-xs text-muted-foreground">bugun</span>
+          </div>
+
+          {/* Bugungi eng yaxshi seriya */}
+          <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+            <div className="flex items-center gap-2 mb-1">
+              <Zap className="h-4 w-4 text-orange-500" />
+              <span className="text-xs text-muted-foreground">Eng yaxshi</span>
+            </div>
+            <p className="text-xl font-display font-bold text-orange-500">{todayBestStreak}</p>
+            <span className="text-xs text-muted-foreground">ta ketma-ket</span>
+          </div>
+
+          {/* O'rtacha vaqt */}
+          <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="h-4 w-4 text-sky-500" />
+              <span className="text-xs text-muted-foreground">O'rtacha</span>
+            </div>
+            <p className="text-xl font-display font-bold text-sky-500">{formatTime(todayAvgTime)}</p>
+            <span className="text-xs text-muted-foreground">har bir misol</span>
           </div>
 
           {/* Kunlik seriya */}

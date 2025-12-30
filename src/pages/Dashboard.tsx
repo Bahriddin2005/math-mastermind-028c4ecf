@@ -66,6 +66,8 @@ const Dashboard = () => {
   const [todaySolved, setTodaySolved] = useState(0);
   const [todayScore, setTodayScore] = useState(0);
   const [todayAccuracy, setTodayAccuracy] = useState(0);
+  const [todayBestStreak, setTodayBestStreak] = useState(0);
+  const [todayAvgTime, setTodayAvgTime] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Achievement notifications hook
@@ -124,9 +126,18 @@ const Dashboard = () => {
         const todayScoreSum = todaySessions.reduce((sum, s) => sum + (s.score || 0), 0);
         const accuracy = todayProblems > 0 ? Math.round((todayCorrect / todayProblems) * 100) : 0;
         
+        // Bugungi eng yaxshi seriya
+        const bestStreakToday = todaySessions.reduce((max, s) => Math.max(max, s.best_streak || 0), 0);
+        
+        // O'rtacha vaqt (har bir misol uchun)
+        const totalTime = todaySessions.reduce((sum, s) => sum + (s.total_time || 0), 0);
+        const avgTimePerProblem = todayProblems > 0 ? totalTime / todayProblems : 0;
+        
         setTodaySolved(todayProblems);
         setTodayScore(todayScoreSum);
         setTodayAccuracy(accuracy);
+        setTodayBestStreak(bestStreakToday);
+        setTodayAvgTime(avgTimePerProblem);
       }
 
       setLoading(false);
@@ -233,6 +244,8 @@ const Dashboard = () => {
                   todaySolved={todaySolved}
                   todayAccuracy={todayAccuracy}
                   currentStreak={profile.current_streak}
+                  todayBestStreak={todayBestStreak}
+                  todayAvgTime={todayAvgTime}
                 />
               )}
               <Achievements
