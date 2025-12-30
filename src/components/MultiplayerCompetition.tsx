@@ -430,46 +430,46 @@ export const MultiplayerCompetition = () => {
   if (!roomId) {
     return (
       <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-red-500/10 to-orange-500/10 pb-4">
-          <CardTitle className="flex items-center gap-2">
-            <Swords className="h-5 w-5 text-red-500" />
+        <CardHeader className="bg-gradient-to-r from-red-500/10 to-orange-500/10 pb-4 px-4 sm:px-6">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Swords className="h-5 w-5 sm:h-6 sm:w-6 text-red-500" />
             Ikki O'yinchi Musobaqasi
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-4">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Crown className="h-4 w-4 text-amber-500" />
+        <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            <div className="space-y-3 sm:space-y-4 p-4 bg-secondary/30 rounded-xl">
+              <h3 className="font-semibold flex items-center gap-2 text-base sm:text-lg">
+                <Crown className="h-5 w-5 text-amber-500" />
                 Yangi xona yaratish
               </h3>
               <p className="text-sm text-muted-foreground">
                 Xona yarating va do'stingizni taklif qiling
               </p>
-              <Button onClick={createRoom} className="w-full gap-2">
-                <Play className="h-4 w-4" />
+              <Button onClick={createRoom} className="w-full gap-2 h-12 sm:h-10 text-base sm:text-sm">
+                <Play className="h-5 w-5 sm:h-4 sm:w-4" />
                 Xona yaratish
               </Button>
             </div>
             
-            <div className="space-y-4">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-500" />
+            <div className="space-y-3 sm:space-y-4 p-4 bg-secondary/30 rounded-xl">
+              <h3 className="font-semibold flex items-center gap-2 text-base sm:text-lg">
+                <Users className="h-5 w-5 text-blue-500" />
                 Mavjud xonaga qo'shilish
               </h3>
               <Input
                 placeholder="Xona ID kiriting"
                 value={inputRoomId}
                 onChange={(e) => setInputRoomId(e.target.value.toUpperCase())}
-                className="text-center text-lg uppercase"
+                className="text-center text-lg sm:text-base uppercase h-12 sm:h-10"
               />
               <Button 
                 onClick={joinRoom} 
                 variant="outline" 
-                className="w-full gap-2"
+                className="w-full gap-2 h-12 sm:h-10 text-base sm:text-sm"
                 disabled={!inputRoomId.trim()}
               >
-                <Zap className="h-4 w-4" />
+                <Zap className="h-5 w-5 sm:h-4 sm:w-4" />
                 Qo'shilish
               </Button>
             </div>
@@ -481,57 +481,61 @@ export const MultiplayerCompetition = () => {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-red-500/10 to-orange-500/10 pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+      <CardHeader className="bg-gradient-to-r from-red-500/10 to-orange-500/10 pb-3 sm:pb-4 px-4 sm:px-6">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-xl">
             <Swords className="h-5 w-5 text-red-500" />
-            Musobaqa
+            <span className="hidden sm:inline">Musobaqa</span>
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="font-mono">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <Badge variant="outline" className="font-mono text-sm sm:text-base px-2 sm:px-3 py-1">
               {roomId}
             </Badge>
-            <Button variant="ghost" size="icon" onClick={copyRoomId}>
+            <Button variant="ghost" size="icon" onClick={copyRoomId} className="h-9 w-9 sm:h-10 sm:w-10">
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="pt-6">
+      <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
         {/* O'yinchilar */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className={`p-4 rounded-lg border-2 ${currentPlayer ? 'border-primary bg-primary/5' : 'border-muted'}`}>
-            <div className="flex items-center gap-3">
-              <Avatar>
-                <AvatarFallback className="bg-primary/20">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <div className={`p-3 sm:p-4 rounded-xl border-2 ${currentPlayer ? 'border-primary bg-primary/5' : 'border-muted'}`}>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+              <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                <AvatarFallback className="bg-primary/20 text-base sm:text-lg">
                   {currentPlayer?.username?.[0]?.toUpperCase() || 'P'}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-semibold">{currentPlayer?.username || 'Siz'}</p>
-                <p className="text-2xl font-bold text-primary">{currentPlayer?.score || 0}</p>
+                <p className="font-semibold text-sm sm:text-base truncate max-w-[80px] sm:max-w-none">
+                  {currentPlayer?.username || 'Siz'}
+                </p>
+                <p className="text-2xl sm:text-3xl font-bold text-primary">{currentPlayer?.score || 0}</p>
               </div>
             </div>
           </div>
           
-          <div className={`p-4 rounded-lg border-2 ${opponent ? 'border-orange-500 bg-orange-500/5' : 'border-muted border-dashed'}`}>
+          <div className={`p-3 sm:p-4 rounded-xl border-2 ${opponent ? 'border-orange-500 bg-orange-500/5' : 'border-muted border-dashed'}`}>
             {opponent ? (
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarFallback className="bg-orange-500/20">
+              <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                  <AvatarFallback className="bg-orange-500/20 text-base sm:text-lg">
                     {opponent.username?.[0]?.toUpperCase() || 'O'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-semibold">{opponent.username}</p>
-                  <p className="text-2xl font-bold text-orange-500">{opponent.score}</p>
+                  <p className="font-semibold text-sm sm:text-base truncate max-w-[80px] sm:max-w-none">
+                    {opponent.username}
+                  </p>
+                  <p className="text-2xl sm:text-3xl font-bold text-orange-500">{opponent.score}</p>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                <Clock className="h-4 w-4 mr-2 animate-pulse" />
-                Kutilmoqda...
+              <div className="flex flex-col items-center justify-center h-full text-muted-foreground py-2">
+                <Clock className="h-5 w-5 mb-1 animate-pulse" />
+                <span className="text-sm">Kutilmoqda...</span>
               </div>
             )}
           </div>
@@ -539,24 +543,24 @@ export const MultiplayerCompetition = () => {
 
         {/* O'yin holati */}
         {gameState?.status === 'waiting' && (
-          <div className="text-center py-8">
+          <div className="text-center py-6 sm:py-8">
             {gameState.players.length < 2 ? (
               <div>
-                <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4 animate-pulse" />
-                <p className="text-muted-foreground mb-4">
+                <Users className="h-14 w-14 sm:h-12 sm:w-12 mx-auto text-muted-foreground mb-4 animate-pulse" />
+                <p className="text-muted-foreground mb-4 text-base sm:text-sm">
                   Raqib kutilmoqda...
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Xona ID: <span className="font-mono font-bold">{roomId}</span>
+                  Xona ID: <span className="font-mono font-bold text-base">{roomId}</span>
                 </p>
               </div>
             ) : isHost ? (
-              <Button onClick={startGame} size="lg" className="gap-2">
-                <Play className="h-5 w-5" />
+              <Button onClick={startGame} size="lg" className="gap-2 h-14 sm:h-12 text-lg sm:text-base px-8">
+                <Play className="h-6 w-6 sm:h-5 sm:w-5" />
                 O'yinni boshlash
               </Button>
             ) : (
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-base sm:text-sm">
                 Host o'yinni boshlashini kuting...
               </p>
             )}
@@ -564,8 +568,8 @@ export const MultiplayerCompetition = () => {
         )}
 
         {gameState?.status === 'countdown' && (
-          <div className="text-center py-8">
-            <div className="text-8xl font-bold text-primary animate-pulse">
+          <div className="text-center py-6 sm:py-8">
+            <div className="text-[100px] sm:text-8xl font-bold text-primary animate-pulse leading-none">
               {countdown}
             </div>
           </div>
@@ -573,7 +577,7 @@ export const MultiplayerCompetition = () => {
 
         {(gameState?.status === 'playing' || gameState?.status === 'countdown') && gameState.currentNumber !== undefined && (
           <div className="text-center">
-            <div className="mb-4 text-sm text-muted-foreground">
+            <div className="mb-3 sm:mb-4 text-base sm:text-sm text-muted-foreground font-medium">
               Masala {gameState.currentProblemIndex + 1}/{PROBLEM_COUNT}
             </div>
             
@@ -585,24 +589,24 @@ export const MultiplayerCompetition = () => {
             />
             
             {gameState.status === 'playing' && !currentPlayer?.hasAnswered && (
-              <div className="mt-6 max-w-xs mx-auto space-y-4">
+              <div className="mt-4 sm:mt-6 max-w-xs mx-auto space-y-3 sm:space-y-4 px-2">
                 <Input
                   type="number"
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Javob"
-                  className="text-center text-2xl h-14"
+                  className="text-center text-3xl sm:text-2xl h-16 sm:h-14"
                   autoFocus
                 />
-                <Button onClick={submitAnswer} disabled={!userAnswer} className="w-full gap-2">
-                  <Check className="h-4 w-4" />
+                <Button onClick={submitAnswer} disabled={!userAnswer} className="w-full gap-2 h-14 sm:h-12 text-lg sm:text-base">
+                  <Check className="h-5 w-5 sm:h-4 sm:w-4" />
                   Yuborish
                 </Button>
               </div>
             )}
             
             {currentPlayer?.hasAnswered && (
-              <div className="mt-6 text-muted-foreground">
+              <div className="mt-4 sm:mt-6 text-muted-foreground text-base sm:text-sm">
                 Raqibni kutilmoqda...
               </div>
             )}
@@ -610,23 +614,23 @@ export const MultiplayerCompetition = () => {
         )}
 
         {gameState?.status === 'finished' && (
-          <div className="text-center py-8">
-            <Trophy className={`h-16 w-16 mx-auto mb-4 ${gameState.winnerId === user?.id ? 'text-amber-500' : 'text-muted-foreground'}`} />
-            <h3 className="text-2xl font-bold mb-2">
+          <div className="text-center py-6 sm:py-8">
+            <Trophy className={`h-20 w-20 sm:h-16 sm:w-16 mx-auto mb-4 ${gameState.winnerId === user?.id ? 'text-amber-500' : 'text-muted-foreground'}`} />
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 px-2">
               {gameState.winnerId === user?.id ? "Tabriklaymiz! Siz yutdingiz! 🎉" : `${opponentName} g'olib bo'ldi`}
             </h3>
-            <div className="flex justify-center gap-8 my-6">
-              <div>
+            <div className="flex justify-center gap-6 sm:gap-8 my-4 sm:my-6">
+              <div className="bg-primary/10 rounded-xl px-6 py-3">
                 <p className="text-sm text-muted-foreground">Siz</p>
-                <p className="text-3xl font-bold text-primary">{currentPlayer?.score || 0}</p>
+                <p className="text-4xl sm:text-3xl font-bold text-primary">{currentPlayer?.score || 0}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">{opponent?.username || 'Raqib'}</p>
-                <p className="text-3xl font-bold text-orange-500">{opponent?.score || 0}</p>
+              <div className="bg-orange-500/10 rounded-xl px-6 py-3">
+                <p className="text-sm text-muted-foreground truncate max-w-[80px]">{opponent?.username || 'Raqib'}</p>
+                <p className="text-4xl sm:text-3xl font-bold text-orange-500">{opponent?.score || 0}</p>
               </div>
             </div>
-            <Button onClick={leaveRoom} variant="outline" className="gap-2">
-              <RotateCcw className="h-4 w-4" />
+            <Button onClick={leaveRoom} variant="outline" className="gap-2 h-12 sm:h-10 text-base sm:text-sm">
+              <RotateCcw className="h-5 w-5 sm:h-4 sm:w-4" />
               Yangi o'yin
             </Button>
           </div>
@@ -634,8 +638,8 @@ export const MultiplayerCompetition = () => {
 
         {/* Chiqish tugmasi */}
         {gameState?.status !== 'finished' && (
-          <div className="mt-6 text-center">
-            <Button variant="ghost" onClick={leaveRoom} className="text-muted-foreground">
+          <div className="mt-4 sm:mt-6 text-center">
+            <Button variant="ghost" onClick={leaveRoom} className="text-muted-foreground h-10">
               Xonadan chiqish
             </Button>
           </div>

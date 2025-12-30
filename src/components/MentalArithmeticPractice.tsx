@@ -471,44 +471,44 @@ export const MentalArithmeticPractice = () => {
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-1 sm:px-0">
       {/* Statistika */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">Jami</div>
-          <div className="text-2xl font-bold text-primary">{stats.totalProblems}</div>
+      <div className="grid grid-cols-4 gap-2 sm:gap-3">
+        <Card className="p-2 sm:p-3">
+          <div className="text-xs sm:text-sm text-muted-foreground truncate">Jami</div>
+          <div className="text-lg sm:text-2xl font-bold text-primary">{stats.totalProblems}</div>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">To'g'ri</div>
-          <div className="text-2xl font-bold text-green-500">{stats.correctAnswers}</div>
+        <Card className="p-2 sm:p-3">
+          <div className="text-xs sm:text-sm text-muted-foreground truncate">To'g'ri</div>
+          <div className="text-lg sm:text-2xl font-bold text-green-500">{stats.correctAnswers}</div>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">Aniqlik</div>
-          <div className="text-2xl font-bold text-blue-500">{accuracy}%</div>
+        <Card className="p-2 sm:p-3">
+          <div className="text-xs sm:text-sm text-muted-foreground truncate">Aniqlik</div>
+          <div className="text-lg sm:text-2xl font-bold text-blue-500">{accuracy}%</div>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">Eng uzun seriya</div>
-          <div className="text-2xl font-bold text-amber-500">{stats.bestStreak}</div>
+        <Card className="p-2 sm:p-3">
+          <div className="text-xs sm:text-sm text-muted-foreground truncate">Seriya</div>
+          <div className="text-lg sm:text-2xl font-bold text-amber-500">{stats.bestStreak}</div>
         </Card>
       </div>
 
       <Tabs defaultValue="flashcard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="flashcard" className="gap-1.5 text-xs sm:text-sm">
-            <Lightbulb className="h-4 w-4" />
-            <span className="hidden sm:inline">Flash Card</span>
+        <TabsList className="grid w-full grid-cols-4 h-auto p-1">
+          <TabsTrigger value="flashcard" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
+            <Lightbulb className="h-4 w-4 sm:h-4 sm:w-4" />
+            <span className="text-[10px] sm:text-sm">Flash</span>
           </TabsTrigger>
-          <TabsTrigger value="multiplayer" className="gap-1.5 text-xs sm:text-sm">
-            <Swords className="h-4 w-4" />
-            <span className="hidden sm:inline">Musobaqa</span>
+          <TabsTrigger value="multiplayer" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
+            <Swords className="h-4 w-4 sm:h-4 sm:w-4" />
+            <span className="text-[10px] sm:text-sm">Musobaqa</span>
           </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="gap-1.5 text-xs sm:text-sm">
-            <Trophy className="h-4 w-4" />
-            <span className="hidden sm:inline">Reyting</span>
+          <TabsTrigger value="leaderboard" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
+            <Trophy className="h-4 w-4 sm:h-4 sm:w-4" />
+            <span className="text-[10px] sm:text-sm">Reyting</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1.5 text-xs sm:text-sm">
-            <BarChart3 className="h-4 w-4" />
-            <span className="hidden sm:inline">Tarix</span>
+          <TabsTrigger value="history" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
+            <BarChart3 className="h-4 w-4 sm:h-4 sm:w-4" />
+            <span className="text-[10px] sm:text-sm">Tarix</span>
           </TabsTrigger>
         </TabsList>
 

@@ -57,12 +57,12 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-lg">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-8">
+      <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
         <Link to="/">
           <Logo size="md" />
         </Link>
         
-        <div className="flex items-center gap-2 md:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
           {/* Video darslar button - only for logged in users */}
           {user && (
             <Button 
@@ -83,9 +83,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/')}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 h-9 sm:h-10 px-2 sm:px-3"
               >
-                <Home className="h-4 w-4" />
+                <Home className="h-4 w-4 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Bosh sahifa</span>
               </Button>
             ) : (
@@ -93,9 +93,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                 variant="default" 
                 size="sm"
                 onClick={() => navigate('/train')}
-                className="gap-2"
+                className="gap-1.5 sm:gap-2 h-9 sm:h-10 px-2 sm:px-3"
               >
-                <Play className="h-4 w-4" />
+                <Play className="h-4 w-4 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Mashq</span>
               </Button>
             )
@@ -108,11 +108,12 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
+              className="h-9 w-9 sm:h-10 sm:w-10"
             >
               {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-warning" />
+                <Sun className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               ) : (
-                <Moon className="h-5 w-5" />
+                <Moon className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </Button>
           )}
@@ -123,18 +124,19 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
             size="icon"
             onClick={onToggleSound}
             aria-label={soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+            className="h-9 w-9 sm:h-10 sm:w-10"
           >
             {soundEnabled ? (
-              <Volume2 className="h-5 w-5" />
+              <Volume2 className="h-4 w-4 sm:h-5 sm:w-5" />
             ) : (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
+              <VolumeX className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             )}
           </Button>
 
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="sm" className="gap-2">
+                <Button variant="secondary" size="sm" className="gap-1.5 sm:gap-2 h-9 sm:h-10 px-2 sm:px-3">
                   <User className="h-4 w-4" />
                   <span className="hidden sm:inline">Profil</span>
                 </Button>
@@ -170,9 +172,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="secondary" size="sm" onClick={() => navigate('/auth')}>
-              <User className="h-4 w-4 mr-2" />
-              Kirish
+            <Button variant="secondary" size="sm" onClick={() => navigate('/auth')} className="h-9 sm:h-10 px-2 sm:px-3 gap-1.5 sm:gap-2">
+              <User className="h-4 w-4" />
+              <span className="hidden xs:inline">Kirish</span>
             </Button>
           )}
         </div>

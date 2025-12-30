@@ -136,6 +136,15 @@ const InteractiveAbacus = ({
   );
 };
 
+// Qiyinlik darajalari
+type DifficultyLevel = '1-digit' | '2-digit' | '3-digit';
+
+const DIFFICULTY_CONFIG = {
+  '1-digit': { label: "1 xonali", min: 0, max: 9, columns: 1 },
+  '2-digit': { label: "2 xonali", min: 10, max: 99, columns: 2 },
+  '3-digit': { label: "3 xonali", min: 100, max: 999, columns: 3 },
+};
+
 export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
@@ -145,6 +154,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const [showTime, setShowTime] = useState(2000);
   const [answerTimeLimit, setAnswerTimeLimit] = useState(10); // seconds to answer
   const [showSettings, setShowSettings] = useState(true);
+  const [difficulty, setDifficulty] = useState<DifficultyLevel>('1-digit');
   
   // Game state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -165,10 +175,11 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Calculate points based on time and streak
+  // Calculate points based on time, streak, and difficulty
   const calculatePoints = useCallback((timeTaken: number, currentStreak: number) => {
-    // Base points
-    let points = 10;
+    // Base points - higher for harder difficulties
+    const difficultyMultiplier = difficulty === '3-digit' ? 3 : difficulty === '2-digit' ? 2 : 1;
+    let points = 10 * difficultyMultiplier;
     
     // Time bonus: faster = more points (max 20 bonus points)
     const timeBonus = Math.max(0, Math.floor((answerTimeLimit - timeTaken) * 2));
@@ -179,12 +190,13 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     points += streakBonus;
     
     return points;
-  }, [answerTimeLimit]);
+  }, [answerTimeLimit, difficulty]);
 
-  // Generate random number 0-9
+  // Generate random number based on difficulty
   const generateNumber = useCallback(() => {
-    return Math.floor(Math.random() * 10);
-  }, []);
+    const config = DIFFICULTY_CONFIG[difficulty];
+    return Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
+  }, [difficulty]);
 
   // Clear all timers
   const clearAllTimers = useCallback(() => {
@@ -440,7 +452,28 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               <Settings2 className="h-4 w-4" />
               Sozlamalar
             </div>
-            <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4">
+              {/* Qiyinlik darajasi */}
+              <div className="space-y-2">
+                <Label className="text-sm sm:text-base">Qiyinlik darajasi</Label>
+                <Select value={difficulty} onValueChange={(v) => setDifficulty(v as DifficultyLevel)}>
+                  <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1-digit" className="text-base sm:text-sm py-3 sm:py-2">
+                      1 xonali (0-9)
+                    </SelectItem>
+                    <SelectItem value="2-digit" className="text-base sm:text-sm py-3 sm:py-2">
+                      2 xonali (10-99)
+                    </SelectItem>
+                    <SelectItem value="3-digit" className="text-base sm:text-sm py-3 sm:py-2">
+                      3 xonali (100-999)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
               <div className="space-y-2">
                 <Label className="text-sm sm:text-base">Masalalar soni</Label>
                 <Select value={String(problemCount)} onValueChange={(v) => setProblemCount(Number(v))}>
