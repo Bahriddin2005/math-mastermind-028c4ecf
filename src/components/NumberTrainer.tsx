@@ -160,6 +160,37 @@ interface DailyData {
   correct: number;
 }
 
+// Ripple effect va haptic feedback
+const createRipple = (event: React.MouseEvent<HTMLElement>) => {
+  const button = event.currentTarget;
+  const ripple = document.createElement('span');
+  const rect = button.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top - size / 2;
+  
+  ripple.style.width = ripple.style.height = `${size}px`;
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+  ripple.className = 'ripple bg-current opacity-30';
+  
+  button.appendChild(ripple);
+  
+  setTimeout(() => ripple.remove(), 600);
+};
+
+const triggerHaptic = () => {
+  if ('vibrate' in navigator) {
+    navigator.vibrate(10);
+  }
+};
+
+const handleTabClick = (event: React.MouseEvent<HTMLElement>, value: string, setTab: (v: string) => void) => {
+  createRipple(event);
+  triggerHaptic();
+  setTab(value);
+};
+
 export const NumberTrainer = () => {
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -955,42 +986,48 @@ export const NumberTrainer = () => {
               
               <TabsTrigger 
                 value="train" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'train', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Play className="h-5 w-5 transition-transform duration-300 data-[state=active]:scale-110" />
                 <span className="text-[10px] font-medium transition-all duration-300">Mashq</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="learn" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-success rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'learn', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-success rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <BookOpen className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">O'quv</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="daily" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-accent rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'daily', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-accent rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Flame className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">Kunlik</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="multiplayer" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'multiplayer', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Users className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">Ko'p</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="leaderboard" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-warning rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'leaderboard', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-warning rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Trophy className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">Reyting</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="stats" 
-                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                onClick={(e) => handleTabClick(e, 'stats', setActiveTab)}
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <BarChart3 className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">Stat</span>
