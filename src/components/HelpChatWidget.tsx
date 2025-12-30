@@ -552,12 +552,12 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
             </div>
           </CardHeader>
 
-          <CardContent className="p-0">
+          <CardContent className="p-0 bg-background dark:bg-card">
             {chatMode ? (
               /* AI Chat Mode */
               <div className="flex flex-col h-[50vh] md:h-[400px]">
                 {/* Back button and TTS toggle */}
-                <div className="p-2 border-b flex items-center justify-between">
+                <div className="p-2 border-b border-border/50 bg-muted/30 dark:bg-muted/10 flex items-center justify-between">
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -569,7 +569,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                         audioRef.current = null;
                       }
                     }}
-                    className="text-muted-foreground"
+                    className="text-muted-foreground hover:text-foreground"
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     FAQ ga qaytish
@@ -579,7 +579,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                     size="icon"
                     onClick={() => setTtsEnabled(!ttsEnabled)}
                     title={ttsEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
-                    className={isPlayingAudio ? "text-primary animate-pulse" : ""}
+                    className={isPlayingAudio ? "text-primary animate-pulse" : "hover:text-foreground"}
                   >
                     {ttsEnabled ? (
                       <Volume2 className="h-4 w-4" />
@@ -590,7 +590,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                 </div>
 
                 {/* Messages */}
-                <ScrollArea className="flex-1 p-4">
+                <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-background to-muted/20 dark:from-card dark:to-muted/10">
                   <div className="space-y-4">
                     {messages.map((msg, index) => (
                       <div
@@ -600,8 +600,8 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                         <div
                           className={`max-w-[85%] px-4 py-2 rounded-2xl ${
                             msg.role === 'user'
-                              ? 'bg-primary text-primary-foreground rounded-br-md'
-                              : 'bg-secondary rounded-bl-md'
+                              ? 'bg-primary text-primary-foreground rounded-br-md shadow-md'
+                              : 'bg-muted dark:bg-muted/80 text-foreground rounded-bl-md shadow-sm border border-border/50'
                           }`}
                         >
                           <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -610,8 +610,12 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                     ))}
                     {isLoading && (
                       <div className="flex justify-start">
-                        <div className="bg-secondary px-4 py-2 rounded-2xl rounded-bl-md">
-                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        <div className="bg-muted dark:bg-muted/80 px-5 py-3 rounded-2xl rounded-bl-md shadow-sm border border-border/50">
+                          <div className="flex items-center gap-1.5">
+                            <span className="typing-dot"></span>
+                            <span className="typing-dot"></span>
+                            <span className="typing-dot"></span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -654,7 +658,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                 )}
 
                 {/* Input */}
-                <div className="p-4 border-t">
+                <div className="p-3 border-t border-border/50 bg-muted/30 dark:bg-muted/10">
                   <div className="flex gap-2">
                     <input
                       ref={fileInputRef}
