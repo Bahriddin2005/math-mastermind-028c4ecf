@@ -1154,7 +1154,22 @@ export const NumberTrainer = () => {
               </Card>
 
               {/* Boshlash tugmasi */}
-              <div className="flex justify-center pt-4">
+              <div className="flex justify-center gap-4 pt-4">
+                <Button
+                  onClick={() => {
+                    setFormulaType('oddiy');
+                    setDigitCount(1);
+                    setSpeed(0.5);
+                    setProblemCount(5);
+                    setVoiceEnabled(true);
+                  }}
+                  variant="outline"
+                  size="lg"
+                  className="gap-2 rounded-2xl px-6 py-6"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                  Default
+                </Button>
                 <Button
                   onClick={startGame}
                   size="lg"
