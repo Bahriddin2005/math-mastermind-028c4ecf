@@ -3,8 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Award, Trophy, Medal, Star, Crown, Zap, Target, Flame } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Award, Trophy, Share2, Twitter, Facebook, Link2, Check } from "lucide-react";
 import { format } from "date-fns";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UserBadge {
   id: string;
@@ -22,7 +31,10 @@ const BADGE_DEFINITIONS = [
   { type: "weekly_winner", name: "Haftalik chempion", icon: "🏆", color: "from-purple-500 to-pink-500", description: "Haftalik musobaqada 1-o'rin" },
   
   // Streak badges
+  { type: "streak_3", name: "Uch kunlik seriya", icon: "🔥", color: "from-orange-400 to-red-400", description: "3 kun ketma-ket mashq" },
+  { type: "streak_5", name: "Besh kunlik seriya", icon: "🔥", color: "from-orange-500 to-red-500", description: "5 kun ketma-ket mashq" },
   { type: "streak_7", name: "Haftalik seriya", icon: "🔥", color: "from-orange-500 to-red-500", description: "7 kun ketma-ket mashq" },
+  { type: "streak_14", name: "Ikki haftalik seriya", icon: "⚡", color: "from-yellow-500 to-orange-500", description: "14 kun ketma-ket mashq" },
   { type: "streak_30", name: "Oylik seriya", icon: "⭐", color: "from-amber-500 to-yellow-500", description: "30 kun ketma-ket mashq" },
   { type: "best_streak_10", name: "Seriya ustasi", icon: "⚡", color: "from-blue-500 to-cyan-500", description: "10+ ketma-ket to'g'ri javob" },
   { type: "best_streak_25", name: "Super seriya", icon: "💎", color: "from-indigo-500 to-purple-500", description: "25+ ketma-ket to'g'ri javob" },
@@ -35,6 +47,12 @@ const BADGE_DEFINITIONS = [
   // Score badges
   { type: "score_1000", name: "Ming ball", icon: "🌟", color: "from-blue-500 to-indigo-500", description: "1000 ball to'plash" },
   { type: "score_5000", name: "Besh ming ball", icon: "👑", color: "from-amber-500 to-orange-500", description: "5000 ball to'plash" },
+  { type: "daily_score_500", name: "Kunlik besh yuz", icon: "⭐", color: "from-cyan-500 to-blue-500", description: "1 kunda 500+ ball" },
+  { type: "daily_score_1000", name: "Kunlik ming ball", icon: "🔥", color: "from-orange-500 to-red-500", description: "1 kunda 1000+ ball" },
+  
+  // Accuracy badges
+  { type: "accuracy_95", name: "Super aniqlik", icon: "🎯", color: "from-emerald-500 to-green-500", description: "95%+ aniqlik" },
+  { type: "perfect_game", name: "Mukammal o'yin", icon: "💎", color: "from-violet-500 to-purple-500", description: "100% aniqlik, 10+ masala" },
   
   // Game badges
   { type: "first_game", name: "Birinchi qadam", icon: "🎮", color: "from-pink-500 to-rose-500", description: "Birinchi o'yinni o'ynash" },
@@ -45,6 +63,7 @@ const BADGE_DEFINITIONS = [
 export const UserBadges = ({ userId }: { userId?: string }) => {
   const { user } = useAuth();
   const targetUserId = userId || user?.id;
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const { data: badges, isLoading } = useQuery({
     queryKey: ["user-badges", targetUserId],
@@ -69,6 +88,49 @@ export const UserBadges = ({ userId }: { userId?: string }) => {
 
   const uniqueBadgeTypes = [...new Set(badges?.map((b) => b.badge_type) || [])];
 
+  const generateShareText = () => {
+    if (!badges?.length) return "";
+    const count = badges.length;
+    const topBadges = uniqueBadgeTypes.slice(0, 3).map((type) => {
+      const def = BADGE_DEFINITIONS.find((b) => b.type === type);
+      return def?.icon || "🏆";
+    }).join(" ");
+    return `Men IqroMax'da ${count} ta mukofot yutib oldim! ${topBadges}\n\nSiz ham sinab ko'ring: `;
+  };
+
+  const shareUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const shareText = generateShareText();
+
+  const handleShare = async (platform: "twitter" | "facebook" | "copy") => {
+    const text = shareText;
+    const url = shareUrl;
+
+    switch (platform) {
+      case "twitter":
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+          "_blank"
+        );
+        break;
+      case "facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,
+          "_blank"
+        );
+        break;
+      case "copy":
+        try {
+          await navigator.clipboard.writeText(`${text}${url}`);
+          setCopiedLink(true);
+          toast.success("Havoladan nusxa olindi!");
+          setTimeout(() => setCopiedLink(false), 2000);
+        } catch {
+          toast.error("Nusxa olishda xatolik");
+        }
+        break;
+    }
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -86,9 +148,36 @@ export const UserBadges = ({ userId }: { userId?: string }) => {
           <Award className="h-5 w-5 text-amber-500" />
           Mukofotlar va yutuqlar
           {badges && badges.length > 0 && (
-            <Badge variant="secondary" className="ml-auto">
-              {badges.length} ta
-            </Badge>
+            <>
+              <Badge variant="secondary" className="ml-auto mr-2">
+                {badges.length} ta
+              </Badge>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleShare("twitter")} className="gap-2">
+                    <Twitter className="h-4 w-4 text-sky-500" />
+                    Twitter
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare("facebook")} className="gap-2">
+                    <Facebook className="h-4 w-4 text-blue-600" />
+                    Facebook
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleShare("copy")} className="gap-2">
+                    {copiedLink ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <Link2 className="h-4 w-4" />
+                    )}
+                    Havoladan nusxa
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           )}
         </CardTitle>
       </CardHeader>

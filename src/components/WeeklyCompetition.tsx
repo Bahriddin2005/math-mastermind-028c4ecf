@@ -296,36 +296,48 @@ export const WeeklyCompetition = () => {
             </div>
           ) : (
             <div className="space-y-2">
-              {leaderboard.map((result, index) => (
-                <div
-                  key={result.id}
-                  className={`flex items-center gap-3 p-2 rounded-lg transition-colors ${
-                    result.user_id === user?.id
-                      ? "bg-primary/10 border border-primary/20"
-                      : index < 3
-                      ? "bg-secondary/50"
-                      : ""
-                  }`}
-                >
-                  <div className="w-6 flex items-center justify-center">{getRankIcon(index)}</div>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={result.avatar_url || undefined} />
-                    <AvatarFallback className="text-xs">
-                      {result.username.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">{result.username}</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {result.games_played} o'yin · {result.correct_answers} to'g'ri
+              {leaderboard.map((result, index) => {
+                const isCurrentUser = result.user_id === user?.id;
+                return (
+                  <div
+                    key={result.id}
+                    className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                      isCurrentUser
+                        ? "bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border-2 border-primary/40 animate-pulse-slow shadow-lg shadow-primary/20 ring-2 ring-primary/20"
+                        : index < 3
+                        ? "bg-secondary/50"
+                        : "hover:bg-secondary/30"
+                    }`}
+                  >
+                    <div className="w-6 flex items-center justify-center">{getRankIcon(index)}</div>
+                    <Avatar className={`h-8 w-8 ${isCurrentUser ? "ring-2 ring-primary" : ""}`}>
+                      <AvatarImage src={result.avatar_url || undefined} />
+                      <AvatarFallback className="text-xs">
+                        {result.username.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-medium text-sm truncate ${isCurrentUser ? "text-primary font-bold" : ""}`}>
+                        {result.username}
+                        {isCurrentUser && (
+                          <Badge variant="secondary" className="ml-2 text-[10px] py-0 px-1.5 bg-primary/20 text-primary">
+                            Siz
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">
+                        {result.games_played} o'yin · {result.correct_answers} to'g'ri
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`font-bold ${isCurrentUser ? "text-primary text-lg" : "text-primary"}`}>
+                        {result.total_score}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">ball</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-bold text-primary">{result.total_score}</div>
-                    <div className="text-[10px] text-muted-foreground">ball</div>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
