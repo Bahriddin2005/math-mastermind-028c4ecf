@@ -191,6 +191,29 @@ export const NumberTrainer = () => {
   });
   const [showStats, setShowStats] = useState(false);
 
+  // Default sozlamalar
+  const DEFAULT_SETTINGS = {
+    formulaType: 'oddiy' as FormulaType,
+    digitCount: 1,
+    speed: 0.5,
+    problemCount: 5,
+    voiceEnabled: true,
+  };
+
+  // Sozlamalarni default holatga qaytarish
+  const resetToDefaults = () => {
+    setFormulaType(DEFAULT_SETTINGS.formulaType);
+    setDigitCount(DEFAULT_SETTINGS.digitCount);
+    setSpeed(DEFAULT_SETTINGS.speed);
+    setProblemCount(DEFAULT_SETTINGS.problemCount);
+    setVoiceEnabled(DEFAULT_SETTINGS.voiceEnabled);
+    localStorage.removeItem('numberTrainer_formulaType');
+    localStorage.removeItem('numberTrainer_digitCount');
+    localStorage.removeItem('numberTrainer_speed');
+    localStorage.removeItem('numberTrainer_problemCount');
+    localStorage.removeItem('numberTrainer_voiceEnabled');
+  };
+
   // Sozlamalarni localStorage ga saqlash
   useEffect(() => {
     localStorage.setItem('numberTrainer_formulaType', formulaType);
@@ -1153,8 +1176,17 @@ export const NumberTrainer = () => {
                 </CardContent>
               </Card>
 
-              {/* Boshlash tugmasi */}
-              <div className="flex justify-center pt-4">
+              {/* Boshlash va Reset tugmalari */}
+              <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
+                <Button
+                  onClick={resetToDefaults}
+                  variant="outline"
+                  size="lg"
+                  className="px-6 py-6 text-base font-medium rounded-2xl border-border/50 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-all duration-300"
+                >
+                  <RotateCcw className="h-5 w-5 mr-2" />
+                  Default holatga qaytarish
+                </Button>
                 <Button
                   onClick={startGame}
                   size="lg"
