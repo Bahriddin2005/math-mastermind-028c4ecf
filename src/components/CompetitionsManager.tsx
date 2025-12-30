@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,9 +10,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Trophy, Calendar, Users, Clock, RefreshCw, Trash2, Plus, Download, CalendarDays } from "lucide-react";
+import { Trophy, Calendar, Users, Clock, RefreshCw, Trash2, Plus, Download, CalendarDays, Edit, Filter, Star, Award } from "lucide-react";
 import { toast } from "sonner";
-import { format, startOfWeek, endOfWeek, addDays } from "date-fns";
+import { format, startOfWeek, endOfWeek, addDays, isWithinInterval, parseISO } from "date-fns";
 
 const FORMULA_TYPES = [
   { value: "oddiy", label: "Oddiy" },
@@ -26,6 +26,8 @@ export const CompetitionsManager = () => {
   const queryClient = useQueryClient();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [createType, setCreateType] = useState<"daily" | "weekly">("daily");
+  const [editingWeekly, setEditingWeekly] = useState<any>(null);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
   const [newChallenge, setNewChallenge] = useState({
     formula_type: "hammasi",
     digit_count: 1,
@@ -33,6 +35,19 @@ export const CompetitionsManager = () => {
     problem_count: 5,
     challenge_date: format(new Date(), "yyyy-MM-dd"),
   });
+
+  // Check if a challenge is currently active
+  const isActiveChallenge = (weekStart: string, weekEnd: string) => {
+    const today = new Date();
+    try {
+      return isWithinInterval(today, {
+        start: parseISO(weekStart),
+        end: parseISO(weekEnd),
+      });
+    } catch {
+      return false;
+    }
+  };
 
   // Kunlik musobaqalar
   const { data: dailyChallenges, isLoading: loadingChallenges } = useQuery({
@@ -251,14 +266,41 @@ export const CompetitionsManager = () => {
   const uniqueUsers = new Set(challengeResults?.map((r) => r.user_id)).size;
   const correctAnswers = challengeResults?.filter((r) => r.is_correct).length || 0;
 
+  // Filtered weekly challenges based on active filter
+  const filteredWeeklyChallenges = useMemo(() => {
+    if (!weeklyChallenges) return [];
+    if (!showActiveOnly) return weeklyChallenges;
+    return weeklyChallenges.filter((c: any) => isActiveChallenge(c.week_start, c.week_end));
+  }, [weeklyChallenges, showActiveOnly]);
+
+  // Top 3 weekly results
+  const top3WeeklyResults = useMemo(() => {
+    if (!weeklyResults) return [];
+    return weeklyResults.slice(0, 3);
+  }, [weeklyResults]);
+
   const openCreateDialog = (type: "daily" | "weekly") => {
     setCreateType(type);
+    setEditingWeekly(null);
     setNewChallenge({
       formula_type: "hammasi",
       digit_count: 1,
       speed: 0.5,
       problem_count: type === "daily" ? 5 : 10,
       challenge_date: format(new Date(), "yyyy-MM-dd"),
+    });
+    setCreateDialogOpen(true);
+  };
+
+  const openEditWeeklyDialog = (challenge: any) => {
+    setCreateType("weekly");
+    setEditingWeekly(challenge);
+    setNewChallenge({
+      formula_type: challenge.formula_type,
+      digit_count: challenge.digit_count,
+      speed: challenge.speed,
+      problem_count: challenge.problem_count,
+      challenge_date: challenge.week_start,
     });
     setCreateDialogOpen(true);
   };
@@ -403,8 +445,20 @@ export const CompetitionsManager = () => {
         <TabsContent value="weekly" className="mt-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2 flex-wrap">
-              <CardTitle className="text-base md:text-lg">Haftalik musobaqalar</CardTitle>
-              <div className="flex gap-2">
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                Haftalik musobaqalar
+                {showActiveOnly && <Badge variant="secondary" className="text-xs">Faol</Badge>}
+              </CardTitle>
+              <div className="flex gap-2 flex-wrap">
+                <Button 
+                  variant={showActiveOnly ? "default" : "outline"} 
+                  size="sm" 
+                  onClick={() => setShowActiveOnly(!showActiveOnly)}
+                  className="gap-1"
+                >
+                  <Filter className="h-4 w-4" />
+                  <span className="hidden sm:inline">{showActiveOnly ? "Hammasi" : "Faol"}</span>
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => queryClient.invalidateQueries({ queryKey: ["admin-weekly-challenges"] })}>
                   <RefreshCw className="h-4 w-4" />
                 </Button>
@@ -417,14 +471,17 @@ export const CompetitionsManager = () => {
             <CardContent>
               {loadingWeekly ? (
                 <div className="text-center py-8 text-muted-foreground">Yuklanmoqda...</div>
-              ) : !weeklyChallenges?.length ? (
-                <div className="text-center py-8 text-muted-foreground">Haftalik musobaqalar topilmadi</div>
+              ) : !filteredWeeklyChallenges?.length ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {showActiveOnly ? "Faol haftalik musobaqa topilmadi" : "Haftalik musobaqalar topilmadi"}
+                </div>
               ) : (
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Hafta</TableHead>
+                        <TableHead>Holat</TableHead>
                         <TableHead>Formula</TableHead>
                         <TableHead className="hidden sm:table-cell">Raqam</TableHead>
                         <TableHead className="hidden sm:table-cell">Tezlik</TableHead>
@@ -433,31 +490,54 @@ export const CompetitionsManager = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {weeklyChallenges.map((challenge: any) => (
-                        <TableRow key={challenge.id}>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {format(new Date(challenge.week_start), "dd.MM")}-{format(new Date(challenge.week_end), "dd.MM")}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className="text-xs">{getFormulaLabel(challenge.formula_type)}</Badge>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">{challenge.digit_count}</TableCell>
-                          <TableCell className="hidden sm:table-cell">{challenge.speed}s</TableCell>
-                          <TableCell className="hidden sm:table-cell">{challenge.problem_count}</TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive h-8 w-8 p-0"
-                              onClick={() => deleteWeeklyMutation.mutate(challenge.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                      {filteredWeeklyChallenges.map((challenge: any) => {
+                        const isActive = isActiveChallenge(challenge.week_start, challenge.week_end);
+                        return (
+                          <TableRow key={challenge.id} className={isActive ? "bg-green-500/5" : ""}>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs">
+                                {format(new Date(challenge.week_start), "dd.MM")}-{format(new Date(challenge.week_end), "dd.MM")}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {isActive ? (
+                                <Badge className="bg-green-500 text-white text-xs gap-1">
+                                  <Star className="h-3 w-3" />
+                                  Faol
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="text-xs">Tugagan</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <Badge className="text-xs">{getFormulaLabel(challenge.formula_type)}</Badge>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">{challenge.digit_count}</TableCell>
+                            <TableCell className="hidden sm:table-cell">{challenge.speed}s</TableCell>
+                            <TableCell className="hidden sm:table-cell">{challenge.problem_count}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 w-8 p-0"
+                                  onClick={() => openEditWeeklyDialog(challenge)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                                  onClick={() => deleteWeeklyMutation.mutate(challenge.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
@@ -539,13 +619,43 @@ export const CompetitionsManager = () => {
 
         {/* Haftalik natijalar */}
         <TabsContent value="weekly-results" className="mt-4">
+          {/* Top 3 Cards */}
+          {top3WeeklyResults.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {top3WeeklyResults.map((result: any, index: number) => (
+                <Card 
+                  key={result.id} 
+                  className={`relative overflow-hidden ${
+                    index === 0 
+                      ? "bg-gradient-to-br from-yellow-500/20 to-amber-500/10 border-yellow-500/30" 
+                      : index === 1 
+                        ? "bg-gradient-to-br from-gray-400/20 to-gray-500/10 border-gray-400/30"
+                        : "bg-gradient-to-br from-amber-600/20 to-orange-500/10 border-amber-600/30"
+                  }`}
+                >
+                  <CardContent className="p-3 md:p-4 text-center">
+                    <div className="text-2xl md:text-3xl mb-1">
+                      {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                    </div>
+                    <div className="font-bold text-sm md:text-base truncate">{result.username}</div>
+                    <div className="text-lg md:text-xl font-bold text-primary">{result.total_score}</div>
+                    <div className="text-xs text-muted-foreground">{result.games_played} o'yin</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2 flex-wrap">
-              <CardTitle className="text-base md:text-lg">Haftalik natijalar</CardTitle>
+              <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Haftalik natijalar
+              </CardTitle>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => exportToCSV("weekly")}>
-                  <Download className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">CSV</span>
+                <Button variant="outline" size="sm" onClick={() => exportToCSV("weekly")} className="gap-1">
+                  <Download className="h-4 w-4" />
+                  <span className="hidden sm:inline">CSV eksport</span>
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => queryClient.invalidateQueries({ queryKey: ["admin-weekly-results"] })}>
                   <RefreshCw className="h-4 w-4" />
@@ -599,7 +709,11 @@ export const CompetitionsManager = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {createType === "daily" ? "Yangi kunlik musobaqa" : "Yangi haftalik musobaqa"}
+              {createType === "daily" 
+                ? "Yangi kunlik musobaqa" 
+                : editingWeekly 
+                  ? "Haftalik musobaqani tahrirlash" 
+                  : "Yangi haftalik musobaqa"}
             </DialogTitle>
           </DialogHeader>
           
@@ -610,7 +724,13 @@ export const CompetitionsManager = () => {
                 type="date"
                 value={newChallenge.challenge_date}
                 onChange={(e) => setNewChallenge({ ...newChallenge, challenge_date: e.target.value })}
+                disabled={!!editingWeekly}
               />
+              {editingWeekly && (
+                <p className="text-xs text-muted-foreground">
+                  Hafta: {format(new Date(editingWeekly.week_start), "dd.MM.yyyy")} - {format(new Date(editingWeekly.week_end), "dd.MM.yyyy")}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -689,7 +809,10 @@ export const CompetitionsManager = () => {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setCreateDialogOpen(false);
+              setEditingWeekly(null);
+            }}>
               Bekor
             </Button>
             <Button
@@ -702,7 +825,7 @@ export const CompetitionsManager = () => {
               }}
               disabled={createDailyMutation.isPending || createWeeklyMutation.isPending}
             >
-              Yaratish
+              {editingWeekly ? "Saqlash" : "Yaratish"}
             </Button>
           </DialogFooter>
         </DialogContent>
