@@ -935,50 +935,65 @@ export const NumberTrainer = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Mobile TabsList - pastki navigatsiya */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg">
-            <TabsList className="grid w-full grid-cols-6 p-1.5 bg-transparent h-auto">
+          {/* Mobile TabsList - pastki navigatsiya with animations */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg safe-area-bottom">
+            <TabsList className="grid w-full grid-cols-6 p-2 bg-transparent h-auto relative">
+              {/* Animated background indicator */}
+              <div 
+                className="absolute h-[calc(100%-16px)] top-2 rounded-2xl bg-gradient-to-r transition-all duration-300 ease-out"
+                style={{
+                  width: 'calc((100% - 16px) / 6)',
+                  left: `calc(${['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 16px) / 6) + 8px)`,
+                  background: activeTab === 'train' ? 'hsl(var(--primary) / 0.15)' :
+                              activeTab === 'learn' ? 'hsl(var(--success) / 0.15)' :
+                              activeTab === 'daily' ? 'hsl(var(--accent) / 0.15)' :
+                              activeTab === 'multiplayer' ? 'hsl(var(--primary) / 0.15)' :
+                              activeTab === 'leaderboard' ? 'hsl(var(--warning) / 0.15)' :
+                              'hsl(var(--primary) / 0.15)'
+                }}
+              />
+              
               <TabsTrigger 
                 value="train" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Play className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Mashq</span>
+                <Play className="h-5 w-5 transition-transform duration-300 data-[state=active]:scale-110" />
+                <span className="text-[10px] font-medium transition-all duration-300">Mashq</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="learn" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-success/10 data-[state=active]:text-success rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-success rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <BookOpen className="h-5 w-5" />
-                <span className="text-[10px] font-medium">O'quv</span>
+                <BookOpen className="h-5 w-5 transition-transform duration-300" />
+                <span className="text-[10px] font-medium transition-all duration-300">O'quv</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="daily" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-accent/10 data-[state=active]:text-accent rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-accent rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Flame className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Kunlik</span>
+                <Flame className="h-5 w-5 transition-transform duration-300" />
+                <span className="text-[10px] font-medium transition-all duration-300">Kunlik</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="multiplayer" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Users className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Ko'p</span>
+                <Users className="h-5 w-5 transition-transform duration-300" />
+                <span className="text-[10px] font-medium transition-all duration-300">Ko'p</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="leaderboard" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-warning/10 data-[state=active]:text-warning rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-warning rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Trophy className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Reyting</span>
+                <Trophy className="h-5 w-5 transition-transform duration-300" />
+                <span className="text-[10px] font-medium transition-all duration-300">Reyting</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="stats" 
-                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+                className="relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <BarChart3 className="h-5 w-5" />
-                <span className="text-[10px] font-medium">Stat</span>
+                <BarChart3 className="h-5 w-5 transition-transform duration-300" />
+                <span className="text-[10px] font-medium transition-all duration-300">Stat</span>
               </TabsTrigger>
             </TabsList>
           </div>
