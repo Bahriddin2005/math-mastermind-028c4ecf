@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +36,7 @@ interface WeeklyResult {
 
 export const WeeklyCompetition = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null } | null>(null);
 
@@ -259,6 +261,16 @@ export const WeeklyCompetition = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {user && (
+            <Button 
+              className="w-full gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              onClick={() => navigate("/weekly-game")}
+            >
+              <Play className="h-4 w-4" />
+              O'ynash
+            </Button>
           )}
 
           {!user && (

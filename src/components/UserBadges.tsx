@@ -17,48 +17,29 @@ interface UserBadge {
 }
 
 const BADGE_DEFINITIONS = [
-  {
-    type: "daily_winner",
-    name: "Kunlik g'olib",
-    icon: "🥇",
-    color: "from-yellow-500 to-amber-500",
-    description: "Kunlik musobaqada 1-o'rin",
-  },
-  {
-    type: "weekly_winner",
-    name: "Haftalik chempion",
-    icon: "🏆",
-    color: "from-purple-500 to-pink-500",
-    description: "Haftalik musobaqada 1-o'rin",
-  },
-  {
-    type: "streak_master",
-    name: "Seriya ustasi",
-    icon: "🔥",
-    color: "from-orange-500 to-red-500",
-    description: "10+ ketma-ket to'g'ri javob",
-  },
-  {
-    type: "speed_demon",
-    name: "Tezkor",
-    icon: "⚡",
-    color: "from-blue-500 to-cyan-500",
-    description: "Eng tez javob beruvchi",
-  },
-  {
-    type: "consistent",
-    name: "Izchil",
-    icon: "📅",
-    color: "from-green-500 to-emerald-500",
-    description: "7 kun ketma-ket mashq qilish",
-  },
-  {
-    type: "problem_solver",
-    name: "Masala yechuvchi",
-    icon: "🎯",
-    color: "from-indigo-500 to-violet-500",
-    description: "1000+ masala yechish",
-  },
+  // Competition badges
+  { type: "daily_winner", name: "Kunlik g'olib", icon: "🥇", color: "from-yellow-500 to-amber-500", description: "Kunlik musobaqada 1-o'rin" },
+  { type: "weekly_winner", name: "Haftalik chempion", icon: "🏆", color: "from-purple-500 to-pink-500", description: "Haftalik musobaqada 1-o'rin" },
+  
+  // Streak badges
+  { type: "streak_7", name: "Haftalik seriya", icon: "🔥", color: "from-orange-500 to-red-500", description: "7 kun ketma-ket mashq" },
+  { type: "streak_30", name: "Oylik seriya", icon: "⭐", color: "from-amber-500 to-yellow-500", description: "30 kun ketma-ket mashq" },
+  { type: "best_streak_10", name: "Seriya ustasi", icon: "⚡", color: "from-blue-500 to-cyan-500", description: "10+ ketma-ket to'g'ri javob" },
+  { type: "best_streak_25", name: "Super seriya", icon: "💎", color: "from-indigo-500 to-purple-500", description: "25+ ketma-ket to'g'ri javob" },
+  
+  // Problem solver badges
+  { type: "solver_100", name: "100 masala", icon: "💯", color: "from-green-500 to-emerald-500", description: "100 ta masala yechish" },
+  { type: "solver_500", name: "500 masala", icon: "🎯", color: "from-teal-500 to-green-500", description: "500 ta masala yechish" },
+  { type: "solver_1000", name: "Ming masala", icon: "🏆", color: "from-yellow-500 to-orange-500", description: "1000 ta masala yechish" },
+  
+  // Score badges
+  { type: "score_1000", name: "Ming ball", icon: "🌟", color: "from-blue-500 to-indigo-500", description: "1000 ball to'plash" },
+  { type: "score_5000", name: "Besh ming ball", icon: "👑", color: "from-amber-500 to-orange-500", description: "5000 ball to'plash" },
+  
+  // Game badges
+  { type: "first_game", name: "Birinchi qadam", icon: "🎮", color: "from-pink-500 to-rose-500", description: "Birinchi o'yinni o'ynash" },
+  { type: "games_10", name: "Faol o'yinchi", icon: "🎲", color: "from-violet-500 to-purple-500", description: "10 ta o'yin o'ynash" },
+  { type: "games_50", name: "Tajribali", icon: "🎖️", color: "from-slate-500 to-zinc-500", description: "50 ta o'yin o'ynash" },
 ];
 
 export const UserBadges = ({ userId }: { userId?: string }) => {
