@@ -16,6 +16,8 @@ import { TestimonialForm } from '@/components/TestimonialForm';
 import { GuestDashboard } from '@/components/GuestDashboard';
 import { Footer } from '@/components/Footer';
 import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice';
+import { WeeklyCompetition } from '@/components/WeeklyCompetition';
+import { UserBadges } from '@/components/UserBadges';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,6 +35,7 @@ import {
   Sparkles,
   GraduationCap,
   Calculator,
+  Award,
 } from 'lucide-react';
 
 interface Profile {
@@ -300,6 +303,16 @@ const Dashboard = () => {
                 totalScore={profile?.total_score || 0}
                 totalGames={stats.totalGames}
               />
+            </div>
+
+            {/* Weekly Competition & Badges */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
+                <WeeklyCompetition />
+              </div>
+              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '420ms', animationFillMode: 'forwards' }}>
+                <UserBadges />
+              </div>
             </div>
 
             {/* Statistics Charts */}

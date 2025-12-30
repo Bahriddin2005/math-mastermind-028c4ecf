@@ -750,6 +750,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_badges: {
+        Row: {
+          badge_icon: string
+          badge_name: string
+          badge_type: string
+          competition_id: string | null
+          competition_type: string | null
+          description: string | null
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_icon?: string
+          badge_name: string
+          badge_type: string
+          competition_id?: string | null
+          competition_type?: string | null
+          description?: string | null
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_icon?: string
+          badge_name?: string
+          badge_type?: string
+          competition_id?: string | null
+          competition_type?: string | null
+          description?: string | null
+          earned_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_lesson_progress: {
         Row: {
           completed: boolean | null
