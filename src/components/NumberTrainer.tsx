@@ -1065,18 +1065,18 @@ export const NumberTrainer = () => {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Kurs kartasi 1 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-32 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <BookOpen className="h-8 w-8 text-primary" />
+                  <div className="h-28 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0">
+                    <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <BookOpen className="h-7 w-7 text-primary" />
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-foreground mb-1">Boshlang'ich kurs</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Soroban asoslari va oddiy formulalar</p>
-                    <div className="flex items-center justify-between">
+                  <CardContent className="p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">Boshlang'ich kurs</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Soroban asoslari va oddiy formulalar</p>
+                    <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-primary font-medium">Bepul</span>
                       <span className="text-xs text-muted-foreground">10+ dars</span>
                     </div>
@@ -1085,18 +1085,18 @@ export const NumberTrainer = () => {
 
                 {/* Kurs kartasi 2 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-32 bg-gradient-to-br from-accent/20 to-warning/20 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-2xl bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Target className="h-8 w-8 text-accent" />
+                  <div className="h-28 bg-gradient-to-br from-accent/20 to-warning/20 flex items-center justify-center flex-shrink-0">
+                    <div className="h-14 w-14 rounded-2xl bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Target className="h-7 w-7 text-accent" />
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-foreground mb-1">O'rta daraja</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Formula 5 va Formula 10</p>
-                    <div className="flex items-center justify-between">
+                  <CardContent className="p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">O'rta daraja</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Formula 5 va Formula 10</p>
+                    <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-accent font-medium">Premium</span>
                       <span className="text-xs text-muted-foreground">15+ dars</span>
                     </div>
@@ -1105,18 +1105,18 @@ export const NumberTrainer = () => {
 
                 {/* Kurs kartasi 3 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-32 bg-gradient-to-br from-warning/20 to-destructive/20 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-2xl bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Trophy className="h-8 w-8 text-warning" />
+                  <div className="h-28 bg-gradient-to-br from-warning/20 to-destructive/20 flex items-center justify-center flex-shrink-0">
+                    <div className="h-14 w-14 rounded-2xl bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Trophy className="h-7 w-7 text-warning" />
                     </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-bold text-foreground mb-1">Yuqori daraja</h3>
-                    <p className="text-sm text-muted-foreground mb-3">Murakkab formulalar va tezlik</p>
-                    <div className="flex items-center justify-between">
+                  <CardContent className="p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">Yuqori daraja</h3>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Murakkab formulalar va tezlik</p>
+                    <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-warning font-medium">Premium</span>
                       <span className="text-xs text-muted-foreground">20+ dars</span>
                     </div>
