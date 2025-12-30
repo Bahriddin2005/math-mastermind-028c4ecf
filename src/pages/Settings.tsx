@@ -235,8 +235,8 @@ const Settings = () => {
           </div>
 
           {/* Avatar Section */}
-          <Card className="opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
-            <CardHeader>
+          <Card className="opacity-0 animate-slide-up h-[220px] flex flex-col" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+            <CardHeader className="flex-shrink-0 pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <Camera className="h-5 w-5 text-primary" />
                 Profil rasmi
@@ -245,12 +245,12 @@ const Settings = () => {
                 Profilingiz uchun rasm tanlang (max 2MB). Rasm avtomatik kesiladi.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-6">
-                <div className="relative group">
-                  <Avatar className="h-24 w-24 border-4 border-primary/20">
+            <CardContent className="flex-1 flex items-center">
+              <div className="flex items-center gap-6 w-full">
+                <div className="relative group flex-shrink-0">
+                  <Avatar className="h-20 w-20 border-4 border-primary/20">
                     <AvatarImage src={avatarUrl || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-2xl font-display">
+                    <AvatarFallback className="bg-primary/10 text-primary text-xl font-display">
                       {username.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
@@ -260,9 +260,9 @@ const Settings = () => {
                     className="absolute inset-0 rounded-full bg-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
                   >
                     {uploading ? (
-                      <Loader2 className="h-6 w-6 text-background animate-spin" />
+                      <Loader2 className="h-5 w-5 text-background animate-spin" />
                     ) : (
-                      <Crop className="h-6 w-6 text-background" />
+                      <Crop className="h-5 w-5 text-background" />
                     )}
                   </button>
                   <input
@@ -273,15 +273,15 @@ const Settings = () => {
                     className="hidden"
                   />
                 </div>
-                <div className="flex-1">
-                  <p className="font-medium">{username || 'Foydalanuvchi'}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{username || 'Foydalanuvchi'}</p>
+                  <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleAvatarClick}
                     disabled={uploading}
-                    className="mt-3 gap-2"
+                    className="mt-2 gap-2"
                   >
                     {uploading ? (
                       <>
@@ -301,8 +301,8 @@ const Settings = () => {
           </Card>
 
           {/* Username Section */}
-          <Card className="opacity-0 animate-slide-up" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
-            <CardHeader>
+          <Card className="opacity-0 animate-slide-up h-[220px] flex flex-col" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
+            <CardHeader className="flex-shrink-0 pb-2">
               <CardTitle className="text-lg flex items-center gap-2">
                 <User className="h-5 w-5 text-accent" />
                 Foydalanuvchi nomi
@@ -311,7 +311,7 @@ const Settings = () => {
                 Reytingda ko'rinadigan ismingiz
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 flex-1 flex flex-col justify-center">
               <div className="space-y-2">
                 <Label htmlFor="username">Ism</Label>
                 <Input
@@ -325,7 +325,7 @@ const Settings = () => {
                   2-30 ta belgi, faqat harflar, raqamlar va _ ishlatish mumkin
                 </p>
               </div>
-              <Button onClick={handleSave} disabled={saving}>
+              <Button onClick={handleSave} disabled={saving} className="w-fit">
                 {saving ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
