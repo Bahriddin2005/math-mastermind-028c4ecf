@@ -6,7 +6,7 @@ import { Navbar } from '@/components/Navbar';
 import { WelcomeHero } from '@/components/WelcomeHero';
 import { FeatureCard } from '@/components/FeatureCard';
 import { StatsCard } from '@/components/StatsCard';
-import { DailyGoals } from '@/components/DailyGoals';
+import { DailyStats } from '@/components/DailyStats';
 import { Achievements } from '@/components/Achievements';
 import { StatsCharts } from '@/components/StatsCharts';
 import { GameHistoryItem } from '@/components/GameHistoryItem';
@@ -64,6 +64,8 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [sessions, setSessions] = useState<GameSession[]>([]);
   const [todaySolved, setTodaySolved] = useState(0);
+  const [todayScore, setTodayScore] = useState(0);
+  const [todayAccuracy, setTodayAccuracy] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Achievement notifications hook
@@ -113,12 +115,18 @@ const Dashboard = () => {
       if (sessionsData) {
         setSessions(sessionsData);
 
-        // Calculate today's solved problems
+        // Calculate today's stats
         const today = new Date().toISOString().split('T')[0];
-        const todayProblems = sessionsData
-          .filter(s => s.created_at.startsWith(today))
-          .reduce((sum, s) => sum + s.correct + s.incorrect, 0);
+        const todaySessions = sessionsData.filter(s => s.created_at.startsWith(today));
+        
+        const todayProblems = todaySessions.reduce((sum, s) => sum + (s.correct || 0) + (s.incorrect || 0), 0);
+        const todayCorrect = todaySessions.reduce((sum, s) => sum + (s.correct || 0), 0);
+        const todayScoreSum = todaySessions.reduce((sum, s) => sum + (s.score || 0), 0);
+        const accuracy = todayProblems > 0 ? Math.round((todayCorrect / todayProblems) * 100) : 0;
+        
         setTodaySolved(todayProblems);
+        setTodayScore(todayScoreSum);
+        setTodayAccuracy(accuracy);
       }
 
       setLoading(false);
@@ -217,15 +225,14 @@ const Dashboard = () => {
               />
             </div>
 
-            {/* Daily Goals & Achievements Row */}
+            {/* Daily Stats & Achievements Row */}
             <div className="grid grid-cols-1 gap-4 sm:gap-6">
               {user && profile && (
-                <DailyGoals
-                  userId={user.id}
-                  dailyGoal={profile.daily_goal}
+                <DailyStats
+                  todayScore={todayScore}
                   todaySolved={todaySolved}
+                  todayAccuracy={todayAccuracy}
                   currentStreak={profile.current_streak}
-                  onGoalChange={(newGoal) => setProfile({ ...profile, daily_goal: newGoal })}
                 />
               )}
               <Achievements
