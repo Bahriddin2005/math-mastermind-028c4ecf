@@ -555,13 +555,9 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
 
             {/* Bottom Controls */}
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center">
               <Button variant="outline" size="lg" onClick={() => playSound('bead')} className="gap-2">
                 <Volume2 className="h-5 w-5" />
-              </Button>
-              <Button variant="destructive" size="lg" onClick={stopGame} className="gap-2">
-                <Square className="h-5 w-5" />
-                To'xtatish
               </Button>
             </div>
           </div>
