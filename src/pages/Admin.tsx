@@ -434,195 +434,200 @@ const Admin = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      <main className="flex-1 container px-4 py-8">
+      <main className="flex-1 container px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-              <ShieldCheck className="h-6 w-6 text-primary" />
+          {/* Header */}
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
-            <div>
-              <h1 className="text-2xl font-display font-bold">Admin Panel</h1>
-              <p className="text-muted-foreground">Platforma boshqaruvi</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-2xl font-display font-bold truncate">Admin Panel</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">Platforma boshqaruvi</p>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
-              <CardContent className="p-4 text-center">
-                <Users className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.totalUsers}</p>
-                <p className="text-xs text-muted-foreground">Foydalanuvchilar</p>
+          {/* Stats Cards - 3 columns on mobile */}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-4 sm:mb-8">
+            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalUsers}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Users</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
-              <CardContent className="p-4 text-center">
-                <Target className="h-6 w-6 text-green-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.totalProblems.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Yechilgan</p>
+            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <Target className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalProblems.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yechilgan</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20">
-              <CardContent className="p-4 text-center">
-                <Trophy className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.totalScore.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground">Jami ball</p>
+            <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-yellow-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalScore.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Ball</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
-              <CardContent className="p-4 text-center">
-                <BarChart3 className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.totalGames}</p>
-                <p className="text-xs text-muted-foreground">O'yinlar</p>
+            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalGames}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">O'yin</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20">
-              <CardContent className="p-4 text-center">
-                <TrendingUp className="h-6 w-6 text-emerald-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.newUsersToday}</p>
-                <p className="text-xs text-muted-foreground">Yangi bugun</p>
+            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.newUsersToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yangi</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20">
-              <CardContent className="p-4 text-center">
-                <Flame className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-                <p className="text-2xl font-bold">{stats.activeToday}</p>
-                <p className="text-xs text-muted-foreground">Faol bugun</p>
+            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 overflow-hidden">
+              <CardContent className="p-2 sm:p-4 text-center">
+                <Flame className="h-4 w-4 sm:h-6 sm:w-6 text-orange-500 mx-auto mb-1 sm:mb-2" />
+                <p className="text-base sm:text-2xl font-bold truncate">{stats.activeToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Faol</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Tez harakatlar (Quick Actions) */}
-          <Card className="mb-8 bg-card/80 backdrop-blur-sm border-border/50">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Zap className="h-5 w-5 text-yellow-500" />
+          {/* Tez harakatlar (Quick Actions) - Compact for mobile */}
+          <Card className="mb-4 sm:mb-8 bg-card/80 backdrop-blur-sm border-border/50 overflow-hidden">
+            <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
                 Tez harakatlar
               </CardTitle>
-              <CardDescription>Tez-tez ishlatiladigan amallar</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 hover:scale-105 transition-all duration-300 group"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 group overflow-hidden"
                   onClick={() => openBlogDialog()}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
-                    <PlusCircle className="h-5 w-5 text-emerald-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                    <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Yangi maqola</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Maqola</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 hover:scale-105 transition-all duration-300 group"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-300 group overflow-hidden"
                   onClick={() => {
                     fetchUsers();
                     fetchStats();
                     toast.success("Ma'lumotlar yangilandi");
                   }}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
-                    <RefreshCw className="h-5 w-5 text-blue-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
+                    <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Yangilash</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Yangilash</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500/50 hover:scale-105 transition-all duration-300 group"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:bg-purple-500/30 transition-colors">
-                    <GraduationCap className="h-5 w-5 text-purple-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Kurslarni ko'rish</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Kurslar</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 hover:scale-105 transition-all duration-300 group"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/blog')}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
-                    <FileText className="h-5 w-5 text-amber-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Blogni ko'rish</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Blog</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 hover:scale-105 transition-all duration-300 group relative"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-300 group relative overflow-hidden"
                   onClick={() => {
                     const messagesTab = document.querySelector('[value="messages"]') as HTMLElement;
                     messagesTab?.click();
                   }}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-red-500/20 flex items-center justify-center group-hover:bg-red-500/30 transition-colors">
-                    <Mail className="h-5 w-5 text-red-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-red-500/20 flex items-center justify-center shrink-0">
+                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Xabarlar</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Xabar</span>
                   {unreadCount > 0 && (
-                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 px-1.5 animate-pulse">{unreadCount}</Badge>
+                    <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">{unreadCount}</Badge>
                   )}
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-2 p-4 bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 hover:scale-105 transition-all duration-300 group"
+                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/settings')}
                 >
-                  <div className="h-10 w-10 rounded-xl bg-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-500/30 transition-colors">
-                    <Settings className="h-5 w-5 text-cyan-500" />
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0">
+                    <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-500" />
                   </div>
-                  <span className="text-xs font-medium text-center">Sozlamalar</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Sozlama</span>
                 </Button>
               </div>
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="users" className="space-y-6">
-            {/* Mobile: Card grid - 5 columns for better fit */}
-            <div className="block md:hidden">
-              <div className="grid grid-cols-5 gap-1.5">
-                {[
-                  { value: 'users', icon: Users, label: 'Foydalanuvchilar', color: 'blue', shortLabel: 'Users' },
-                  { value: 'reports', icon: BarChart2, label: 'Hisobotlar', color: 'purple', shortLabel: 'Hisobot' },
-                  { value: 'courses', icon: GraduationCap, label: 'Kurslar', color: 'emerald', shortLabel: 'Kurs' },
-                  { value: 'files', icon: FolderOpen, label: 'Fayllar', color: 'amber', shortLabel: 'Fayl' },
-                  { value: 'examples', icon: Calculator, label: 'Misollar', color: 'cyan', shortLabel: 'Misol' },
-                  { value: 'faq', icon: HelpCircle, label: 'FAQ', color: 'indigo', shortLabel: 'FAQ' },
-                  { value: 'testimonials', icon: Quote, label: 'Sharhlar', color: 'pink', shortLabel: 'Sharh' },
-                  { value: 'chats', icon: MessageCircle, label: 'Chatlar', color: 'teal', shortLabel: 'Chat' },
-                  { value: 'messages', icon: Mail, label: 'Xabarlar', color: 'red', shortLabel: 'Xabar', badge: unreadCount },
-                  { value: 'blog', icon: FileText, label: 'Maqolalar', color: 'orange', shortLabel: 'Blog' },
-                ].map((item) => (
-                  <TabsList key={item.value} className="h-auto bg-transparent p-0">
-                    <TabsTrigger 
-                      value={item.value} 
-                      className={`relative w-full flex flex-col items-center gap-1 p-2 h-auto rounded-xl 
-                        bg-${item.color}-500/10 border border-${item.color}-500/20 
-                        transition-all duration-300 hover:scale-[1.02] 
-                        hover:bg-${item.color}-500/20 hover:border-${item.color}-500/40 
-                        data-[state=active]:bg-gradient-to-br data-[state=active]:from-${item.color}-500 data-[state=active]:to-${item.color}-600 
-                        data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:border-${item.color}-400
-                        data-[state=active]:shadow-${item.color}-500/30`}
-                    >
-                      <div className={`h-8 w-8 rounded-lg bg-${item.color}-500/20 flex items-center justify-center 
-                        data-[state=active]:bg-white/20 transition-colors`}>
-                        <item.icon className={`h-4 w-4 text-${item.color}-500`} />
-                      </div>
-                      <span className="text-[10px] font-medium leading-tight text-center">{item.shortLabel}</span>
-                      {item.badge && item.badge > 0 && (
-                        <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">
-                          {item.badge}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                  </TabsList>
-                ))}
-              </div>
+          <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
+            {/* Mobile: Compact scrollable tabs */}
+            <div className="block md:hidden overflow-hidden">
+              <TabsList className="flex w-full h-auto bg-muted/50 p-1 rounded-xl overflow-x-auto gap-1 scrollbar-hide">
+                <TabsTrigger value="users" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <Users className="h-4 w-4 text-blue-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Users</span>
+                </TabsTrigger>
+                <TabsTrigger value="reports" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <BarChart2 className="h-4 w-4 text-purple-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Hisobot</span>
+                </TabsTrigger>
+                <TabsTrigger value="courses" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <GraduationCap className="h-4 w-4 text-emerald-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Kurs</span>
+                </TabsTrigger>
+                <TabsTrigger value="files" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <FolderOpen className="h-4 w-4 text-amber-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Fayl</span>
+                </TabsTrigger>
+                <TabsTrigger value="examples" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <Calculator className="h-4 w-4 text-cyan-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Misol</span>
+                </TabsTrigger>
+                <TabsTrigger value="faq" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <HelpCircle className="h-4 w-4 text-indigo-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">FAQ</span>
+                </TabsTrigger>
+                <TabsTrigger value="testimonials" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <Quote className="h-4 w-4 text-pink-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Sharh</span>
+                </TabsTrigger>
+                <TabsTrigger value="chats" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <MessageCircle className="h-4 w-4 text-teal-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Chat</span>
+                </TabsTrigger>
+                <TabsTrigger value="messages" className="relative flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <Mail className="h-4 w-4 text-red-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Xabar</span>
+                  {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 p-0 flex items-center justify-center text-[8px]">{unreadCount}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="blog" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                  <FileText className="h-4 w-4 text-orange-500 data-[state=active]:text-white" />
+                  <span className="text-[9px] font-medium">Blog</span>
+                </TabsTrigger>
+              </TabsList>
             </div>
 
             {/* Desktop: Beautiful horizontal navigation */}
@@ -630,43 +635,47 @@ const Admin = () => {
               <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-lg overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
                 <TabsList className="relative grid w-full grid-cols-10 h-14 gap-0.5 bg-transparent p-1.5">
-                  {[
-                    { value: 'users', icon: Users, label: 'Foydalanuvchilar', color: 'blue' },
-                    { value: 'reports', icon: BarChart2, label: 'Hisobotlar', color: 'purple' },
-                    { value: 'courses', icon: GraduationCap, label: 'Kurslar', color: 'emerald' },
-                    { value: 'files', icon: FolderOpen, label: 'Fayllar', color: 'amber' },
-                    { value: 'examples', icon: Calculator, label: 'Misollar', color: 'cyan' },
-                    { value: 'faq', icon: HelpCircle, label: 'FAQ', color: 'indigo' },
-                    { value: 'testimonials', icon: Quote, label: 'Sharhlar', color: 'pink' },
-                    { value: 'chats', icon: MessageCircle, label: 'Chatlar', color: 'teal' },
-                    { value: 'messages', icon: Mail, label: 'Xabarlar', color: 'red', badge: unreadCount },
-                    { value: 'blog', icon: FileText, label: 'Maqolalar', color: 'orange' },
-                  ].map((item) => (
-                    <TabsTrigger 
-                      key={item.value}
-                      value={item.value} 
-                      className={`relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg
-                        transition-all duration-300 
-                        hover:bg-${item.color}-500/15 hover:-translate-y-0.5
-                        data-[state=active]:bg-gradient-to-br data-[state=active]:from-${item.color}-500 data-[state=active]:to-${item.color}-600 
-                        data-[state=active]:text-white data-[state=active]:shadow-lg
-                        data-[state=active]:shadow-${item.color}-500/40`}
-                    >
-                      <div className={`h-6 w-6 rounded-md bg-${item.color}-500/20 flex items-center justify-center 
-                        group-hover:bg-${item.color}-500/30 group-data-[state=active]:bg-white/20 transition-all duration-300`}>
-                        <item.icon className={`h-3.5 w-3.5 text-${item.color}-500 group-data-[state=active]:text-white transition-colors`} />
-                      </div>
-                      <span className="text-[10px] font-medium leading-tight truncate max-w-full">{item.label}</span>
-                      {item.badge && item.badge > 0 && (
-                        <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">
-                          {item.badge}
-                        </Badge>
-                      )}
-                      {/* Active indicator */}
-                      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full 
-                        bg-${item.color}-500 opacity-0 data-[state=active]:opacity-100 transition-opacity`} />
-                    </TabsTrigger>
-                  ))}
+                  <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Users className="h-4 w-4 text-blue-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Users</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="reports" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-purple-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <BarChart2 className="h-4 w-4 text-purple-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Hisobot</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <GraduationCap className="h-4 w-4 text-emerald-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Kurslar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="files" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-amber-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <FolderOpen className="h-4 w-4 text-amber-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Fayllar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="examples" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-cyan-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Calculator className="h-4 w-4 text-cyan-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Misollar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="faq" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-indigo-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <HelpCircle className="h-4 w-4 text-indigo-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">FAQ</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="testimonials" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-pink-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Quote className="h-4 w-4 text-pink-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Sharhlar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="chats" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-teal-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <MessageCircle className="h-4 w-4 text-teal-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Chatlar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="messages" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-red-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Mail className="h-4 w-4 text-red-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Xabarlar</span>
+                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">{unreadCount}</Badge>}
+                  </TabsTrigger>
+                  <TabsTrigger value="blog" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-orange-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <FileText className="h-4 w-4 text-orange-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Maqolalar</span>
+                  </TabsTrigger>
                 </TabsList>
               </Card>
             </div>
