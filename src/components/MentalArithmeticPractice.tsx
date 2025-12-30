@@ -10,10 +10,10 @@ import { AbacusDisplay } from './AbacusDisplay';
 import { MentalArithmeticHistory } from './MentalArithmeticHistory';
 import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
 import { AbacusFlashCard } from './AbacusFlashCard';
-import { AbacusTutorial } from './AbacusTutorial';
+
 import { MultiplayerCompetition } from './MultiplayerCompetition';
 import { AbacusSimulator } from './AbacusSimulator';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, GraduationCap, Swords, Square, Gamepad2 } from 'lucide-react';
+import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, Swords, Square, Gamepad2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
@@ -494,7 +494,7 @@ export const MentalArithmeticPractice = () => {
       </div>
 
       <Tabs defaultValue="practice" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="practice" className="gap-1.5 text-xs sm:text-sm">
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">Mashq</span>
@@ -502,10 +502,6 @@ export const MentalArithmeticPractice = () => {
           <TabsTrigger value="games" className="gap-1.5 text-xs sm:text-sm">
             <Gamepad2 className="h-4 w-4" />
             <span className="hidden sm:inline">O'yinlar</span>
-          </TabsTrigger>
-          <TabsTrigger value="tutorial" className="gap-1.5 text-xs sm:text-sm">
-            <GraduationCap className="h-4 w-4" />
-            <span className="hidden sm:inline">Tutorial</span>
           </TabsTrigger>
           <TabsTrigger value="flashcard" className="gap-1.5 text-xs sm:text-sm">
             <Lightbulb className="h-4 w-4" />
@@ -754,9 +750,6 @@ export const MentalArithmeticPractice = () => {
           <AbacusSimulator />
         </TabsContent>
 
-        <TabsContent value="tutorial" className="mt-4">
-          <AbacusTutorial />
-        </TabsContent>
 
         <TabsContent value="flashcard" className="mt-4">
           <AbacusFlashCard onComplete={() => setRefreshHistory(prev => prev + 1)} />
