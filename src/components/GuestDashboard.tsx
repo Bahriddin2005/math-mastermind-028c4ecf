@@ -44,6 +44,15 @@ interface Testimonial {
   avatar_url: string | null;
 }
 
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  description: string | null;
+  avatar_url: string | null;
+  order_index: number;
+}
+
 interface PlatformStats {
   total_users: number;
   total_problems_solved: number;
@@ -54,6 +63,7 @@ interface PlatformStats {
 export const GuestDashboard = () => {
   const navigate = useNavigate();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [stats, setStats] = useState<PlatformStats>({
     total_users: 0,
     total_problems_solved: 0,
@@ -73,6 +83,17 @@ export const GuestDashboard = () => {
 
       if (testimonialsData) {
         setTestimonials(testimonialsData);
+      }
+
+      // Fetch team members
+      const { data: teamData } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (teamData) {
+        setTeamMembers(teamData);
       }
 
       // Fetch platform stats using the function
@@ -162,30 +183,6 @@ export const GuestDashboard = () => {
     }
   ];
 
-  // Team members data
-  const teamMembers = [
-    {
-      id: 1,
-      name: "Safarbek Solijonov",
-      role: "O'qituvchi",
-      description: "4 yillik dasturlash sohasidagi tajriba va ko'plab loyihalar dasturchi. Undan tashqari o'quvchilari yaxshi natijalar ko'rsatib kelmoqda",
-      avatar: null
-    },
-    {
-      id: 2,
-      name: "Jamshid Karimov",
-      role: "Mental arifmetika ustozi",
-      description: "8 yillik tajribaga ega professional o'qituvchi. Xalqaro musobaqalar g'olibi va 500+ o'quvchilarni tayyorlagan",
-      avatar: null
-    },
-    {
-      id: 3,
-      name: "Dilnoza Rahimova",
-      role: "Metodist",
-      description: "Ta'lim sohasida 10 yillik tajriba. Zamonaviy o'qitish metodlarini ishlab chiqish va joriy etish bo'yicha mutaxassis",
-      avatar: null
-    }
-  ];
 
   const howItWorks = [
     { step: 1, title: "Ro'yxatdan o'ting", description: "Bepul hisob yarating", icon: User },
@@ -426,9 +423,9 @@ export const GuestDashboard = () => {
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 blur-md scale-110" />
                       <div className="relative w-40 h-40 md:w-52 md:h-52 rounded-full p-1 bg-gradient-to-br from-primary/20 to-accent/20">
                         <div className="w-full h-full rounded-full bg-secondary flex items-center justify-center overflow-hidden border-4 border-background">
-                          {member.avatar ? (
+                          {member.avatar_url ? (
                             <img 
-                              src={member.avatar} 
+                              src={member.avatar_url} 
                               alt={member.name}
                               className="w-full h-full object-cover"
                             />

@@ -37,6 +37,7 @@ import { FileManager } from '@/components/FileManager';
 import { TestimonialsManager } from '@/components/TestimonialsManager';
 import { AdminReports } from '@/components/AdminReports';
 import { CompetitionsManager } from '@/components/CompetitionsManager';
+import { TeamMembersManager } from '@/components/TeamMembersManager';
 import { 
   Mail, 
   FileText, 
@@ -609,7 +610,7 @@ const Admin = () => {
                     <span className="text-[9px] font-medium">Fayl</span>
                   </TabsTrigger>
                 </TabsList>
-                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1.5 pt-0 gap-1">
+                <TabsList className="grid w-full grid-cols-6 h-auto bg-transparent p-1.5 pt-0 gap-1">
                   <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <HelpCircle className="h-4 w-4" />
                     <span className="text-[9px] font-medium">FAQ</span>
@@ -617,6 +618,10 @@ const Admin = () => {
                   <TabsTrigger value="testimonials" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <Quote className="h-4 w-4" />
                     <span className="text-[9px] font-medium">Sharh</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="team" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-violet-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Users className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Jamoa</span>
                   </TabsTrigger>
                   <TabsTrigger value="chats" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <MessageCircle className="h-4 w-4" />
@@ -639,7 +644,7 @@ const Admin = () => {
             <div className="hidden md:block">
               <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-lg overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
-                <TabsList className="relative grid w-full grid-cols-10 h-14 gap-0.5 bg-transparent p-1.5">
+                <TabsList className="relative grid w-full grid-cols-11 h-14 gap-0.5 bg-transparent p-1.5">
                   <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <Users className="h-4 w-4 text-blue-500 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate">Users</span>
@@ -650,7 +655,7 @@ const Admin = () => {
                   </TabsTrigger>
                   <TabsTrigger value="competitions" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-yellow-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <Trophy className="h-4 w-4 text-yellow-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Musobaqalar</span>
+                    <span className="text-[10px] font-medium truncate">Musobaqa</span>
                   </TabsTrigger>
                   <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <GraduationCap className="h-4 w-4 text-emerald-500 group-data-[state=active]:text-white" />
@@ -667,6 +672,10 @@ const Admin = () => {
                   <TabsTrigger value="testimonials" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-pink-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <Quote className="h-4 w-4 text-pink-500 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate">Sharhlar</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="team" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-violet-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Users className="h-4 w-4 text-violet-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Jamoa</span>
                   </TabsTrigger>
                   <TabsTrigger value="chats" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-teal-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <MessageCircle className="h-4 w-4 text-teal-500 group-data-[state=active]:text-white" />
@@ -783,6 +792,11 @@ const Admin = () => {
             {/* Testimonials Tab */}
             <TabsContent value="testimonials">
               <TestimonialsManager />
+            </TabsContent>
+
+            {/* Team Members Tab */}
+            <TabsContent value="team">
+              <TeamMembersManager />
             </TabsContent>
 
             {/* Chat History Tab */}
