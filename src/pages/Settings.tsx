@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
+import { Achievements } from '@/components/Achievements';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,14 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   
+  // Profile stats for achievements
+  const [profileStats, setProfileStats] = useState({
+    totalProblems: 0,
+    bestStreak: 0,
+    totalScore: 0,
+    totalGames: 0,
+  });
+  
   // Crop dialog state
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -53,14 +62,31 @@ const Settings = () => {
     const fetchProfile = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('username, avatar_url')
+        .select('username, avatar_url, total_problems_solved, best_streak, total_score')
         .eq('user_id', user.id)
         .maybeSingle();
 
       if (data) {
         setUsername(data.username || '');
         setAvatarUrl(data.avatar_url);
+        setProfileStats({
+          totalProblems: data.total_problems_solved || 0,
+          bestStreak: data.best_streak || 0,
+          totalScore: data.total_score || 0,
+          totalGames: 0,
+        });
       }
+      
+      // Fetch game sessions count
+      const { count } = await supabase
+        .from('game_sessions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      if (count) {
+        setProfileStats(prev => ({ ...prev, totalGames: count }));
+      }
+      
       setLoading(false);
     };
 
@@ -314,6 +340,14 @@ const Settings = () => {
               </Button>
             </CardContent>
           </Card>
+
+          {/* Achievements Section */}
+          <Achievements
+            totalProblems={profileStats.totalProblems}
+            bestStreak={profileStats.bestStreak}
+            totalScore={profileStats.totalScore}
+            totalGames={profileStats.totalGames}
+          />
 
           {/* Chat History Section */}
           <UserChatHistory />

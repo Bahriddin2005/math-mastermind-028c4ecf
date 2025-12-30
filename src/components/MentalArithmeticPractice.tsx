@@ -263,12 +263,11 @@ export const MentalArithmeticPractice = () => {
     
     if (randomOp.isAdd) {
       runningResultRef.current += randomOp.number;
+      return randomOp.number; // Musbat son (+)
     } else {
       runningResultRef.current -= randomOp.number;
+      return -randomOp.number; // Manfiy son (-) bilan qaytarish
     }
-
-    // Faqat sonni qaytarish (amal ko'rsatilmaydi)
-    return randomOp.number;
   }, [formulaType]);
 
   // O'yinni boshlash
