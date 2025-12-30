@@ -162,6 +162,31 @@ export const GuestDashboard = () => {
     }
   ];
 
+  // Team members data
+  const teamMembers = [
+    {
+      id: 1,
+      name: "Safarbek Solijonov",
+      role: "O'qituvchi",
+      description: "4 yillik dasturlash sohasidagi tajriba va ko'plab loyihalar dasturchi. Undan tashqari o'quvchilari yaxshi natijalar ko'rsatib kelmoqda",
+      avatar: null
+    },
+    {
+      id: 2,
+      name: "Jamshid Karimov",
+      role: "Mental arifmetika ustozi",
+      description: "8 yillik tajribaga ega professional o'qituvchi. Xalqaro musobaqalar g'olibi va 500+ o'quvchilarni tayyorlagan",
+      avatar: null
+    },
+    {
+      id: 3,
+      name: "Dilnoza Rahimova",
+      role: "Metodist",
+      description: "Ta'lim sohasida 10 yillik tajriba. Zamonaviy o'qitish metodlarini ishlab chiqish va joriy etish bo'yicha mutaxassis",
+      avatar: null
+    }
+  ];
+
   const howItWorks = [
     { step: 1, title: "Ro'yxatdan o'ting", description: "Bepul hisob yarating", icon: User },
     { step: 2, title: "Bo'limni tanlang", description: "O'zingizga mos bo'limni tanlang", icon: Target },
@@ -364,6 +389,87 @@ export const GuestDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Team Section - Bizning Jamoa */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '510ms', animationFillMode: 'forwards' }}>
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+            <Users className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-display font-bold text-foreground">Bizning Jamoa</h2>
+            <p className="text-sm text-muted-foreground">Professional o'qituvchilar jamoasi</p>
+          </div>
+        </div>
+
+        <div className="opacity-0 animate-slide-up" style={{ animationDelay: '520ms', animationFillMode: 'forwards' }}>
+          <Carousel
+            opts={{
+              align: "center",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 5000,
+                stopOnInteraction: true,
+                stopOnMouseEnter: true,
+              }),
+            ]}
+            className="w-full max-w-4xl mx-auto"
+          >
+            <CarouselContent>
+              {teamMembers.map((member) => (
+                <CarouselItem key={member.id} className="md:basis-full">
+                  <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 p-4">
+                    {/* Avatar with decorative border */}
+                    <div className="relative shrink-0">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 blur-md scale-110" />
+                      <div className="relative w-40 h-40 md:w-52 md:h-52 rounded-full p-1 bg-gradient-to-br from-primary/20 to-accent/20">
+                        <div className="w-full h-full rounded-full bg-secondary flex items-center justify-center overflow-hidden border-4 border-background">
+                          {member.avatar ? (
+                            <img 
+                              src={member.avatar} 
+                              alt={member.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                              <User className="h-16 w-16 md:h-20 md:w-20 text-primary/40" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {/* Decorative lines */}
+                      <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary/30 rounded-tr-2xl" />
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-accent/30 rounded-bl-2xl" />
+                    </div>
+
+                    {/* Info card */}
+                    <Card className="flex-1 p-6 md:p-8 bg-secondary/50 border-border/30 max-w-xl">
+                      <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-1">
+                        {member.name}
+                      </h3>
+                      <p className="text-primary font-semibold mb-4">{member.role}</p>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {member.description}
+                      </p>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {/* Dot indicators */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              {teamMembers.map((_, index) => (
+                <div
+                  key={index}
+                  className="w-2.5 h-2.5 rounded-full bg-primary/30 transition-all"
+                />
+              ))}
+            </div>
+          </Carousel>
+        </div>
+      </div>
 
       {/* Video Lessons Section */}
       <Card className="overflow-hidden border-border/40 opacity-0 animate-slide-up" style={{ animationDelay: '520ms', animationFillMode: 'forwards' }}>
