@@ -29,7 +29,10 @@ import {
   XCircle,
   FileText,
   Copy,
-  Check
+  Check,
+  Trash2,
+  History,
+  Plus
 } from 'lucide-react';
 
 interface FAQItem {
@@ -95,6 +98,9 @@ export const HelpChatWidget = () => {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress | null>(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [chatHistory, setChatHistory] = useState<{ session_id: string; created_at: string; preview: string }[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   
   // AI Chat state
   const [chatMode, setChatMode] = useState(false);
@@ -128,6 +134,99 @@ export const HelpChatWidget = () => {
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) return "Bugun";
+    if (date.toDateString() === yesterday.toDateString()) return "Kecha";
+    return date.toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' });
+  };
+
+  const fetchChatHistory = async () => {
+    setLoadingHistory(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoadingHistory(false);
+        return;
+      }
+
+      const { data: sessions } = await supabase
+        .from('chat_sessions')
+        .select('session_id, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (sessions && sessions.length > 0) {
+        const historyWithPreview = await Promise.all(
+          sessions.map(async (session) => {
+            const { data: firstMsg } = await supabase
+              .from('chat_messages')
+              .select('content')
+              .eq('session_id', session.session_id)
+              .eq('role', 'user')
+              .order('created_at', { ascending: true })
+              .limit(1)
+              .single();
+            
+            return {
+              session_id: session.session_id,
+              created_at: session.created_at,
+              preview: firstMsg?.content?.substring(0, 50) || "Yangi suhbat"
+            };
+          })
+        );
+        setChatHistory(historyWithPreview);
+      }
+    } catch (error) {
+      console.error('Failed to fetch chat history:', error);
+    }
+    setLoadingHistory(false);
+  };
+
+  const loadChatSession = async (sessionId: string) => {
+    setIsLoading(true);
+    try {
+      const { data: messages } = await supabase
+        .from('chat_messages')
+        .select('role, content, created_at')
+        .eq('session_id', sessionId)
+        .order('created_at', { ascending: true });
+
+      if (messages) {
+        setMessages(messages.map(m => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content,
+          timestamp: new Date(m.created_at)
+        })));
+        sessionIdRef.current = sessionId;
+        setShowHistory(false);
+        setChatMode(true);
+      }
+    } catch (error) {
+      console.error('Failed to load session:', error);
+      toast.error("Suhbatni yuklashda xatolik");
+    }
+    setIsLoading(false);
+  };
+
+  const deleteMessage = (index: number) => {
+    setMessages(prev => prev.filter((_, i) => i !== index));
+    toast.success("Xabar o'chirildi");
+  };
+
+  const startNewChat = () => {
+    sessionIdRef.current = generateSessionId();
+    setMessages([]);
+    setShowHistory(false);
+    setChatMode(true);
+    startChatMode();
   };
 
   useEffect(() => {
@@ -575,38 +674,103 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
             {chatMode ? (
               /* AI Chat Mode */
               <div className="flex flex-col h-[50vh] md:h-[400px]">
-                {/* Back button and TTS toggle */}
+                {/* Back button, History and TTS toggle */}
                 <div className="p-2 border-b border-border/50 bg-muted/30 dark:bg-muted/10 flex items-center justify-between">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => {
-                      setChatMode(false);
-                      setMessages([]);
-                      if (audioRef.current) {
-                        audioRef.current.pause();
-                        audioRef.current = null;
-                      }
-                    }}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    FAQ ga qaytish
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setTtsEnabled(!ttsEnabled)}
-                    title={ttsEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
-                    className={isPlayingAudio ? "text-primary animate-pulse" : "hover:text-foreground"}
-                  >
-                    {ttsEnabled ? (
-                      <Volume2 className="h-4 w-4" />
-                    ) : (
-                      <VolumeX className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => {
+                        setChatMode(false);
+                        setShowHistory(false);
+                        setMessages([]);
+                        if (audioRef.current) {
+                          audioRef.current.pause();
+                          audioRef.current = null;
+                        }
+                      }}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-1" />
+                      <span className="hidden sm:inline">Orqaga</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setShowHistory(!showHistory);
+                        if (!showHistory) fetchChatHistory();
+                      }}
+                      title="Chat tarixi"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <History className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={startNewChat}
+                      title="Yangi suhbat"
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setTtsEnabled(!ttsEnabled)}
+                      title={ttsEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+                      className={isPlayingAudio ? "text-primary animate-pulse" : "hover:text-foreground"}
+                    >
+                      {ttsEnabled ? (
+                        <Volume2 className="h-4 w-4" />
+                      ) : (
+                        <VolumeX className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Chat History Panel */}
+                {showHistory && (
+                  <div className="absolute inset-0 top-[52px] bg-background dark:bg-card z-10 flex flex-col">
+                    <div className="p-3 border-b border-border/50">
+                      <h3 className="font-semibold text-sm">Suhbat tarixi</h3>
+                    </div>
+                    <ScrollArea className="flex-1">
+                      {loadingHistory ? (
+                        <div className="flex items-center justify-center py-8">
+                          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                        </div>
+                      ) : chatHistory.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                          Hali suhbatlar yo'q
+                        </div>
+                      ) : (
+                        <div className="p-2 space-y-1">
+                          {chatHistory.map((session) => (
+                            <button
+                              key={session.session_id}
+                              onClick={() => loadChatSession(session.session_id)}
+                              className="w-full text-left p-3 rounded-xl hover:bg-muted/50 transition-colors group"
+                            >
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium truncate flex-1">
+                                  {session.preview}...
+                                </p>
+                                <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
+                                  {formatDate(session.created_at)}
+                                </span>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </ScrollArea>
+                  </div>
+                )}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-background to-muted/20 dark:from-card dark:to-muted/10">
@@ -626,20 +790,29 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
                           >
                             <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                           </div>
-                          {/* Copy button for assistant messages */}
-                          {msg.role === 'assistant' && (
+                          {/* Action buttons */}
+                          <div className={`absolute ${msg.role === 'user' ? '-left-16' : '-right-16'} top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5`}>
+                            {msg.role === 'assistant' && (
+                              <button
+                                onClick={() => copyToClipboard(msg.content, index)}
+                                className="p-1.5 rounded-lg hover:bg-muted"
+                                title="Nusxalash"
+                              >
+                                {copiedIndex === index ? (
+                                  <Check className="h-3.5 w-3.5 text-success" />
+                                ) : (
+                                  <Copy className="h-3.5 w-3.5 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
                             <button
-                              onClick={() => copyToClipboard(msg.content, index)}
-                              className="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-muted"
-                              title="Nusxalash"
+                              onClick={() => deleteMessage(index)}
+                              className="p-1.5 rounded-lg hover:bg-destructive/10"
+                              title="O'chirish"
                             >
-                              {copiedIndex === index ? (
-                                <Check className="h-3.5 w-3.5 text-success" />
-                              ) : (
-                                <Copy className="h-3.5 w-3.5 text-muted-foreground" />
-                              )}
+                              <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
                             </button>
-                          )}
+                          </div>
                         </div>
                         {/* Timestamp */}
                         <span className={`text-[10px] text-muted-foreground mt-1 ${msg.role === 'user' ? 'mr-1' : 'ml-1'}`}>
