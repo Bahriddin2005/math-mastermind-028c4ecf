@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactCrop, { Crop, PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
@@ -45,15 +45,21 @@ export const AvatarCropDialog = ({
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Load image when file changes
-  useState(() => {
-    if (imageFile) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result as string);
-      };
-      reader.readAsDataURL(imageFile);
+  useEffect(() => {
+    if (!open || !imageFile) {
+      setImageSrc('');
+      setCrop(undefined);
+      setCompletedCrop(undefined);
+      return;
     }
-  });
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setImageSrc(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [imageFile, open]);
 
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
