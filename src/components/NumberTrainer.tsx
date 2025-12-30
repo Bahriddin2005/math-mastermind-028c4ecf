@@ -198,6 +198,18 @@ export const NumberTrainer = () => {
   const [mounted, setMounted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState('train');
+  const [prevTab, setPrevTab] = useState('train');
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  
+  const tabOrder = ['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'];
+  
+  const handleTabChange = (newTab: string) => {
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const newIndex = tabOrder.indexOf(newTab);
+    setSlideDirection(newIndex > currentIndex ? 'right' : 'left');
+    setPrevTab(activeTab);
+    setActiveTab(newTab);
+  };
   
   // Sozlamalar - localStorage dan yuklash
   const [formulaType, setFormulaType] = useState<FormulaType>(() => {
@@ -937,7 +949,7 @@ export const NumberTrainer = () => {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop TabsList - tepa qismda */}
           <TabsList className="hidden md:grid w-full max-w-3xl mx-auto grid-cols-6 mb-8 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-2xl shadow-md">
             <TabsTrigger value="train" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
@@ -986,7 +998,7 @@ export const NumberTrainer = () => {
               
               <TabsTrigger 
                 value="train" 
-                onClick={(e) => handleTabClick(e, 'train', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Play className="h-5 w-5 transition-transform duration-300 data-[state=active]:scale-110" />
@@ -994,7 +1006,7 @@ export const NumberTrainer = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="learn" 
-                onClick={(e) => handleTabClick(e, 'learn', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-success rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <BookOpen className="h-5 w-5 transition-transform duration-300" />
@@ -1002,7 +1014,7 @@ export const NumberTrainer = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="daily" 
-                onClick={(e) => handleTabClick(e, 'daily', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-accent rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Flame className="h-5 w-5 transition-transform duration-300" />
@@ -1010,7 +1022,7 @@ export const NumberTrainer = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="multiplayer" 
-                onClick={(e) => handleTabClick(e, 'multiplayer', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Users className="h-5 w-5 transition-transform duration-300" />
@@ -1018,7 +1030,7 @@ export const NumberTrainer = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="leaderboard" 
-                onClick={(e) => handleTabClick(e, 'leaderboard', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-warning rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <Trophy className="h-5 w-5 transition-transform duration-300" />
@@ -1026,7 +1038,7 @@ export const NumberTrainer = () => {
               </TabsTrigger>
               <TabsTrigger 
                 value="stats" 
-                onClick={(e) => handleTabClick(e, 'stats', setActiveTab)}
+                onClick={(e) => { createRipple(e); triggerHaptic(); }}
                 className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
                 <BarChart3 className="h-5 w-5 transition-transform duration-300" />
@@ -1035,7 +1047,7 @@ export const NumberTrainer = () => {
             </TabsList>
           </div>
 
-          <TabsContent value="learn" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="learn" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`learn-${activeTab}`}>
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-success/10 rounded-full text-sm text-success font-medium mb-4">
@@ -1125,17 +1137,17 @@ export const NumberTrainer = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="daily" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="daily" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`daily-${activeTab}`}>
             <div className="max-w-2xl mx-auto">
               <DailyChallenge />
             </div>
           </TabsContent>
 
-          <TabsContent value="multiplayer" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="multiplayer" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`multiplayer-${activeTab}`}>
             <MultiplayerMode onBack={() => setActiveTab('train')} />
           </TabsContent>
 
-          <TabsContent value="train" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="train" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`train-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
@@ -1395,13 +1407,13 @@ export const NumberTrainer = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="leaderboard" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="leaderboard" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`leaderboard-${activeTab}`}>
             <div className="max-w-2xl mx-auto">
               <Leaderboard currentUserId={user?.id} />
             </div>
           </TabsContent>
 
-          <TabsContent value="stats" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+          <TabsContent value="stats" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`stats-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Statistika kartalar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
