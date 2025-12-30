@@ -681,16 +681,16 @@ const Admin = () => {
             </div>
 
             {/* Users Tab */}
-            <TabsContent value="users" className="space-y-6">
+            <TabsContent value="users" className="space-y-4 sm:space-y-6">
               {/* Statistics Charts */}
               <AdminUserCharts users={users} gameSessions={gameSessions} />
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Foydalanuvchilar ro'yxati</CardTitle>
-                  <CardDescription>Barcha ro'yxatdan o'tgan foydalanuvchilar</CardDescription>
+              <Card className="overflow-hidden">
+                <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
+                  <CardTitle className="text-base sm:text-lg">Foydalanuvchilar</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">Ro'yxatdan o'tganlar</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
                   {loadingUsers ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -698,36 +698,37 @@ const Admin = () => {
                   ) : (
                     <div className="space-y-2">
                       {users.map((profile, index) => (
-                        <div key={profile.id} className="flex items-center justify-between p-4 rounded-xl border bg-secondary/30">
-                          <div className="flex items-center gap-4">
-                            <span className="text-lg font-bold text-muted-foreground w-8">#{index + 1}</span>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-semibold">{profile.username}</p>
+                        <div key={profile.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 rounded-xl border bg-secondary/30 gap-2 sm:gap-4">
+                          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                            <span className="text-sm sm:text-lg font-bold text-muted-foreground w-6 sm:w-8 shrink-0">#{index + 1}</span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                                <p className="font-semibold text-sm sm:text-base truncate">{profile.username}</p>
                                 {adminUsers.includes(profile.user_id) && (
-                                  <Badge variant="default" className="text-xs">Admin</Badge>
+                                  <Badge variant="default" className="text-[10px] sm:text-xs h-4 sm:h-5">Admin</Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-[10px] sm:text-sm text-muted-foreground truncate">
                                 {profile.total_problems_solved} masala · {profile.best_streak} seriya
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className="text-xl font-bold text-primary">{profile.total_score.toLocaleString()}</p>
-                              <p className="text-xs text-muted-foreground">{formatDate(profile.created_at).split(',')[0]}</p>
+                          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4 pl-8 sm:pl-0">
+                            <div className="text-left sm:text-right">
+                              <p className="text-base sm:text-xl font-bold text-primary">{profile.total_score.toLocaleString()}</p>
+                              <p className="text-[10px] sm:text-xs text-muted-foreground">{formatDate(profile.created_at).split(',')[0]}</p>
                             </div>
                             {profile.user_id !== user?.id && (
                               <Button
                                 variant="outline"
                                 size="sm"
+                                className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
                                 onClick={() => toggleAdminRole(profile.user_id)}
                               >
                                 {adminUsers.includes(profile.user_id) ? (
-                                  <><X className="h-4 w-4 mr-1" />Admin o'chirish</>
+                                  <><X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin o'chirish</span><span className="sm:hidden">O'chirish</span></>
                                 ) : (
-                                  <><ShieldCheck className="h-4 w-4 mr-1" />Admin qilish</>
+                                  <><ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin qilish</span><span className="sm:hidden">Admin</span></>
                                 )}
                               </Button>
                             )}
@@ -747,8 +748,8 @@ const Admin = () => {
 
             {/* Courses Tab */}
             <TabsContent value="courses">
-              <Card>
-                <CardContent className="p-6">
+              <Card className="overflow-hidden">
+                <CardContent className="p-2 sm:p-6">
                   <CourseManager isAdmin={isAdmin} />
                 </CardContent>
               </Card>
@@ -756,8 +757,8 @@ const Admin = () => {
 
             {/* Files Tab */}
             <TabsContent value="files">
-              <Card>
-                <CardContent className="p-6">
+              <Card className="overflow-hidden">
+                <CardContent className="p-2 sm:p-6">
                   <FileManager isAdmin={isAdmin} />
                 </CardContent>
               </Card>
@@ -785,12 +786,12 @@ const Admin = () => {
 
             {/* Messages Tab */}
             <TabsContent value="messages">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Kontakt xabarlari</CardTitle>
-                  <CardDescription>Foydalanuvchilardan kelgan xabarlar</CardDescription>
+              <Card className="overflow-hidden">
+                <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
+                  <CardTitle className="text-base sm:text-lg">Kontakt xabarlari</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">Foydalanuvchilardan kelgan xabarlar</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
                   {loadingMessages ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -801,24 +802,24 @@ const Admin = () => {
                       <p>Hali xabarlar yo'q</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${message.is_read ? 'bg-secondary/30' : 'bg-primary/5 border-primary/20'}`}
+                          className={`p-2 sm:p-4 rounded-xl border cursor-pointer transition-all hover:shadow-md ${message.is_read ? 'bg-secondary/30' : 'bg-primary/5 border-primary/20'}`}
                           onClick={() => handleViewMessage(message)}
                         >
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {!message.is_read && <div className="w-2 h-2 rounded-full bg-primary" />}
-                                <span className="font-semibold">{message.name}</span>
-                                <span className="text-sm text-muted-foreground">({message.email})</span>
+                              <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1 flex-wrap">
+                                {!message.is_read && <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary shrink-0" />}
+                                <span className="font-semibold text-sm sm:text-base truncate">{message.name}</span>
+                                <span className="text-[10px] sm:text-sm text-muted-foreground truncate">({message.email})</span>
                               </div>
-                              <p className="font-medium text-sm">{message.subject}</p>
-                              <p className="text-sm text-muted-foreground truncate">{message.message}</p>
+                              <p className="font-medium text-xs sm:text-sm truncate">{message.subject}</p>
+                              <p className="text-[10px] sm:text-sm text-muted-foreground truncate">{message.message}</p>
                             </div>
-                            <div className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(message.created_at)}</div>
+                            <div className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap self-end sm:self-start">{formatDate(message.created_at)}</div>
                           </div>
                         </div>
                       ))}
@@ -830,18 +831,18 @@ const Admin = () => {
 
             {/* Blog Tab */}
             <TabsContent value="blog">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+              <Card className="overflow-hidden">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-6">
                   <div>
-                    <CardTitle>Blog maqolalari</CardTitle>
-                    <CardDescription>Maqolalarni yaratish va tahrirlash</CardDescription>
+                    <CardTitle className="text-base sm:text-lg">Blog maqolalari</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Maqolalarni yaratish va tahrirlash</CardDescription>
                   </div>
-                  <Button onClick={() => openBlogDialog()}>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button onClick={() => openBlogDialog()} size="sm" className="w-full sm:w-auto h-8 sm:h-10">
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                     Yangi maqola
                   </Button>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
                   {loadingPosts ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -852,32 +853,32 @@ const Admin = () => {
                       <p>Hali maqolalar yo'q</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {blogPosts.map((post) => (
-                        <div key={post.id} className="p-4 rounded-xl border bg-secondary/30 flex items-center justify-between gap-4">
+                        <div key={post.id} className="p-2 sm:p-4 rounded-xl border bg-secondary/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-semibold">{post.title}</span>
-                              <Badge variant={post.is_published ? 'default' : 'secondary'}>
+                            <div className="flex items-center gap-1 sm:gap-2 mb-0.5 sm:mb-1 flex-wrap">
+                              <span className="font-semibold text-sm sm:text-base truncate">{post.title}</span>
+                              <Badge variant={post.is_published ? 'default' : 'secondary'} className="text-[10px] sm:text-xs h-4 sm:h-5">
                                 {post.is_published ? 'Chop etilgan' : 'Qoralama'}
                               </Badge>
                             </div>
-                            <p className="text-sm text-muted-foreground truncate">{post.excerpt}</p>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                              <span className="flex items-center gap-1"><User className="h-3 w-3" />{post.author}</span>
-                              <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{post.read_time}</span>
-                              <Badge variant="outline">{post.category}</Badge>
+                            <p className="text-[10px] sm:text-sm text-muted-foreground truncate">{post.excerpt}</p>
+                            <div className="flex items-center gap-2 sm:gap-4 mt-1 sm:mt-2 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
+                              <span className="flex items-center gap-0.5 sm:gap-1"><User className="h-2.5 w-2.5 sm:h-3 sm:w-3" />{post.author}</span>
+                              <span className="flex items-center gap-0.5 sm:gap-1"><Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />{post.read_time}</span>
+                              <Badge variant="outline" className="text-[10px] sm:text-xs h-4 sm:h-5">{post.category}</Badge>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => togglePostPublish(post)}>
-                              {post.is_published ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                          <div className="flex items-center gap-1 sm:gap-2 self-end sm:self-center">
+                            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-9 sm:w-9" onClick={() => togglePostPublish(post)}>
+                              {post.is_published ? <X className="h-3 w-3 sm:h-4 sm:w-4" /> : <Check className="h-3 w-3 sm:h-4 sm:w-4" />}
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => openBlogDialog(post)}>
-                              <Edit className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-9 sm:w-9" onClick={() => openBlogDialog(post)}>
+                              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleDeletePost(post.id)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-9 sm:w-9" onClick={() => handleDeletePost(post.id)}>
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
                             </Button>
                           </div>
                         </div>
