@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target, Play, Home, Moon, Sun, User, LogOut, Settings, ShieldCheck, GraduationCap, Users, Flame } from 'lucide-react';
+import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target, Play, Home, Moon, Sun, User, LogOut, Settings, ShieldCheck, GraduationCap, Users, Flame, BookOpen } from 'lucide-react';
 import { MultiplayerMode } from './MultiplayerMode';
 import { DailyChallenge } from './DailyChallenge';
 import { supabase } from '@/integrations/supabase/client';
@@ -907,40 +907,183 @@ export const NumberTrainer = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5 mb-8 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-2xl shadow-md">
+          {/* Desktop TabsList - tepa qismda */}
+          <TabsList className="hidden md:grid w-full max-w-3xl mx-auto grid-cols-6 mb-8 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-2xl shadow-md">
             <TabsTrigger value="train" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <Play className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Mashq</span>
+              <span className="font-medium">Mashq</span>
+            </TabsTrigger>
+            <TabsTrigger value="learn" className="gap-2 data-[state=active]:bg-success data-[state=active]:text-success-foreground rounded-xl transition-all duration-300">
+              <BookOpen className="h-4 w-4" />
+              <span className="font-medium">O'quv</span>
             </TabsTrigger>
             <TabsTrigger value="daily" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-xl transition-all duration-300">
               <Flame className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Kunlik</span>
+              <span className="font-medium">Kunlik</span>
             </TabsTrigger>
             <TabsTrigger value="multiplayer" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <Users className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Multiplayer</span>
+              <span className="font-medium">Multiplayer</span>
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-warning data-[state=active]:text-warning-foreground rounded-xl transition-all duration-300">
               <Trophy className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Reyting</span>
+              <span className="font-medium">Reyting</span>
             </TabsTrigger>
             <TabsTrigger value="stats" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Statistika</span>
+              <span className="font-medium">Statistika</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="daily" className="mt-0 animate-fade-in">
+          {/* Mobile TabsList - pastki navigatsiya */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg">
+            <TabsList className="grid w-full grid-cols-6 p-1.5 bg-transparent h-auto">
+              <TabsTrigger 
+                value="train" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+              >
+                <Play className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Mashq</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="learn" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-success/10 data-[state=active]:text-success rounded-xl transition-all"
+              >
+                <BookOpen className="h-5 w-5" />
+                <span className="text-[10px] font-medium">O'quv</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="daily" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-accent/10 data-[state=active]:text-accent rounded-xl transition-all"
+              >
+                <Flame className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Kunlik</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="multiplayer" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+              >
+                <Users className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Ko'p</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="leaderboard" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-warning/10 data-[state=active]:text-warning rounded-xl transition-all"
+              >
+                <Trophy className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Reyting</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="stats" 
+                className="flex flex-col items-center gap-0.5 py-2 px-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-xl transition-all"
+              >
+                <BarChart3 className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Stat</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="learn" className="mt-0 mb-20 md:mb-0 animate-fade-in">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-success/10 rounded-full text-sm text-success font-medium mb-4">
+                  <GraduationCap className="h-4 w-4" />
+                  Video darslar
+                </div>
+                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+                  Mental Arifmetika Darslari
+                </h2>
+                <p className="text-muted-foreground max-w-lg mx-auto">
+                  Professional video darslar orqali mental arifmetika sirlarini o'rganing
+                </p>
+              </div>
+              
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Kurs kartasi 1 */}
+                <Card 
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  onClick={() => navigate('/courses')}
+                >
+                  <div className="h-32 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <BookOpen className="h-8 w-8 text-primary" />
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-foreground mb-1">Boshlang'ich kurs</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Soroban asoslari va oddiy formulalar</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-primary font-medium">Bepul</span>
+                      <span className="text-xs text-muted-foreground">10+ dars</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Kurs kartasi 2 */}
+                <Card 
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  onClick={() => navigate('/courses')}
+                >
+                  <div className="h-32 bg-gradient-to-br from-accent/20 to-warning/20 flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-2xl bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Target className="h-8 w-8 text-accent" />
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-foreground mb-1">O'rta daraja</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Formula 5 va Formula 10</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-accent font-medium">Premium</span>
+                      <span className="text-xs text-muted-foreground">15+ dars</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Kurs kartasi 3 */}
+                <Card 
+                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
+                  onClick={() => navigate('/courses')}
+                >
+                  <div className="h-32 bg-gradient-to-br from-warning/20 to-destructive/20 flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-2xl bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Trophy className="h-8 w-8 text-warning" />
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-foreground mb-1">Yuqori daraja</h3>
+                    <p className="text-sm text-muted-foreground mb-3">Murakkab formulalar va tezlik</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-warning font-medium">Premium</span>
+                      <span className="text-xs text-muted-foreground">20+ dars</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="mt-8 text-center">
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/courses')}
+                  className="gap-2 h-12 px-8 rounded-2xl bg-gradient-to-r from-success to-green-400 hover:from-green-400 hover:to-success text-white font-bold shadow-lg"
+                >
+                  <GraduationCap className="h-5 w-5" />
+                  Barcha kurslarni ko'rish
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="daily" className="mt-0 mb-20 md:mb-0 animate-fade-in">
             <div className="max-w-2xl mx-auto">
               <DailyChallenge />
             </div>
           </TabsContent>
 
-          <TabsContent value="multiplayer" className="mt-0 animate-fade-in">
+          <TabsContent value="multiplayer" className="mt-0 mb-20 md:mb-0 animate-fade-in">
             <MultiplayerMode onBack={() => setActiveTab('train')} />
           </TabsContent>
 
-          <TabsContent value="train" className="mt-0 animate-fade-in">
+          <TabsContent value="train" className="mt-0 mb-20 md:mb-0 animate-fade-in">
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
@@ -1200,13 +1343,13 @@ export const NumberTrainer = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="leaderboard" className="mt-0 animate-fade-in">
+          <TabsContent value="leaderboard" className="mt-0 mb-20 md:mb-0 animate-fade-in">
             <div className="max-w-2xl mx-auto">
               <Leaderboard currentUserId={user?.id} />
             </div>
           </TabsContent>
 
-          <TabsContent value="stats" className="mt-0 animate-fade-in">
+          <TabsContent value="stats" className="mt-0 mb-20 md:mb-0 animate-fade-in">
             <div className="max-w-4xl mx-auto space-y-6">
               {/* Statistika kartalar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
