@@ -753,7 +753,7 @@ export const NumberTrainer = () => {
 
   // Sozlamalar sahifasi
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10">
+    <div className="min-h-screen">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
       
       <div className="container py-8 px-4 md:px-8">

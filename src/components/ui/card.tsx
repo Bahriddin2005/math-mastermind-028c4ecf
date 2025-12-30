@@ -9,10 +9,10 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', ...props }, ref) => {
     const variants = {
-      default: "rounded-2xl border bg-card text-card-foreground shadow-md",
-      game: "rounded-3xl border-2 border-primary/20 bg-card text-card-foreground shadow-lg hover:shadow-glow transition-all duration-300",
-      stat: "rounded-2xl border border-border/50 bg-gradient-to-br from-card to-secondary/30 text-card-foreground shadow-sm hover:shadow-md transition-all duration-200",
-      section: "rounded-3xl border-2 border-transparent bg-card text-card-foreground shadow-md hover:border-primary/30 hover:shadow-lg cursor-pointer transition-all duration-300 active:scale-[0.98]",
+      default: "rounded-2xl border bg-card text-card-foreground shadow-md card-hover-glow",
+      game: "rounded-3xl border-2 border-primary/20 bg-card text-card-foreground shadow-lg hover:shadow-glow transition-all duration-300 dark-glow-card",
+      stat: "rounded-2xl border border-border/50 bg-gradient-to-br from-card to-secondary/30 text-card-foreground shadow-sm hover:shadow-md transition-all duration-200 card-hover-glow",
+      section: "rounded-3xl border-2 border-transparent bg-card text-card-foreground shadow-md hover:border-primary/30 hover:shadow-lg cursor-pointer transition-all duration-300 active:scale-[0.98] dark-glow-card",
     };
 
     return (

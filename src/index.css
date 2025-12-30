@@ -105,6 +105,13 @@
     --input: 160 20% 22%;
     --ring: 145 75% 48%;
 
+    /* Dark mode shadows with glow */
+    --shadow-sm: 0 2px 8px -2px hsl(145 40% 20% / 0.3);
+    --shadow-md: 0 4px 16px -4px hsl(145 40% 20% / 0.4);
+    --shadow-lg: 0 8px 32px -8px hsl(145 40% 20% / 0.5);
+    --shadow-glow: 0 0 30px hsl(145 75% 48% / 0.35);
+    --shadow-accent-glow: 0 0 30px hsl(28 90% 58% / 0.35);
+
     --sidebar-background: 160 25% 10%;
     --sidebar-foreground: 45 30% 95%;
     --sidebar-primary: 145 75% 48%;
@@ -158,6 +165,61 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Dark mode card glow effects */
+  .dark-glow-card {
+    @apply relative transition-all duration-300;
+  }
+
+  .dark-glow-card::before {
+    content: '';
+    @apply absolute -inset-0.5 rounded-xl opacity-0 blur-md transition-opacity duration-300 -z-10;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--accent) / 0.2));
+  }
+
+  .dark .dark-glow-card:hover::before {
+    @apply opacity-100;
+  }
+
+  .dark .dark-glow-card:hover {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.2), 0 0 40px hsl(var(--primary) / 0.1);
+  }
+
+  /* Subtle ambient glow for sections */
+  .dark-section-glow {
+    @apply relative;
+  }
+
+  .dark .dark-section-glow::after {
+    content: '';
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 rounded-full opacity-40;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+    filter: blur(8px);
+  }
+
+  /* Card hover glow effect */
+  .card-hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .dark .card-hover-glow:hover {
+    box-shadow: 
+      0 4px 20px hsl(var(--primary) / 0.15),
+      0 0 40px hsl(var(--primary) / 0.1),
+      inset 0 1px 0 hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary) / 0.3);
+  }
+
+  /* Accent glow hover */
+  .accent-hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .dark .accent-hover-glow:hover {
+    box-shadow: 
+      0 4px 20px hsl(var(--accent) / 0.2),
+      0 0 40px hsl(var(--accent) / 0.15);
   }
 }
 
