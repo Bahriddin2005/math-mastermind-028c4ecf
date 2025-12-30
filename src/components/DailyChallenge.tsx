@@ -370,22 +370,22 @@ export const DailyChallenge = () => {
     );
   }
 
-  // O'yin davomida
+  // O'yin davomida - Mobile optimized
   if (view === 'playing' && currentDisplay !== null) {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50">
-        <div className="absolute top-6 right-6 flex items-center gap-2 text-2xl font-mono text-muted-foreground">
-          <Clock className="h-6 w-6" />
+      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-4">
+        <div className="absolute top-4 sm:top-6 right-4 sm:right-6 flex items-center gap-2 text-xl sm:text-2xl font-mono text-muted-foreground bg-muted/50 px-3 sm:px-4 py-2 rounded-xl">
+          <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
           {elapsedTime.toFixed(1)}s
         </div>
         
-        <Badge className="absolute top-6 left-6 text-lg px-4 py-2">
-          <Calendar className="h-4 w-4 mr-2" />
+        <Badge className="absolute top-4 sm:top-6 left-4 sm:left-6 text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
+          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
           Kunlik musobaqa
         </Badge>
         
         <div 
-          className="text-[180px] md:text-[250px] font-light text-foreground transition-all duration-100"
+          className="text-[120px] sm:text-[180px] md:text-[250px] font-light text-foreground transition-all duration-100 leading-none"
         >
           {!isAddition && countRef.current > 1 ? '-' : ''}{currentDisplay}
         </div>
@@ -393,26 +393,26 @@ export const DailyChallenge = () => {
     );
   }
 
-  // Javob kiritish
+  // Javob kiritish - Mobile optimized
   if (view === 'answer') {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-6">
-        <div className="max-w-md w-full space-y-6 text-center">
-          <Badge className="text-lg px-4 py-2">
-            <Calendar className="h-4 w-4 mr-2" />
+      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-4 sm:p-6">
+        <div className="max-w-md w-full space-y-4 sm:space-y-6 text-center">
+          <Badge className="text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
+            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
             Kunlik musobaqa
           </Badge>
           
-          <h2 className="text-2xl font-bold">Javobingizni kiriting!</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Javobingizni kiriting!</h2>
           
-          <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <Clock className="h-5 w-5" />
-            <span className="font-mono text-lg">{elapsedTime.toFixed(1)}s</span>
+          <div className="flex items-center justify-center gap-2 text-muted-foreground bg-muted/50 px-4 py-2 rounded-xl mx-auto w-fit">
+            <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="font-mono text-lg sm:text-xl font-bold">{elapsedTime.toFixed(1)}s</span>
           </div>
           
-          <div className="bg-muted/50 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
-            <p className="text-lg font-mono">
+          <div className="bg-muted/50 rounded-xl p-3 sm:p-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
+            <p className="text-base sm:text-lg font-mono leading-relaxed">
               {displayedNumbers.map((item, i) => (
                 <span key={i}>
                   {i > 0 ? (item.isAdd ? ' + ' : ' - ') : ''}{item.num}
@@ -427,17 +427,22 @@ export const DailyChallenge = () => {
             onChange={(e) => setUserAnswer(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
             placeholder="Javob"
-            className="text-center text-3xl h-16"
+            className="text-center text-3xl sm:text-4xl h-16 sm:h-20 text-primary font-bold"
             autoFocus
           />
           
-          <Button onClick={submitAnswer} disabled={!userAnswer || !user} size="lg" className="w-full">
-            <Check className="h-5 w-5 mr-2" />
+          <Button 
+            onClick={submitAnswer} 
+            disabled={!userAnswer || !user} 
+            size="lg" 
+            className="w-full h-14 sm:h-12 text-lg sm:text-base"
+          >
+            <Check className="h-5 w-5 sm:h-5 sm:w-5 mr-2" />
             Yuborish
           </Button>
           
           {!user && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Natijani saqlash uchun tizimga kiring
             </p>
           )}
@@ -446,56 +451,55 @@ export const DailyChallenge = () => {
     );
   }
 
-  // Natijalar va info
+  // Natijalar va info - Mobile optimized
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Kunlik musobaqa ma'lumotlari */}
       <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <Flame className="h-5 w-5 text-white" />
+        <CardHeader className="px-3 sm:px-6 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <CardTitle className="flex items-center gap-2 sm:gap-3">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div>
-                <span className="text-lg">Kunlik musobaqa</span>
-                <p className="text-xs text-muted-foreground font-normal mt-0.5">
+                <span className="text-base sm:text-lg">Kunlik musobaqa</span>
+                <p className="text-[10px] sm:text-xs text-muted-foreground font-normal mt-0.5">
                   {new Date().toLocaleDateString('uz-UZ', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
+                    weekday: 'short', 
+                    month: 'short', 
                     day: 'numeric' 
                   })}
                 </p>
               </div>
             </CardTitle>
-            <div className="text-right">
+            <div className="flex items-center gap-2 sm:flex-col sm:items-end bg-muted/50 sm:bg-transparent px-3 py-2 sm:p-0 rounded-lg sm:rounded-none">
               <div className="flex items-center gap-1 text-muted-foreground">
-                <Timer className="h-4 w-4" />
-                <span className="text-sm">Yangilanishgacha:</span>
+                <Timer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">Yangilanish:</span>
               </div>
-              <span className="font-mono text-lg font-bold text-primary">{timeLeft}</span>
+              <span className="font-mono text-base sm:text-lg font-bold text-primary">{timeLeft}</span>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
           {challenge && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">Turi</p>
-                <p className="font-semibold">{challenge.formula_type}</p>
+            <div className="grid grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Turi</p>
+                <p className="font-semibold text-xs sm:text-base">{challenge.formula_type}</p>
               </div>
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">Xona</p>
-                <p className="font-semibold">{challenge.digit_count}-xonali</p>
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Xona</p>
+                <p className="font-semibold text-xs sm:text-base">{challenge.digit_count}-xon</p>
               </div>
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">Tezlik</p>
-                <p className="font-semibold">{challenge.speed}s</p>
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Tezlik</p>
+                <p className="font-semibold text-xs sm:text-base">{challenge.speed}s</p>
               </div>
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs text-muted-foreground">Sonlar</p>
-                <p className="font-semibold">{challenge.problem_count} ta</p>
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Sonlar</p>
+                <p className="font-semibold text-xs sm:text-base">{challenge.problem_count}</p>
               </div>
             </div>
           )}
@@ -504,56 +508,56 @@ export const DailyChallenge = () => {
             <Button 
               onClick={startChallenge} 
               size="lg" 
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+              className="w-full h-12 sm:h-11 text-base sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
               disabled={!user}
             >
-              <Play className="h-5 w-5 mr-2" />
+              <Play className="h-5 w-5 sm:h-5 sm:w-5 mr-2" />
               Musobaqani boshlash
             </Button>
           )}
           
           {!user && view === 'info' && (
-            <p className="text-center text-sm text-muted-foreground mt-2">
+            <p className="text-center text-xs sm:text-sm text-muted-foreground mt-2">
               Qatnashish uchun tizimga kiring
             </p>
           )}
           
           {userResult && (
             <div className={cn(
-              "p-4 rounded-lg text-center",
+              "p-3 sm:p-4 rounded-xl text-center",
               userResult.is_correct ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30"
             )}>
-              <p className="text-lg font-semibold">
+              <p className="text-base sm:text-lg font-semibold">
                 {userResult.is_correct ? "✓ To'g'ri javob!" : "✗ Noto'g'ri"}
               </p>
-              <p className="text-muted-foreground">
-                Vaqt: {userResult.completion_time.toFixed(1)}s | Ball: {userResult.score}
+              <p className="text-sm text-muted-foreground mt-1">
+                Vaqt: <span className="font-mono font-bold">{userResult.completion_time.toFixed(1)}s</span> | Ball: <span className="font-bold text-primary">{userResult.score}</span>
               </p>
             </div>
           )}
         </CardContent>
       </Card>
       
-      {/* Reyting */}
+      {/* Reyting - Mobile optimized */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-amber-500" />
+        <CardHeader className="px-3 sm:px-6 py-3 sm:py-4">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
             Bugungi reyting
-            <Badge variant="secondary" className="ml-auto">
+            <Badge variant="secondary" className="ml-auto text-[10px] sm:text-xs">
               {results.length} ishtirokchi
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
           {results.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Trophy className="h-12 w-12 mx-auto mb-4 opacity-30" />
-              <p>Hali hech kim qatnashmadi</p>
-              <p className="text-sm">Birinchi bo'lib qatnashing!</p>
+            <div className="text-center py-6 sm:py-8 text-muted-foreground">
+              <Trophy className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 opacity-30" />
+              <p className="text-sm sm:text-base">Hali hech kim qatnashmadi</p>
+              <p className="text-xs sm:text-sm">Birinchi bo'lib qatnashing!</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+            <div className="space-y-2 max-h-[350px] sm:max-h-[400px] overflow-y-auto pr-1 sm:pr-2">
               {results.map((result, index) => {
                 const rank = index + 1;
                 const isCurrentUser = result.user_id === user?.id;
@@ -562,36 +566,36 @@ export const DailyChallenge = () => {
                   <div
                     key={result.id}
                     className={cn(
-                      'flex items-center gap-3 p-3 rounded-xl border transition-all',
-                      isCurrentUser && 'ring-2 ring-primary ring-offset-2 ring-offset-background bg-primary/5',
+                      'flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border transition-all',
+                      isCurrentUser && 'ring-2 ring-primary ring-offset-1 sm:ring-offset-2 ring-offset-background bg-primary/5',
                       rank === 1 && !isCurrentUser && 'bg-amber-500/5 border-amber-500/20',
                       rank === 2 && !isCurrentUser && 'bg-gray-400/5 border-gray-400/20',
                       rank === 3 && !isCurrentUser && 'bg-amber-700/5 border-amber-700/20',
                       rank > 3 && !isCurrentUser && 'bg-card border-border/40'
                     )}
                   >
-                    <div className="w-8 flex justify-center">
+                    <div className="w-6 sm:w-8 flex justify-center flex-shrink-0">
                       {getRankIcon(rank)}
                     </div>
                     
-                    <Avatar className="h-10 w-10">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarImage src={result.avatar_url || undefined} />
-                      <AvatarFallback>{result.username.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="text-xs sm:text-sm">{result.username.charAt(0)}</AvatarFallback>
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
-                      <p className={cn("font-medium truncate", isCurrentUser && "text-primary")}>
+                      <p className={cn("font-medium text-sm sm:text-base truncate", isCurrentUser && "text-primary")}>
                         {result.username}
-                        {isCurrentUser && <span className="text-xs ml-2">(siz)</span>}
+                        {isCurrentUser && <span className="text-[10px] sm:text-xs ml-1">(siz)</span>}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">
                         {result.completion_time.toFixed(1)}s
                       </p>
                     </div>
                     
-                    <div className="text-right">
-                      <Badge variant={result.is_correct ? "default" : "destructive"}>
-                        {result.score} ball
+                    <div className="text-right flex-shrink-0">
+                      <Badge variant={result.is_correct ? "default" : "destructive"} className="text-[10px] sm:text-xs px-2 py-0.5">
+                        {result.score}
                       </Badge>
                     </div>
                   </div>
