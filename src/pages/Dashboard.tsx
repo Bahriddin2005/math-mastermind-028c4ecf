@@ -75,6 +75,7 @@ const Dashboard = () => {
   const [todayStats, setTodayStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
   const [weekStats, setWeekStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
   const [monthStats, setMonthStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
+  const [chartData, setChartData] = useState<{ date: string; score: number; solved: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Achievement notifications hook
@@ -159,6 +160,31 @@ const Dashboard = () => {
         // Oylik statistika
         const monthSessions = sessionsData.filter(s => new Date(s.created_at) >= startOfMonth);
         setMonthStats(calcStats(monthSessions));
+        
+        // Chart data - oxirgi 14 kun
+        const dailyData: { [key: string]: { score: number; solved: number } } = {};
+        for (let i = 13; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toISOString().split('T')[0];
+          dailyData[dateStr] = { score: 0, solved: 0 };
+        }
+        
+        sessionsData.forEach(s => {
+          const dateStr = s.created_at.split('T')[0];
+          if (dailyData[dateStr]) {
+            dailyData[dateStr].score += s.score || 0;
+            dailyData[dateStr].solved += (s.correct || 0) + (s.incorrect || 0);
+          }
+        });
+        
+        const chartDataArray = Object.entries(dailyData).map(([date, data]) => ({
+          date: new Date(date).toLocaleDateString('uz-UZ', { day: 'numeric', month: 'short' }),
+          score: data.score,
+          solved: data.solved
+        }));
+        
+        setChartData(chartDataArray);
       }
 
       setLoading(false);
@@ -265,6 +291,7 @@ const Dashboard = () => {
                   weekStats={weekStats}
                   monthStats={monthStats}
                   currentStreak={profile.current_streak}
+                  chartData={chartData}
                 />
               )}
               <Achievements
