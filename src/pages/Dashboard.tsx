@@ -242,13 +242,18 @@ const Dashboard = () => {
 
       <main className="flex-1">
         {/* Hero Section with gradient */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
+          {/* Animated background elements */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-accent/10 rounded-full blur-3xl" />
+            <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-accent/20 to-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
           </div>
           
-          <div className="container px-4 py-8 md:py-12 relative">
+          {/* Decorative dots pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          
+          <div className="container px-4 py-10 md:py-14 relative">
             <div className="max-w-5xl mx-auto">
               <WelcomeHero username={profile?.username} />
             </div>
@@ -324,14 +329,17 @@ const Dashboard = () => {
 
             {/* Quick Access Section */}
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center gap-2 sm:gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl gradient-primary flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
+              <div className="flex items-center justify-between opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
+                    <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Tez kirish</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Tez kirish</h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
-                </div>
+                <div className="hidden sm:block h-px flex-1 mx-6 bg-gradient-to-r from-border to-transparent" />
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
@@ -370,14 +378,17 @@ const Dashboard = () => {
 
             {/* Mental Arifmetika Mashqi */}
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex items-center gap-2 sm:gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
-                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                  <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              <div className="flex items-center justify-between opacity-0 animate-slide-up" style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
+                    <Calculator className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Mental Arifmetika</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Abacus bilan mashq qiling</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Mental Arifmetika</h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Abacus bilan mashq qiling</p>
-                </div>
+                <div className="hidden sm:block h-px flex-1 mx-6 bg-gradient-to-r from-border to-transparent" />
               </div>
               <MentalArithmeticPractice />
             </div>

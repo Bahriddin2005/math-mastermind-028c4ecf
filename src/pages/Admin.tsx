@@ -450,46 +450,46 @@ const Admin = () => {
 
           {/* Stats Cards - 3 columns on mobile */}
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-4 sm:mb-8">
-            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalUsers}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Users</p>
+            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalUsers}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Users</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <Target className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalProblems.toLocaleString()}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yechilgan</p>
+            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <Target className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalProblems.toLocaleString()}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Yechilgan</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-yellow-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalScore.toLocaleString()}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Ball</p>
+            <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-yellow-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalScore.toLocaleString()}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Ball</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.totalGames}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">O'yin</p>
+            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalGames}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">O'yin</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.newUsersToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Yangi</p>
+            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.newUsersToday}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Yangi</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 overflow-hidden">
-              <CardContent className="p-2 sm:p-4 text-center">
-                <Flame className="h-4 w-4 sm:h-6 sm:w-6 text-orange-500 mx-auto mb-1 sm:mb-2" />
-                <p className="text-base sm:text-2xl font-bold truncate">{stats.activeToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Faol</p>
+            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+              <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
+                <Flame className="h-4 w-4 sm:h-6 sm:w-6 text-orange-500 mx-auto mb-1" />
+                <p className="text-sm sm:text-xl font-bold truncate">{stats.activeToday}</p>
+                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Faol</p>
               </CardContent>
             </Card>
           </div>
