@@ -36,6 +36,7 @@ import { AdminUserCharts } from '@/components/AdminUserCharts';
 import { FileManager } from '@/components/FileManager';
 import { TestimonialsManager } from '@/components/TestimonialsManager';
 import { AdminReports } from '@/components/AdminReports';
+import { CompetitionsManager } from '@/components/CompetitionsManager';
 import { 
   Mail, 
   FileText, 
@@ -595,6 +596,10 @@ const Admin = () => {
                     <BarChart2 className="h-4 w-4" />
                     <span className="text-[9px] font-medium">Hisobot</span>
                   </TabsTrigger>
+                  <TabsTrigger value="competitions" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Trophy className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Musobaqa</span>
+                  </TabsTrigger>
                   <TabsTrigger value="courses" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <GraduationCap className="h-4 w-4" />
                     <span className="text-[9px] font-medium">Kurs</span>
@@ -603,12 +608,12 @@ const Admin = () => {
                     <FolderOpen className="h-4 w-4" />
                     <span className="text-[9px] font-medium">Fayl</span>
                   </TabsTrigger>
+                </TabsList>
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1.5 pt-0 gap-1">
                   <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <HelpCircle className="h-4 w-4" />
                     <span className="text-[9px] font-medium">FAQ</span>
                   </TabsTrigger>
-                </TabsList>
-                <TabsList className="grid w-full grid-cols-4 h-auto bg-transparent p-1.5 pt-0 gap-1">
                   <TabsTrigger value="testimonials" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
                     <Quote className="h-4 w-4" />
                     <span className="text-[9px] font-medium">Sharh</span>
@@ -634,7 +639,7 @@ const Admin = () => {
             <div className="hidden md:block">
               <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-lg overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
-                <TabsList className="relative grid w-full grid-cols-9 h-14 gap-0.5 bg-transparent p-1.5">
+                <TabsList className="relative grid w-full grid-cols-10 h-14 gap-0.5 bg-transparent p-1.5">
                   <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <Users className="h-4 w-4 text-blue-500 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate">Users</span>
@@ -642,6 +647,10 @@ const Admin = () => {
                   <TabsTrigger value="reports" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-purple-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <BarChart2 className="h-4 w-4 text-purple-500 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate">Hisobot</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="competitions" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-yellow-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
+                    <Trophy className="h-4 w-4 text-yellow-500 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate">Musobaqalar</span>
                   </TabsTrigger>
                   <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
                     <GraduationCap className="h-4 w-4 text-emerald-500 group-data-[state=active]:text-white" />
@@ -740,6 +749,11 @@ const Admin = () => {
             {/* Reports Tab */}
             <TabsContent value="reports">
               <AdminReports />
+            </TabsContent>
+
+            {/* Competitions Tab */}
+            <TabsContent value="competitions">
+              <CompetitionsManager />
             </TabsContent>
 
             {/* Courses Tab */}
