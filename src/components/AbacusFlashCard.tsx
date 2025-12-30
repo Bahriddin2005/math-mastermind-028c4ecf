@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Play, RotateCcw, Check, Settings2, Lightbulb, Eye, EyeOff } from 'lucide-react';
+import { Play, RotateCcw, Check, Settings2, Lightbulb, Eye, EyeOff, Clock, Star, Zap, Trophy } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,10 +50,8 @@ const InteractiveAbacus = ({
     if (disabled) return;
     playSound('bead');
     if (topBeadActive) {
-      // Deactivate: subtract 5
       onChange(value - 5);
     } else {
-      // Activate: add 5
       onChange(value + 5);
     }
   };
@@ -61,16 +59,13 @@ const InteractiveAbacus = ({
   const handleBottomBeadClick = (index: number) => {
     if (disabled) return;
     playSound('bead');
-    // Bottom beads: clicking activates/deactivates from bottom up
-    const clickedPosition = 3 - index; // 0 = top bead, 3 = bottom bead
+    const clickedPosition = 3 - index;
     const currentActive = bottomBeadsActive;
     
     if (clickedPosition < currentActive) {
-      // Deactivate: set to clickedPosition
       const newBase = topBeadActive ? 5 : 0;
       onChange(newBase + clickedPosition);
     } else {
-      // Activate: set to clickedPosition + 1
       const newBase = topBeadActive ? 5 : 0;
       onChange(newBase + clickedPosition + 1);
     }
@@ -123,7 +118,6 @@ const InteractiveAbacus = ({
           "
         >
           <div className="relative flex flex-col items-center">
-            {/* Rod */}
             <div 
               className={`
                 absolute ${styles.rod} 
@@ -133,17 +127,14 @@ const InteractiveAbacus = ({
               `} 
             />
             
-            {/* Top bead (5 value) */}
             <div className={`flex flex-col ${styles.gap} z-10 mb-4`}>
               {renderBead(topBeadActive, true, handleTopBeadClick)}
             </div>
 
-            {/* Divider bar */}
             <div 
               className="w-16 h-2 bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 rounded z-10 my-2 shadow-md" 
             />
 
-            {/* Bottom beads (1 value each) */}
             <div className={`flex flex-col ${styles.gap} z-10 mt-4`}>
               {[0, 1, 2, 3].map((index) => {
                 const isActive = (3 - index) < bottomBeadsActive;
@@ -154,7 +145,6 @@ const InteractiveAbacus = ({
         </div>
       </div>
       
-      {/* Current value display */}
       <div className="mt-4 text-3xl font-bold text-primary font-display">
         {value}
       </div>
@@ -168,7 +158,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   
   // Settings
   const [problemCount, setProblemCount] = useState(5);
-  const [showTime, setShowTime] = useState(2000); // ms to show number
+  const [showTime, setShowTime] = useState(2000);
+  const [answerTimeLimit, setAnswerTimeLimit] = useState(10); // seconds to answer
   const [showSettings, setShowSettings] = useState(true);
   
   // Game state
@@ -177,79 +168,184 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const [targetNumber, setTargetNumber] = useState<number | null>(null);
   const [showTarget, setShowTarget] = useState(false);
   const [userValue, setUserValue] = useState(0);
-  const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const [score, setScore] = useState({ correct: 0, incorrect: 0 });
+  const [feedback, setFeedback] = useState<'correct' | 'incorrect' | 'timeout' | null>(null);
+  const [score, setScore] = useState({ correct: 0, incorrect: 0, totalPoints: 0 });
   const [isFinished, setIsFinished] = useState(false);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  
+  // Timer state
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [answerStartTime, setAnswerStartTime] = useState<number | null>(null);
   
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Calculate points based on time and streak
+  const calculatePoints = useCallback((timeTaken: number, currentStreak: number) => {
+    // Base points
+    let points = 10;
+    
+    // Time bonus: faster = more points (max 20 bonus points)
+    const timeBonus = Math.max(0, Math.floor((answerTimeLimit - timeTaken) * 2));
+    points += Math.min(timeBonus, 20);
+    
+    // Streak bonus: 5 points per streak level (max 25 bonus)
+    const streakBonus = Math.min(currentStreak * 5, 25);
+    points += streakBonus;
+    
+    return points;
+  }, [answerTimeLimit]);
 
   // Generate random number 0-9
   const generateNumber = useCallback(() => {
     return Math.floor(Math.random() * 10);
   }, []);
 
+  // Clear all timers
+  const clearAllTimers = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, []);
+
+  // Start answer timer countdown
+  const startAnswerTimer = useCallback(() => {
+    setTimeLeft(answerTimeLimit);
+    setAnswerStartTime(Date.now());
+    
+    timerIntervalRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          // Time's up!
+          clearInterval(timerIntervalRef.current!);
+          timerIntervalRef.current = null;
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }, [answerTimeLimit]);
+
+  // Handle timeout
+  useEffect(() => {
+    if (timeLeft === 0 && isPlaying && !showTarget && feedback === null && answerStartTime !== null) {
+      // Time ran out
+      handleTimeout();
+    }
+  }, [timeLeft, isPlaying, showTarget, feedback, answerStartTime]);
+
+  const handleTimeout = useCallback(() => {
+    clearAllTimers();
+    setFeedback('timeout');
+    playSound('incorrect');
+    setStreak(0);
+    
+    const newScore = {
+      ...score,
+      incorrect: score.incorrect + 1,
+    };
+    setScore(newScore);
+    
+    setTimeout(() => {
+      if (currentProblem >= problemCount) {
+        finishGame(newScore);
+      } else {
+        nextProblem();
+      }
+    }, 1500);
+  }, [score, currentProblem, problemCount, playSound, clearAllTimers]);
+
   // Start game
   const startGame = useCallback(() => {
     setIsPlaying(true);
     setShowSettings(false);
     setCurrentProblem(1);
-    setScore({ correct: 0, incorrect: 0 });
+    setScore({ correct: 0, incorrect: 0, totalPoints: 0 });
     setIsFinished(false);
     setFeedback(null);
+    setStreak(0);
+    setBestStreak(0);
     
     playSound('start');
     
-    // Generate and show first number
     const num = generateNumber();
     setTargetNumber(num);
     setShowTarget(true);
     setUserValue(0);
     
-    // Hide number after showTime
     timeoutRef.current = setTimeout(() => {
       setShowTarget(false);
+      startAnswerTimer();
     }, showTime);
-  }, [generateNumber, showTime, playSound]);
+  }, [generateNumber, showTime, playSound, startAnswerTimer]);
 
   // Check answer
   const checkAnswer = useCallback(() => {
-    if (targetNumber === null) return;
+    if (targetNumber === null || feedback !== null) return;
     
+    clearAllTimers();
+    
+    const timeTaken = answerStartTime ? (Date.now() - answerStartTime) / 1000 : answerTimeLimit;
     const isCorrect = userValue === targetNumber;
+    
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     playSound(isCorrect ? 'correct' : 'incorrect');
+    
+    let newStreak = streak;
+    let points = 0;
+    
+    if (isCorrect) {
+      newStreak = streak + 1;
+      setStreak(newStreak);
+      if (newStreak > bestStreak) {
+        setBestStreak(newStreak);
+      }
+      points = calculatePoints(timeTaken, newStreak);
+    } else {
+      newStreak = 0;
+      setStreak(0);
+    }
     
     const newScore = {
       correct: score.correct + (isCorrect ? 1 : 0),
       incorrect: score.incorrect + (isCorrect ? 0 : 1),
+      totalPoints: score.totalPoints + points,
     };
     setScore(newScore);
     
-    // Show correct answer briefly
     setTimeout(() => {
       if (currentProblem >= problemCount) {
-        // Game finished
-        setIsFinished(true);
-        setIsPlaying(false);
-        playSound('complete');
-        onComplete?.(newScore.correct, problemCount);
-        
-        // Save to database
-        if (user) {
-          saveResult(newScore);
-        }
+        finishGame(newScore);
       } else {
-        // Next problem
         nextProblem();
       }
     }, 1500);
-  }, [targetNumber, userValue, score, currentProblem, problemCount, playSound, onComplete, user]);
+  }, [targetNumber, userValue, score, currentProblem, problemCount, playSound, streak, bestStreak, answerStartTime, answerTimeLimit, calculatePoints, clearAllTimers, feedback]);
+
+  // Finish game
+  const finishGame = useCallback((finalScore: { correct: number; incorrect: number; totalPoints: number }) => {
+    setIsFinished(true);
+    setIsPlaying(false);
+    playSound('complete');
+    onComplete?.(finalScore.correct, problemCount);
+    
+    if (user) {
+      saveResult(finalScore);
+    }
+  }, [problemCount, playSound, onComplete, user]);
 
   // Next problem
   const nextProblem = useCallback(() => {
     setCurrentProblem(prev => prev + 1);
     setFeedback(null);
     setUserValue(0);
+    setAnswerStartTime(null);
     
     const num = generateNumber();
     setTargetNumber(num);
@@ -257,11 +353,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     
     timeoutRef.current = setTimeout(() => {
       setShowTarget(false);
+      startAnswerTimer();
     }, showTime);
-  }, [generateNumber, showTime]);
+  }, [generateNumber, showTime, startAnswerTimer]);
 
   // Save result to database
-  const saveResult = async (finalScore: { correct: number; incorrect: number }) => {
+  const saveResult = async (finalScore: { correct: number; incorrect: number; totalPoints: number }) => {
     if (!user) return;
     
     try {
@@ -272,10 +369,29 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         mode: 'flashcard',
         correct: finalScore.correct,
         incorrect: finalScore.incorrect,
-        best_streak: finalScore.correct, // Simplified for flashcard mode
-        score: finalScore.correct * 10,
+        best_streak: bestStreak,
+        score: finalScore.totalPoints,
         problems_solved: problemCount,
       });
+      
+      // Update profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('total_score, total_problems_solved, best_streak')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (profile) {
+        await supabase
+          .from('profiles')
+          .update({
+            total_score: (profile.total_score || 0) + finalScore.totalPoints,
+            total_problems_solved: (profile.total_problems_solved || 0) + problemCount,
+            best_streak: Math.max(profile.best_streak || 0, bestStreak),
+            last_active_date: new Date().toISOString().split('T')[0],
+          })
+          .eq('user_id', user.id);
+      }
       
       toast.success('Natija saqlandi!', { duration: 2000 });
     } catch (error) {
@@ -285,9 +401,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
 
   // Reset game
   const resetGame = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    clearAllTimers();
     setIsPlaying(false);
     setIsFinished(false);
     setShowSettings(true);
@@ -296,8 +410,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setShowTarget(false);
     setUserValue(0);
     setFeedback(null);
-    setScore({ correct: 0, incorrect: 0 });
-  }, []);
+    setScore({ correct: 0, incorrect: 0, totalPoints: 0 });
+    setStreak(0);
+    setBestStreak(0);
+    setTimeLeft(0);
+    setAnswerStartTime(null);
+  }, [clearAllTimers]);
 
   // Toggle show/hide target
   const toggleShowTarget = () => {
@@ -307,15 +425,20 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   // Cleanup
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      clearAllTimers();
     };
-  }, []);
+  }, [clearAllTimers]);
 
   const accuracy = score.correct + score.incorrect > 0
     ? Math.round((score.correct / (score.correct + score.incorrect)) * 100)
     : 0;
+
+  // Get timer color based on time left
+  const getTimerColor = () => {
+    if (timeLeft <= 3) return 'text-red-500';
+    if (timeLeft <= 5) return 'text-amber-500';
+    return 'text-green-500';
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -333,7 +456,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               <Settings2 className="h-4 w-4" />
               Sozlamalar
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label>Masalalar soni</Label>
                 <Select value={String(problemCount)} onValueChange={(v) => setProblemCount(Number(v))}>
@@ -362,7 +485,48 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label>Javob vaqti chegarasi</Label>
+                <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5 soniya</SelectItem>
+                    <SelectItem value="10">10 soniya</SelectItem>
+                    <SelectItem value="15">15 soniya</SelectItem>
+                    <SelectItem value="20">20 soniya</SelectItem>
+                    <SelectItem value="30">30 soniya</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
+            
+            {/* Scoring info */}
+            <Card className="bg-muted/50 border-primary/20">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <Star className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="font-medium text-sm">Ball tizimi</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li className="flex items-center gap-2">
+                        <Zap className="h-3 w-3 text-primary" />
+                        Asosiy ball: 10 ball har bir to'g'ri javob uchun
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Clock className="h-3 w-3 text-green-500" />
+                        Vaqt bonusi: Tezroq javob = ko'proq ball (max +20)
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Trophy className="h-3 w-3 text-amber-500" />
+                        Seriya bonusi: Ketma-ket to'g'ri javoblar uchun +5 ball (max +25)
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             
             <div className="flex justify-center pt-4">
               <Button onClick={startGame} size="lg" className="gap-2">
@@ -376,18 +540,35 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Game area */}
         {isPlaying && (
           <div className="space-y-6">
-            {/* Progress */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
+            {/* Progress and Stats */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">
                   Masala {currentProblem} / {problemCount}
                 </span>
-                <span className="text-green-500 font-medium">
-                  {score.correct} to'g'ri
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="flex items-center gap-1 text-amber-500">
+                    <Star className="h-4 w-4" />
+                    <span className="font-bold">{score.totalPoints}</span>
+                  </span>
+                  <span className="flex items-center gap-1 text-green-500">
+                    <Trophy className="h-4 w-4" />
+                    <span className="font-medium">{streak}x</span>
+                  </span>
+                </div>
               </div>
               <Progress value={(currentProblem / problemCount) * 100} className="h-2" />
             </div>
+
+            {/* Timer display (only when answering) */}
+            {!showTarget && feedback === null && (
+              <div className="flex justify-center">
+                <div className={`flex items-center gap-2 text-3xl font-bold ${getTimerColor()} transition-colors`}>
+                  <Clock className="h-8 w-8" />
+                  <span>{timeLeft}</span>
+                </div>
+              </div>
+            )}
 
             {/* Target number display */}
             <div className="text-center">
@@ -427,8 +608,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                 
                 {/* Feedback */}
                 {feedback && (
-                  <div className={`text-2xl font-bold ${feedback === 'correct' ? 'text-green-500' : 'text-red-500'} animate-fade-in`}>
-                    {feedback === 'correct' ? "To'g'ri! ✓" : `Noto'g'ri. Javob: ${targetNumber}`}
+                  <div className={`text-2xl font-bold animate-fade-in ${
+                    feedback === 'correct' ? 'text-green-500' : 'text-red-500'
+                  }`}>
+                    {feedback === 'correct' && "To'g'ri! ✓"}
+                    {feedback === 'incorrect' && `Noto'g'ri. Javob: ${targetNumber}`}
+                    {feedback === 'timeout' && `Vaqt tugadi! Javob: ${targetNumber}`}
                   </div>
                 )}
                 
@@ -447,9 +632,31 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Results */}
         {isFinished && (
           <div className="text-center space-y-6 py-8">
-            <div className="text-6xl font-bold text-primary font-display">
-              {score.correct} / {problemCount}
+            {/* Total Points */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-center gap-2 text-amber-500">
+                <Star className="h-8 w-8" />
+                <span className="text-5xl font-bold font-display">{score.totalPoints}</span>
+              </div>
+              <p className="text-muted-foreground">Jami ball</p>
             </div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-green-500/10 rounded-lg p-4">
+                <div className="text-2xl font-bold text-green-500">{score.correct}</div>
+                <div className="text-xs text-muted-foreground">To'g'ri</div>
+              </div>
+              <div className="bg-red-500/10 rounded-lg p-4">
+                <div className="text-2xl font-bold text-red-500">{score.incorrect}</div>
+                <div className="text-xs text-muted-foreground">Noto'g'ri</div>
+              </div>
+              <div className="bg-amber-500/10 rounded-lg p-4">
+                <div className="text-2xl font-bold text-amber-500">{bestStreak}x</div>
+                <div className="text-xs text-muted-foreground">Eng uzun seriya</div>
+              </div>
+            </div>
+            
             <div className="text-lg text-muted-foreground">
               Aniqlik: <span className="text-blue-500 font-semibold">{accuracy}%</span>
             </div>
