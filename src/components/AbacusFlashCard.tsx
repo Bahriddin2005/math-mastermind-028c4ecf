@@ -14,34 +14,17 @@ interface AbacusFlashCardProps {
   onComplete?: (correct: number, total: number) => void;
 }
 
-// Interactive Abacus where user can click beads
+// Interactive Abacus where user can click beads - Mobile Optimized
 const InteractiveAbacus = ({ 
   value, 
   onChange, 
-  size = 'lg',
   disabled = false,
 }: { 
   value: number; 
   onChange: (value: number) => void;
-  size?: 'md' | 'lg';
   disabled?: boolean;
 }) => {
   const { playSound } = useSound();
-  
-  const sizeClasses = {
-    md: { 
-      bead: 'w-8 h-8', 
-      rod: 'w-1.5 h-36', 
-      gap: 'gap-1.5',
-    },
-    lg: { 
-      bead: 'w-10 h-10', 
-      rod: 'w-2 h-44', 
-      gap: 'gap-2',
-    },
-  };
-
-  const styles = sizeClasses[size];
 
   const topBeadActive = value >= 5;
   const bottomBeadsActive = value >= 5 ? value - 5 : value;
@@ -78,9 +61,10 @@ const InteractiveAbacus = ({
         onClick={onClick}
         disabled={disabled}
         className={`
-          ${styles.bead} 
+          w-14 h-14 sm:w-16 sm:h-16 md:w-12 md:h-12
           rounded-full 
           transition-all duration-300 ease-out
+          touch-manipulation
           ${disabled ? 'cursor-default' : 'cursor-pointer hover:scale-110 active:scale-95'}
           ${isActive
             ? `bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 
@@ -92,7 +76,7 @@ const InteractiveAbacus = ({
         `}
         style={{
           transform: isActive 
-            ? `translateY(${isTop ? '14px' : '-14px'})` 
+            ? `translateY(${isTop ? '16px' : '-16px'})` 
             : 'translateY(0)',
         }}
       />
@@ -100,11 +84,11 @@ const InteractiveAbacus = ({
   };
 
   return (
-    <div className="flex flex-col items-center p-6">
+    <div className="flex flex-col items-center p-4 sm:p-6">
       <div 
         className="
           bg-gradient-to-br from-amber-100 via-amber-50 to-amber-100 
-          rounded-2xl p-6 
+          rounded-2xl p-4 sm:p-6 
           shadow-[0_8px_32px_rgba(217,119,6,0.2),inset_0_2px_8px_rgba(255,255,255,0.5)] 
           border-2 border-amber-300
         "
@@ -112,30 +96,30 @@ const InteractiveAbacus = ({
         <div 
           className="
             bg-gradient-to-b from-amber-50 to-white 
-            rounded-xl p-5 
+            rounded-xl p-4 sm:p-5 
             shadow-inner
             border border-amber-200
           "
         >
           <div className="relative flex flex-col items-center">
             <div 
-              className={`
-                absolute ${styles.rod} 
+              className="
+                absolute w-2.5 h-52 sm:h-56 md:h-48
                 bg-gradient-to-b from-amber-700 via-amber-800 to-amber-900 
                 rounded-full z-0
                 shadow-[inset_2px_0_4px_rgba(0,0,0,0.3)]
-              `} 
+              " 
             />
             
-            <div className={`flex flex-col ${styles.gap} z-10 mb-4`}>
+            <div className="flex flex-col gap-2 sm:gap-2.5 z-10 mb-4">
               {renderBead(topBeadActive, true, handleTopBeadClick)}
             </div>
 
             <div 
-              className="w-16 h-2 bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 rounded z-10 my-2 shadow-md" 
+              className="w-20 sm:w-24 h-2.5 bg-gradient-to-r from-amber-800 via-amber-700 to-amber-800 rounded z-10 my-2 shadow-md" 
             />
 
-            <div className={`flex flex-col ${styles.gap} z-10 mt-4`}>
+            <div className="flex flex-col gap-2 sm:gap-2.5 z-10 mt-4">
               {[0, 1, 2, 3].map((index) => {
                 const isActive = (3 - index) < bottomBeadsActive;
                 return renderBead(isActive, false, () => handleBottomBeadClick(index), index);
@@ -145,7 +129,7 @@ const InteractiveAbacus = ({
         </div>
       </div>
       
-      <div className="mt-4 text-3xl font-bold text-primary font-display">
+      <div className="mt-4 text-4xl sm:text-5xl font-bold text-primary font-display">
         {value}
       </div>
     </div>
@@ -442,13 +426,13 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-amber-500" />
+      <CardHeader className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 pb-4 px-4 sm:px-6">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
           Flash Card Rejimi
         </CardTitle>
       </CardHeader>
-      <CardContent className="pt-6">
+      <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
         {/* Settings */}
         {showSettings && !isPlaying && !isFinished && (
           <div className="space-y-4 mb-6">
@@ -456,71 +440,73 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               <Settings2 className="h-4 w-4" />
               Sozlamalar
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
-                <Label>Masalalar soni</Label>
+                <Label className="text-sm sm:text-base">Masalalar soni</Label>
                 <Select value={String(problemCount)} onValueChange={(v) => setProblemCount(Number(v))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5">5 ta</SelectItem>
-                    <SelectItem value="10">10 ta</SelectItem>
-                    <SelectItem value="15">15 ta</SelectItem>
-                    <SelectItem value="20">20 ta</SelectItem>
+                    <SelectItem value="5" className="text-base sm:text-sm py-3 sm:py-2">5 ta</SelectItem>
+                    <SelectItem value="10" className="text-base sm:text-sm py-3 sm:py-2">10 ta</SelectItem>
+                    <SelectItem value="15" className="text-base sm:text-sm py-3 sm:py-2">15 ta</SelectItem>
+                    <SelectItem value="20" className="text-base sm:text-sm py-3 sm:py-2">20 ta</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label>Ko'rsatish vaqti</Label>
-                <Select value={String(showTime)} onValueChange={(v) => setShowTime(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1000">1 soniya</SelectItem>
-                    <SelectItem value="2000">2 soniya</SelectItem>
-                    <SelectItem value="3000">3 soniya</SelectItem>
-                    <SelectItem value="5000">5 soniya</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Javob vaqti chegarasi</Label>
-                <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5 soniya</SelectItem>
-                    <SelectItem value="10">10 soniya</SelectItem>
-                    <SelectItem value="15">15 soniya</SelectItem>
-                    <SelectItem value="20">20 soniya</SelectItem>
-                    <SelectItem value="30">30 soniya</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-sm sm:text-base">Ko'rsatish vaqti</Label>
+                  <Select value={String(showTime)} onValueChange={(v) => setShowTime(Number(v))}>
+                    <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1000" className="text-base sm:text-sm py-3 sm:py-2">1 son</SelectItem>
+                      <SelectItem value="2000" className="text-base sm:text-sm py-3 sm:py-2">2 son</SelectItem>
+                      <SelectItem value="3000" className="text-base sm:text-sm py-3 sm:py-2">3 son</SelectItem>
+                      <SelectItem value="5000" className="text-base sm:text-sm py-3 sm:py-2">5 son</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm sm:text-base">Javob vaqti</Label>
+                  <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
+                    <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5" className="text-base sm:text-sm py-3 sm:py-2">5 son</SelectItem>
+                      <SelectItem value="10" className="text-base sm:text-sm py-3 sm:py-2">10 son</SelectItem>
+                      <SelectItem value="15" className="text-base sm:text-sm py-3 sm:py-2">15 son</SelectItem>
+                      <SelectItem value="20" className="text-base sm:text-sm py-3 sm:py-2">20 son</SelectItem>
+                      <SelectItem value="30" className="text-base sm:text-sm py-3 sm:py-2">30 son</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             
-            {/* Scoring info */}
+            {/* Scoring info - Collapsible on mobile */}
             <Card className="bg-muted/50 border-primary/20">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-start gap-2 sm:gap-3">
                   <Star className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
                   <div className="space-y-1">
                     <p className="font-medium text-sm">Ball tizimi</p>
-                    <ul className="text-xs text-muted-foreground space-y-1">
+                    <ul className="text-xs text-muted-foreground space-y-1.5">
                       <li className="flex items-center gap-2">
-                        <Zap className="h-3 w-3 text-primary" />
-                        Asosiy ball: 10 ball har bir to'g'ri javob uchun
+                        <Zap className="h-3 w-3 text-primary flex-shrink-0" />
+                        <span>Asosiy: 10 ball</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Clock className="h-3 w-3 text-green-500" />
-                        Vaqt bonusi: Tezroq javob = ko'proq ball (max +20)
+                        <Clock className="h-3 w-3 text-green-500 flex-shrink-0" />
+                        <span>Vaqt bonusi: max +20</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Trophy className="h-3 w-3 text-amber-500" />
-                        Seriya bonusi: Ketma-ket to'g'ri javoblar uchun +5 ball (max +25)
+                        <Trophy className="h-3 w-3 text-amber-500 flex-shrink-0" />
+                        <span>Seriya bonusi: max +25</span>
                       </li>
                     </ul>
                   </div>
@@ -529,8 +515,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </Card>
             
             <div className="flex justify-center pt-4">
-              <Button onClick={startGame} size="lg" className="gap-2">
-                <Play className="h-5 w-5" />
+              <Button onClick={startGame} size="lg" className="gap-2 h-14 sm:h-12 text-lg sm:text-base px-8 w-full sm:w-auto">
+                <Play className="h-6 w-6 sm:h-5 sm:w-5" />
                 Boshlash
               </Button>
             </div>
@@ -539,58 +525,58 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
 
         {/* Game area */}
         {isPlaying && (
-          <div className="space-y-6">
-            {/* Progress and Stats */}
+          <div className="space-y-4 sm:space-y-6">
+            {/* Progress and Stats - Mobile optimized */}
             <div className="space-y-3">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">
-                  Masala {currentProblem} / {problemCount}
+              <div className="flex justify-between items-center">
+                <span className="text-sm sm:text-base text-muted-foreground font-medium">
+                  {currentProblem} / {problemCount}
                 </span>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1 text-amber-500">
-                    <Star className="h-4 w-4" />
-                    <span className="font-bold">{score.totalPoints}</span>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <span className="flex items-center gap-1.5 text-amber-500">
+                    <Star className="h-5 w-5 sm:h-4 sm:w-4" />
+                    <span className="font-bold text-base sm:text-sm">{score.totalPoints}</span>
                   </span>
-                  <span className="flex items-center gap-1 text-green-500">
-                    <Trophy className="h-4 w-4" />
-                    <span className="font-medium">{streak}x</span>
+                  <span className="flex items-center gap-1.5 text-green-500">
+                    <Trophy className="h-5 w-5 sm:h-4 sm:w-4" />
+                    <span className="font-medium text-base sm:text-sm">{streak}x</span>
                   </span>
                 </div>
               </div>
-              <Progress value={(currentProblem / problemCount) * 100} className="h-2" />
+              <Progress value={(currentProblem / problemCount) * 100} className="h-2.5 sm:h-2" />
             </div>
 
-            {/* Timer display (only when answering) */}
+            {/* Timer display - Larger for mobile */}
             {!showTarget && feedback === null && (
               <div className="flex justify-center">
-                <div className={`flex items-center gap-2 text-3xl font-bold ${getTimerColor()} transition-colors`}>
-                  <Clock className="h-8 w-8" />
+                <div className={`flex items-center gap-3 text-5xl sm:text-4xl font-bold ${getTimerColor()} transition-colors`}>
+                  <Clock className="h-12 w-12 sm:h-8 sm:w-8" />
                   <span>{timeLeft}</span>
                 </div>
               </div>
             )}
 
-            {/* Target number display */}
+            {/* Target number display - Much larger for mobile */}
             <div className="text-center">
               {showTarget ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Bu sonni yodlang:</p>
-                  <div className="text-8xl font-bold text-primary font-display animate-fade-in">
+                <div className="space-y-3">
+                  <p className="text-base sm:text-sm text-muted-foreground">Bu sonni yodlang:</p>
+                  <div className="text-[120px] sm:text-8xl font-bold text-primary font-display animate-fade-in leading-none">
                     {targetNumber}
                   </div>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Abacusda {targetNumber !== null ? 'sonni' : ''} joylashtiring:
+                  <p className="text-base sm:text-sm text-muted-foreground">
+                    Abacusda sonni joylashtiring:
                   </p>
                   <Button 
                     variant="ghost" 
-                    size="sm" 
+                    size="default" 
                     onClick={toggleShowTarget}
-                    className="gap-1"
+                    className="gap-2 h-10 sm:h-8"
                   >
-                    {showTarget ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showTarget ? <EyeOff className="h-5 w-5 sm:h-4 sm:w-4" /> : <Eye className="h-5 w-5 sm:h-4 sm:w-4" />}
                     {showTarget ? 'Yashirish' : "Ko'rsatish"}
                   </Button>
                 </div>
@@ -606,9 +592,9 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                   disabled={feedback !== null}
                 />
                 
-                {/* Feedback */}
+                {/* Feedback - Larger for mobile */}
                 {feedback && (
-                  <div className={`text-2xl font-bold animate-fade-in ${
+                  <div className={`text-2xl sm:text-xl font-bold animate-fade-in text-center px-4 ${
                     feedback === 'correct' ? 'text-green-500' : 'text-red-500'
                   }`}>
                     {feedback === 'correct' && "To'g'ri! ✓"}
@@ -617,10 +603,10 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                   </div>
                 )}
                 
-                {/* Check button */}
+                {/* Check button - Larger for mobile */}
                 {!feedback && (
-                  <Button onClick={checkAnswer} size="lg" className="gap-2 mt-4">
-                    <Check className="h-5 w-5" />
+                  <Button onClick={checkAnswer} size="lg" className="gap-2 mt-4 h-14 sm:h-12 text-lg sm:text-base px-8 w-full sm:w-auto max-w-xs">
+                    <Check className="h-6 w-6 sm:h-5 sm:w-5" />
                     Tekshirish
                   </Button>
                 )}
@@ -629,41 +615,41 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
           </div>
         )}
 
-        {/* Results */}
+        {/* Results - Mobile optimized */}
         {isFinished && (
-          <div className="text-center space-y-6 py-8">
+          <div className="text-center space-y-6 py-6 sm:py-8">
             {/* Total Points */}
             <div className="space-y-2">
-              <div className="flex items-center justify-center gap-2 text-amber-500">
-                <Star className="h-8 w-8" />
-                <span className="text-5xl font-bold font-display">{score.totalPoints}</span>
+              <div className="flex items-center justify-center gap-3 text-amber-500">
+                <Star className="h-10 w-10 sm:h-8 sm:w-8" />
+                <span className="text-6xl sm:text-5xl font-bold font-display">{score.totalPoints}</span>
               </div>
-              <p className="text-muted-foreground">Jami ball</p>
+              <p className="text-base sm:text-sm text-muted-foreground">Jami ball</p>
             </div>
             
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-green-500/10 rounded-lg p-4">
-                <div className="text-2xl font-bold text-green-500">{score.correct}</div>
-                <div className="text-xs text-muted-foreground">To'g'ri</div>
+            {/* Stats Grid - Larger on mobile */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="bg-green-500/10 rounded-xl p-4 sm:p-4">
+                <div className="text-3xl sm:text-2xl font-bold text-green-500">{score.correct}</div>
+                <div className="text-xs sm:text-xs text-muted-foreground mt-1">To'g'ri</div>
               </div>
-              <div className="bg-red-500/10 rounded-lg p-4">
-                <div className="text-2xl font-bold text-red-500">{score.incorrect}</div>
-                <div className="text-xs text-muted-foreground">Noto'g'ri</div>
+              <div className="bg-red-500/10 rounded-xl p-4 sm:p-4">
+                <div className="text-3xl sm:text-2xl font-bold text-red-500">{score.incorrect}</div>
+                <div className="text-xs sm:text-xs text-muted-foreground mt-1">Noto'g'ri</div>
               </div>
-              <div className="bg-amber-500/10 rounded-lg p-4">
-                <div className="text-2xl font-bold text-amber-500">{bestStreak}x</div>
-                <div className="text-xs text-muted-foreground">Eng uzun seriya</div>
+              <div className="bg-amber-500/10 rounded-xl p-4 sm:p-4">
+                <div className="text-3xl sm:text-2xl font-bold text-amber-500">{bestStreak}x</div>
+                <div className="text-xs sm:text-xs text-muted-foreground mt-1">Seriya</div>
               </div>
             </div>
             
-            <div className="text-lg text-muted-foreground">
+            <div className="text-lg sm:text-base text-muted-foreground">
               Aniqlik: <span className="text-blue-500 font-semibold">{accuracy}%</span>
             </div>
             
-            <div className="flex justify-center gap-4">
-              <Button onClick={resetGame} variant="outline" className="gap-2">
-                <RotateCcw className="h-4 w-4" />
+            <div className="flex justify-center px-4">
+              <Button onClick={resetGame} variant="outline" className="gap-2 h-14 sm:h-10 text-lg sm:text-sm w-full sm:w-auto">
+                <RotateCcw className="h-5 w-5 sm:h-4 sm:w-4" />
                 Qayta boshlash
               </Button>
             </div>
