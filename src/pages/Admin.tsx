@@ -583,51 +583,55 @@ const Admin = () => {
           </Card>
 
           <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
-            {/* Mobile: Compact scrollable tabs */}
-            <div className="block md:hidden overflow-hidden">
-              <TabsList className="flex w-full h-auto bg-muted/50 p-1 rounded-xl overflow-x-auto gap-1 scrollbar-hide">
-                <TabsTrigger value="users" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <Users className="h-4 w-4 text-blue-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Users</span>
-                </TabsTrigger>
-                <TabsTrigger value="reports" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <BarChart2 className="h-4 w-4 text-purple-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Hisobot</span>
-                </TabsTrigger>
-                <TabsTrigger value="courses" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <GraduationCap className="h-4 w-4 text-emerald-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Kurs</span>
-                </TabsTrigger>
-                <TabsTrigger value="files" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <FolderOpen className="h-4 w-4 text-amber-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Fayl</span>
-                </TabsTrigger>
-                <TabsTrigger value="examples" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <Calculator className="h-4 w-4 text-cyan-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Misol</span>
-                </TabsTrigger>
-                <TabsTrigger value="faq" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <HelpCircle className="h-4 w-4 text-indigo-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">FAQ</span>
-                </TabsTrigger>
-                <TabsTrigger value="testimonials" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <Quote className="h-4 w-4 text-pink-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Sharh</span>
-                </TabsTrigger>
-                <TabsTrigger value="chats" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <MessageCircle className="h-4 w-4 text-teal-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Chat</span>
-                </TabsTrigger>
-                <TabsTrigger value="messages" className="relative flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <Mail className="h-4 w-4 text-red-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Xabar</span>
-                  {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 p-0 flex items-center justify-center text-[8px]">{unreadCount}</Badge>}
-                </TabsTrigger>
-                <TabsTrigger value="blog" className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg min-w-[52px] data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                  <FileText className="h-4 w-4 text-orange-500 data-[state=active]:text-white" />
-                  <span className="text-[9px] font-medium">Blog</span>
-                </TabsTrigger>
-              </TabsList>
+            {/* Mobile: Grid tabs - all visible */}
+            <div className="block md:hidden">
+              <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-sm overflow-hidden">
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1.5 gap-1">
+                  <TabsTrigger value="users" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Users className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Users</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="reports" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <BarChart2 className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Hisobot</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="courses" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <GraduationCap className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Kurs</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="files" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <FolderOpen className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Fayl</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="examples" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Calculator className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Misol</span>
+                  </TabsTrigger>
+                </TabsList>
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1.5 pt-0 gap-1">
+                  <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <HelpCircle className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">FAQ</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="testimonials" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Quote className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Sharh</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="chats" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <MessageCircle className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Chat</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="messages" className="relative flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <Mail className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Xabar</span>
+                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 p-0 flex items-center justify-center text-[8px]">{unreadCount}</Badge>}
+                  </TabsTrigger>
+                  <TabsTrigger value="blog" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md">
+                    <FileText className="h-4 w-4" />
+                    <span className="text-[9px] font-medium">Blog</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Card>
             </div>
 
             {/* Desktop: Beautiful horizontal navigation */}
