@@ -109,9 +109,9 @@ const WeeklyGame = () => {
         .select("*")
         .lte("week_start", today)
         .gte("week_end", today)
-        .single();
-      if (error && error.code !== "PGRST116") throw error;
-      return data as WeeklyChallenge | null;
+        .maybeSingle();
+      if (error) throw error;
+      return (data ?? null) as WeeklyChallenge | null;
     },
   });
 
@@ -125,8 +125,8 @@ const WeeklyGame = () => {
         .select("*")
         .eq("challenge_id", challenge.id)
         .eq("user_id", user.id)
-        .single();
-      if (error && error.code !== "PGRST116") throw error;
+        .maybeSingle();
+      if (error) throw error;
       return data;
     },
     enabled: !!challenge && !!user,

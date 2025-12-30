@@ -128,15 +128,23 @@ export const CompetitionsManager = () => {
         problem_count: newChallenge.problem_count,
       });
       
-      const { data, error } = await supabase.from("weekly_challenges").insert({
-        week_start: format(weekStart, "yyyy-MM-dd"),
-        week_end: format(weekEnd, "yyyy-MM-dd"),
-        formula_type: newChallenge.formula_type,
-        digit_count: newChallenge.digit_count,
-        speed: newChallenge.speed,
-        problem_count: newChallenge.problem_count,
-        seed: Math.floor(Math.random() * 1000000),
-      }).select();
+      const { data, error } = await supabase
+        .from("weekly_challenges")
+        .upsert(
+          {
+            week_start: format(weekStart, "yyyy-MM-dd"),
+            week_end: format(weekEnd, "yyyy-MM-dd"),
+            formula_type: newChallenge.formula_type,
+            digit_count: newChallenge.digit_count,
+            speed: newChallenge.speed,
+            problem_count: newChallenge.problem_count,
+            seed: Math.floor(Math.random() * 1000000),
+          },
+          {
+            onConflict: "week_start",
+          }
+        )
+        .select();
       
       console.log("Insert result:", { data, error });
       
@@ -146,7 +154,7 @@ export const CompetitionsManager = () => {
     onSuccess: (data) => {
       console.log("Weekly challenge created successfully:", data);
       queryClient.invalidateQueries({ queryKey: ["admin-weekly-challenges"] });
-      toast.success("Haftalik musobaqa yaratildi");
+      toast.success("Haftalik musobaqa saqlandi");
       setCreateDialogOpen(false);
     },
     onError: (error: any) => {
