@@ -53,7 +53,16 @@ interface GameSession {
   incorrect: number;
   best_streak: number;
   score: number;
+  total_time: number;
   created_at: string;
+}
+
+interface PeriodStats {
+  score: number;
+  solved: number;
+  accuracy: number;
+  bestStreak: number;
+  avgTime: number;
 }
 
 const Dashboard = () => {
@@ -63,11 +72,9 @@ const Dashboard = () => {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [sessions, setSessions] = useState<GameSession[]>([]);
-  const [todaySolved, setTodaySolved] = useState(0);
-  const [todayScore, setTodayScore] = useState(0);
-  const [todayAccuracy, setTodayAccuracy] = useState(0);
-  const [todayBestStreak, setTodayBestStreak] = useState(0);
-  const [todayAvgTime, setTodayAvgTime] = useState(0);
+  const [todayStats, setTodayStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
+  const [weekStats, setWeekStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
+  const [monthStats, setMonthStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
   const [loading, setLoading] = useState(true);
 
   // Achievement notifications hook
@@ -117,27 +124,41 @@ const Dashboard = () => {
       if (sessionsData) {
         setSessions(sessionsData);
 
-        // Calculate today's stats
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        
+        // Hafta boshidan hisoblash (Dushanba)
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+        startOfWeek.setHours(0, 0, 0, 0);
+        
+        // Oy boshidan hisoblash
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        
+        // Helper funksiya statistikani hisoblash uchun
+        const calcStats = (filteredSessions: typeof sessionsData): PeriodStats => {
+          const problems = filteredSessions.reduce((sum, s) => sum + (s.correct || 0) + (s.incorrect || 0), 0);
+          const correct = filteredSessions.reduce((sum, s) => sum + (s.correct || 0), 0);
+          const score = filteredSessions.reduce((sum, s) => sum + (s.score || 0), 0);
+          const accuracy = problems > 0 ? Math.round((correct / problems) * 100) : 0;
+          const bestStreak = filteredSessions.reduce((max, s) => Math.max(max, s.best_streak || 0), 0);
+          const totalTime = filteredSessions.reduce((sum, s) => sum + (s.total_time || 0), 0);
+          const avgTime = problems > 0 ? totalTime / problems : 0;
+          
+          return { score, solved: problems, accuracy, bestStreak, avgTime };
+        };
+        
+        // Bugungi statistika
         const todaySessions = sessionsData.filter(s => s.created_at.startsWith(today));
+        setTodayStats(calcStats(todaySessions));
         
-        const todayProblems = todaySessions.reduce((sum, s) => sum + (s.correct || 0) + (s.incorrect || 0), 0);
-        const todayCorrect = todaySessions.reduce((sum, s) => sum + (s.correct || 0), 0);
-        const todayScoreSum = todaySessions.reduce((sum, s) => sum + (s.score || 0), 0);
-        const accuracy = todayProblems > 0 ? Math.round((todayCorrect / todayProblems) * 100) : 0;
+        // Haftalik statistika
+        const weekSessions = sessionsData.filter(s => new Date(s.created_at) >= startOfWeek);
+        setWeekStats(calcStats(weekSessions));
         
-        // Bugungi eng yaxshi seriya
-        const bestStreakToday = todaySessions.reduce((max, s) => Math.max(max, s.best_streak || 0), 0);
-        
-        // O'rtacha vaqt (har bir misol uchun)
-        const totalTime = todaySessions.reduce((sum, s) => sum + (s.total_time || 0), 0);
-        const avgTimePerProblem = todayProblems > 0 ? totalTime / todayProblems : 0;
-        
-        setTodaySolved(todayProblems);
-        setTodayScore(todayScoreSum);
-        setTodayAccuracy(accuracy);
-        setTodayBestStreak(bestStreakToday);
-        setTodayAvgTime(avgTimePerProblem);
+        // Oylik statistika
+        const monthSessions = sessionsData.filter(s => new Date(s.created_at) >= startOfMonth);
+        setMonthStats(calcStats(monthSessions));
       }
 
       setLoading(false);
@@ -240,12 +261,10 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 gap-4 sm:gap-6">
               {user && profile && (
                 <DailyStats
-                  todayScore={todayScore}
-                  todaySolved={todaySolved}
-                  todayAccuracy={todayAccuracy}
+                  todayStats={todayStats}
+                  weekStats={weekStats}
+                  monthStats={monthStats}
                   currentStreak={profile.current_streak}
-                  todayBestStreak={todayBestStreak}
-                  todayAvgTime={todayAvgTime}
                 />
               )}
               <Achievements
