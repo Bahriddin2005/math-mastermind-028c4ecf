@@ -303,7 +303,7 @@ const Pricing = () => {
                 <Card 
                   key={plan.id}
                   className={cn(
-                    "relative border-border/40 shadow-lg transition-all hover:shadow-xl",
+                    "relative border-border/40 shadow-lg transition-all hover:shadow-xl h-[520px] flex flex-col",
                     plan.popular && "ring-2 ring-primary scale-105 z-10",
                     isCurrentPlan && "ring-2 ring-green-500"
                   )}
@@ -326,7 +326,7 @@ const Pricing = () => {
                     </div>
                   )}
 
-                  <CardHeader className="text-center pt-8">
+                  <CardHeader className="text-center pt-8 flex-shrink-0">
                     <div className={cn(
                       "w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center",
                       plan.color
@@ -337,7 +337,7 @@ const Pricing = () => {
                     <CardDescription>{plan.description}</CardDescription>
                   </CardHeader>
 
-                  <CardContent className="text-center">
+                  <CardContent className="text-center flex-1 flex flex-col">
                     <div className="mb-6">
                       <span className="text-4xl font-bold">{formatPrice(price)}</span>
                       {price > 0 && (
@@ -345,7 +345,7 @@ const Pricing = () => {
                       )}
                     </div>
 
-                    <ul className="space-y-3 text-left">
+                    <ul className="space-y-3 text-left flex-1">
                       {plan.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-2">
                           <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0">
@@ -357,7 +357,7 @@ const Pricing = () => {
                     </ul>
                   </CardContent>
 
-                  <CardFooter>
+                  <CardFooter className="flex-shrink-0">
                     <Button 
                       className="w-full" 
                       variant={isCurrentPlan ? 'outline' : plan.popular ? 'default' : 'outline'}
