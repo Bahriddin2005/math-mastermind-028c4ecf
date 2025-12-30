@@ -250,7 +250,7 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                     key={entry.id}
                     onClick={() => handlePlayerClick(entry.user_id)}
                     className={cn(
-                      'flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-xl sm:rounded-2xl',
+                      'flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-xl sm:rounded-2xl h-[72px] sm:h-[88px]',
                       getRankStyles(rank, isCurrentUser)
                     )}
                   >

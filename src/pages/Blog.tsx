@@ -194,22 +194,22 @@ const Blog = () => {
                 return (
                   <Card 
                     key={post.id} 
-                    className="group border-border/40 shadow-lg hover:shadow-xl transition-all overflow-hidden cursor-pointer"
+                    className="group border-border/40 shadow-lg hover:shadow-xl transition-all overflow-hidden cursor-pointer h-[380px] flex flex-col"
                     onClick={() => navigate(`/blog/${post.id}`)}
                   >
-                    <div className={`h-32 bg-gradient-to-br ${post.gradient} flex items-center justify-center`}>
+                    <div className={`h-32 bg-gradient-to-br ${post.gradient} flex items-center justify-center flex-shrink-0`}>
                       <Icon className="h-12 w-12 text-white/90" />
                     </div>
-                    <CardHeader className="pb-2">
+                    <CardHeader className="pb-2 flex-shrink-0">
                       <Badge variant="secondary" className="w-fit text-xs">{post.category}</Badge>
                       <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
                         {post.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1">
                       <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>
                     </CardContent>
-                    <CardFooter className="flex items-center justify-between text-sm text-muted-foreground border-t pt-4">
+                    <CardFooter className="flex items-center justify-between text-sm text-muted-foreground border-t pt-4 mt-auto flex-shrink-0">
                       <div className="flex items-center gap-4">
                         <span className="flex items-center gap-1"><User className="h-3.5 w-3.5" />{post.author}</span>
                         <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{post.read_time}</span>
