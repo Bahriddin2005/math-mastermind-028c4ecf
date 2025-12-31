@@ -10,11 +10,7 @@ import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Set
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-<<<<<<< HEAD
 import { useConfetti } from '@/hooks/useConfetti';
-=======
-import confetti from 'canvas-confetti';
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
 
 type FormulaType = 'oddiy' | 'formula5' | 'formula10plus' | 'formula10minus' | 'hammasi';
 
@@ -525,7 +521,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
       : `+${currentDisplay}`;
     
     return (
-<<<<<<< HEAD
       <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex flex-col">
         {/* Yuqori qism - timer va o'yinchilar */}
         <div className="flex-1 flex items-start justify-between p-4 md:p-6">
@@ -598,47 +593,8 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               )}
             </div>
           </div>
-=======
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        </div>
-
-        {/* Timer */}
-        <div className="absolute top-6 right-6 flex items-center gap-3 px-4 py-2 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50">
-          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
-          <Clock className="h-5 w-5 text-muted-foreground" />
-          <span className="text-xl font-mono font-bold tabular-nums">{elapsedTime.toFixed(1)}s</span>
         </div>
         
-        {/* Participants */}
-        <div className="absolute top-6 left-6 flex gap-2">
-          {participants.map((p, i) => (
-            <div key={p.id} className="relative" style={{ animationDelay: `${i * 100}ms` }}>
-              <Avatar className="h-12 w-12 border-3 border-primary/50 shadow-lg ring-2 ring-background">
-                <AvatarImage src={p.avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-bold">
-                  {p.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-background text-xs font-medium border shadow-sm">
-                {p.username.slice(0, 6)}
-              </div>
-            </div>
-          ))}
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
-        </div>
-
-        {/* Problem Counter */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50">
-          <span className="text-sm font-medium text-muted-foreground">
-            Son {countRef.current} / {room?.problem_count || problemCount}
-          </span>
-        </div>
-        
-<<<<<<< HEAD
         <style>{`
           @keyframes numberPop {
             0% {
@@ -654,48 +610,12 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             }
           }
         `}</style>
-=======
-        {/* Main Number Display */}
-        <div className="relative flex items-center justify-center">
-          {/* Glow Effect */}
-          <div className={`absolute inset-0 blur-3xl transition-colors duration-300 ${isAddition ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}></div>
-          
-          {/* Number Container */}
-          <div 
-            key={currentDisplay}
-            className={`relative flex items-center justify-center transition-all animate-scale-in ${
-              isAddition ? 'text-foreground' : 'text-foreground'
-            }`}
-          >
-            {/* Operation Sign */}
-            {countRef.current > 1 && (
-              <span className={`text-6xl md:text-8xl font-light mr-4 ${isAddition ? 'text-emerald-500' : 'text-rose-500'}`}>
-                {isAddition ? '+' : '−'}
-              </span>
-            )}
-            
-            {/* Number */}
-            <span className="text-[140px] md:text-[200px] font-extralight tracking-tight">
-              {currentDisplay}
-            </span>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-64 h-2 rounded-full bg-muted overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
-            style={{ width: `${(countRef.current / (room?.problem_count || problemCount)) * 100}%` }}
-          ></div>
-        </div>
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
       </div>
     );
   }
 
   // Javob kiritish - pastroqda alohida oynada
   if (view === 'playing' && currentDisplay === null && !hasAnswered) {
-<<<<<<< HEAD
     const otherAnswered = participants.filter(p => 
       p.user_id !== user?.id && answeredParticipants.has(p.user_id)
     );
@@ -778,68 +698,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               </div>
             </div>
           </div>
-=======
-    const answeredCount = participants.filter(p => p.answer !== null).length;
-    
-    return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6">
-        <div className="max-w-md w-full space-y-6 text-center animate-fade-in">
-          {/* Header */}
-          <div>
-            <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg mb-4">
-              <span className="text-3xl">✏️</span>
-            </div>
-            <h2 className="text-3xl font-bold">Javobingizni kiriting!</h2>
-          </div>
-          
-          {/* Answer Input */}
-          <div className="space-y-4">
-            <Input
-              type="number"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
-              placeholder="Javob"
-              className="text-center text-4xl h-20 font-mono border-2 focus:border-primary"
-              autoFocus
-            />
-            
-            <Button 
-              onClick={submitAnswer} 
-              disabled={!userAnswer} 
-              size="lg" 
-              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg"
-            >
-              <Check className="h-6 w-6 mr-2" />
-              Yuborish
-            </Button>
-          </div>
-
-          {/* Other Players Status */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-            <p className="text-sm text-muted-foreground mb-3">O'yinchilar holati</p>
-            <div className="flex justify-center gap-3 flex-wrap">
-              {participants.map((p) => (
-                <div key={p.id} className="flex flex-col items-center gap-1">
-                  <div className="relative">
-                    <Avatar className={`h-10 w-10 border-2 transition-all ${p.answer !== null ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-border opacity-60'}`}>
-                      <AvatarImage src={p.avatar_url || undefined} />
-                      <AvatarFallback className="text-xs">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    {p.answer !== null && (
-                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center">
-                        <Check className="h-3 w-3 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground truncate max-w-[50px]">{p.username.slice(0, 6)}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              {answeredCount} / {participants.length} javob berdi
-            </p>
-          </div>
         </div>
       </div>
     );
@@ -912,7 +770,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           {allAnswered && (
             <p className="text-primary font-medium animate-pulse">Natijalar tayyorlanmoqda...</p>
           )}
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
         </div>
       </div>
     );
@@ -926,7 +783,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
       return (a.answer_time || 999) - (b.answer_time || 999);
     });
 
-<<<<<<< HEAD
     const getPodiumHeight = (position: number) => {
       if (position === 0) return 'h-32'; // 1-o'rin - eng baland
       if (position === 1) return 'h-24'; // 2-o'rin - o'rtacha
@@ -1006,110 +862,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               </div>
             );
           })}
-=======
-    const podiumParticipants = sortedParticipants.slice(0, 3);
-    const otherParticipants = sortedParticipants.slice(3);
-
-    // Confetti animation on first render
-    useEffect(() => {
-      const duration = 3000;
-      const end = Date.now() + duration;
-
-      const frame = () => {
-        confetti({
-          particleCount: 3,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
-        });
-        confetti({
-          particleCount: 3,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      };
-
-      frame();
-    }, []);
-    
-    return (
-      <div className="w-full max-w-2xl mx-auto px-4 py-6 space-y-8 animate-fade-in">
-        {/* Header */}
-        <div className="text-center">
-          <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl scale-150 animate-pulse"></div>
-            <Trophy className="relative h-20 w-20 text-amber-500 drop-shadow-lg" />
-          </div>
-          <h2 className="text-3xl font-bold">O'yin yakunlandi!</h2>
-          <p className="text-muted-foreground mt-1">To'g'ri javob: <span className="font-mono font-bold text-foreground text-xl">{runningResultRef.current}</span></p>
-        </div>
-
-        {/* Podium */}
-        <div className="flex items-end justify-center gap-2 md:gap-4 h-64 px-4">
-          {/* 2nd Place */}
-          {podiumParticipants[1] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '200ms' }}>
-              <Avatar className="h-16 w-16 border-4 border-gray-400 shadow-lg mb-2">
-                <AvatarImage src={podiumParticipants[1].avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-gray-400 to-gray-500 text-white font-bold text-xl">
-                  {podiumParticipants[1].username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <p className="font-semibold text-sm mb-2 truncate max-w-[80px]">{podiumParticipants[1].username}</p>
-              <div className="w-20 md:w-28 h-24 bg-gradient-to-t from-gray-400 to-gray-300 rounded-t-lg flex flex-col items-center justify-start pt-3 shadow-lg">
-                <span className="text-3xl font-bold text-gray-700">2</span>
-                <span className="text-xs text-gray-600 mt-1">{podiumParticipants[1].answer_time?.toFixed(1)}s</span>
-              </div>
-            </div>
-          )}
-
-          {/* 1st Place */}
-          {podiumParticipants[0] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <div className="relative">
-                <Crown className="absolute -top-6 left-1/2 -translate-x-1/2 h-8 w-8 text-amber-400 drop-shadow-lg" />
-                <Avatar className="h-20 w-20 border-4 border-amber-400 shadow-xl">
-                  <AvatarImage src={podiumParticipants[0].avatar_url || undefined} />
-                  <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-500 text-white font-bold text-2xl">
-                    {podiumParticipants[0].username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </div>
-              <p className="font-bold text-base mt-2 mb-2 truncate max-w-[100px]">{podiumParticipants[0].username}</p>
-              <div className="w-24 md:w-32 h-32 bg-gradient-to-t from-amber-400 to-amber-300 rounded-t-lg flex flex-col items-center justify-start pt-3 shadow-xl">
-                <span className="text-4xl font-bold text-amber-700">1</span>
-                <span className="text-sm text-amber-700 font-medium mt-1">{podiumParticipants[0].answer_time?.toFixed(1)}s</span>
-                {podiumParticipants[0].is_correct && (
-                  <Badge className="mt-2 bg-emerald-500">To'g'ri</Badge>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* 3rd Place */}
-          {podiumParticipants[2] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '300ms' }}>
-              <Avatar className="h-14 w-14 border-4 border-amber-700 shadow-lg mb-2">
-                <AvatarImage src={podiumParticipants[2].avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-amber-700 to-amber-800 text-white font-bold">
-                  {podiumParticipants[2].username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <p className="font-semibold text-sm mb-2 truncate max-w-[80px]">{podiumParticipants[2].username}</p>
-              <div className="w-20 md:w-28 h-16 bg-gradient-to-t from-amber-700 to-amber-600 rounded-t-lg flex flex-col items-center justify-start pt-2 shadow-lg">
-                <span className="text-2xl font-bold text-amber-200">3</span>
-                <span className="text-xs text-amber-300">{podiumParticipants[2].answer_time?.toFixed(1)}s</span>
-              </div>
-            </div>
-          )}
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
         </div>
 
         {/* Other Participants */}
@@ -1163,102 +915,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           </CardContent>
         </Card>
         
-<<<<<<< HEAD
-        {/* Qolgan o'yinchilar ro'yxati */}
-        {sortedParticipants.length > 3 && (
-          <Card className="border-2">
-            <CardHeader>
-              <CardTitle className="text-lg">Qolgan o'yinchilar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {sortedParticipants.slice(3).map((p, index) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center gap-4 p-4 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/50 transition-all animate-in fade-in slide-in-from-left-4"
-                    style={{ animationDelay: `${(index + 3) * 100}ms` }}
-                  >
-                    <div className="text-2xl font-bold text-muted-foreground w-8 text-center">
-                      {index + 4}
-                    </div>
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={p.avatar_url || undefined} />
-                      <AvatarFallback>{p.username.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-semibold">{p.username}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Javob: {p.answer ?? '-'} | {p.answer_time?.toFixed(1) ?? '-'}s
-                      </p>
-                    </div>
-                    <Badge variant={p.is_correct ? 'default' : 'destructive'} className="text-sm">
-                      {p.is_correct ? "To'g'ri" : "Noto'g'ri"}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        {/* Barcha o'yinchilar ro'yxati (3 tadan kam bo'lsa) */}
-        {sortedParticipants.length <= 3 && sortedParticipants.length > 0 && (
-          <div className="space-y-3">
-            {sortedParticipants.map((p, index) => (
-              <Card
-                key={p.id}
-                className={`
-                  border-2 transition-all
-                  ${index === 0 && p.is_correct ? 'border-amber-500 bg-amber-50/50 dark:bg-amber-950/20' : ''}
-                  ${index === 1 ? 'border-slate-400 bg-slate-50/50 dark:bg-slate-950/20' : ''}
-                  ${index === 2 ? 'border-orange-400 bg-orange-50/50 dark:bg-orange-950/20' : ''}
-                `}
-              >
-                <CardContent className="p-4 flex items-center gap-4">
-                  <div className="text-2xl font-bold text-muted-foreground w-8">
-                    {index + 1}
-                  </div>
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={p.avatar_url || undefined} />
-                    <AvatarFallback>{p.username.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-semibold">{p.username}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Javob: {p.answer ?? '-'} | {p.answer_time?.toFixed(1) ?? '-'}s
-                    </p>
-                  </div>
-                  <Badge variant={p.is_correct ? 'default' : 'destructive'}>
-                    {p.is_correct ? "To'g'ri" : "Noto'g'ri"}
-                  </Badge>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-        
-        <div className="flex gap-4 pt-4">
-          <Button 
-            onClick={resetState} 
-            variant="outline" 
-            className="flex-1 h-12 text-base font-semibold"
-          >
-            <ArrowLeft className="h-5 w-5 mr-2" />
-            Menyuga qaytish
-          </Button>
-        </div>
-=======
-        {/* Action Button */}
-        <Button 
-          onClick={resetState} 
-          size="lg" 
-          className="w-full h-14 text-lg font-semibold"
-          variant="outline"
-        >
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          Menyuga qaytish
-        </Button>
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
       </div>
     );
   }
@@ -1268,7 +924,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     const isHost = room.host_id === user.id;
     
     return (
-<<<<<<< HEAD
       <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6">
         <div className="flex items-center justify-between">
           <Button onClick={leaveRoom} variant="ghost" size="sm" className="hover:bg-destructive/10 hover:text-destructive">
@@ -1277,22 +932,10 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           </Button>
           <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium">
             <Users className="h-4 w-4 mr-1.5" />
-=======
-      <div className="w-full max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Button onClick={leaveRoom} variant="ghost" size="sm" className="gap-2 hover:bg-destructive/10 hover:text-destructive">
-            <ArrowLeft className="h-4 w-4" />
-            Chiqish
-          </Button>
-          <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
-            <Users className="h-3.5 w-3.5 mr-1.5" />
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
             {participants.length} o'yinchi
           </Badge>
         </div>
         
-<<<<<<< HEAD
         {/* Xona kodi kartasi */}
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
           <CardHeader className="text-center pb-3">
@@ -1307,29 +950,11 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
                 <span className="text-5xl font-mono font-bold tracking-[0.2em] bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   {room.room_code}
                 </span>
-=======
-        {/* Room Code Card */}
-        <Card className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-transparent overflow-hidden">
-          <CardContent className="p-6 text-center relative">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
-            <p className="text-xs uppercase tracking-wider text-muted-foreground mb-3 font-medium">Xona kodi</p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="flex gap-1.5">
-                {room.room_code.split('').map((char, i) => (
-                  <span 
-                    key={i} 
-                    className="w-10 h-12 bg-background border-2 border-border rounded-lg flex items-center justify-center text-2xl font-mono font-bold shadow-sm"
-                  >
-                    {char}
-                  </span>
-                ))}
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
               </div>
               <Button 
                 onClick={copyRoomCode} 
                 variant="outline" 
                 size="icon"
-<<<<<<< HEAD
                 className="h-12 w-12 rounded-xl hover:bg-primary hover:text-primary-foreground transition-all"
               >
                 {copied ? <Check className="h-6 w-6 text-green-500" /> : <Copy className="h-6 w-6" />}
@@ -1438,99 +1063,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               </div>
             </CardContent>
           </Card>
-=======
-                className="h-12 w-12 rounded-lg shrink-0"
-              >
-                {copied ? <Check className="h-5 w-5 text-green-500" /> : <Copy className="h-5 w-5" />}
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground mt-4">
-              Do'stlaringizga yuboring va birga o'ynang!
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Game Settings Summary */}
-        <div className="grid grid-cols-4 gap-2">
-          <div className="p-3 rounded-xl bg-muted/50 text-center">
-            <p className="text-xs text-muted-foreground mb-1">Formula</p>
-            <p className="text-sm font-semibold truncate">{room.formula_type}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-muted/50 text-center">
-            <p className="text-xs text-muted-foreground mb-1">Xona</p>
-            <p className="text-sm font-semibold">{room.digit_count}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-muted/50 text-center">
-            <p className="text-xs text-muted-foreground mb-1">Tezlik</p>
-            <p className="text-sm font-semibold">{room.speed}s</p>
-          </div>
-          <div className="p-3 rounded-xl bg-muted/50 text-center">
-            <p className="text-xs text-muted-foreground mb-1">Sonlar</p>
-            <p className="text-sm font-semibold">{room.problem_count}</p>
-          </div>
-        </div>
-        
-        {/* Participants List */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-lg">O'yinchilar</h3>
-            <span className="text-sm text-muted-foreground">
-              {participants.length < 2 && "Kamida 2 ta o'yinchi kerak"}
-            </span>
-          </div>
-          <div className="space-y-2">
-            {participants.map((p, index) => (
-              <div 
-                key={p.id} 
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-muted/60 to-muted/30 rounded-xl border border-border/50 transition-all hover:border-primary/30"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="relative">
-                  <Avatar className="h-12 w-12 border-2 border-background shadow-md">
-                    <AvatarImage src={p.avatar_url || undefined} />
-                    <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-bold">
-                      {p.username.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {p.user_id === room.host_id && (
-                    <div className="absolute -top-1 -right-1 h-5 w-5 bg-amber-400 rounded-full flex items-center justify-center shadow-sm">
-                      <Crown className="h-3 w-3 text-amber-900" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{p.username}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {p.user_id === room.host_id ? 'Host' : 'O\'yinchi'}
-                  </p>
-                </div>
-                {p.user_id === user?.id && (
-                  <Badge variant="outline" className="text-xs">Siz</Badge>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Action Button */}
-        {isHost ? (
-          <Button 
-            onClick={startGame} 
-            size="lg" 
-            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg shadow-green-500/25 transition-all hover:shadow-green-500/40"
-            disabled={participants.length < 2}
-          >
-            <Play className="h-6 w-6 mr-2" />
-            O'yinni boshlash
-          </Button>
-        ) : (
-          <div className="p-4 rounded-xl bg-muted/50 border border-border/50 text-center">
-            <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2 text-primary" />
-            <p className="text-muted-foreground">
-              Host o'yinni boshlashini kuting...
-            </p>
-          </div>
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
         )}
       </div>
     );
@@ -1538,7 +1070,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
 
   // Xona yaratish
   if (view === 'create') {
-<<<<<<< HEAD
     const formulaLabels: Record<string, string> = {
       'oddiy': 'Oddiy',
       'formula5': 'Formula 5',
@@ -1585,51 +1116,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
                       className="flex-1 px-4 py-3 border-2 rounded-xl cursor-pointer text-sm font-medium transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 peer-data-[state=checked]:bg-gradient-to-r peer-data-[state=checked]:from-primary peer-data-[state=checked]:to-primary/80 peer-data-[state=checked]:text-primary-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:shadow-md"
                     >
                       {formulaLabels[type]}
-=======
-    const formulaOptions = [
-      { value: 'oddiy', label: 'Oddiy', description: 'Asosiy qoidalar' },
-      { value: 'formula5', label: 'F-5', description: '5-formula' },
-      { value: 'formula10plus', label: 'F-10+', description: '10+ formula' },
-      { value: 'formula10minus', label: 'F-10-', description: '10- formula' },
-      { value: 'hammasi', label: 'Hammasi', description: 'Barcha formulalar' },
-    ];
-
-    return (
-      <div className="w-full max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button onClick={() => setView('menu')} variant="ghost" size="icon" className="shrink-0">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h2 className="text-2xl font-bold">Xona yaratish</h2>
-            <p className="text-sm text-muted-foreground">O'yin sozlamalarini tanlang</p>
-          </div>
-        </div>
-        
-        {/* Settings Cards */}
-        <div className="space-y-4">
-          {/* Formula Type */}
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-3 bg-muted/30">
-              <CardTitle className="text-base flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="text-lg">🧮</span>
-                </div>
-                Misol turi
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <RadioGroup value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)} className="grid grid-cols-5 gap-2">
-                {formulaOptions.map((option) => (
-                  <div key={option.value}>
-                    <RadioGroupItem value={option.value} id={`create-${option.value}`} className="peer sr-only" />
-                    <Label
-                      htmlFor={`create-${option.value}`}
-                      className="flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer text-center transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                    >
-                      <span className="font-semibold text-sm">{option.label}</span>
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
                     </Label>
                   </div>
                 ))}
@@ -1637,7 +1123,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             </CardContent>
           </Card>
           
-<<<<<<< HEAD
           {/* Son xonasi */}
           <Card className="border-2 hover:border-primary/50 transition-all">
             <CardHeader className="pb-3">
@@ -1657,29 +1142,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
                     >
                       <span className="text-2xl font-bold">{num}</span>
                       <span className="text-xs mt-1">xonali</span>
-=======
-          {/* Digit Count */}
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-3 bg-muted/30">
-              <CardTitle className="text-base flex items-center gap-2">
-                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="text-lg">🔢</span>
-                </div>
-                Son xonasi
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <RadioGroup value={String(digitCount)} onValueChange={(v) => setDigitCount(Number(v))} className="grid grid-cols-4 gap-2">
-                {[1, 2, 3, 4].map((num) => (
-                  <div key={num}>
-                    <RadioGroupItem value={String(num)} id={`digit-create-${num}`} className="peer sr-only" />
-                    <Label
-                      htmlFor={`digit-create-${num}`}
-                      className="flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                    >
-                      <span className="text-2xl font-bold">{num}</span>
-                      <span className="text-xs text-muted-foreground mt-1">xonali</span>
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
                     </Label>
                   </div>
                 ))}
@@ -1687,7 +1149,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             </CardContent>
           </Card>
           
-<<<<<<< HEAD
           {/* Tezlik */}
           <Card className="border-2 hover:border-primary/50 transition-all">
             <CardHeader className="pb-3">
@@ -1758,75 +1219,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               Xona yaratish
             </>
           )}
-=======
-          {/* Speed & Problem Count Row */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Speed */}
-            <Card className="overflow-hidden">
-              <CardHeader className="pb-3 bg-muted/30">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  Tezlik
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <RadioGroup value={String(speed)} onValueChange={(v) => setSpeed(Number(v))} className="grid grid-cols-2 gap-2">
-                  {[0.3, 0.5, 0.7, 1].map((s) => (
-                    <div key={s}>
-                      <RadioGroupItem value={String(s)} id={`speed-create-${s}`} className="peer sr-only" />
-                      <Label
-                        htmlFor={`speed-create-${s}`}
-                        className="flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                      >
-                        <span className="font-semibold">{s}s</span>
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </CardContent>
-            </Card>
-            
-            {/* Problem Count */}
-            <Card className="overflow-hidden">
-              <CardHeader className="pb-3 bg-muted/30">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <span className="text-primary">#</span>
-                  Sonlar
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <RadioGroup value={String(problemCount)} onValueChange={(v) => setProblemCount(Number(v))} className="grid grid-cols-2 gap-2">
-                  {[3, 5, 7, 10].map((num) => (
-                    <div key={num}>
-                      <RadioGroupItem value={String(num)} id={`count-create-${num}`} className="peer sr-only" />
-                      <Label
-                        htmlFor={`count-create-${num}`}
-                        className="flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
-                      >
-                        <span className="font-semibold">{num}</span>
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        
-        {/* Create Button */}
-        <Button 
-          onClick={createRoom} 
-          size="lg" 
-          className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40" 
-          disabled={loading}
-        >
-          {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin mr-2" />
-          ) : (
-            <Crown className="h-5 w-5 mr-2" />
-          )}
-          Xona yaratish
->>>>>>> a45b2b6b89a968b2f3a5e23ebc415b74cdbd32e4
         </Button>
       </div>
     );
