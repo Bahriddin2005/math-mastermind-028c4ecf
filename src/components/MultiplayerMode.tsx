@@ -10,6 +10,7 @@ import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2 } fr
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
 
 type FormulaType = 'oddiy' | 'formula5' | 'formula10plus' | 'formula10minus' | 'hammasi';
 
@@ -555,9 +556,11 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
 
   // Javob kiritish
   if (view === 'playing' && currentDisplay === null && !hasAnswered) {
+    const answeredCount = participants.filter(p => p.answer !== null).length;
+    
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6">
-        <div className="max-w-md w-full space-y-8 text-center animate-fade-in">
+        <div className="max-w-md w-full space-y-6 text-center animate-fade-in">
           {/* Header */}
           <div>
             <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg mb-4">
@@ -565,27 +568,6 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             </div>
             <h2 className="text-3xl font-bold">Javobingizni kiriting!</h2>
           </div>
-          
-          {/* Numbers Summary */}
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-2 bg-muted/30">
-              <CardTitle className="text-sm text-muted-foreground">Ko'rsatilgan sonlar</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="flex flex-wrap justify-center gap-1 text-lg font-mono">
-                {displayedNumbers.map((item, i) => (
-                  <span key={i} className="flex items-center">
-                    {i > 0 && (
-                      <span className={`mx-2 font-bold ${item.isAdd ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {item.isAdd ? '+' : '−'}
-                      </span>
-                    )}
-                    <span className="font-semibold">{item.num}</span>
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
           
           {/* Answer Input */}
           <div className="space-y-4">
@@ -609,6 +591,104 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               Yuborish
             </Button>
           </div>
+
+          {/* Other Players Status */}
+          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+            <p className="text-sm text-muted-foreground mb-3">O'yinchilar holati</p>
+            <div className="flex justify-center gap-3 flex-wrap">
+              {participants.map((p) => (
+                <div key={p.id} className="flex flex-col items-center gap-1">
+                  <div className="relative">
+                    <Avatar className={`h-10 w-10 border-2 transition-all ${p.answer !== null ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-border opacity-60'}`}>
+                      <AvatarImage src={p.avatar_url || undefined} />
+                      <AvatarFallback className="text-xs">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    {p.answer !== null && (
+                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground truncate max-w-[50px]">{p.username.slice(0, 6)}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              {answeredCount} / {participants.length} javob berdi
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Javob kutish (javob bergandan keyin)
+  if (view === 'playing' && currentDisplay === null && hasAnswered) {
+    const answeredCount = participants.filter(p => p.answer !== null).length;
+    const allAnswered = answeredCount === participants.length;
+    
+    return (
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6">
+        <div className="max-w-md w-full space-y-8 text-center animate-fade-in">
+          {/* Waiting Animation */}
+          <div className="relative">
+            <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center animate-pulse">
+                <Check className="h-8 w-8 text-primary-foreground" />
+              </div>
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-28 w-28 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-emerald-500">Javobingiz qabul qilindi!</h2>
+            <p className="text-muted-foreground mt-2">Boshqa o'yinchilarni kutmoqdamiz...</p>
+          </div>
+
+          {/* Players Status */}
+          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+            <div className="flex justify-center gap-3 flex-wrap mb-4">
+              {participants.map((p) => (
+                <div key={p.id} className="flex flex-col items-center gap-1">
+                  <div className="relative">
+                    <Avatar className={`h-12 w-12 border-2 transition-all ${p.answer !== null ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-border'}`}>
+                      <AvatarImage src={p.avatar_url || undefined} />
+                      <AvatarFallback>{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    {p.answer !== null ? (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-md">
+                        <Check className="h-3.5 w-3.5 text-white" />
+                      </div>
+                    ) : (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
+                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{p.username.slice(0, 8)}</span>
+                </div>
+              ))}
+            </div>
+            
+            {/* Progress */}
+            <div className="space-y-2">
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-500"
+                  style={{ width: `${(answeredCount / participants.length) * 100}%` }}
+                ></div>
+              </div>
+              <p className="text-sm font-medium">
+                {answeredCount} / {participants.length} o'yinchi javob berdi
+              </p>
+            </div>
+          </div>
+
+          {allAnswered && (
+            <p className="text-primary font-medium animate-pulse">Natijalar tayyorlanmoqda...</p>
+          )}
         </div>
       </div>
     );
@@ -624,17 +704,46 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
 
     const podiumParticipants = sortedParticipants.slice(0, 3);
     const otherParticipants = sortedParticipants.slice(3);
+
+    // Confetti animation on first render
+    useEffect(() => {
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+
+      frame();
+    }, []);
     
     return (
       <div className="w-full max-w-2xl mx-auto px-4 py-6 space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center">
           <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl scale-150"></div>
+            <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl scale-150 animate-pulse"></div>
             <Trophy className="relative h-20 w-20 text-amber-500 drop-shadow-lg" />
           </div>
           <h2 className="text-3xl font-bold">O'yin yakunlandi!</h2>
-          <p className="text-muted-foreground mt-1">To'g'ri javob: <span className="font-mono font-bold text-foreground">{runningResultRef.current}</span></p>
+          <p className="text-muted-foreground mt-1">To'g'ri javob: <span className="font-mono font-bold text-foreground text-xl">{runningResultRef.current}</span></p>
         </div>
 
         {/* Podium */}
