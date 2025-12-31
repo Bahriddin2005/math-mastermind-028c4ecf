@@ -788,50 +788,75 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
 
   // Asosiy menyu
   return (
-    <div className="max-w-md mx-auto p-6 space-y-6">
-      <Button onClick={onBack} variant="ghost" size="sm">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Orqaga
-      </Button>
-      
-      <div className="text-center space-y-2">
-        <Users className="h-16 w-16 mx-auto text-primary" />
-        <h2 className="text-2xl font-bold">Multiplayer</h2>
-        <p className="text-muted-foreground">
-          Do'stlaringiz bilan raqobatlashing!
-        </p>
+    <div className="w-full max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
+      {/* Hero Section */}
+      <div className="text-center space-y-4">
+        <div className="relative inline-block">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-xl scale-150"></div>
+          <div className="relative h-20 w-20 mx-auto rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+            <Users className="h-10 w-10 text-primary-foreground" />
+          </div>
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Multiplayer
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            Do'stlaringiz bilan raqobatlashing!
+          </p>
+        </div>
       </div>
       
+      {/* Action Cards */}
       <div className="grid gap-4">
         <Card 
-          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          className="group cursor-pointer border-2 border-transparent hover:border-primary/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
           onClick={() => setView('create')}
         >
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Crown className="h-6 w-6 text-primary" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Crown className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h3 className="font-semibold">Xona yaratish</h3>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-primary transition-colors">Xona yaratish</h3>
               <p className="text-sm text-muted-foreground">Yangi o'yin xonasi oching</p>
             </div>
+            <ArrowLeft className="h-5 w-5 text-muted-foreground rotate-180 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
           </CardContent>
         </Card>
         
         <Card 
-          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          className="group cursor-pointer border-2 border-transparent hover:border-primary/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
           onClick={() => setView('join')}
         >
-          <CardContent className="p-6 flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
-              <Users className="h-6 w-6" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Users className="h-7 w-7 text-white" />
             </div>
-            <div>
-              <h3 className="font-semibold">Xonaga qo'shilish</h3>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-primary transition-colors">Xonaga qo'shilish</h3>
               <p className="text-sm text-muted-foreground">Kod orqali o'yinga qo'shiling</p>
             </div>
+            <ArrowLeft className="h-5 w-5 text-muted-foreground rotate-180 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
           </CardContent>
         </Card>
+      </div>
+
+      {/* Info Section */}
+      <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+        <div className="flex items-start gap-3">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+            <Trophy className="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <h4 className="font-medium text-sm">Qanday ishlaydi?</h4>
+            <p className="text-xs text-muted-foreground mt-1">
+              Xona yarating yoki do'stingiz kodini kiriting. O'yin boshlanganida hammaga bir xil sonlar ko'rsatiladi - kim tezroq to'g'ri javob bersa g'olib!
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
