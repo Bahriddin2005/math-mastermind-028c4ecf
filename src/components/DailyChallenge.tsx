@@ -370,129 +370,202 @@ export const DailyChallenge = () => {
     );
   }
 
-  // O'yin davomida - Mobile optimized
+  // O'yin davomida - Fullscreen number display
   if (view === 'playing' && currentDisplay !== null) {
+    const progress = (countRef.current / (challenge?.problem_count || 1)) * 100;
+    
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 flex flex-col items-center justify-start z-50 p-4 sm:p-6 overflow-hidden">
-        {/* Header section - fixed at top */}
-        <div className="w-full max-w-2xl mx-auto flex items-center justify-between mb-8 sm:mb-12 md:mb-16 pt-8 sm:pt-12">
-          <Badge className="inline-flex items-center gap-2 text-sm sm:text-base px-4 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-accent/10 via-orange-500/10 to-accent/10 border-2 border-accent/30 text-accent shadow-lg shadow-accent/20">
-            <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="font-bold">Kunlik musobaqa</span>
-          </Badge>
-          
-          <div className="flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-mono text-foreground bg-card/80 backdrop-blur-md px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border-2 border-border/50 shadow-lg">
-            <Clock className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-accent" />
-            <span className="font-bold text-accent">{elapsedTime.toFixed(1)}s</span>
+      <div className="fixed inset-0 bg-background z-50 flex flex-col overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] md:w-[1000px] md:h-[1000px] rounded-full bg-gradient-radial from-primary/10 via-primary/5 to-transparent animate-pulse" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        </div>
+
+        {/* Top bar with timer and progress */}
+        <div className="relative z-10 w-full px-4 sm:px-8 pt-6 sm:pt-10">
+          <div className="max-w-4xl mx-auto">
+            {/* Progress bar */}
+            <div className="h-2 sm:h-3 bg-muted/30 rounded-full overflow-hidden mb-4 sm:mb-6 backdrop-blur-sm">
+              <div 
+                className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            
+            {/* Info row */}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-card/50 backdrop-blur-md rounded-xl border border-border/30">
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+                  <span className="text-sm sm:text-base font-medium">Kunlik</span>
+                </div>
+                <div className="px-3 sm:px-4 py-2 bg-card/50 backdrop-blur-md rounded-xl border border-border/30">
+                  <span className="text-sm sm:text-base font-bold text-foreground">{countRef.current}/{challenge?.problem_count}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-card/80 backdrop-blur-md rounded-xl border border-accent/30 shadow-lg shadow-accent/10">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent animate-pulse" />
+                <span className="font-mono text-xl sm:text-2xl md:text-3xl font-bold text-accent tabular-nums">
+                  {elapsedTime.toFixed(1)}s
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         
-        {/* Number display - centered below header */}
-        <div className="flex-1 flex items-center justify-center w-full px-4">
-          <div 
-            className="text-[120px] sm:text-[180px] md:text-[250px] lg:text-[300px] font-light text-foreground transition-all duration-100 leading-none text-center"
-            style={{
-              textShadow: '0 4px 20px rgba(0,0,0,0.1), 0 8px 40px rgba(0,0,0,0.05)',
-            }}
-          >
-            <span className={!isAddition && countRef.current > 1 ? 'text-destructive' : 'text-primary'}>
-              {!isAddition && countRef.current > 1 ? '-' : ''}{currentDisplay}
-            </span>
+        {/* Main number display - centered */}
+        <div className="flex-1 flex items-center justify-center px-4 relative z-10">
+          <div className="relative">
+            {/* Glow effect behind number */}
+            <div 
+              className={cn(
+                "absolute inset-0 blur-3xl opacity-40 transition-colors duration-200",
+                isAddition || countRef.current === 1 ? "bg-primary" : "bg-destructive"
+              )}
+              style={{ transform: 'scale(1.5)' }}
+            />
+            
+            {/* Number with operation sign */}
+            <div className="relative flex items-center justify-center gap-2 sm:gap-4">
+              {/* Operation sign for non-first numbers */}
+              {countRef.current > 1 && (
+                <span 
+                  className={cn(
+                    "text-[80px] sm:text-[120px] md:text-[160px] lg:text-[200px] font-extralight transition-all duration-200",
+                    isAddition ? "text-primary" : "text-destructive"
+                  )}
+                >
+                  {isAddition ? '+' : '−'}
+                </span>
+              )}
+              
+              {/* Main number */}
+              <span 
+                className={cn(
+                  "text-[120px] sm:text-[180px] md:text-[240px] lg:text-[320px] xl:text-[380px] font-extralight tracking-tight transition-all duration-200 tabular-nums",
+                  isAddition || countRef.current === 1 ? "text-primary" : "text-destructive"
+                )}
+                style={{
+                  textShadow: isAddition || countRef.current === 1 
+                    ? '0 0 80px hsl(var(--primary) / 0.3), 0 0 160px hsl(var(--primary) / 0.2)' 
+                    : '0 0 80px hsl(var(--destructive) / 0.3), 0 0 160px hsl(var(--destructive) / 0.2)',
+                }}
+              >
+                {currentDisplay}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom decorative element */}
+        <div className="relative z-10 w-full px-4 sm:px-8 pb-6 sm:pb-10">
+          <div className="max-w-4xl mx-auto flex justify-center">
+            <div className="flex gap-1.5 sm:gap-2">
+              {Array.from({ length: challenge?.problem_count || 0 }).map((_, i) => (
+                <div 
+                  key={i}
+                  className={cn(
+                    "w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300",
+                    i < countRef.current 
+                      ? "bg-primary shadow-lg shadow-primary/50" 
+                      : "bg-muted/30"
+                  )}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Javob kiritish - Mobile optimized
+  // Javob kiritish - Fullscreen answer input
   if (view === 'answer') {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 flex flex-col items-center justify-start z-50 p-4 sm:p-6 md:p-8 overflow-y-auto">
-        <div className="max-w-lg sm:max-w-xl md:max-w-2xl w-full space-y-5 sm:space-y-6 md:space-y-8 text-center pt-6 sm:pt-10 md:pt-16 relative z-10">
-          <Badge className="inline-flex items-center gap-2 text-base sm:text-lg md:text-xl px-5 sm:px-6 md:px-7 py-2.5 sm:py-3 md:py-3.5 bg-gradient-to-r from-accent/20 via-orange-500/20 to-accent/20 border-2 border-accent/50 text-accent shadow-lg shadow-accent/30 backdrop-blur-sm">
-            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" />
-            <span className="font-bold">Kunlik musobaqa</span>
-          </Badge>
-          
-          <div className="space-y-4 sm:space-y-5 md:space-y-6">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground drop-shadow-sm">Javobingizni kiriting!</h2>
-            
-            <div className="flex items-center justify-center gap-3 text-foreground bg-card/90 backdrop-blur-md px-5 sm:px-6 md:px-7 py-3 sm:py-3.5 md:py-4 rounded-xl mx-auto w-fit border-2 border-border/70 shadow-xl">
-              <Clock className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-accent" />
-              <span className="font-mono text-xl sm:text-2xl md:text-3xl font-bold text-accent">{elapsedTime.toFixed(1)}s</span>
-            </div>
-            
-            <div className="p-6 sm:p-8 md:p-10 lg:p-12 rounded-3xl bg-gradient-to-br from-card/98 via-card/95 to-primary/5 border-2 border-border/80 shadow-2xl backdrop-blur-xl">
-              <div className="space-y-6 sm:space-y-8 text-left">
-                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6 sm:mb-8 text-center drop-shadow-lg">
-                  Ko'rsatilgan sonlar:
-                </div>
-                <div className="font-mono flex flex-wrap items-center justify-center gap-4 sm:gap-5 md:gap-6">
-                  {displayedNumbers.map((item, idx) => (
-                    <div key={idx} className="flex items-center gap-2 sm:gap-3">
-                      {idx > 0 && (
-                        <span 
-                          className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold ${
-                            item.isAdd ? 'text-primary' : 'text-destructive'
-                          } drop-shadow-lg`}
-                        >
-                          {item.isAdd ? '+' : '-'}
-                        </span>
-                      )}
-                      <div
-                        className={`
-                          inline-flex items-center justify-center 
-                          px-6 sm:px-8 md:px-10 lg:px-12 
-                          py-4 sm:py-5 md:py-6 lg:py-7
-                          rounded-2xl sm:rounded-3xl
-                          font-bold 
-                          shadow-xl shadow-black/10
-                          text-4xl sm:text-5xl md:text-6xl lg:text-7xl
-                          min-w-[80px] sm:min-w-[100px] md:min-w-[120px] lg:min-w-[140px]
-                          transition-all duration-300
-                          ${
-                            item.isAdd 
-                              ? 'bg-gradient-to-br from-primary/30 via-primary/25 to-primary/20 text-primary border-2 border-primary/60 hover:shadow-2xl hover:shadow-primary/30 hover:scale-105' 
-                              : 'bg-gradient-to-br from-destructive/30 via-destructive/25 to-destructive/20 text-destructive border-2 border-destructive/60 hover:shadow-2xl hover:shadow-destructive/30 hover:scale-105'
-                          }
-                        `}
-                      >
-                        {item.num}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      <div className="fixed inset-0 bg-background z-50 flex flex-col overflow-y-auto">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-radial from-accent/10 to-transparent animate-pulse" />
+        </div>
+
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-8 sm:py-12">
+          <div className="w-full max-w-2xl space-y-6 sm:space-y-8">
+            {/* Header */}
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 border border-accent/30 rounded-full">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
+                <span className="text-sm sm:text-base font-medium text-accent">Kunlik musobaqa</span>
+              </div>
+              
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground">
+                Javobingizni kiriting
+              </h2>
+              
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-xl border border-border/50">
+                <Clock className="h-5 w-5 text-accent" />
+                <span className="font-mono text-lg sm:text-xl font-bold text-accent tabular-nums">{elapsedTime.toFixed(1)}s</span>
               </div>
             </div>
-          </div>
-          
-          <div className="w-full space-y-5 sm:space-y-6">
-            <Input
-              type="number"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
-              placeholder="Javob"
-              className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl h-20 sm:h-24 md:h-28 lg:h-32 font-mono border-2 border-primary/50 focus:border-primary focus:ring-4 focus:ring-primary/30 rounded-2xl bg-card/95 backdrop-blur-md shadow-xl text-foreground font-bold"
-              autoFocus
-            />
+
+            {/* Displayed numbers summary */}
+            <div className="bg-card/50 backdrop-blur-sm border border-border/30 rounded-2xl p-4 sm:p-6">
+              <p className="text-sm sm:text-base text-muted-foreground text-center mb-4">Ko'rsatilgan sonlar</p>
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 font-mono">
+                {displayedNumbers.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-1 sm:gap-2">
+                    {idx > 0 && (
+                      <span className={cn(
+                        "text-xl sm:text-2xl md:text-3xl font-light",
+                        item.isAdd ? "text-primary" : "text-destructive"
+                      )}>
+                        {item.isAdd ? '+' : '−'}
+                      </span>
+                    )}
+                    <span className={cn(
+                      "text-xl sm:text-2xl md:text-3xl font-medium px-2 py-1 rounded-lg",
+                      item.isAdd 
+                        ? "bg-primary/10 text-primary" 
+                        : "bg-destructive/10 text-destructive"
+                    )}>
+                      {item.num}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
             
-            <Button 
-              onClick={submitAnswer} 
-              disabled={!userAnswer || !user} 
-              size="lg" 
-              className="w-full h-16 sm:h-20 md:h-24 text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary/90 hover:via-primary hover:to-primary/90 text-primary-foreground shadow-xl shadow-primary/40 hover:shadow-2xl hover:shadow-primary/60 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Check className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 mr-3" />
-              Yuborish
-            </Button>
+            {/* Answer input */}
+            <div className="space-y-4">
+              <Input
+                type="number"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
+                placeholder="Javobni kiriting..."
+                className="text-center text-3xl sm:text-4xl md:text-5xl h-20 sm:h-24 md:h-28 font-mono border-2 border-primary/30 focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-2xl bg-card text-foreground font-bold"
+                autoFocus
+              />
+              
+              <Button 
+                onClick={submitAnswer} 
+                disabled={!userAnswer || !user} 
+                size="lg" 
+                className="w-full h-14 sm:h-16 md:h-18 text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-accent via-orange-500 to-accent hover:from-accent/90 hover:via-orange-500/90 hover:to-accent/90 text-white shadow-xl shadow-accent/30 hover:shadow-2xl hover:shadow-accent/50 transition-all duration-300 hover:scale-[1.01]"
+              >
+                <Check className="h-6 w-6 sm:h-7 sm:w-7 mr-2" />
+                Yuborish
+              </Button>
+            </div>
+            
+            {!user && (
+              <p className="text-center text-sm text-muted-foreground bg-card/50 px-4 py-2 rounded-xl">
+                Natijani saqlash uchun tizimga kiring
+              </p>
+            )}
           </div>
-          
-          {!user && (
-            <p className="text-sm sm:text-base md:text-lg text-foreground font-medium bg-card/80 backdrop-blur-md px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl border border-border/50 shadow-md">
-              Natijani saqlash uchun tizimga kiring
-            </p>
-          )}
         </div>
       </div>
     );
