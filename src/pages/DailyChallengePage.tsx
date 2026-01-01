@@ -174,56 +174,56 @@ const DailyChallengePage = () => {
 
             {/* Challenge Parameters Menu */}
             {!loading && challengeData && (
-              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '50ms', animationFillMode: 'forwards' }}>
-                <div className="bg-gradient-to-br from-card/95 via-card/90 to-primary/5 backdrop-blur-md border-2 border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-black/5">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
-                    <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-xl sm:rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 group">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <Hash className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-primary" />
+              <>
+                <div className="opacity-0 animate-slide-up" style={{ animationDelay: '50ms', animationFillMode: 'forwards' }}>
+                  <div className="bg-gradient-to-br from-card/95 via-card/90 to-primary/5 backdrop-blur-md border-2 border-border/60 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl shadow-black/5">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                      <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-xl sm:rounded-2xl border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 group">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Hash className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-primary" />
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Turi</p>
+                        <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.formula_type}</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Turi</p>
-                      <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.formula_type}</p>
-                    </div>
 
-                    <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-success/10 via-success/5 to-transparent rounded-xl sm:rounded-2xl border border-success/20 hover:border-success/40 transition-all duration-300 hover:shadow-lg hover:shadow-success/20 group">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-success/20 to-success/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <Layers className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-success" />
+                      <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-success/10 via-success/5 to-transparent rounded-xl sm:rounded-2xl border border-success/20 hover:border-success/40 transition-all duration-300 hover:shadow-lg hover:shadow-success/20 group">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-success/20 to-success/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Layers className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-success" />
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Xona</p>
+                        <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.digit_count}-xon</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Xona</p>
-                      <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.digit_count}-xon</p>
-                    </div>
 
-                    <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-warning/10 via-warning/5 to-transparent rounded-xl sm:rounded-2xl border border-warning/20 hover:border-warning/40 transition-all duration-300 hover:shadow-lg hover:shadow-warning/20 group">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <Gauge className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-warning" />
+                      <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-warning/10 via-warning/5 to-transparent rounded-xl sm:rounded-2xl border border-warning/20 hover:border-warning/40 transition-all duration-300 hover:shadow-lg hover:shadow-warning/20 group">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Gauge className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-warning" />
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Tezlik</p>
+                        <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.speed}s</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Tezlik</p>
-                      <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.speed}s</p>
-                    </div>
 
-                    <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-xl sm:rounded-2xl border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 group">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                        <Timer className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-accent" />
+                      <div className="flex flex-col items-center justify-center p-4 sm:p-5 md:p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent rounded-xl sm:rounded-2xl border border-accent/20 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/20 group">
+                        <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                          <Timer className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-accent" />
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Sonlar</p>
+                        <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.problem_count}</p>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-1">Sonlar</p>
-                      <p className="text-base sm:text-lg md:text-xl font-bold text-foreground">{challengeData.problem_count}</p>
                     </div>
                   </div>
-                  
-                  {/* Number Display */}
-                  {displayNumber !== null && (
-                    <div className="flex items-center justify-center mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-border/30">
-                      <div className="text-center w-full">
-                        <div className={`text-[100px] sm:text-[150px] md:text-[200px] lg:text-[250px] font-bold leading-none transition-all duration-300 ${
-                          isAddition ? 'text-primary' : 'text-destructive'
-                        }`}>
-                          {!isAddition ? '-' : ''}{displayNumber}
-                        </div>
+                </div>
+
+                {/* Number Display - Outside the card */}
+                {displayNumber !== null && (
+                  <div className="opacity-0 animate-slide-up flex items-center justify-center py-8 sm:py-12 md:py-16" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                    <div className="text-center w-full">
+                      <div className="text-[100px] sm:text-[150px] md:text-[200px] lg:text-[250px] font-bold leading-none transition-all duration-300 text-foreground">
+                        {isAddition ? '+' : '−'}{displayNumber}
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* Daily Challenge Component */}

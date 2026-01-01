@@ -697,10 +697,7 @@ export const NumberTrainer = () => {
           <div className="relative">
             {/* Glow effect behind number */}
             <div 
-              className={cn(
-                "absolute inset-0 blur-3xl opacity-40 transition-colors duration-200",
-                showAddition ? "bg-primary" : "bg-destructive"
-              )}
+              className="absolute inset-0 blur-3xl opacity-40 transition-colors duration-200 bg-white"
               style={{ transform: 'scale(1.5)' }}
             />
             
@@ -709,29 +706,18 @@ export const NumberTrainer = () => {
               {/* Operation sign for non-first numbers */}
               {countRef.current > 1 && (
                 <span 
-                  className={cn(
-                    "text-[80px] sm:text-[120px] md:text-[160px] lg:text-[200px] font-extralight transition-all duration-200",
-                    showAddition ? "text-primary" : "text-destructive"
-                  )}
+                  className="text-[100px] sm:text-[150px] md:text-[200px] lg:text-[250px] xl:text-[300px] font-bold transition-all duration-200 text-foreground"
                 >
                   {isAddition ? '+' : '−'}
                 </span>
               )}
               
               {/* Main number */}
-              <span 
-                className={cn(
-                  "text-[120px] sm:text-[180px] md:text-[240px] lg:text-[320px] xl:text-[380px] font-extralight tracking-tight transition-all duration-200 tabular-nums",
-                  showAddition ? "text-primary" : "text-destructive"
-                )}
-                style={{
-                  textShadow: showAddition 
-                    ? '0 0 80px hsl(var(--primary) / 0.3), 0 0 160px hsl(var(--primary) / 0.2)' 
-                    : '0 0 80px hsl(var(--destructive) / 0.3), 0 0 160px hsl(var(--destructive) / 0.2)',
-                }}
+          <span 
+                className="text-[150px] sm:text-[220px] md:text-[300px] lg:text-[400px] xl:text-[480px] font-bold tracking-tight transition-all duration-200 tabular-nums text-foreground"
               >
                 {currentDisplay}
-              </span>
+          </span>
             </div>
           </div>
         </div>
@@ -982,8 +968,8 @@ export const NumberTrainer = () => {
               <div 
                 className="absolute h-[calc(100%-16px)] top-2 rounded-2xl bg-gradient-to-r transition-all duration-300 ease-out"
                 style={{
-                  width: 'calc((100% - 16px) / 6)',
-                  left: `calc(${['train', 'learn', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 16px) / 6) + 8px)`,
+                  width: 'calc((100% - 16px) / 5)',
+                  left: `calc(${['train', 'learn', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 16px) / 5) + 8px)`,
                   background: activeTab === 'train' ? 'linear-gradient(to right, hsl(var(--primary) / 0.2), hsl(var(--primary) / 0.1))' :
                               activeTab === 'learn' ? 'linear-gradient(to right, hsl(var(--success) / 0.2), hsl(var(--success) / 0.1))' :
                               activeTab === 'multiplayer' ? 'linear-gradient(to right, hsl(var(--primary) / 0.2), hsl(var(--primary) / 0.1))' :
@@ -1009,23 +995,6 @@ export const NumberTrainer = () => {
                 <BookOpen className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">O'quv</span>
               </TabsTrigger>
-              <Button
-                variant="ghost"
-                onClick={(e) => { 
-                  createRipple(e); 
-                  triggerHaptic(); 
-                  navigate('/daily-challenge');
-                }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground rounded-xl transition-all duration-300 z-10 group overflow-hidden
-                  hover:text-accent hover:scale-110"
-              >
-                {/* Gradient glow effect on hover */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-accent/20 via-orange-500/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 rounded-xl" />
-                <Flame className="h-5 w-5 relative z-10 transition-transform duration-300 group-hover:scale-110 group-hover:animate-pulse" />
-                <span className="text-[10px] font-medium relative z-10 transition-all duration-300 group-hover:font-bold">Kunlik</span>
-              </Button>
               <TabsTrigger 
                 value="multiplayer" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
@@ -1050,7 +1019,7 @@ export const NumberTrainer = () => {
                 <BarChart3 className="h-5 w-5 transition-transform duration-300" />
                 <span className="text-[10px] font-medium transition-all duration-300">Stat</span>
               </TabsTrigger>
-              </TabsList>
+            </TabsList>
             </div>
           </div>
 
