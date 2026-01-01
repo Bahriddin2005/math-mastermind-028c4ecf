@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target, Play, Home, Moon, Sun, User, LogOut, Settings, ShieldCheck, GraduationCap, Users, Flame, BookOpen, Crown } from 'lucide-react';
+import { Square, Volume2, VolumeX, RotateCcw, Check, Clock, BarChart3, Trophy, Target, Play, Home, Moon, Sun, User, LogOut, Settings, ShieldCheck, GraduationCap, Users, Flame, BookOpen, Crown, Brain } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { MultiplayerMode } from './MultiplayerMode';
 import { Navbar } from './Navbar';
 import { supabase } from '@/integrations/supabase/client';
@@ -644,55 +645,112 @@ export const NumberTrainer = () => {
     : 0;
 
 
-  // O'yin davomida - sonlar markazda katta ko'rinishda
+  // O'yin davomida - Fullscreen number display (DailyChallenge uslubida)
   if (isRunning && currentDisplay !== null) {
-    const displayNumber = countRef.current === 1 
-      ? currentDisplay 
-      : (isAddition ? `+${currentDisplay}` : `-${currentDisplay}`);
+    const progress = (countRef.current / problemCount) * 100;
+    const showAddition = isAddition || countRef.current === 1;
     
     return (
-      <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="w-full max-w-7xl mx-auto">
-          {/* Alohida oyna - markazda */}
-          <div 
-            key={countRef.current}
-            className="relative bg-gradient-to-br from-card via-card to-primary/5 border-2 border-primary/20 rounded-3xl shadow-2xl p-4 sm:p-8 md:p-12 lg:p-16 xl:p-20 animate-fade-in overflow-hidden min-h-[50vh] flex items-center justify-center"
-          >
-            {/* Background decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-0 right-0 w-64 h-64 sm:w-80 sm:h-80 md:w-96 md:h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-accent/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+      <div className="fixed inset-0 bg-background z-50 flex flex-col overflow-hidden">
+        {/* Animated background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] sm:w-[800px] sm:h-[800px] md:w-[1000px] md:h-[1000px] rounded-full bg-gradient-radial from-primary/10 via-primary/5 to-transparent animate-pulse" />
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        </div>
+
+        {/* Top bar with timer and progress */}
+        <div className="relative z-10 w-full px-4 sm:px-8 pt-6 sm:pt-10">
+          <div className="max-w-4xl mx-auto">
+            {/* Progress bar */}
+            <div className="h-2 sm:h-3 bg-muted/30 rounded-full overflow-hidden mb-4 sm:mb-6 backdrop-blur-sm">
+              <div 
+                className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              />
             </div>
             
-            {/* Son ko'rsatish - markazda va juda katta */}
-            <div className="relative z-10 text-center w-full">
+            {/* Info row */}
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 text-muted-foreground">
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-card/50 backdrop-blur-md rounded-xl border border-border/30">
+                  <Brain className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  <span className="text-sm sm:text-base font-medium">{digitCount}-xon</span>
+                </div>
+                <div className="px-3 sm:px-4 py-2 bg-card/50 backdrop-blur-md rounded-xl border border-border/30">
+                  <span className="text-sm sm:text-base font-bold text-foreground">{countRef.current}/{problemCount}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-card/80 backdrop-blur-md rounded-xl border border-accent/30 shadow-lg shadow-accent/10">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent animate-pulse" />
+                <span className="font-mono text-xl sm:text-2xl md:text-3xl font-bold text-accent tabular-nums">
+                  {elapsedTime.toFixed(1)}s
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Main number display - centered */}
+        <div className="flex-1 flex items-center justify-center px-4 relative z-10">
+          <div className="relative">
+            {/* Glow effect behind number */}
+            <div 
+              className={cn(
+                "absolute inset-0 blur-3xl opacity-40 transition-colors duration-200",
+                showAddition ? "bg-primary" : "bg-destructive"
+              )}
+              style={{ transform: 'scale(1.5)' }}
+            />
+            
+            {/* Number with operation sign */}
+            <div className="relative flex items-center justify-center gap-2 sm:gap-4">
+              {/* Operation sign for non-first numbers */}
+              {countRef.current > 1 && (
+                <span 
+                  className={cn(
+                    "text-[80px] sm:text-[120px] md:text-[160px] lg:text-[200px] font-extralight transition-all duration-200",
+                    showAddition ? "text-primary" : "text-destructive"
+                  )}
+                >
+                  {isAddition ? '+' : '−'}
+                </span>
+              )}
+              
+              {/* Main number */}
               <span 
-                className="text-[200px] xs:text-[280px] sm:text-[380px] md:text-[480px] lg:text-[580px] xl:text-[680px] font-light text-foreground tracking-tight inline-block leading-none select-none"
-                style={{ 
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
-                  textShadow: '0 8px 40px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.1)',
-                  lineHeight: '0.9',
-                  fontWeight: '300'
+                className={cn(
+                  "text-[120px] sm:text-[180px] md:text-[240px] lg:text-[320px] xl:text-[380px] font-extralight tracking-tight transition-all duration-200 tabular-nums",
+                  showAddition ? "text-primary" : "text-destructive"
+                )}
+                style={{
+                  textShadow: showAddition 
+                    ? '0 0 80px hsl(var(--primary) / 0.3), 0 0 160px hsl(var(--primary) / 0.2)' 
+                    : '0 0 80px hsl(var(--destructive) / 0.3), 0 0 160px hsl(var(--destructive) / 0.2)',
                 }}
               >
-                {displayNumber}
+                {currentDisplay}
               </span>
             </div>
-            
-            {/* Progress indicator - pastda */}
-            <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 w-full max-w-md px-4">
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
-                {Array.from({ length: problemCount }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1.5 sm:h-2 md:h-2.5 rounded-full transition-all duration-300 ${
-                      i < countRef.current
-                        ? 'bg-primary w-6 sm:w-8 md:w-10 shadow-lg shadow-primary/50'
-                        : 'bg-muted/50 w-1.5 sm:w-2 md:w-2.5'
-                    }`}
-                  />
-                ))}
-              </div>
+          </div>
+        </div>
+
+        {/* Bottom decorative element */}
+        <div className="relative z-10 w-full px-4 sm:px-8 pb-6 sm:pb-10">
+          <div className="max-w-4xl mx-auto flex justify-center">
+            <div className="flex gap-1.5 sm:gap-2">
+              {Array.from({ length: problemCount }).map((_, i) => (
+                <div 
+                  key={i}
+                  className={cn(
+                    "w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300",
+                    i < countRef.current 
+                      ? "bg-primary shadow-lg shadow-primary/50" 
+                      : "bg-muted/30"
+                  )}
+                />
+              ))}
             </div>
           </div>
         </div>
