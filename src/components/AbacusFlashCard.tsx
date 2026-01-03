@@ -647,9 +647,9 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Main Content - Centered Number Display - Mobile Optimized */}
         <div className="flex-1 flex items-center justify-center px-4">
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[60px] xs:blur-[80px] sm:blur-[100px] scale-125 sm:scale-150" />
-              <div className="relative text-[100px] xs:text-[140px] sm:text-[200px] md:text-[280px] lg:text-[360px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg">
+            <div className="relative flex items-center justify-center w-full">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[80px] xs:blur-[100px] sm:blur-[120px] scale-150 sm:scale-175" />
+              <div className="relative text-[140px] xs:text-[180px] sm:text-[260px] md:text-[340px] lg:text-[420px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg text-center">
                 {displayNumbers[currentDisplayIndex] < 0 
                   ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
                   : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
