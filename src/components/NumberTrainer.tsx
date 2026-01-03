@@ -619,8 +619,8 @@ export const NumberTrainer = () => {
   // O'yin davomida - toza oq fon, markazda katta son
   if (isRunning && currentDisplay !== null) {
     const displayNumber = countRef.current === 1 
-      ? currentDisplay 
-      : (isAddition ? currentDisplay : `-${currentDisplay}`);
+      ? `+${currentDisplay}` 
+      : (isAddition ? `+${currentDisplay}` : `−${currentDisplay}`);
     
     return (
       <div className="fixed inset-0 bg-background dark:bg-slate-950 flex items-center justify-center z-50">
