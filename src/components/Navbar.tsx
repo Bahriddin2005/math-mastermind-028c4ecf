@@ -424,12 +424,12 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </div>
 
         {/* Mobile menu footer */}
-        <div className="flex-shrink-0 p-4 border-t border-border/50 safe-bottom">
+        <div className="flex-shrink-0 p-3 border-t border-border/50 safe-bottom">
           {user ? (
             <Button 
               variant="destructive" 
               onClick={handleSignOut}
-              className="w-full h-14 text-lg font-semibold rounded-2xl touch-target-lg"
+              className="w-full h-12 text-base font-semibold rounded-xl touch-target"
             >
               <LogOut className="h-5 w-5 mr-2" />
               Chiqish
@@ -437,7 +437,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           ) : (
             <Button 
               onClick={() => handleNavigation('/auth')}
-              className="w-full h-14 text-lg font-semibold rounded-2xl gradient-primary shadow-glow touch-target-lg"
+              className="w-full h-12 text-base font-semibold rounded-xl gradient-primary shadow-glow touch-target"
             >
               <Sparkles className="h-5 w-5 mr-2" />
               Boshlash
