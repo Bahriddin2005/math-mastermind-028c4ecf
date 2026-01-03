@@ -661,27 +661,44 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
           )}
 
-          {/* Answer Input - Mobile Optimized */}
+          {/* Answer Input - Beautiful Design */}
           {!isDisplaying && feedback === null && (
-            <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 w-full max-w-lg px-4 xs:px-6">
-              <p className="text-base xs:text-lg sm:text-xl text-muted-foreground">Javobingizni kiriting</p>
-              <Input
-                ref={inputRef}
-                type="number"
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="?"
-                className="text-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold h-20 xs:h-24 sm:h-28 md:h-32 border-2 rounded-xl xs:rounded-2xl"
-                autoFocus
-              />
+            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 w-full max-w-2xl px-4 xs:px-6 animate-zoom-in">
+              {/* Header */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-center gap-2 text-primary">
+                  <div className="h-1 w-8 sm:w-12 bg-gradient-to-r from-transparent to-primary/50 rounded-full" />
+                  <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">Javobingizni kiriting</span>
+                  <div className="h-1 w-8 sm:w-12 bg-gradient-to-l from-transparent to-primary/50 rounded-full" />
+                </div>
+                <p className="text-sm xs:text-base sm:text-lg text-muted-foreground">Natijani yozing va tekshiring</p>
+              </div>
+              
+              {/* Input Container */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 rounded-3xl blur-xl" />
+                <div className="relative bg-card/80 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 xs:p-8 sm:p-10 shadow-lg">
+                  <Input
+                    ref={inputRef}
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="?"
+                    className="text-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold h-24 xs:h-32 sm:h-40 md:h-48 lg:h-56 border-2 border-primary/30 rounded-2xl xs:rounded-3xl bg-background/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300"
+                    autoFocus
+                  />
+                </div>
+              </div>
+              
+              {/* Submit Button */}
               <Button 
                 onClick={checkAnswer} 
                 size="lg" 
-                className="gap-2 xs:gap-3 h-12 xs:h-14 sm:h-16 text-base xs:text-lg sm:text-xl px-8 xs:px-12 w-full rounded-xl xs:rounded-2xl"
+                className="gap-3 xs:gap-4 h-16 xs:h-20 sm:h-24 text-lg xs:text-xl sm:text-2xl md:text-3xl px-12 xs:px-16 sm:px-20 w-full max-w-md mx-auto rounded-2xl xs:rounded-3xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 font-semibold"
                 disabled={!userAnswer}
               >
-                <Check className="h-5 w-5 xs:h-6 xs:w-6 sm:h-7 sm:w-7" />
+                <Check className="h-6 w-6 xs:h-8 xs:w-8 sm:h-10 sm:w-10" />
                 Tekshirish
               </Button>
             </div>
