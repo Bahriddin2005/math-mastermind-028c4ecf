@@ -471,80 +471,80 @@ export const MentalArithmeticPractice = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-0">
-      {/* Statistika - Chiroyli gradient kartalar */}
+      {/* Statistika - Chiroyli gradient kartalar - Dark mode enhanced */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-primary/20 bg-card/80 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
+          <Card className="relative p-3 sm:p-4 text-center border-primary/20 dark:border-primary/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-primary/10">
             <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-primary/40" />
+              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-primary/40 dark:text-primary/60" />
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wide">Jami</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Jami</div>
             <div className="text-xl sm:text-3xl font-bold text-primary mt-0.5">{stats.totalProblems}</div>
           </Card>
         </div>
         
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-green-500/5 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-green-500/20 bg-card/80 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-green-500/5 dark:from-green-500/30 dark:to-green-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
+          <Card className="relative p-3 sm:p-4 text-center border-green-500/20 dark:border-green-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-green-500/10">
             <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-500/40" />
+              <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-500/40 dark:text-green-500/60" />
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wide">To'g'ri</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">To'g'ri</div>
             <div className="text-xl sm:text-3xl font-bold text-green-500 mt-0.5">{stats.correctAnswers}</div>
           </Card>
         </div>
         
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-500/5 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-blue-500/20 bg-card/80 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-500/5 dark:from-blue-500/30 dark:to-blue-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
+          <Card className="relative p-3 sm:p-4 text-center border-blue-500/20 dark:border-blue-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-blue-500/10">
             <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500/40" />
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500/40 dark:text-blue-500/60" />
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wide">Aniqlik</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Aniqlik</div>
             <div className="text-xl sm:text-3xl font-bold text-blue-500 mt-0.5">{accuracy}%</div>
           </Card>
         </div>
         
         <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/5 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-amber-500/20 bg-card/80 backdrop-blur-sm">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/5 dark:from-amber-500/30 dark:to-amber-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
+          <Card className="relative p-3 sm:p-4 text-center border-amber-500/20 dark:border-amber-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-amber-500/10">
             <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500/40" />
+              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500/40 dark:text-amber-500/60" />
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground font-medium uppercase tracking-wide">Seriya</div>
+            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Seriya</div>
             <div className="text-xl sm:text-3xl font-bold text-amber-500 mt-0.5">{stats.bestStreak}</div>
           </Card>
         </div>
       </div>
 
-      {/* Tabs - Chiroyli dizayn */}
+      {/* Tabs - Chiroyli dizayn - Dark mode enhanced */}
       <Tabs defaultValue="flashcard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto p-1 sm:p-1.5 bg-muted/50 backdrop-blur-sm rounded-xl border border-border/50">
+        <TabsList className="grid w-full grid-cols-4 h-auto p-1 sm:p-1.5 bg-muted/50 dark:bg-muted/30 backdrop-blur-sm rounded-xl border border-border/50 dark:border-border/30">
           <TabsTrigger 
             value="flashcard" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border-primary/20 transition-all"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:border-primary/20 dark:data-[state=active]:border-primary/30 transition-all"
           >
             <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-[10px] sm:text-sm font-medium">Flash</span>
           </TabsTrigger>
           <TabsTrigger 
             value="multiplayer" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border-primary/20 transition-all"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:border-primary/20 dark:data-[state=active]:border-primary/30 transition-all"
           >
             <Swords className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-[10px] sm:text-sm font-medium">Musobaqa</span>
           </TabsTrigger>
           <TabsTrigger 
             value="leaderboard" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border-primary/20 transition-all"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:border-primary/20 dark:data-[state=active]:border-primary/30 transition-all"
           >
             <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-[10px] sm:text-sm font-medium">Reyting</span>
           </TabsTrigger>
           <TabsTrigger 
             value="history" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card data-[state=active]:shadow-md data-[state=active]:border-primary/20 transition-all"
+            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-2 sm:px-4 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:border-primary/20 dark:data-[state=active]:border-primary/30 transition-all"
           >
             <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-[10px] sm:text-sm font-medium">Tarix</span>
