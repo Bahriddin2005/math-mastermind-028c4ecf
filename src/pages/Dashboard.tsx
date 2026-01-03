@@ -40,6 +40,8 @@ import {
   GraduationCap,
   Calculator,
   Award,
+  Clock,
+  Activity,
 } from 'lucide-react';
 
 interface Profile {
@@ -301,8 +303,8 @@ const Dashboard = () => {
         <div className="container px-3 sm:px-4 py-4 sm:py-6 md:py-8">
           <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
 
-            {/* Stats Overview - Mobile optimized Grid */}
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+            {/* Stats Overview - Mobile optimized Grid - Extended with new cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
               <StatsCard
                 icon={Trophy}
                 label="Jami ball"
@@ -330,6 +332,20 @@ const Dashboard = () => {
                 value={`${stats.avgAccuracy}%`}
                 iconBgColor="success"
                 delay={250}
+              />
+              <StatsCard
+                icon={Activity}
+                label="O'yinlar soni"
+                value={stats.totalGames}
+                iconBgColor="accent"
+                delay={300}
+              />
+              <StatsCard
+                icon={Clock}
+                label="Joriy streak"
+                value={profile?.current_streak || 0}
+                iconBgColor="primary"
+                delay={350}
               />
             </div>
 
