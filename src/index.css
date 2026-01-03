@@ -152,8 +152,14 @@
     /* Better text rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Prevent overscroll bounce on iOS */
-    overscroll-behavior-y: none;
+    /* Prevent overscroll bounce */
+    overscroll-behavior: none;
+    /* Prevent horizontal scroll/swipe */
+    overflow-x: hidden;
+  }
+
+  html {
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
