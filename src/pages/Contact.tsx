@@ -133,21 +133,21 @@ const Contact = () => {
     {
       name: 'Telegram',
       icon: MessageCircle,
-      href: 'https://t.me/iqromax',
+      href: 'https://t.me/mentalarifmetika_uz',
       color: 'bg-blue-500 hover:bg-blue-600',
       description: 'Telegram kanalimizga qo\'shiling',
     },
     {
       name: 'Instagram',
       icon: Instagram,
-      href: 'https://instagram.com/iqromax',
+      href: 'https://instagram.com/iqromaxcom',
       color: 'bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
       description: 'Bizni Instagramda kuzating',
     },
     {
       name: 'YouTube',
       icon: Youtube,
-      href: 'https://youtube.com/@iqromax',
+      href: 'https://www.youtube.com/@iqromaxcom',
       color: 'bg-red-500 hover:bg-red-600',
       description: 'Video darslarimizni tomosha qiling',
     },
@@ -163,8 +163,8 @@ const Contact = () => {
     {
       icon: Phone,
       label: 'Telefon',
-      value: '+998 90 123 45 67',
-      href: 'tel:+998901234567',
+      value: '+998 99 005 30 00',
+      href: 'tel:+998990053000',
     },
     {
       icon: MapPin,
