@@ -625,7 +625,7 @@ export const NumberTrainer = () => {
     const isFirstNumber = countRef.current === 1;
     
     return (
-      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10 flex flex-col z-50">
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-emerald-200/60 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-500/30 flex flex-col z-50">
         {/* Yuqori panel */}
         <div className="flex items-center justify-between p-4 sm:p-6">
           <div className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground bg-muted/50 dark:bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-border/30">
