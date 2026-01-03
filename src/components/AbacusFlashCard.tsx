@@ -870,18 +870,6 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               Mashqni boshlash
             </Button>
           </div>
-
-          {/* Large Display Area for Preview */}
-          <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-8">
-            <div className="text-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-[40px] sm:blur-[60px] scale-125 sm:scale-150" />
-                <div className="relative text-[60px] xs:text-[80px] sm:text-[120px] md:text-[160px] lg:text-[200px] font-bold font-display text-primary/30 dark:text-primary/20 select-none leading-none">
-                  ?
-                </div>
-              </div>
-            </div>
-          </div>
         </>
       )}
 
