@@ -685,13 +685,13 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
 
           {/* Feedback - Mobile Optimized */}
           {feedback && (
-            <div className="text-center space-y-4 xs:space-y-6 animate-fade-in px-4">
-              <div className={`text-[80px] xs:text-[100px] sm:text-[140px] md:text-[180px] font-bold font-display leading-none ${
+            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 animate-fade-in px-4 flex flex-col items-center justify-center w-full">
+              <div className={`text-[120px] xs:text-[160px] sm:text-[220px] md:text-[300px] lg:text-[380px] font-bold font-display leading-none text-center ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
                 {correctAnswer}
               </div>
-              <div className={`text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold ${
+              <div className={`text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
                 {feedback === 'correct' && "To'g'ri! ✓"}
