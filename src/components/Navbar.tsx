@@ -348,6 +348,28 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           </div>
         )}
 
+        {/* Logout/Login button at top */}
+        <div className="flex-shrink-0 px-2 py-1.5 border-b border-border/50">
+          {user ? (
+            <Button 
+              variant="destructive" 
+              onClick={handleSignOut}
+              className="w-full h-9 text-sm font-medium rounded-md"
+            >
+              <LogOut className="h-4 w-4 mr-1.5" />
+              Chiqish
+            </Button>
+          ) : (
+            <Button 
+              onClick={() => handleNavigation('/auth')}
+              className="w-full h-9 text-sm font-medium rounded-md gradient-primary"
+            >
+              <Sparkles className="h-4 w-4 mr-1.5" />
+              Boshlash
+            </Button>
+          )}
+        </div>
+
         {/* Mobile menu navigation */}
         <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto mobile-menu-scroll px-2 py-1">
           {navItems.map((item, index) => (
@@ -420,27 +442,6 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           )}
         </div>
 
-        {/* Mobile menu footer */}
-        <div className="flex-shrink-0 p-3 border-t border-border/50 safe-bottom">
-          {user ? (
-            <Button 
-              variant="destructive" 
-              onClick={handleSignOut}
-              className="w-full h-12 text-base font-semibold rounded-xl touch-target"
-            >
-              <LogOut className="h-5 w-5 mr-2" />
-              Chiqish
-            </Button>
-          ) : (
-            <Button 
-              onClick={() => handleNavigation('/auth')}
-              className="w-full h-12 text-base font-semibold rounded-xl gradient-primary shadow-glow touch-target"
-            >
-              <Sparkles className="h-5 w-5 mr-2" />
-              Boshlash
-            </Button>
-          )}
-        </div>
       </div>
     </>
   );
