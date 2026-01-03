@@ -439,170 +439,174 @@ const Admin = () => {
 
       <main className="flex-1 container px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Header - Enhanced Design */}
-          <div className="relative mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 border border-primary/20 overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.15),transparent_50%)]" />
-            <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-3xl" />
+          {/* Header - Enhanced Dark Mode Design */}
+          <div className="relative mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-primary/15 via-background to-accent/10 dark:from-primary/20 dark:via-background/80 dark:to-accent/15 border border-primary/20 dark:border-primary/30 overflow-hidden shadow-xl dark:shadow-primary/5">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.15),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.25),transparent_50%)]" />
+            <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-gradient-to-br from-accent/20 dark:from-accent/30 to-transparent rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-tr from-primary/10 dark:from-primary/20 to-transparent rounded-full blur-2xl" />
             
             <div className="relative flex items-center gap-3 sm:gap-4">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 dark:from-primary dark:to-primary/70 flex items-center justify-center shadow-lg shadow-primary/30 dark:shadow-primary/40 ring-2 ring-primary/20 dark:ring-primary/30">
                 <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-3xl font-display font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Admin Panel</h1>
-                <p className="text-sm sm:text-base text-muted-foreground mt-0.5">Platforma boshqaruvi va statistika</p>
+                <h1 className="text-xl sm:text-3xl font-display font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/70 dark:from-foreground dark:via-foreground/90 dark:to-foreground/60 bg-clip-text">Admin Panel</h1>
+                <p className="text-sm sm:text-base text-muted-foreground dark:text-muted-foreground/80 mt-0.5">Platforma boshqaruvi va statistika</p>
               </div>
               <div className="hidden sm:flex items-center gap-2">
-                <Badge variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/30 text-primary">
-                  <Bell className="h-3 w-3 mr-1" />
+                <Badge variant="outline" className="bg-background/60 dark:bg-background/40 backdrop-blur-sm border-primary/30 dark:border-primary/40 text-primary dark:text-primary/90 shadow-sm">
+                  <Bell className="h-3 w-3 mr-1 animate-pulse" />
                   {unreadCount} yangi xabar
                 </Badge>
               </div>
             </div>
           </div>
 
-          {/* Stats Cards - Enhanced with animations */}
+          {/* Stats Cards - Enhanced Dark Mode */}
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-6 sm:mb-10">
-            <Card className="bg-gradient-to-br from-blue-500/15 to-blue-500/5 border-blue-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-blue-500/15 to-blue-500/5 dark:from-blue-500/25 dark:to-blue-500/10 border-blue-500/30 dark:border-blue-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-500/20 dark:bg-blue-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.totalUsers}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Foydalanuvchilar</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.totalUsers}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">Foydalanuvchilar</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-green-500/15 to-green-500/5 border-green-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-green-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-green-500/15 to-green-500/5 dark:from-green-500/25 dark:to-green-500/10 border-green-500/30 dark:border-green-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-green-500/20 dark:hover:shadow-green-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-green-500/20 dark:bg-green-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 dark:text-green-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.totalProblems.toLocaleString()}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Yechilgan</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.totalProblems.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">Yechilgan</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-yellow-500/15 to-yellow-500/5 border-yellow-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-yellow-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-yellow-500/15 to-yellow-500/5 dark:from-yellow-500/25 dark:to-yellow-500/10 border-yellow-500/30 dark:border-yellow-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-yellow-500/20 dark:hover:shadow-yellow-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-yellow-500/20 dark:bg-yellow-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 dark:text-yellow-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.totalScore.toLocaleString()}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Jami ball</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.totalScore.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">Jami ball</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-purple-500/15 to-purple-500/5 border-purple-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-purple-500/15 to-purple-500/5 dark:from-purple-500/25 dark:to-purple-500/10 border-purple-500/30 dark:border-purple-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-purple-500/20 dark:hover:shadow-purple-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-500/20 dark:bg-purple-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 dark:text-purple-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.totalGames}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">O'yinlar</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.totalGames}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">O'yinlar</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 dark:from-emerald-500/25 dark:to-emerald-500/10 border-emerald-500/30 dark:border-emerald-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 dark:bg-emerald-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 dark:text-emerald-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.newUsersToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Bugun yangi</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.newUsersToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">Bugun yangi</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-orange-500/15 to-orange-500/5 border-orange-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-orange-500/15 to-orange-500/5 dark:from-orange-500/25 dark:to-orange-500/10 border-orange-500/30 dark:border-orange-500/40 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-orange-500/20 dark:hover:shadow-orange-500/30 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
-                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-500/20 dark:bg-orange-500/30 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform shadow-inner">
+                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 dark:text-orange-400" />
                 </div>
-                <p className="text-lg sm:text-2xl font-bold">{stats.activeToday}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground">Bugun faol</p>
+                <p className="text-lg sm:text-2xl font-bold dark:text-foreground">{stats.activeToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">Bugun faol</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Tez harakatlar (Quick Actions) - Compact for mobile */}
-          <Card className="mb-4 sm:mb-8 bg-card/80 backdrop-blur-sm border-border/50 overflow-hidden">
-            <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 pt-3 sm:pt-6">
+          {/* Tez harakatlar (Quick Actions) - Enhanced Dark Mode */}
+          <Card className="mb-4 sm:mb-8 bg-card/80 dark:bg-card/60 backdrop-blur-md border-border/50 dark:border-border/30 overflow-hidden shadow-lg dark:shadow-xl dark:shadow-black/20">
+            <CardHeader className="pb-2 sm:pb-3 px-3 sm:px-6 pt-3 sm:pt-6 border-b border-border/30 dark:border-border/20">
               <CardTitle className="flex items-center gap-2 text-sm sm:text-lg">
-                <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
-                Tez harakatlar
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-yellow-500/20 to-amber-500/20 dark:from-yellow-500/30 dark:to-amber-500/30">
+                  <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 dark:text-yellow-400" />
+                </div>
+                <span className="dark:text-foreground/95">Tez harakatlar</span>
               </CardTitle>
+              <CardDescription className="text-xs dark:text-muted-foreground/70">Eng ko'p ishlatiladigan amallar</CardDescription>
             </CardHeader>
-            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-3 sm:pt-4">
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/30 hover:bg-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 group overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 dark:from-emerald-500/20 dark:to-emerald-500/10 border-emerald-500/30 dark:border-emerald-500/40 hover:bg-emerald-500/20 dark:hover:bg-emerald-500/30 hover:border-emerald-500/50 dark:hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/30 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => openBlogDialog()}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-                    <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 dark:from-emerald-500/40 dark:to-emerald-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                    <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 dark:text-emerald-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Maqola</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Maqola</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/30 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-300 group overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-blue-500/10 to-blue-500/5 dark:from-blue-500/20 dark:to-blue-500/10 border-blue-500/30 dark:border-blue-500/40 hover:bg-blue-500/20 dark:hover:bg-blue-500/30 hover:border-blue-500/50 dark:hover:border-blue-500/60 hover:shadow-lg hover:shadow-blue-500/20 dark:hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => {
                     fetchUsers();
                     fetchStats();
                     toast.success("Ma'lumotlar yangilandi");
                   }}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
-                    <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-blue-500/30 to-blue-600/20 dark:from-blue-500/40 dark:to-blue-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-180 transition-all duration-500 shadow-inner">
+                    <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Yangilash</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Yangilash</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/30 hover:bg-purple-500/20 hover:border-purple-500/50 transition-all duration-300 group overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-purple-500/10 to-purple-500/5 dark:from-purple-500/20 dark:to-purple-500/10 border-purple-500/30 dark:border-purple-500/40 hover:bg-purple-500/20 dark:hover:bg-purple-500/30 hover:border-purple-500/50 dark:hover:border-purple-500/60 hover:shadow-lg hover:shadow-purple-500/20 dark:hover:shadow-purple-500/30 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
-                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-purple-500/30 to-purple-600/20 dark:from-purple-500/40 dark:to-purple-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 dark:text-purple-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Kurslar</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Kurslar</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all duration-300 group overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-amber-500/10 to-amber-500/5 dark:from-amber-500/20 dark:to-amber-500/10 border-amber-500/30 dark:border-amber-500/40 hover:bg-amber-500/20 dark:hover:bg-amber-500/30 hover:border-amber-500/50 dark:hover:border-amber-500/60 hover:shadow-lg hover:shadow-amber-500/20 dark:hover:shadow-amber-500/30 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/blog')}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
-                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-amber-500/30 to-amber-600/20 dark:from-amber-500/40 dark:to-amber-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                    <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 dark:text-amber-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Blog</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Blog</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-all duration-300 group relative overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-red-500/10 to-red-500/5 dark:from-red-500/20 dark:to-red-500/10 border-red-500/30 dark:border-red-500/40 hover:bg-red-500/20 dark:hover:bg-red-500/30 hover:border-red-500/50 dark:hover:border-red-500/60 hover:shadow-lg hover:shadow-red-500/20 dark:hover:shadow-red-500/30 hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden"
                   onClick={() => {
                     const messagesTab = document.querySelector('[value="messages"]') as HTMLElement;
                     messagesTab?.click();
                   }}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-red-500/20 flex items-center justify-center shrink-0">
-                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-red-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-red-500/30 to-red-600/20 dark:from-red-500/40 dark:to-red-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-inner">
+                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 dark:text-red-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Xabar</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Xabar</span>
                   {unreadCount > 0 && (
-                    <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">{unreadCount}</Badge>
+                    <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-[10px] animate-pulse shadow-lg shadow-red-500/50">{unreadCount}</Badge>
                   )}
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all duration-300 group overflow-hidden"
+                  className="h-auto flex flex-col items-center gap-1.5 sm:gap-2 p-2.5 sm:p-4 bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 dark:from-cyan-500/20 dark:to-cyan-500/10 border-cyan-500/30 dark:border-cyan-500/40 hover:bg-cyan-500/20 dark:hover:bg-cyan-500/30 hover:border-cyan-500/50 dark:hover:border-cyan-500/60 hover:shadow-lg hover:shadow-cyan-500/20 dark:hover:shadow-cyan-500/30 hover:-translate-y-1 transition-all duration-300 group overflow-hidden"
                   onClick={() => navigate('/settings')}
                 >
-                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-cyan-500/20 flex items-center justify-center shrink-0">
-                    <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-500" />
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-cyan-500/30 to-cyan-600/20 dark:from-cyan-500/40 dark:to-cyan-600/30 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 shadow-inner">
+                    <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-500 dark:text-cyan-400" />
                   </div>
-                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full">Sozlama</span>
+                  <span className="text-[10px] sm:text-xs font-medium text-center truncate w-full dark:text-foreground/90">Sozlama</span>
                 </Button>
               </div>
             </CardContent>
