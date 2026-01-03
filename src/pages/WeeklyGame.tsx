@@ -329,15 +329,17 @@ const WeeklyGame = () => {
 
   if (!user) {
     return (
-      <PageBackground className="flex flex-col">
+      <PageBackground className="flex flex-col min-h-screen">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-        <main className="flex-1 container px-4 py-8">
-          <Card className="max-w-md mx-auto">
-            <CardContent className="py-8 text-center">
-              <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-lg font-bold mb-2">Tizimga kiring</h2>
-              <p className="text-muted-foreground mb-4">Haftalik musobaqada ishtirok etish uchun tizimga kiring</p>
-              <Button onClick={() => navigate("/auth")}>Kirish</Button>
+        <main className="flex-1 container px-3 sm:px-4 py-6 sm:py-8 flex items-center justify-center">
+          <Card className="max-w-md w-full mx-auto bg-card/80 dark:bg-card/60 backdrop-blur-sm border-border/40 dark:border-border/20 shadow-xl dark:shadow-2xl dark:shadow-primary/10">
+            <CardContent className="py-8 sm:py-10 text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 dark:from-purple-500/30 dark:to-pink-500/30 flex items-center justify-center mx-auto mb-4 border border-purple-500/30 dark:border-purple-500/40">
+                <Trophy className="h-8 w-8 sm:h-10 sm:w-10 text-purple-500" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 text-foreground">Tizimga kiring</h2>
+              <p className="text-muted-foreground dark:text-muted-foreground/80 mb-4 text-sm sm:text-base">Haftalik musobaqada ishtirok etish uchun tizimga kiring</p>
+              <Button onClick={() => navigate("/auth")} className="shadow-lg dark:shadow-primary/20">Kirish</Button>
             </CardContent>
           </Card>
         </main>
@@ -348,23 +350,28 @@ const WeeklyGame = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <PageBackground className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground dark:text-muted-foreground/80 mt-3 text-sm">Yuklanmoqda...</p>
+        </div>
+      </PageBackground>
     );
   }
 
   if (!challenge) {
     return (
-      <PageBackground className="flex flex-col">
+      <PageBackground className="flex flex-col min-h-screen">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-        <main className="flex-1 container px-4 py-8">
-          <Card className="max-w-md mx-auto">
-            <CardContent className="py-8 text-center">
-              <Trophy className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-lg font-bold mb-2">Musobaqa topilmadi</h2>
-              <p className="text-muted-foreground mb-4">Hozirda faol haftalik musobaqa mavjud emas</p>
-              <Button variant="outline" onClick={() => navigate("/")}>
+        <main className="flex-1 container px-3 sm:px-4 py-6 sm:py-8 flex items-center justify-center">
+          <Card className="max-w-md w-full mx-auto bg-card/80 dark:bg-card/60 backdrop-blur-sm border-border/40 dark:border-border/20 shadow-xl dark:shadow-2xl dark:shadow-primary/10">
+            <CardContent className="py-8 sm:py-10 text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 dark:from-purple-500/30 dark:to-pink-500/30 flex items-center justify-center mx-auto mb-4 border border-purple-500/30 dark:border-purple-500/40">
+                <Trophy className="h-8 w-8 sm:h-10 sm:w-10 text-purple-500" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold mb-2 text-foreground">Musobaqa topilmadi</h2>
+              <p className="text-muted-foreground dark:text-muted-foreground/80 mb-4 text-sm sm:text-base">Hozirda faol haftalik musobaqa mavjud emas</p>
+              <Button variant="outline" onClick={() => navigate("/")} className="dark:border-border/40 dark:hover:bg-secondary/50">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Orqaga
               </Button>
@@ -377,19 +384,19 @@ const WeeklyGame = () => {
   }
 
   return (
-    <PageBackground className="flex flex-col">
+    <PageBackground className="flex flex-col min-h-screen">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      <main className="flex-1 container px-4 py-6">
+      <main className="flex-1 container px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-2xl mx-auto">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Orqaga
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="dark:hover:bg-secondary/50">
+              <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="hidden xs:inline">Orqaga</span>
             </Button>
             {timeRemaining && (
-              <Badge variant="secondary" className="bg-purple-500/20">
+              <Badge variant="secondary" className="bg-purple-500/20 dark:bg-purple-500/30 text-purple-600 dark:text-purple-300 border border-purple-500/30 dark:border-purple-500/40">
                 <Clock className="h-3 w-3 mr-1" />
                 {timeRemaining.days}k {timeRemaining.hours}s qoldi
               </Badge>
@@ -397,22 +404,24 @@ const WeeklyGame = () => {
           </div>
 
           {/* Challenge Info */}
-          <Card className="mb-6 bg-gradient-to-br from-purple-500/10 to-pink-500/5 border-purple-500/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-purple-500" />
+          <Card className="mb-4 sm:mb-6 bg-gradient-to-br from-purple-500/10 to-pink-500/5 dark:from-purple-500/20 dark:to-pink-500/10 border-purple-500/20 dark:border-purple-500/30 shadow-lg dark:shadow-xl dark:shadow-purple-500/10">
+            <CardHeader className="pb-2 px-4 sm:px-6 pt-4 sm:pt-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-purple-500/20 dark:bg-purple-500/30">
+                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                </div>
                 Haftalik Musobaqa
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2 mb-2">
-                <Badge variant="outline">{getFormulaLabel(challenge.formula_type)}</Badge>
-                <Badge variant="outline">{challenge.digit_count} xonali</Badge>
-                <Badge variant="outline">{challenge.speed}s</Badge>
-                <Badge variant="outline">{challenge.problem_count} misol</Badge>
+            <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-2">
+                <Badge variant="outline" className="dark:border-border/40 dark:bg-secondary/30 text-xs sm:text-sm">{getFormulaLabel(challenge.formula_type)}</Badge>
+                <Badge variant="outline" className="dark:border-border/40 dark:bg-secondary/30 text-xs sm:text-sm">{challenge.digit_count} xonali</Badge>
+                <Badge variant="outline" className="dark:border-border/40 dark:bg-secondary/30 text-xs sm:text-sm">{challenge.speed}s</Badge>
+                <Badge variant="outline" className="dark:border-border/40 dark:bg-secondary/30 text-xs sm:text-sm">{challenge.problem_count} misol</Badge>
               </div>
               {userResult && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80 mt-2 sm:mt-3 p-2 sm:p-3 rounded-lg bg-secondary/50 dark:bg-secondary/30 border border-border/30 dark:border-border/20">
                   Sizning natijangiz: <span className="font-bold text-primary">{userResult.total_score} ball</span> ({userResult.games_played} o'yin)
                 </div>
               )}
@@ -420,22 +429,22 @@ const WeeklyGame = () => {
           </Card>
 
           {/* Game Area */}
-          <Card className="overflow-hidden">
-            <CardContent className="p-6 min-h-[400px] flex flex-col items-center justify-center">
+          <Card className="overflow-hidden bg-card/80 dark:bg-card/60 backdrop-blur-sm border-border/40 dark:border-border/20 shadow-xl dark:shadow-2xl dark:shadow-primary/10">
+            <CardContent className="p-4 sm:p-6 min-h-[350px] sm:min-h-[400px] flex flex-col items-center justify-center">
               {/* Idle State */}
               {gameState.status === "idle" && (
-                <div className="text-center space-y-6">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto">
-                    <Play className="h-10 w-10 text-white" />
+                <div className="text-center space-y-4 sm:space-y-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto shadow-lg dark:shadow-xl dark:shadow-purple-500/30">
+                    <Play className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold mb-2">Tayyor misiz?</h2>
-                    <p className="text-muted-foreground">
+                    <h2 className="text-lg sm:text-xl font-bold mb-2 text-foreground">Tayyor misiz?</h2>
+                    <p className="text-muted-foreground dark:text-muted-foreground/80 text-sm sm:text-base">
                       {challenge.problem_count} ta misolni yechib, ball to'plang!
                     </p>
                   </div>
-                  <Button size="lg" onClick={startGame} className="gap-2">
-                    <Play className="h-5 w-5" />
+                  <Button size="lg" onClick={startGame} className="gap-2 shadow-lg dark:shadow-primary/20">
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5" />
                     Boshlash
                   </Button>
                 </div>
@@ -444,18 +453,18 @@ const WeeklyGame = () => {
               {/* Countdown */}
               {gameState.status === "countdown" && (
                 <div className="text-center">
-                  <div className="text-8xl font-bold text-primary animate-pulse">{countdown}</div>
-                  <p className="text-muted-foreground mt-4">Tayyor bo'ling...</p>
+                  <div className="text-7xl sm:text-8xl font-bold text-primary animate-pulse drop-shadow-lg dark:drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]">{countdown}</div>
+                  <p className="text-muted-foreground dark:text-muted-foreground/80 mt-4 text-sm sm:text-base">Tayyor bo'ling...</p>
                 </div>
               )}
 
               {/* Showing Numbers */}
               {gameState.status === "showing" && (
-                <div className="text-center space-y-4">
-                  <div className="text-sm text-muted-foreground">
+                <div className="text-center space-y-3 sm:space-y-4">
+                  <div className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">
                     Misol {gameState.currentProblem + 1}/{challenge.problem_count}
                   </div>
-                  <div className="text-7xl md:text-8xl font-bold text-primary tabular-nums">
+                  <div className="text-6xl sm:text-7xl md:text-8xl font-bold text-primary tabular-nums drop-shadow-lg dark:drop-shadow-[0_0_20px_rgba(var(--primary-rgb),0.4)]">
                     {gameState.currentNumberIndex > 0 && gameState.currentNumberIndex <= gameState.numbers.length ? (
                       <>
                         {gameState.numbers[gameState.currentNumberIndex - 1] >= 0 ? "+" : ""}
@@ -467,19 +476,19 @@ const WeeklyGame = () => {
                   </div>
                   <Progress
                     value={(gameState.currentNumberIndex / gameState.numbers.length) * 100}
-                    className="w-48 mx-auto"
+                    className="w-36 sm:w-48 mx-auto"
                   />
                 </div>
               )}
 
               {/* Input Answer */}
               {gameState.status === "input" && (
-                <div className="text-center space-y-6 w-full max-w-xs">
-                  <div className="text-sm text-muted-foreground">
+                <div className="text-center space-y-4 sm:space-y-6 w-full max-w-xs">
+                  <div className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">
                     Misol {gameState.currentProblem + 1}/{challenge.problem_count}
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium mb-4">Javobingizni kiriting</h3>
+                    <h3 className="text-base sm:text-lg font-medium mb-3 sm:mb-4 text-foreground">Javobingizni kiriting</h3>
                     <Input
                       ref={inputRef}
                       type="number"
@@ -487,11 +496,11 @@ const WeeklyGame = () => {
                       onChange={(e) => setGameState((prev) => ({ ...prev, answer: e.target.value }))}
                       onKeyDown={handleKeyDown}
                       placeholder="Javob"
-                      className="text-center text-2xl h-14"
+                      className="text-center text-xl sm:text-2xl h-12 sm:h-14 bg-secondary/50 dark:bg-secondary/30 border-border/40 dark:border-border/20 focus:border-primary dark:focus:border-primary"
                       autoFocus
                     />
                   </div>
-                  <Button size="lg" onClick={submitAnswer} className="w-full">
+                  <Button size="lg" onClick={submitAnswer} className="w-full shadow-lg dark:shadow-primary/20">
                     Tasdiqlash
                   </Button>
                 </div>
@@ -499,22 +508,22 @@ const WeeklyGame = () => {
 
               {/* Result */}
               {gameState.status === "result" && (
-                <div className="text-center space-y-4">
+                <div className="text-center space-y-3 sm:space-y-4">
                   {gameState.results[gameState.results.length - 1]?.correct ? (
                     <>
-                      <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto">
-                        <Check className="h-10 w-10 text-green-500" />
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-green-500/20 dark:bg-green-500/30 flex items-center justify-center mx-auto border border-green-500/30 dark:border-green-500/40 shadow-lg dark:shadow-green-500/20">
+                        <Check className="h-8 w-8 sm:h-10 sm:w-10 text-green-500" />
                       </div>
-                      <h3 className="text-xl font-bold text-green-500">To'g'ri!</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-green-500">To'g'ri!</h3>
                     </>
                   ) : (
                     <>
-                      <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto">
-                        <X className="h-10 w-10 text-red-500" />
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-red-500/20 dark:bg-red-500/30 flex items-center justify-center mx-auto border border-red-500/30 dark:border-red-500/40 shadow-lg dark:shadow-red-500/20">
+                        <X className="h-8 w-8 sm:h-10 sm:w-10 text-red-500" />
                       </div>
-                      <h3 className="text-xl font-bold text-red-500">Noto'g'ri</h3>
-                      <p className="text-muted-foreground">
-                        To'g'ri javob: <span className="font-bold">{gameState.correctAnswer}</span>
+                      <h3 className="text-lg sm:text-xl font-bold text-red-500">Noto'g'ri</h3>
+                      <p className="text-muted-foreground dark:text-muted-foreground/80 text-sm sm:text-base">
+                        To'g'ri javob: <span className="font-bold text-foreground">{gameState.correctAnswer}</span>
                       </p>
                     </>
                   )}
@@ -523,33 +532,33 @@ const WeeklyGame = () => {
 
               {/* Finished */}
               {gameState.status === "finished" && (
-                <div className="text-center space-y-6 w-full">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto">
-                    <Award className="h-10 w-10 text-white" />
+                <div className="text-center space-y-4 sm:space-y-6 w-full">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto shadow-lg dark:shadow-xl dark:shadow-amber-500/30">
+                    <Award className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">O'yin tugadi!</h2>
-                    <p className="text-muted-foreground">Natijalaringiz saqlandi</p>
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2 text-foreground">O'yin tugadi!</h2>
+                    <p className="text-muted-foreground dark:text-muted-foreground/80 text-sm sm:text-base">Natijalaringiz saqlandi</p>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
-                    <div className="bg-secondary/50 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-primary">{correctCount}</div>
-                      <div className="text-xs text-muted-foreground">To'g'ri</div>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-sm mx-auto">
+                    <div className="bg-green-500/10 dark:bg-green-500/20 rounded-xl p-3 sm:p-4 border border-green-500/20 dark:border-green-500/30">
+                      <div className="text-xl sm:text-2xl font-bold text-green-500">{correctCount}</div>
+                      <div className="text-xs text-muted-foreground dark:text-muted-foreground/80">To'g'ri</div>
                     </div>
-                    <div className="bg-secondary/50 rounded-xl p-4">
-                      <div className="text-2xl font-bold">{gameState.results.length - correctCount}</div>
-                      <div className="text-xs text-muted-foreground">Noto'g'ri</div>
+                    <div className="bg-red-500/10 dark:bg-red-500/20 rounded-xl p-3 sm:p-4 border border-red-500/20 dark:border-red-500/30">
+                      <div className="text-xl sm:text-2xl font-bold text-red-500">{gameState.results.length - correctCount}</div>
+                      <div className="text-xs text-muted-foreground dark:text-muted-foreground/80">Noto'g'ri</div>
                     </div>
-                    <div className="bg-secondary/50 rounded-xl p-4">
-                      <div className="text-2xl font-bold text-amber-500">
+                    <div className="bg-amber-500/10 dark:bg-amber-500/20 rounded-xl p-3 sm:p-4 border border-amber-500/20 dark:border-amber-500/30">
+                      <div className="text-xl sm:text-2xl font-bold text-amber-500">
                         {(totalTime / 1000).toFixed(1)}s
                       </div>
-                      <div className="text-xs text-muted-foreground">Vaqt</div>
+                      <div className="text-xs text-muted-foreground dark:text-muted-foreground/80">Vaqt</div>
                     </div>
                   </div>
 
-                  <div className="flex gap-3 justify-center">
+                  <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 justify-center">
                     <Button
                       variant="outline"
                       onClick={() => {
@@ -564,11 +573,12 @@ const WeeklyGame = () => {
                           startTime: 0,
                         });
                       }}
+                      className="dark:border-border/40 dark:hover:bg-secondary/50"
                     >
                       <Play className="h-4 w-4 mr-2" />
                       Yana o'ynash
                     </Button>
-                    <Button onClick={() => navigate("/")}>
+                    <Button onClick={() => navigate("/")} className="shadow-lg dark:shadow-primary/20">
                       Dashboard
                     </Button>
                   </div>

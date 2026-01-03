@@ -432,9 +432,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           {isAdmin && (
             <button
               onClick={() => handleNavigation('/admin')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 transition-all duration-200"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-all duration-200"
             >
-              <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-lg bg-primary/20 dark:bg-primary/30 flex items-center justify-center">
                 <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
               <span className="text-base font-semibold text-primary">Admin panel</span>
@@ -447,7 +447,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   );
 };
 
-// Desktop navigation button component
+// Desktop navigation button component - Enhanced dark mode
 const NavButton = ({ 
   active, 
   onClick, 
@@ -466,10 +466,10 @@ const NavButton = ({
     className={`
       flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200
       ${active 
-        ? 'bg-primary text-primary-foreground shadow-md' 
+        ? 'bg-primary text-primary-foreground shadow-md dark:shadow-lg dark:shadow-primary/30' 
         : highlight 
-          ? 'text-primary hover:bg-primary/10' 
-          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80'
+          ? 'text-primary hover:bg-primary/10 dark:hover:bg-primary/20' 
+          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80 dark:hover:bg-secondary/50'
       }
     `}
   >

@@ -13,24 +13,24 @@ const MentalArithmetic = () => {
       
       <main className="flex-1 container px-3 sm:px-6 py-4 sm:py-8">
         <div className="max-w-5xl w-full mx-auto space-y-4 sm:space-y-6">
-          {/* Beautiful Header */}
+          {/* Beautiful Header - Enhanced dark mode */}
           <div className="relative opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
             <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
-              {/* Icon with glow */}
+              {/* Icon with glow - Enhanced dark mode */}
               <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse-glow" />
-                <div className="relative p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/20 shadow-glow">
+                <div className="absolute inset-0 bg-primary/20 dark:bg-primary/30 rounded-full blur-xl animate-pulse-glow" />
+                <div className="relative p-3 sm:p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 dark:from-primary/30 dark:to-accent/20 border border-primary/20 dark:border-primary/40 shadow-glow dark:shadow-lg dark:shadow-primary/20">
                   <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                 </div>
               </div>
               
-              {/* Title */}
+              {/* Title - Enhanced dark mode */}
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 justify-center">
-                  <span className="text-gradient-primary">Mental Arifmetika</span>
+                  <span className="text-gradient-primary drop-shadow-sm dark:drop-shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)]">Mental Arifmetika</span>
                   <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-accent animate-bounce-soft" />
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80 max-w-md mx-auto">
                   Aqliy hisoblash qobiliyatingizni rivojlantiring
                 </p>
               </div>
