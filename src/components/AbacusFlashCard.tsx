@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
+import { useTTS } from '@/hooks/useTTS';
 import { useAuth } from '@/hooks/useAuth';
 import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
@@ -177,6 +178,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
   const { triggerCompletionConfetti } = useConfetti();
+  const { speakNumber, stop: stopTTS } = useTTS({ useElevenLabs: true });
   
   // Settings
   const [problemCount, setProblemCount] = useState(5);
@@ -186,6 +188,10 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const [showSettings, setShowSettings] = useState(true);
   const [digitLevel, setDigitLevel] = useState<DigitLevel>('1-digit');
   const [formulaType, setFormulaType] = useState<FormulaType>('basic');
+  const [voiceEnabled, setVoiceEnabled] = useState(() => {
+    const saved = localStorage.getItem('flashCard_voiceEnabled');
+    return saved !== null ? saved === 'true' : true;
+  });
   
   // Game state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -408,6 +414,11 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setCurrentDisplayIndex(0);
     setIsDisplaying(true);
     
+    // Speak first number
+    if (voiceEnabled && numbers.length > 0) {
+      speakNumber(String(Math.abs(numbers[0])), true, true);
+    }
+    
     let index = 0;
     displayIntervalRef.current = setInterval(() => {
       index++;
@@ -423,9 +434,14 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         }, showTime);
       } else {
         setCurrentDisplayIndex(index);
+        // Speak subsequent numbers
+        if (voiceEnabled) {
+          const num = numbers[index];
+          speakNumber(String(Math.abs(num)), num >= 0, false);
+        }
       }
     }, showTime);
-  }, [showTime, startAnswerTimer]);
+  }, [showTime, startAnswerTimer, voiceEnabled, speakNumber]);
 
   // Start game
   const startGame = useCallback(() => {
