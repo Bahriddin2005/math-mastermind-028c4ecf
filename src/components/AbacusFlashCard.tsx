@@ -706,145 +706,148 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-180px)]">
+    <div className="flex flex-col min-h-[calc(100vh-200px)] sm:min-h-[calc(100vh-180px)]">
       {/* Settings - Sticky at bottom when not playing */}
       {showSettings && !isFinished && (
         <>
           {/* Large Display Area for Preview */}
-          <div className="flex-1 flex items-center justify-center py-12 sm:py-16 md:py-20">
-            <div className="text-center space-y-6">
+          <div className="flex-1 flex items-center justify-center py-6 xs:py-8 sm:py-12 md:py-16">
+            <div className="text-center space-y-3 sm:space-y-6">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-[80px] scale-[2]" />
-                <div className="relative text-[120px] sm:text-[180px] md:text-[240px] lg:text-[300px] font-bold font-display text-emerald-600/40 dark:text-emerald-400/40 select-none leading-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-[60px] sm:blur-[80px] scale-150 sm:scale-[2]" />
+                <div className="relative text-[80px] xs:text-[100px] sm:text-[160px] md:text-[220px] lg:text-[280px] font-bold font-display text-emerald-600/40 dark:text-emerald-400/40 select-none leading-none">
                   ?
                 </div>
               </div>
-              <p className="text-muted-foreground text-base sm:text-lg">
-                Sozlamalarni tanlang va mashqni boshlang
+              <p className="text-muted-foreground text-xs xs:text-sm sm:text-base">
+                Sozlamalarni tanlang va boshlang
               </p>
             </div>
           </div>
 
-          {/* Settings Panel - Fixed at Bottom */}
-          <div className="bg-card/95 backdrop-blur-lg border-t border-border/50 rounded-t-3xl shadow-2xl p-4 sm:p-6 space-y-4">
-            {/* Quick Settings Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Settings Panel - Fixed at Bottom - Mobile Optimized */}
+          <div className="bg-card/95 backdrop-blur-lg border-t border-border/50 rounded-t-2xl sm:rounded-t-3xl shadow-2xl p-3 xs:p-4 sm:p-6 space-y-3 sm:space-y-4">
+            {/* Quick Settings Row - 2x2 grid on mobile */}
+            <div className="grid grid-cols-2 gap-2 xs:gap-3 sm:grid-cols-4 sm:gap-3">
               {/* Formula */}
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">📚 Formula</Label>
+              <div className="space-y-1">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground">📚 Formula</Label>
                 <Select value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)}>
-                  <SelectTrigger className="h-11 text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(FORMULA_CONFIG).map(([key, config]) => (
-                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                      <SelectItem key={key} value={key} className="text-xs xs:text-sm">{config.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Digits */}
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">🔢 Xonalar</Label>
+              <div className="space-y-1">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground">🔢 Xonalar</Label>
                 <Select value={digitLevel} onValueChange={(v) => setDigitLevel(v as DigitLevel)}>
-                  <SelectTrigger className="h-11 text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1-digit">1 xonali</SelectItem>
-                    <SelectItem value="2-digit">2 xonali</SelectItem>
-                    <SelectItem value="3-digit">3 xonali</SelectItem>
+                    <SelectItem value="1-digit" className="text-xs xs:text-sm">1 xonali</SelectItem>
+                    <SelectItem value="2-digit" className="text-xs xs:text-sm">2 xonali</SelectItem>
+                    <SelectItem value="3-digit" className="text-xs xs:text-sm">3 xonali</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Terms */}
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">📊 Hadlar</Label>
+              <div className="space-y-1">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground">📊 Hadlar</Label>
                 <Select value={String(termsCount)} onValueChange={(v) => setTermsCount(Number(v))}>
-                  <SelectTrigger className="h-11 text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(TERMS_CONFIG).map(([count, config]) => (
-                      <SelectItem key={count} value={count}>{count} ta</SelectItem>
+                      <SelectItem key={count} value={count} className="text-xs xs:text-sm">{count} ta</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Answer Time */}
-              <div className="space-y-1.5">
-                <Label className="text-xs text-muted-foreground">⏱️ Javob vaqti</Label>
+              <div className="space-y-1">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground">⏱️ Javob vaqti</Label>
                 <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
-                  <SelectTrigger className="h-11 text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5">5s</SelectItem>
-                    <SelectItem value="10">10s</SelectItem>
-                    <SelectItem value="15">15s</SelectItem>
-                    <SelectItem value="20">20s</SelectItem>
-                    <SelectItem value="30">30s</SelectItem>
+                    <SelectItem value="5" className="text-xs xs:text-sm">5s</SelectItem>
+                    <SelectItem value="10" className="text-xs xs:text-sm">10s</SelectItem>
+                    <SelectItem value="15" className="text-xs xs:text-sm">15s</SelectItem>
+                    <SelectItem value="20" className="text-xs xs:text-sm">20s</SelectItem>
+                    <SelectItem value="30" className="text-xs xs:text-sm">30s</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            {/* Speed Selection */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Tezlik
-                </Label>
-                <span className="text-xs font-medium text-primary">
-                  {(showTime / 1000).toFixed(1)}s
-                </span>
+            {/* Speed & Problems - Compact horizontal scroll */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              {/* Speed Selection */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
+                    <Clock className="h-2.5 w-2.5 xs:h-3 xs:w-3" /> Tezlik
+                  </Label>
+                  <span className="text-[10px] xs:text-xs font-medium text-primary">
+                    {(showTime / 1000).toFixed(1)}s
+                  </span>
+                </div>
+                <div className="flex gap-1 xs:gap-1.5 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                  {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((speed) => (
+                    <Button
+                      key={speed}
+                      variant={showTime === speed ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowTime(speed)}
+                      className="text-[10px] xs:text-xs h-7 xs:h-8 px-2 xs:px-3 flex-shrink-0"
+                    >
+                      {(speed / 1000).toFixed(1)}
+                    </Button>
+                  ))}
+                </div>
               </div>
-              <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
-                {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((speed) => (
-                  <Button
-                    key={speed}
-                    variant={showTime === speed ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setShowTime(speed)}
-                    className="text-xs h-8 px-3 flex-shrink-0"
-                  >
-                    {(speed / 1000).toFixed(1)}
-                  </Button>
-                ))}
+
+              {/* Problems Count */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <Label className="text-[10px] xs:text-xs text-muted-foreground">Misollar</Label>
+                  <span className="text-[10px] xs:text-xs font-medium text-primary">{problemCount} ta</span>
+                </div>
+                <div className="flex gap-1 xs:gap-1.5 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                  {[3, 5, 7, 10, 15, 20].map((count) => (
+                    <Button
+                      key={count}
+                      variant={problemCount === count ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setProblemCount(count)}
+                      className="text-[10px] xs:text-xs h-7 xs:h-8 px-2.5 xs:px-4 flex-shrink-0"
+                    >
+                      {count}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Problems Count */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label className="text-xs text-muted-foreground">Misollar soni</Label>
-                <span className="text-xs font-medium text-primary">{problemCount} ta</span>
-              </div>
-              <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
-                {[3, 5, 7, 10, 15, 20].map((count) => (
-                  <Button
-                    key={count}
-                    variant={problemCount === count ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setProblemCount(count)}
-                    className="text-xs h-8 px-4 flex-shrink-0"
-                  >
-                    {count}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Start Button */}
+            {/* Start Button - Prominent */}
             <Button 
               onClick={startGame} 
               size="lg" 
-              className="w-full h-14 text-lg font-semibold gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg"
+              className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-semibold gap-2 xs:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg rounded-xl sm:rounded-2xl"
             >
-              <Play className="h-6 w-6" />
+              <Play className="h-5 w-5 xs:h-6 xs:w-6" />
               Mashqni boshlash
             </Button>
           </div>
