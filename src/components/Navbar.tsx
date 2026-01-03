@@ -326,22 +326,25 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
         {/* User info in mobile menu */}
         {user && profile && (
-          <div className="flex-shrink-0 p-4 border-b border-border/50">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
-              <Avatar className="h-14 w-14 border-3 border-primary/30 shadow-lg">
+          <div className="flex-shrink-0 p-3 border-b border-border/50">
+            <button
+              onClick={() => handleNavigation('/settings')}
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 hover:from-primary/15 hover:to-accent/15 transition-all duration-200"
+            >
+              <Avatar className="h-12 w-12 border-2 border-primary/30 shadow-lg">
                 <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
+                <AvatarFallback className="bg-primary/20 text-primary text-lg font-bold">
                   {profile.username?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-lg truncate">{profile.username}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Trophy className="h-4 w-4 text-warning" />
-                  <span className="text-sm font-medium text-muted-foreground">{profile.total_score} ball</span>
+              <div className="flex-1 min-w-0 text-left">
+                <p className="font-bold text-base truncate">{profile.username}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <Trophy className="h-3.5 w-3.5 text-warning" />
+                  <span className="text-xs font-medium text-muted-foreground">{profile.total_score} ball</span>
                 </div>
               </div>
-            </div>
+            </button>
           </div>
         )}
 
