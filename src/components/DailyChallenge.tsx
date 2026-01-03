@@ -386,24 +386,75 @@ export const DailyChallenge = () => {
     );
   }
 
-  // O'yin davomida - Mobile optimized
+  // O'yin davomida - Yangi dizayn
   if (view === 'playing' && currentDisplay !== null) {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-4">
-        <div className="absolute top-4 sm:top-6 right-4 sm:right-6 flex items-center gap-2 text-xl sm:text-2xl font-mono text-muted-foreground bg-muted/50 px-3 sm:px-4 py-2 rounded-xl">
-          <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
-          {elapsedTime.toFixed(1)}s
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-primary/5 flex flex-col z-50">
+        {/* Yuqori panel */}
+        <div className="flex items-center justify-between p-4 sm:p-6">
+          <Badge className="text-xs sm:text-sm px-2.5 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/30">
+            <Flame className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 text-amber-500" />
+            Kunlik musobaqa
+          </Badge>
+          
+          <div className="flex items-center gap-2 text-lg sm:text-xl font-mono bg-muted/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full border border-border/50 shadow-lg">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="text-foreground font-semibold">{elapsedTime.toFixed(1)}s</span>
+          </div>
         </div>
         
-        <Badge className="absolute top-4 sm:top-6 left-4 sm:left-6 text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
-          <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-          Kunlik musobaqa
-        </Badge>
+        {/* Progress ko'rsatkichi */}
+        <div className="px-6 sm:px-12 mb-4">
+          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary via-primary to-primary/70 rounded-full transition-all duration-300"
+              style={{ width: `${(countRef.current / (challenge?.problem_count || 1)) * 100}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            <span>Son: {countRef.current}/{challenge?.problem_count}</span>
+            <span>{challenge?.digit_count} xonali</span>
+          </div>
+        </div>
         
-        <div 
-          className="text-[120px] sm:text-[180px] md:text-[250px] font-light text-foreground transition-all duration-100 leading-none"
-        >
-          {!isAddition && countRef.current > 1 ? '-' : ''}{currentDisplay}
+        {/* Asosiy son ko'rsatish joyi - pastroqda */}
+        <div className="flex-1 flex flex-col items-center justify-end pb-[25vh] sm:pb-[30vh]">
+          {/* Animatsiyali orqa fon */}
+          <div className="relative">
+            <div className="absolute inset-0 blur-3xl bg-primary/20 rounded-full scale-150 animate-pulse" />
+            
+            {/* Son konteyner */}
+            <div className={cn(
+              "relative px-8 sm:px-16 py-6 sm:py-10 rounded-3xl",
+              "bg-gradient-to-br from-card via-card to-muted/50",
+              "border border-border/50 shadow-2xl",
+              "backdrop-blur-sm"
+            )}>
+              {/* Ishorali belgi */}
+              {!isAddition && countRef.current > 1 && (
+                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-destructive font-light">
+                  −
+                </span>
+              )}
+              {isAddition && countRef.current > 1 && (
+                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-emerald-500 font-light">
+                  +
+                </span>
+              )}
+              
+              {/* Asosiy son */}
+              <div 
+                className={cn(
+                  "text-[80px] sm:text-[140px] md:text-[180px] font-bold leading-none",
+                  "bg-gradient-to-br from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent",
+                  "animate-in fade-in-0 zoom-in-95 duration-200"
+                )}
+                key={currentDisplay}
+              >
+                {currentDisplay}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
