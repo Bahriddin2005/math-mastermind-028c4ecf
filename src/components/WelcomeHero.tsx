@@ -69,13 +69,14 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
 
         {/* IQROMAX Logo */}
         <div className="hidden md:flex items-center justify-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary-foreground/20 rounded-2xl blur-xl scale-110" />
-            <div className="relative bg-white/95 dark:bg-white rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-white/30 rounded-3xl blur-2xl scale-125 group-hover:scale-150 transition-transform duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-amber-400/20 rounded-3xl blur-xl scale-110" />
+            <div className="relative bg-white dark:bg-white rounded-3xl p-6 shadow-2xl backdrop-blur-sm border border-white/50 group-hover:scale-105 transition-transform duration-300">
               <img 
                 src={iqromaxLogo} 
                 alt="IQROMAX" 
-                className="h-16 w-auto object-contain"
+                className="h-20 lg:h-24 w-auto object-contain"
               />
             </div>
           </div>
