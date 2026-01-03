@@ -644,12 +644,16 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Progress Bar */}
         <Progress value={(currentProblem / problemCount) * 100} className="h-0.5 xs:h-1 rounded-none" />
 
-        {/* Main Content - Scrollable from top */}
-        <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start pt-8 sm:pt-12 px-4">
+        {/* Main Content - Conditional layout */}
+        <div className={`flex-1 overflow-y-auto flex flex-col items-center px-4 ${
+          isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length
+            ? 'justify-center' 
+            : 'justify-start pt-8 sm:pt-12'
+        }`}>
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
             <div className="relative flex items-center justify-center w-full">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[80px] xs:blur-[100px] sm:blur-[120px] scale-150 sm:scale-175" />
-              <div className="relative text-[140px] xs:text-[180px] sm:text-[260px] md:text-[340px] lg:text-[420px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg text-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[100px] xs:blur-[120px] sm:blur-[150px] scale-150 sm:scale-200" />
+              <div className="relative text-[160px] xs:text-[200px] sm:text-[300px] md:text-[380px] lg:text-[460px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-2xl text-center">
                 {displayNumbers[currentDisplayIndex] < 0 
                   ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
                   : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
@@ -685,7 +689,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
 
           {/* Feedback - Mobile Optimized */}
           {feedback && (
-            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 animate-fade-in px-4 flex flex-col items-center justify-center w-full">
+            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 animate-fade-in px-4 flex flex-col items-center w-full">
               <div className={`text-[120px] xs:text-[160px] sm:text-[220px] md:text-[300px] lg:text-[380px] font-bold font-display leading-none text-center ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
