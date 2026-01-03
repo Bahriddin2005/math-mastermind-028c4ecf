@@ -17,6 +17,7 @@ import { Logo } from './Logo';
 import { Leaderboard } from './Leaderboard';
 import { useConfetti } from '@/hooks/useConfetti';
 import { useSound } from '@/hooks/useSound';
+import { useTTS } from '@/hooks/useTTS';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,8 +115,8 @@ const FORMULA_RULES: Record<FormulaType, Record<number, { add: number[]; subtrac
   hammasi: RULES_ALL,
 };
 
-// Ovozli o'qish funksiyasi
-const speakNumber = (number: string, isAddition: boolean, isFirst: boolean) => {
+// Web Speech API fallback (used when ElevenLabs fails or is disabled)
+const speakNumberFallback = (number: string, isAddition: boolean, isFirst: boolean) => {
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     
@@ -394,6 +395,7 @@ export const NumberTrainer = () => {
   }, [user, showResult]);
 
   const { playSound, soundEnabled, toggleSound } = useSound();
+  const { speakNumber, stop: stopTTS, cleanup: cleanupTTS } = useTTS({ useElevenLabs: true });
 
   // Sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
@@ -498,7 +500,7 @@ export const NumberTrainer = () => {
         }
       }
     }, speedMs);
-  }, [digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound]);
+  }, [digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
@@ -510,12 +512,13 @@ export const NumberTrainer = () => {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+    stopTTS();
     window.speechSynthesis.cancel();
     setIsRunning(false);
     setIsFinished(false);
     setCurrentDisplay(null);
     setDisplayedNumbers([]);
-  }, []);
+  }, [stopTTS]);
 
   const { triggerLevelUpConfetti } = useConfetti();
 
@@ -1279,46 +1282,54 @@ export const NumberTrainer = () => {
 
           <TabsContent value="stats" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`stats-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
-              {/* Statistika kartalar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
+              {/* Statistika kartalar - Mobile optimized */}
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 overflow-hidden flex flex-col relative group">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow" />
-                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Target className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold text-foreground dark:text-white">{stats.totalProblems}</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Jami mashqlar</p>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-2xl sm:text-3xl font-bold text-foreground dark:text-white truncate">{stats.totalProblems}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 truncate">Jami mashqlar</p>
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 overflow-hidden flex flex-col relative group">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success to-green-400" />
-                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-success/10 dark:bg-success/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <Check className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-success/10 dark:bg-success/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Check className="h-6 w-6 sm:h-7 sm:w-7 text-success" />
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold text-success">{accuracy}%</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Aniqlik</p>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-2xl sm:text-3xl font-bold text-success truncate">{accuracy}%</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 truncate">Aniqlik</p>
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 overflow-hidden flex flex-col relative group">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />
-                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Clock className="h-6 w-6 sm:h-7 sm:w-7 text-blue-500" />
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">O'rtacha vaqt</p>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-2xl sm:text-3xl font-bold text-blue-500 truncate">{stats.averageTime.toFixed(1)}s</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 truncate">O'rtacha vaqt</p>
+                    </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 sm:hover:-translate-y-1 overflow-hidden flex flex-col relative group">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-warning to-amber-400" />
-                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-warning/10 dark:bg-warning/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-                      <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
+                  <CardContent className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-warning/10 dark:bg-warning/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-warning" />
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold text-warning">{stats.bestStreak}</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Eng uzun seriya</p>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-2xl sm:text-3xl font-bold text-warning truncate">{stats.bestStreak}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 truncate">Eng uzun seriya</p>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
