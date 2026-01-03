@@ -857,76 +857,61 @@ export const NumberTrainer = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Mobile TabsList - pastki navigatsiya with animations */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-border/50 dark:border-slate-800 shadow-lg safe-area-bottom">
-            <TabsList className="grid w-full grid-cols-6 p-1.5 sm:p-2 bg-transparent h-auto relative">
-              {/* Animated background indicator */}
-              <div 
-                className="absolute h-[calc(100%-12px)] sm:h-[calc(100%-16px)] top-1.5 sm:top-2 rounded-xl sm:rounded-2xl bg-gradient-to-r transition-all duration-300 ease-out"
-                style={{
-                  width: 'calc((100% - 12px) / 6)',
-                  left: `calc(${['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 12px) / 6) + 6px)`,
-                  background: activeTab === 'train' ? 'hsl(var(--primary) / 0.15)' :
-                              activeTab === 'learn' ? 'hsl(var(--success) / 0.15)' :
-                              activeTab === 'daily' ? 'hsl(var(--accent) / 0.15)' :
-                              activeTab === 'multiplayer' ? 'hsl(var(--primary) / 0.15)' :
-                              activeTab === 'leaderboard' ? 'hsl(var(--warning) / 0.15)' :
-                              'hsl(var(--primary) / 0.15)'
-                }}
-              />
-              
+          {/* Mobile TabsList - tepada sticky */}
+          <div className="md:hidden sticky top-0 z-40 -mx-3 sm:-mx-4 px-3 sm:px-4 pt-2 pb-3 bg-background/95 dark:bg-slate-950/95 backdrop-blur-lg border-b border-border/30 dark:border-slate-800/50 mb-4">
+            <TabsList className="grid w-full grid-cols-6 p-1 sm:p-1.5 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border border-border/50 dark:border-slate-700/50 rounded-xl shadow-sm h-auto relative">
               <TabsTrigger 
                 value="train" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary-foreground data-[state=active]:bg-primary rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <Play className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 data-[state=active]:scale-110" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Mashq</span>
+                <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">Mashq</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="learn" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-success rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-success-foreground data-[state=active]:bg-success rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">O'quv</span>
+                <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">O'quv</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="daily" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-accent rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-accent-foreground data-[state=active]:bg-accent rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <Flame className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Kunlik</span>
+                <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">Kunlik</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="multiplayer" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary-foreground data-[state=active]:bg-primary rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <Users className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Ko'p</span>
+                <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">Ko'p</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="leaderboard" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-warning rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-warning-foreground data-[state=active]:bg-warning rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <Trophy className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Reyting</span>
+                <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">Reyting</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="stats" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-1.5 sm:py-2 px-0.5 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary-foreground data-[state=active]:bg-primary rounded-lg transition-all duration-200 text-[9px] sm:text-[10px]"
               >
-                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
-                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Stat</span>
+                <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="font-medium">Stat</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <TabsContent value="learn" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`learn-${activeTab}`}>
+          <TabsContent value="learn" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`learn-${activeTab}`}>
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-6 sm:mb-8">
                 <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-success/10 dark:bg-success/20 rounded-full text-xs sm:text-sm text-success font-medium mb-3 sm:mb-4">
@@ -1016,17 +1001,17 @@ export const NumberTrainer = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="daily" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`daily-${activeTab}`}>
+          <TabsContent value="daily" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`daily-${activeTab}`}>
             <div className="max-w-2xl mx-auto">
               <DailyChallenge />
             </div>
           </TabsContent>
 
-          <TabsContent value="multiplayer" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`multiplayer-${activeTab}`}>
+          <TabsContent value="multiplayer" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`multiplayer-${activeTab}`}>
             <MultiplayerMode onBack={() => setActiveTab('train')} />
           </TabsContent>
 
-          <TabsContent value="train" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`train-${activeTab}`}>
+          <TabsContent value="train" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`train-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
@@ -1286,13 +1271,13 @@ export const NumberTrainer = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="leaderboard" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`leaderboard-${activeTab}`}>
+          <TabsContent value="leaderboard" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`leaderboard-${activeTab}`}>
             <div className="max-w-2xl mx-auto">
               <Leaderboard currentUserId={user?.id} />
             </div>
           </TabsContent>
 
-          <TabsContent value="stats" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`stats-${activeTab}`}>
+          <TabsContent value="stats" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`stats-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {/* Statistika kartalar */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
