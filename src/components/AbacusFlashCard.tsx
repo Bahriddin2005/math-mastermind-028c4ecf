@@ -656,7 +656,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               <div className="relative text-[160px] xs:text-[200px] sm:text-[300px] md:text-[380px] lg:text-[460px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 select-none drop-shadow-2xl text-center">
                 {displayNumbers[currentDisplayIndex] < 0 
                   ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
-                  : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
+                  : `+${displayNumbers[currentDisplayIndex]}`}
               </div>
             </div>
           )}
