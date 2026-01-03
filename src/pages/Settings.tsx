@@ -34,8 +34,12 @@ import {
   Calendar,
   Sun,
   Moon,
-  Palette
+  Palette,
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
+import { useOnboarding } from '@/components/OnboardingScreen';
+import { InAppRatingDialog } from '@/components/InAppRatingDialog';
 import { useTheme } from 'next-themes';
 
 const usernameSchema = z.string()
@@ -48,7 +52,9 @@ const Settings = () => {
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { theme, setTheme } = useTheme();
+  const { resetOnboarding } = useOnboarding();
   const [mounted, setMounted] = useState(false);
+  const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [username, setUsername] = useState('');
@@ -555,13 +561,77 @@ const Settings = () => {
             </Card>
           </div>
 
+          {/* App Settings Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+            {/* Onboarding Reset */}
+            <Card className="overflow-hidden bg-card dark:bg-card/90 border-border/40 dark:border-border/20 backdrop-blur-sm">
+              <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-blue-500/10 to-transparent dark:from-blue-500/20 dark:to-transparent px-4 sm:px-6">
+                <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 text-foreground dark:text-foreground/95">
+                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-500/20 dark:bg-blue-500/35 flex items-center justify-center">
+                    <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500" />
+                  </div>
+                  Onboarding
+                </CardTitle>
+                <CardDescription className="text-[10px] sm:text-xs md:text-sm text-muted-foreground dark:text-muted-foreground/80">
+                  Kirish ekranlarini qayta ko'ring
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-3 sm:pt-4 px-4 sm:px-6">
+                <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80 mb-3">
+                  Ilova haqidagi tanishuv ekranlarini qayta ko'rish uchun pastdagi tugmani bosing.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    resetOnboarding();
+                    navigate('/');
+                    toast.success("Onboarding qayta o'rnatildi!");
+                  }}
+                  className="gap-2 h-9 text-xs sm:text-sm border-border/40 dark:border-border/20 hover:bg-secondary/50 dark:hover:bg-secondary/30"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  Qayta ko'rish
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Rate App */}
+            <Card className="overflow-hidden bg-card dark:bg-card/90 border-border/40 dark:border-border/20 backdrop-blur-sm">
+              <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-yellow-500/10 to-transparent dark:from-yellow-500/20 dark:to-transparent px-4 sm:px-6">
+                <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 text-foreground dark:text-foreground/95">
+                  <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-yellow-500/20 dark:bg-yellow-500/35 flex items-center justify-center">
+                    <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500" />
+                  </div>
+                  Ilovani baholash
+                </CardTitle>
+                <CardDescription className="text-[10px] sm:text-xs md:text-sm text-muted-foreground dark:text-muted-foreground/80">
+                  Fikringizni bildiring
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-3 sm:pt-4 px-4 sm:px-6">
+                <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80 mb-3">
+                  IQroMax sizga yoqdimi? Baho bering va ilovani yaxshilashga yordam bering!
+                </p>
+                <Button
+                  onClick={() => setRatingDialogOpen(true)}
+                  size="sm"
+                  className="gap-2 h-9 text-xs sm:text-sm shadow-md dark:shadow-lg dark:shadow-primary/10"
+                >
+                  <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  Baholash
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Daily Reminders Section */}
-          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '225ms', animationFillMode: 'forwards' }}>
             <DailyRemindersSettings />
           </div>
 
           {/* Achievements Section */}
-          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '275ms', animationFillMode: 'forwards' }}>
             <Achievements
               totalProblems={profileStats.totalProblems}
               bestStreak={profileStats.bestStreak}
@@ -571,7 +641,7 @@ const Settings = () => {
           </div>
 
           {/* Chat History Section */}
-          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
             <UserChatHistory />
           </div>
         </div>
@@ -583,6 +653,13 @@ const Settings = () => {
         onOpenChange={setCropDialogOpen}
         imageFile={selectedFile}
         onCropComplete={handleCropComplete}
+      />
+
+      {/* In-App Rating Dialog */}
+      <InAppRatingDialog
+        open={ratingDialogOpen}
+        onOpenChange={setRatingDialogOpen}
+        triggerType="manual"
       />
     </PageBackground>
   );
