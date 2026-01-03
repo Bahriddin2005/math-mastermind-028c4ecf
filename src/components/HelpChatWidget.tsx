@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -91,9 +92,11 @@ const generateSessionId = () => {
 
 export const HelpChatWidget = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
-  // Faqat bosh sahifada ko'rsatish - hooklardan OLDIN tekshirish
+  // Faqat bosh sahifada va tizimga kirgan foydalanuvchilarga ko'rsatish
   const isHomePage = location.pathname === '/';
+  const isLoggedIn = !!user;
   
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,8 +131,8 @@ export const HelpChatWidget = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Agar bosh sahifa bo'lmasa, hech narsa ko'rsatma
-  if (!isHomePage) {
+  // Agar bosh sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
+  if (!isHomePage || !isLoggedIn) {
     return null;
   }
 
