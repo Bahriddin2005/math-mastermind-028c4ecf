@@ -428,67 +428,33 @@ export const DailyChallenge = () => {
           </div>
         </div>
         
-        {/* Asosiy son ko'rsatish joyi - pastroqda */}
-        <div className="flex-1 flex flex-col items-center justify-end pb-[20vh] sm:pb-[25vh]">
-          {/* Katta animatsiyali orqa fon */}
-          <div className="relative">
-            {/* Katta yorug'lik effekti */}
-            <div className="absolute inset-0 blur-[100px] sm:blur-[150px] rounded-full scale-[2] sm:scale-[2.5]">
-              <div className={`absolute inset-0 rounded-full animate-pulse ${
-                isFirstNumber 
-                  ? 'bg-primary/40' 
-                  : isAddition 
-                    ? 'bg-emerald-500/40' 
-                    : 'bg-red-500/40'
-              }`} />
-            </div>
-            
-            {/* Ikkinchi qatlam glow */}
-            <div className="absolute inset-0 blur-[60px] sm:blur-[80px] rounded-full scale-150">
-              <div className={`absolute inset-0 rounded-full ${
-                isFirstNumber 
-                  ? 'bg-primary/30' 
-                  : isAddition 
-                    ? 'bg-emerald-400/30' 
-                    : 'bg-red-400/30'
-              }`} />
-            </div>
-            
+        {/* Asosiy son ko'rsatish joyi - markazda */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          {/* Qizil ramkali konteyner */}
+          <div className="relative border-[3px] border-red-500 rounded-lg p-8 sm:p-12 md:p-16 lg:p-20 bg-background/80 backdrop-blur-sm min-w-[280px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[600px] min-h-[200px] sm:min-h-[280px] md:min-h-[350px] flex items-center justify-center">
             {/* Son konteyner */}
             <div 
               key={countRef.current}
-              className="relative animate-in fade-in-0 zoom-in-90 duration-300"
+              className="animate-in fade-in-0 zoom-in-90 duration-300"
             >
               {/* Matematik amal belgisi va son - bir qatorda */}
               <div className="flex items-center justify-center gap-2 sm:gap-4">
-                {/* Matematik amal belgisi - har doim ko'rsatiladi */}
+                {/* Matematik amal belgisi */}
                 <span 
-                  className={`text-[60px] sm:text-[100px] md:text-[140px] lg:text-[180px] font-bold leading-none drop-shadow-2xl ${
-                    isFirstNumber 
-                      ? 'text-primary' 
-                      : isAddition 
-                        ? 'text-emerald-500 dark:text-emerald-400' 
-                        : 'text-red-500 dark:text-red-400'
-                  }`}
+                  className="text-[50px] sm:text-[80px] md:text-[120px] lg:text-[160px] font-bold leading-none text-emerald-700 dark:text-emerald-500"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
-                    textShadow: isFirstNumber 
-                      ? '0 0 60px hsl(var(--primary) / 0.5), 0 0 120px hsl(var(--primary) / 0.3)'
-                      : isAddition
-                        ? '0 0 60px rgba(16, 185, 129, 0.5), 0 0 120px rgba(16, 185, 129, 0.3)'
-                        : '0 0 60px rgba(239, 68, 68, 0.5), 0 0 120px rgba(239, 68, 68, 0.3)'
                   }}
                 >
-                  {isAddition || isFirstNumber ? '+' : '−'}
+                  {isAddition || isFirstNumber ? '' : '−'}
                 </span>
                 
-                {/* Asosiy son - juda katta */}
+                {/* Asosiy son */}
                 <span 
-                  className="text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-black leading-none text-foreground dark:text-white drop-shadow-2xl"
+                  className="text-[60px] sm:text-[100px] md:text-[150px] lg:text-[200px] font-black leading-none text-emerald-700 dark:text-emerald-500"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     letterSpacing: '-0.02em',
-                    filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
                   }}
                 >
                   {currentDisplay}
