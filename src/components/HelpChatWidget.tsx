@@ -132,10 +132,6 @@ export const HelpChatWidget = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Agar ruxsat berilgan sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
-  if (!isAllowedPage || !isLoggedIn) {
-    return null;
-  }
 
   const copyToClipboard = async (text: string, index: number) => {
     try {
@@ -246,10 +242,17 @@ export const HelpChatWidget = () => {
   };
 
   useEffect(() => {
-    fetchFAQs();
-    fetchCoursesAndLessons();
-    fetchUserProgress();
-  }, []);
+    if (isAllowedPage && isLoggedIn) {
+      fetchFAQs();
+      fetchCoursesAndLessons();
+      fetchUserProgress();
+    }
+  }, [isAllowedPage, isLoggedIn]);
+
+  // Agar ruxsat berilgan sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
+  if (!isAllowedPage || !isLoggedIn) {
+    return null;
+  }
 
   const fetchFAQs = async () => {
     const { data } = await supabase
