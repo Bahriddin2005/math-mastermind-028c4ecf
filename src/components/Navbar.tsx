@@ -4,7 +4,7 @@ import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
@@ -31,6 +31,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null; total_score: number } | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navScrollRef = useRef<HTMLDivElement>(null);
   
   const isTrainPage = location.pathname === '/train';
   const isHomePage = location.pathname === '/';
@@ -44,10 +45,18 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll when mobile menu is open
+  // Prevent body scroll when mobile menu is open and auto-scroll to active item
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      
+      // Auto-scroll to active navigation item
+      setTimeout(() => {
+        const activeButton = navScrollRef.current?.querySelector('[data-active="true"]');
+        if (activeButton) {
+          activeButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     } else {
       document.body.style.overflow = '';
     }
@@ -337,10 +346,11 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         )}
 
         {/* Mobile menu navigation */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+        <div ref={navScrollRef} className="flex-1 overflow-y-auto mobile-menu-scroll p-4 space-y-2">
           {navItems.map((item, index) => (
             <button
               key={item.path}
+              data-active={isActive(item.path)}
               onClick={() => handleNavigation(item.path)}
               className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 touch-target ${
                 isActive(item.path)
