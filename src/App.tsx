@@ -9,6 +9,7 @@ import { HelpChatWidget } from "./components/HelpChatWidget";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
+import { ScrollToTop } from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -39,6 +40,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <div className="pb-16 md:pb-0">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
