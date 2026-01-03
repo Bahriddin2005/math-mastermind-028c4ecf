@@ -470,44 +470,44 @@ export const MentalArithmeticPractice = () => {
     : 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-1 sm:px-0">
-      {/* Statistika */}
-      <div className="grid grid-cols-4 gap-2 sm:gap-3">
-        <Card className="p-2 sm:p-3">
-          <div className="text-xs sm:text-sm text-muted-foreground truncate">Jami</div>
-          <div className="text-lg sm:text-2xl font-bold text-primary">{stats.totalProblems}</div>
+    <div className="space-y-3 sm:space-y-6 px-0">
+      {/* Statistika - Kompakt mobil dizayn */}
+      <div className="grid grid-cols-4 gap-1.5 xs:gap-2 sm:gap-3">
+        <Card className="p-1.5 xs:p-2 sm:p-3 text-center">
+          <div className="text-[9px] xs:text-[10px] sm:text-sm text-muted-foreground truncate">Jami</div>
+          <div className="text-sm xs:text-base sm:text-2xl font-bold text-primary">{stats.totalProblems}</div>
         </Card>
-        <Card className="p-2 sm:p-3">
-          <div className="text-xs sm:text-sm text-muted-foreground truncate">To'g'ri</div>
-          <div className="text-lg sm:text-2xl font-bold text-green-500">{stats.correctAnswers}</div>
+        <Card className="p-1.5 xs:p-2 sm:p-3 text-center">
+          <div className="text-[9px] xs:text-[10px] sm:text-sm text-muted-foreground truncate">To'g'ri</div>
+          <div className="text-sm xs:text-base sm:text-2xl font-bold text-green-500">{stats.correctAnswers}</div>
         </Card>
-        <Card className="p-2 sm:p-3">
-          <div className="text-xs sm:text-sm text-muted-foreground truncate">Aniqlik</div>
-          <div className="text-lg sm:text-2xl font-bold text-blue-500">{accuracy}%</div>
+        <Card className="p-1.5 xs:p-2 sm:p-3 text-center">
+          <div className="text-[9px] xs:text-[10px] sm:text-sm text-muted-foreground truncate">Aniqlik</div>
+          <div className="text-sm xs:text-base sm:text-2xl font-bold text-blue-500">{accuracy}%</div>
         </Card>
-        <Card className="p-2 sm:p-3">
-          <div className="text-xs sm:text-sm text-muted-foreground truncate">Seriya</div>
-          <div className="text-lg sm:text-2xl font-bold text-amber-500">{stats.bestStreak}</div>
+        <Card className="p-1.5 xs:p-2 sm:p-3 text-center">
+          <div className="text-[9px] xs:text-[10px] sm:text-sm text-muted-foreground truncate">Seriya</div>
+          <div className="text-sm xs:text-base sm:text-2xl font-bold text-amber-500">{stats.bestStreak}</div>
         </Card>
       </div>
 
       <Tabs defaultValue="flashcard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 h-auto p-1">
-          <TabsTrigger value="flashcard" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
-            <Lightbulb className="h-4 w-4 sm:h-4 sm:w-4" />
-            <span className="text-[10px] sm:text-sm">Flash</span>
+        <TabsList className="grid w-full grid-cols-4 h-auto p-0.5 xs:p-1">
+          <TabsTrigger value="flashcard" className="gap-0.5 xs:gap-1 sm:gap-1.5 text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 sm:py-2.5 flex-col sm:flex-row px-1 xs:px-2">
+            <Lightbulb className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+            <span className="text-[9px] xs:text-[10px] sm:text-sm leading-tight">Flash</span>
           </TabsTrigger>
-          <TabsTrigger value="multiplayer" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
-            <Swords className="h-4 w-4 sm:h-4 sm:w-4" />
-            <span className="text-[10px] sm:text-sm">Musobaqa</span>
+          <TabsTrigger value="multiplayer" className="gap-0.5 xs:gap-1 sm:gap-1.5 text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 sm:py-2.5 flex-col sm:flex-row px-1 xs:px-2">
+            <Swords className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+            <span className="text-[9px] xs:text-[10px] sm:text-sm leading-tight">Musobaqa</span>
           </TabsTrigger>
-          <TabsTrigger value="leaderboard" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
-            <Trophy className="h-4 w-4 sm:h-4 sm:w-4" />
-            <span className="text-[10px] sm:text-sm">Reyting</span>
+          <TabsTrigger value="leaderboard" className="gap-0.5 xs:gap-1 sm:gap-1.5 text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 sm:py-2.5 flex-col sm:flex-row px-1 xs:px-2">
+            <Trophy className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+            <span className="text-[9px] xs:text-[10px] sm:text-sm leading-tight">Reyting</span>
           </TabsTrigger>
-          <TabsTrigger value="history" className="gap-1 sm:gap-1.5 text-xs sm:text-sm py-2 sm:py-2.5 flex-col sm:flex-row">
-            <BarChart3 className="h-4 w-4 sm:h-4 sm:w-4" />
-            <span className="text-[10px] sm:text-sm">Tarix</span>
+          <TabsTrigger value="history" className="gap-0.5 xs:gap-1 sm:gap-1.5 text-[10px] xs:text-xs sm:text-sm py-1.5 xs:py-2 sm:py-2.5 flex-col sm:flex-row px-1 xs:px-2">
+            <BarChart3 className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+            <span className="text-[9px] xs:text-[10px] sm:text-sm leading-tight">Tarix</span>
           </TabsTrigger>
         </TabsList>
 
