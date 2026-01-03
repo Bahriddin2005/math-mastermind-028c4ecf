@@ -619,24 +619,76 @@ export const NumberTrainer = () => {
     : 0;
 
 
-  // O'yin davomida - toza oq fon, markazda katta son
+  // O'yin davomida - yangi dizayn, pastroqda ko'rsatish
   if (isRunning && currentDisplay !== null) {
-    const displayNumber = countRef.current === 1 
-      ? `+${currentDisplay}` 
-      : (isAddition ? `+${currentDisplay}` : `−${currentDisplay}`);
+    const isFirstNumber = countRef.current === 1;
     
     return (
-      <div className="fixed inset-0 bg-background dark:bg-slate-950 flex items-center justify-center z-50">
-        <div 
-          key={countRef.current}
-          className="animate-fade-in"
-        >
-          <span 
-            className="text-[120px] sm:text-[180px] md:text-[220px] lg:text-[280px] xl:text-[350px] font-light text-foreground dark:text-white tracking-tight"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-          >
-            {displayNumber}
-          </span>
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10 flex flex-col z-50">
+        {/* Yuqori panel */}
+        <div className="flex items-center justify-between p-4 sm:p-6">
+          <div className="flex items-center gap-2 text-sm sm:text-base text-muted-foreground bg-muted/50 dark:bg-slate-800/50 backdrop-blur-sm px-3 py-1.5 rounded-full border border-border/30">
+            <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+            <span>{problemCount} ta son</span>
+          </div>
+          
+          <div className="flex items-center gap-2 text-lg sm:text-xl font-mono bg-muted/80 dark:bg-slate-800/80 backdrop-blur-sm px-3 sm:px-4 py-2 rounded-full border border-border/50 shadow-lg">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="text-foreground font-semibold">{elapsedTime.toFixed(1)}s</span>
+          </div>
+        </div>
+        
+        {/* Progress bar */}
+        <div className="px-6 sm:px-12 mb-4">
+          <div className="h-1.5 bg-muted dark:bg-slate-800 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary via-primary to-primary/70 rounded-full transition-all duration-300"
+              style={{ width: `${(countRef.current / problemCount) * 100}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            <span>Son: {countRef.current}/{problemCount}</span>
+            <span>{digitCount} xonali • {formulaType}</span>
+          </div>
+        </div>
+        
+        {/* Asosiy son ko'rsatish joyi - pastroqda */}
+        <div className="flex-1 flex flex-col items-center justify-end pb-[25vh] sm:pb-[30vh]">
+          {/* Animatsiyali orqa fon */}
+          <div className="relative">
+            <div className="absolute inset-0 blur-3xl bg-primary/20 dark:bg-primary/30 rounded-full scale-150 animate-pulse" />
+            
+            {/* Son konteyner */}
+            <div 
+              key={countRef.current}
+              className="relative px-8 sm:px-16 py-6 sm:py-10 rounded-3xl bg-gradient-to-br from-card via-card to-muted/50 dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-900/50 border border-border/50 dark:border-slate-700/50 shadow-2xl backdrop-blur-sm animate-in fade-in-0 zoom-in-95 duration-200"
+            >
+              {/* Ishorali belgi */}
+              {!isFirstNumber && !isAddition && (
+                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-destructive font-light">
+                  −
+                </span>
+              )}
+              {!isFirstNumber && isAddition && (
+                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-emerald-500 font-light">
+                  +
+                </span>
+              )}
+              {isFirstNumber && (
+                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-primary font-light">
+                  +
+                </span>
+              )}
+              
+              {/* Asosiy son */}
+              <div 
+                className="text-[80px] sm:text-[140px] md:text-[180px] font-bold leading-none bg-gradient-to-br from-foreground via-foreground to-foreground/80 dark:from-white dark:via-white dark:to-white/80 bg-clip-text text-transparent"
+                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+              >
+                {currentDisplay}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
