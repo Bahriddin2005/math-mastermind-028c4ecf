@@ -694,236 +694,201 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   }
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 pb-4 px-4 sm:px-6">
-        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-          <Star className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
-          Flash Card Rejimi
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
-        {/* Settings */}
-        {showSettings && !isFinished && (
-          <div className="space-y-4 mb-6">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Settings2 className="h-4 w-4" />
-              Sozlamalar
-            </div>
-            
-            {/* Mavzu tanlash */}
-            <div className="space-y-2">
-              <Label className="text-sm sm:text-base font-medium">📚 Mavzu (Formula)</Label>
-              <Select value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)}>
-                <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(FORMULA_CONFIG).map(([key, config]) => (
-                    <SelectItem key={key} value={key}>
-                      <div className="flex flex-col items-start">
-                        <span>{config.label}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {FORMULA_CONFIG[formulaType].description}
+    <div className="flex flex-col min-h-[calc(100vh-200px)]">
+      {/* Settings - Sticky at bottom when not playing */}
+      {showSettings && !isFinished && (
+        <>
+          {/* Large Display Area for Preview */}
+          <div className="flex-1 flex items-center justify-center py-8 sm:py-12">
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-3xl scale-150" />
+                <div className="relative text-[80px] sm:text-[120px] md:text-[160px] font-bold font-display text-emerald-600/30 dark:text-emerald-400/30 select-none">
+                  ?
+                </div>
+              </div>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                Sozlamalarni tanlang va mashqni boshlang
               </p>
             </div>
+          </div>
 
-            {/* Xonalar soni */}
+          {/* Settings Panel - Fixed at Bottom */}
+          <div className="bg-card/95 backdrop-blur-lg border-t border-border/50 rounded-t-3xl shadow-2xl p-4 sm:p-6 space-y-4">
+            {/* Quick Settings Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {/* Formula */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">📚 Formula</Label>
+                <Select value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)}>
+                  <SelectTrigger className="h-11 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(FORMULA_CONFIG).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>{config.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Digits */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">🔢 Xonalar</Label>
+                <Select value={digitLevel} onValueChange={(v) => setDigitLevel(v as DigitLevel)}>
+                  <SelectTrigger className="h-11 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1-digit">1 xonali</SelectItem>
+                    <SelectItem value="2-digit">2 xonali</SelectItem>
+                    <SelectItem value="3-digit">3 xonali</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Terms */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">📊 Hadlar</Label>
+                <Select value={String(termsCount)} onValueChange={(v) => setTermsCount(Number(v))}>
+                  <SelectTrigger className="h-11 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(TERMS_CONFIG).map(([count, config]) => (
+                      <SelectItem key={count} value={count}>{count} ta</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Answer Time */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">⏱️ Javob vaqti</Label>
+                <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
+                  <SelectTrigger className="h-11 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5s</SelectItem>
+                    <SelectItem value="10">10s</SelectItem>
+                    <SelectItem value="15">15s</SelectItem>
+                    <SelectItem value="20">20s</SelectItem>
+                    <SelectItem value="30">30s</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Speed Selection */}
             <div className="space-y-2">
-              <Label className="text-sm sm:text-base font-medium">🔢 Xonalar soni</Label>
-              <Select value={digitLevel} onValueChange={(v) => setDigitLevel(v as DigitLevel)}>
-                <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1-digit">1 xonali (1-9) - x1 ball</SelectItem>
-                  <SelectItem value="2-digit">2 xonali (10-99) - x2 ball</SelectItem>
-                  <SelectItem value="3-digit">3 xonali (100-999) - x3 ball</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Tezlik va hadlar soni */}
-            <div className="space-y-3">
-              <Label className="text-sm sm:text-base font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Tezlik va misollar soni
-              </Label>
-              
-              {/* Tezlik */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Tezligi (soniyada)</span>
-                  <span className="text-sm font-medium text-primary">
-                    {(showTime / 1000).toFixed(1)}s
-                    {SPEED_CONFIG[showTime as keyof typeof SPEED_CONFIG] && (
-                      <span className="ml-1 text-amber-500">
-                        (x{SPEED_CONFIG[showTime as keyof typeof SPEED_CONFIG].multiplier} ball)
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="grid grid-cols-5 gap-1.5">
-                  {[100, 200, 300, 400, 500].map((speed) => (
-                    <Button
-                      key={speed}
-                      variant={showTime === speed ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowTime(speed)}
-                      className="text-xs h-9"
-                    >
-                      {(speed / 1000).toFixed(1)}
-                    </Button>
-                  ))}
-                </div>
-                <div className="grid grid-cols-5 gap-1.5">
-                  {[600, 700, 800, 900, 1000].map((speed) => (
-                    <Button
-                      key={speed}
-                      variant={showTime === speed ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowTime(speed)}
-                      className="text-xs h-9"
-                    >
-                      {(speed / 1000).toFixed(1)}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Hadlar soni */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Hadlar soni (bir misolda)</span>
-                  <span className="text-sm font-medium text-primary">
-                    {termsCount} ta
-                    {TERMS_CONFIG[termsCount as keyof typeof TERMS_CONFIG] && (
-                      <span className="ml-1 text-amber-500">
-                        ({TERMS_CONFIG[termsCount as keyof typeof TERMS_CONFIG].basePoints} ball)
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="grid grid-cols-6 gap-1.5">
-                  {Object.entries(TERMS_CONFIG).map(([count]) => (
-                    <Button
-                      key={count}
-                      variant={termsCount === Number(count) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setTermsCount(Number(count))}
-                      className="text-xs h-9"
-                    >
-                      {count}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Misollar soni */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Misollar soni</span>
-                  <span className="text-sm font-medium text-primary">{problemCount} ta</span>
-                </div>
-                <div className="grid grid-cols-6 gap-1.5">
-                  {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((count) => (
-                    <Button
-                      key={count}
-                      variant={problemCount === count ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setProblemCount(count)}
-                      className="text-xs h-9"
-                    >
-                      {count}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Javob vaqti */}
-            <div className="space-y-2">
-              <Label className="text-sm sm:text-base">Javob vaqti (soniya)</Label>
-              <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
-                <SelectTrigger className="h-12 sm:h-10 text-base sm:text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5 soniya</SelectItem>
-                  <SelectItem value="10">10 soniya</SelectItem>
-                  <SelectItem value="15">15 soniya</SelectItem>
-                  <SelectItem value="20">20 soniya</SelectItem>
-                  <SelectItem value="30">30 soniya</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Taxminiy ball */}
-            <div className="bg-muted/50 rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Taxminiy max ball (bir misol uchun):</span>
-                <span className="text-lg font-bold text-amber-500">
-                  ~{calculatePoints(0, 5)} ball
+              <div className="flex justify-between items-center">
+                <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> Tezlik
+                </Label>
+                <span className="text-xs font-medium text-primary">
+                  {(showTime / 1000).toFixed(1)}s
                 </span>
               </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
+                {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((speed) => (
+                  <Button
+                    key={speed}
+                    variant={showTime === speed ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setShowTime(speed)}
+                    className="text-xs h-8 px-3 flex-shrink-0"
+                  >
+                    {(speed / 1000).toFixed(1)}
+                  </Button>
+                ))}
+              </div>
             </div>
-            
-            <div className="flex justify-center pt-4">
-              <Button onClick={startGame} size="lg" className="gap-2 h-14 sm:h-12 text-lg sm:text-base px-8 w-full sm:w-auto">
-                <Play className="h-6 w-6 sm:h-5 sm:w-5" />
-                Mashqni boshlash
-              </Button>
+
+            {/* Problems Count */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-xs text-muted-foreground">Misollar soni</Label>
+                <span className="text-xs font-medium text-primary">{problemCount} ta</span>
+              </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
+                {[3, 5, 7, 10, 15, 20].map((count) => (
+                  <Button
+                    key={count}
+                    variant={problemCount === count ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setProblemCount(count)}
+                    className="text-xs h-8 px-4 flex-shrink-0"
+                  >
+                    {count}
+                  </Button>
+                ))}
+              </div>
             </div>
+
+            {/* Start Button */}
+            <Button 
+              onClick={startGame} 
+              size="lg" 
+              className="w-full h-14 text-lg font-semibold gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg"
+            >
+              <Play className="h-6 w-6" />
+              Mashqni boshlash
+            </Button>
           </div>
-        )}
+        </>
+      )}
 
+      {/* Results */}
+      {isFinished && (
+        <div className="flex-1 flex items-center justify-center py-8">
+          <div className="text-center space-y-8 w-full max-w-md px-4">
+            {/* Trophy Icon */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-3xl scale-150" />
+              <Trophy className="h-20 w-20 sm:h-24 sm:w-24 text-amber-500 mx-auto relative" />
+            </div>
 
-        {/* Results */}
-        {isFinished && (
-          <div className="text-center space-y-6 py-6 sm:py-8">
             {/* Total Points */}
             <div className="space-y-2">
-              <div className="flex items-center justify-center gap-3 text-amber-500">
-                <Trophy className="h-10 w-10 sm:h-8 sm:w-8" />
-                <span className="text-6xl sm:text-5xl font-bold font-display">{score.totalPoints}</span>
+              <div className="text-6xl sm:text-7xl font-bold font-display text-amber-500">
+                {score.totalPoints}
               </div>
-              <p className="text-base sm:text-sm text-muted-foreground">Jami ball</p>
+              <p className="text-muted-foreground">Jami ball</p>
             </div>
             
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              <div className="bg-green-500/10 rounded-xl p-4 sm:p-4">
-                <div className="text-3xl sm:text-2xl font-bold text-green-500">{score.correct}</div>
-                <div className="text-xs sm:text-xs text-muted-foreground mt-1">To'g'ri</div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-green-500/10 rounded-2xl p-4 border border-green-500/20">
+                <div className="text-3xl font-bold text-green-500">{score.correct}</div>
+                <div className="text-xs text-muted-foreground mt-1">To'g'ri</div>
               </div>
-              <div className="bg-red-500/10 rounded-xl p-4 sm:p-4">
-                <div className="text-3xl sm:text-2xl font-bold text-red-500">{score.incorrect}</div>
-                <div className="text-xs sm:text-xs text-muted-foreground mt-1">Noto'g'ri</div>
+              <div className="bg-red-500/10 rounded-2xl p-4 border border-red-500/20">
+                <div className="text-3xl font-bold text-red-500">{score.incorrect}</div>
+                <div className="text-xs text-muted-foreground mt-1">Noto'g'ri</div>
               </div>
-              <div className="bg-amber-500/10 rounded-xl p-4 sm:p-4">
-                <div className="text-3xl sm:text-2xl font-bold text-amber-500">{bestStreak}x</div>
-                <div className="text-xs sm:text-xs text-muted-foreground mt-1">Seriya</div>
+              <div className="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20">
+                <div className="text-3xl font-bold text-amber-500">{bestStreak}x</div>
+                <div className="text-xs text-muted-foreground mt-1">Seriya</div>
               </div>
             </div>
             
-            <div className="text-lg sm:text-base text-muted-foreground">
-              Aniqlik: <span className="text-blue-500 font-semibold">{accuracy}%</span>
+            <div className="text-lg text-muted-foreground">
+              Aniqlik: <span className="text-blue-500 font-bold">{accuracy}%</span>
             </div>
             
-            <div className="flex justify-center px-4">
-              <Button onClick={resetGame} variant="outline" className="gap-2 h-14 sm:h-10 text-lg sm:text-sm w-full sm:w-auto">
-                <RotateCcw className="h-5 w-5 sm:h-4 sm:w-4" />
-                Qayta boshlash
-              </Button>
-            </div>
+            <Button 
+              onClick={resetGame} 
+              size="lg"
+              className="w-full h-14 text-lg font-semibold gap-3"
+            >
+              <RotateCcw className="h-5 w-5" />
+              Qayta boshlash
+            </Button>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 };
 
