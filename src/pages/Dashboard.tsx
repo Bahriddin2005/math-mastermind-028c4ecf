@@ -16,6 +16,8 @@ import { InfoCarousel } from '@/components/InfoCarousel';
 import { TestimonialForm } from '@/components/TestimonialForm';
 import { GuestDashboard } from '@/components/GuestDashboard';
 import { Footer } from '@/components/Footer';
+import { MobileDashboard } from '@/components/MobileDashboard';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 import { WeeklyCompetition } from '@/components/WeeklyCompetition';
 import { UserBadges } from '@/components/UserBadges';
@@ -78,6 +80,7 @@ const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
+  const isMobile = useIsMobile();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [sessions, setSessions] = useState<GameSession[]>([]);
@@ -275,6 +278,23 @@ const Dashboard = () => {
         </main>
         <Footer />
       </PageBackground>
+    );
+  }
+
+  // Show lightweight mobile dashboard for mobile devices
+  if (isMobile) {
+    return (
+      <PullToRefresh onRefresh={handleRefresh}>
+        <MobileDashboard 
+          username={profile?.username}
+          stats={{
+            todayProblems: todayStats.solved,
+            streak: profile?.current_streak || 0,
+            weeklyRank: undefined,
+            totalScore: profile?.total_score || 0
+          }}
+        />
+      </PullToRefresh>
     );
   }
 
