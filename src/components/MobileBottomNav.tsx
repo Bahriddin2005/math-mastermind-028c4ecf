@@ -15,8 +15,8 @@ export const MobileBottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  // Hide on auth page
-  if (location.pathname === '/auth' || location.pathname === '/reset-password') {
+  // Hide on auth page or if user is not logged in
+  if (!user || location.pathname === '/auth' || location.pathname === '/reset-password') {
     return null;
   }
 
