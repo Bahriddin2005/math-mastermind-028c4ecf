@@ -418,38 +418,46 @@ export const DailyChallenge = () => {
         </div>
         
         {/* Asosiy son ko'rsatish joyi - pastroqda */}
-        <div className="flex-1 flex flex-col items-center justify-end pb-[25vh] sm:pb-[30vh]">
+        <div className="flex-1 flex flex-col items-center justify-end pb-[20vh] sm:pb-[25vh]">
           {/* Animatsiyali orqa fon */}
           <div className="relative">
-            <div className="absolute inset-0 blur-3xl bg-primary/20 rounded-full scale-150 animate-pulse" />
+            {/* Glow effekt */}
+            <div className="absolute inset-0 blur-[80px] sm:blur-[120px] bg-gradient-to-r from-primary/40 via-amber-500/30 to-orange-500/40 rounded-full scale-[2] animate-pulse" />
+            <div className="absolute inset-0 blur-[40px] sm:blur-[60px] bg-primary/30 rounded-full scale-150" />
             
             {/* Son konteyner */}
-            <div className={cn(
-              "relative px-8 sm:px-16 py-6 sm:py-10 rounded-3xl",
-              "bg-gradient-to-br from-card via-card to-muted/50",
-              "border border-border/50 shadow-2xl",
-              "backdrop-blur-sm"
-            )}>
+            <div 
+              className={cn(
+                "relative px-10 sm:px-20 md:px-28 py-8 sm:py-14 md:py-16 rounded-[2rem] sm:rounded-[3rem]",
+                "bg-gradient-to-br from-card/95 via-card/90 to-muted/70",
+                "border-2 border-primary/20 shadow-[0_0_60px_-15px] shadow-primary/50",
+                "backdrop-blur-xl"
+              )}
+              key={currentDisplay}
+            >
+              {/* Ichki glow */}
+              <div className="absolute inset-0 rounded-[2rem] sm:rounded-[3rem] bg-gradient-to-t from-primary/5 to-transparent" />
+              
               {/* Ishorali belgi */}
               {!isAddition && countRef.current > 1 && (
-                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-destructive font-light">
+                <span className="absolute -left-6 sm:-left-10 md:-left-12 top-1/2 -translate-y-1/2 text-6xl sm:text-8xl md:text-9xl text-destructive font-light drop-shadow-lg">
                   −
                 </span>
               )}
               {isAddition && countRef.current > 1 && (
-                <span className="absolute -left-4 sm:-left-6 top-1/2 -translate-y-1/2 text-5xl sm:text-7xl text-emerald-500 font-light">
+                <span className="absolute -left-6 sm:-left-10 md:-left-12 top-1/2 -translate-y-1/2 text-6xl sm:text-8xl md:text-9xl text-emerald-500 font-light drop-shadow-lg">
                   +
                 </span>
               )}
               
-              {/* Asosiy son */}
+              {/* Asosiy son - kattaroq */}
               <div 
                 className={cn(
-                  "text-[80px] sm:text-[140px] md:text-[180px] font-bold leading-none",
-                  "bg-gradient-to-br from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent",
-                  "animate-in fade-in-0 zoom-in-95 duration-200"
+                  "relative text-[100px] sm:text-[180px] md:text-[240px] lg:text-[280px] font-black leading-none tracking-tight",
+                  "bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent",
+                  "drop-shadow-2xl",
+                  "animate-in fade-in-0 zoom-in-90 duration-300"
                 )}
-                key={currentDisplay}
               >
                 {currentDisplay}
               </div>
