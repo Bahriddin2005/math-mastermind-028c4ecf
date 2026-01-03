@@ -607,49 +607,49 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   // Fullscreen game mode when playing
   if (isPlaying) {
     return (
-      <div className="fixed inset-0 z-[100] bg-background flex flex-col">
-        {/* Minimal Header */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-border/50">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-sm font-medium">{currentProblem}/{problemCount}</span>
+      <div className="fixed inset-0 z-[100] bg-background flex flex-col safe-top safe-bottom">
+        {/* Minimal Header - Mobile Optimized */}
+        <div className="flex justify-between items-center px-2 xs:px-3 sm:px-4 py-2 xs:py-2.5 sm:py-3 border-b border-border/50">
+          <div className="flex items-center gap-1.5 xs:gap-2 px-2 xs:px-3 py-1 xs:py-1.5 bg-muted/50 rounded-lg">
+            <div className="w-1.5 h-1.5 xs:w-2 xs:h-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs xs:text-sm font-medium">{currentProblem}/{problemCount}</span>
           </div>
           
           {streak > 0 && (
-            <div className="bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Star className="h-4 w-4" />
-              <span className="font-bold text-sm">{streak}x</span>
+            <div className="bg-amber-500/10 text-amber-500 px-2 xs:px-3 py-1 xs:py-1.5 rounded-full flex items-center gap-1 xs:gap-1.5">
+              <Star className="h-3 w-3 xs:h-4 xs:w-4" />
+              <span className="font-bold text-xs xs:text-sm">{streak}x</span>
             </div>
           )}
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-muted/50 rounded-lg">
-              <Trophy className="h-4 w-4 text-amber-500" />
-              <span className="text-sm font-bold text-amber-500">{score.totalPoints}</span>
+          <div className="flex items-center gap-1.5 xs:gap-2 sm:gap-4">
+            <div className="flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-1 xs:py-1.5 bg-muted/50 rounded-lg">
+              <Trophy className="h-3 w-3 xs:h-4 xs:w-4 text-amber-500" />
+              <span className="text-xs xs:text-sm font-bold text-amber-500">{score.totalPoints}</span>
             </div>
             
             {!isDisplaying && (
-              <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${timeLeft <= 3 ? 'bg-red-500/20' : 'bg-muted/50'}`}>
-                <Clock className={`h-4 w-4 ${getTimerColor()}`} />
-                <span className={`text-sm font-bold ${getTimerColor()}`}>{timeLeft}s</span>
+              <div className={`flex items-center gap-1 xs:gap-1.5 px-2 xs:px-3 py-1 xs:py-1.5 rounded-lg ${timeLeft <= 3 ? 'bg-red-500/20' : 'bg-muted/50'}`}>
+                <Clock className={`h-3 w-3 xs:h-4 xs:w-4 ${getTimerColor()}`} />
+                <span className={`text-xs xs:text-sm font-bold ${getTimerColor()}`}>{timeLeft}s</span>
               </div>
             )}
             
-            <Button variant="ghost" size="icon" onClick={resetGame} className="h-9 w-9">
-              <RotateCcw className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={resetGame} className="h-8 w-8 xs:h-9 xs:w-9">
+              <RotateCcw className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
             </Button>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <Progress value={(currentProblem / problemCount) * 100} className="h-1 rounded-none" />
+        <Progress value={(currentProblem / problemCount) * 100} className="h-0.5 xs:h-1 rounded-none" />
 
-        {/* Main Content - Centered Number Display */}
-        <div className="flex-1 flex items-center justify-center">
+        {/* Main Content - Centered Number Display - Mobile Optimized */}
+        <div className="flex-1 flex items-center justify-center px-4">
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[100px] scale-150" />
-              <div className="relative text-[180px] sm:text-[260px] md:text-[340px] lg:text-[400px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[60px] xs:blur-[80px] sm:blur-[100px] scale-125 sm:scale-150" />
+              <div className="relative text-[100px] xs:text-[140px] sm:text-[200px] md:text-[280px] lg:text-[360px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg">
                 {displayNumbers[currentDisplayIndex] < 0 
                   ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
                   : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
@@ -657,10 +657,10 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
           )}
 
-          {/* Answer Input */}
+          {/* Answer Input - Mobile Optimized */}
           {!isDisplaying && feedback === null && (
-            <div className="text-center space-y-8 w-full max-w-lg px-6">
-              <p className="text-xl text-muted-foreground">Javobingizni kiriting</p>
+            <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 w-full max-w-lg px-4 xs:px-6">
+              <p className="text-base xs:text-lg sm:text-xl text-muted-foreground">Javobingizni kiriting</p>
               <Input
                 ref={inputRef}
                 type="number"
@@ -668,30 +668,30 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                 onChange={(e) => setUserAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="?"
-                className="text-center text-6xl sm:text-7xl font-bold h-28 sm:h-32 border-2"
+                className="text-center text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold h-20 xs:h-24 sm:h-28 md:h-32 border-2 rounded-xl xs:rounded-2xl"
                 autoFocus
               />
               <Button 
                 onClick={checkAnswer} 
                 size="lg" 
-                className="gap-3 h-16 text-xl px-12 w-full"
+                className="gap-2 xs:gap-3 h-12 xs:h-14 sm:h-16 text-base xs:text-lg sm:text-xl px-8 xs:px-12 w-full rounded-xl xs:rounded-2xl"
                 disabled={!userAnswer}
               >
-                <Check className="h-7 w-7" />
+                <Check className="h-5 w-5 xs:h-6 xs:w-6 sm:h-7 sm:w-7" />
                 Tekshirish
               </Button>
             </div>
           )}
 
-          {/* Feedback */}
+          {/* Feedback - Mobile Optimized */}
           {feedback && (
-            <div className="text-center space-y-6 animate-fade-in">
-              <div className={`text-[120px] sm:text-[180px] font-bold font-display leading-none ${
+            <div className="text-center space-y-4 xs:space-y-6 animate-fade-in px-4">
+              <div className={`text-[80px] xs:text-[100px] sm:text-[140px] md:text-[180px] font-bold font-display leading-none ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
                 {correctAnswer}
               </div>
-              <div className={`text-3xl sm:text-4xl font-bold ${
+              <div className={`text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
                 {feedback === 'correct' && "To'g'ri! ✓"}
@@ -854,50 +854,55 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         </>
       )}
 
-      {/* Results */}
+      {/* Results - Mobile Optimized */}
       {isFinished && (
-        <div className="flex-1 flex items-center justify-center py-8">
-          <div className="text-center space-y-8 w-full max-w-md px-4">
-            {/* Trophy Icon */}
+        <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-8">
+          <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 w-full max-w-md px-3 xs:px-4">
+            {/* Trophy Icon with animation */}
             <div className="relative">
-              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-3xl scale-150" />
-              <Trophy className="h-20 w-20 sm:h-24 sm:w-24 text-amber-500 mx-auto relative" />
+              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl xs:blur-3xl scale-125 sm:scale-150 animate-pulse" />
+              <div className="relative inline-flex items-center justify-center w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg">
+                <Trophy className="h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 text-white" />
+              </div>
             </div>
 
             {/* Total Points */}
-            <div className="space-y-2">
-              <div className="text-6xl sm:text-7xl font-bold font-display text-amber-500">
+            <div className="space-y-1 xs:space-y-2">
+              <div className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold font-display bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
                 {score.totalPoints}
               </div>
-              <p className="text-muted-foreground">Jami ball</p>
+              <p className="text-xs xs:text-sm text-muted-foreground font-medium">Jami ball</p>
             </div>
             
-            {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-green-500/10 rounded-2xl p-4 border border-green-500/20">
-                <div className="text-3xl font-bold text-green-500">{score.correct}</div>
-                <div className="text-xs text-muted-foreground mt-1">To'g'ri</div>
+            {/* Stats Grid - Mobile Optimized */}
+            <div className="grid grid-cols-3 gap-2 xs:gap-3">
+              <div className="bg-green-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-green-500/20">
+                <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-green-500">{score.correct}</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">To'g'ri</div>
               </div>
-              <div className="bg-red-500/10 rounded-2xl p-4 border border-red-500/20">
-                <div className="text-3xl font-bold text-red-500">{score.incorrect}</div>
-                <div className="text-xs text-muted-foreground mt-1">Noto'g'ri</div>
+              <div className="bg-red-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-red-500/20">
+                <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-red-500">{score.incorrect}</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Noto'g'ri</div>
               </div>
-              <div className="bg-amber-500/10 rounded-2xl p-4 border border-amber-500/20">
-                <div className="text-3xl font-bold text-amber-500">{bestStreak}x</div>
-                <div className="text-xs text-muted-foreground mt-1">Seriya</div>
+              <div className="bg-amber-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-amber-500/20">
+                <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-amber-500">{bestStreak}x</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Seriya</div>
               </div>
             </div>
             
-            <div className="text-lg text-muted-foreground">
-              Aniqlik: <span className="text-blue-500 font-bold">{accuracy}%</span>
+            {/* Accuracy Badge */}
+            <div className="inline-flex items-center gap-2 px-4 xs:px-5 py-2 xs:py-2.5 bg-blue-500/10 rounded-full border border-blue-500/20">
+              <span className="text-xs xs:text-sm text-muted-foreground">Aniqlik:</span>
+              <span className="text-base xs:text-lg font-bold text-blue-500">{accuracy}%</span>
             </div>
             
+            {/* Restart Button */}
             <Button 
               onClick={resetGame} 
               size="lg"
-              className="w-full h-14 text-lg font-semibold gap-3"
+              className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-semibold gap-2 xs:gap-3 rounded-xl xs:rounded-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
             >
-              <RotateCcw className="h-5 w-5" />
+              <RotateCcw className="h-4 w-4 xs:h-5 xs:w-5" />
               Qayta boshlash
             </Button>
           </div>
