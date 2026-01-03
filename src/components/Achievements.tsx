@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Progress } from './ui/progress';
+import { Button } from './ui/button';
 import { 
   Trophy, 
   Target, 
@@ -115,12 +117,19 @@ export const Achievements = ({
               </p>
             </div>
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-warning" />
-            <span className="text-sm font-bold text-foreground">
-              {earnedCount}
-              <span className="text-muted-foreground font-normal">/{achievements.length}</span>
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-warning" />
+              <span className="text-sm font-bold text-foreground">
+                {earnedCount}
+                <span className="text-muted-foreground font-normal">/{achievements.length}</span>
+              </span>
+            </div>
+            <Link to="/achievements">
+              <Button variant="outline" size="sm" className="text-xs h-7">
+                Barchasi
+              </Button>
+            </Link>
           </div>
         </div>
         
