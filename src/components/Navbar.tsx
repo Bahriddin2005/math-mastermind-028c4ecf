@@ -307,12 +307,12 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
       {/* Mobile Menu Panel */}
       <div 
-        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-card border-l border-border z-[70] shadow-2xl transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-card border-l border-border z-[70] shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Mobile menu header */}
-        <div className="flex items-center justify-between p-4 border-b border-border/50">
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border/50">
           <Logo size="sm" />
           <Button 
             variant="ghost" 
@@ -326,7 +326,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
         {/* User info in mobile menu */}
         {user && profile && (
-          <div className="p-4 border-b border-border/50">
+          <div className="flex-shrink-0 p-4 border-b border-border/50">
             <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
               <Avatar className="h-14 w-14 border-3 border-primary/30 shadow-lg">
                 <AvatarImage src={profile.avatar_url || undefined} />
@@ -421,7 +421,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </div>
 
         {/* Mobile menu footer */}
-        <div className="p-4 border-t border-border/50 safe-bottom">
+        <div className="flex-shrink-0 p-4 border-t border-border/50 safe-bottom">
           {user ? (
             <Button 
               variant="destructive" 
