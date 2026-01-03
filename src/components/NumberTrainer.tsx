@@ -685,10 +685,10 @@ export const NumberTrainer = () => {
               className="relative animate-in fade-in-0 zoom-in-90 duration-300"
             >
               {/* Matematik amal belgisi va son - bir qatorda */}
-              <div className="flex items-center justify-center gap-2 sm:gap-4">
+              <div className="flex items-center justify-center gap-3 sm:gap-6 w-full">
                 {/* Matematik amal belgisi - har doim ko'rsatiladi */}
                 <span 
-                  className={`text-[60px] sm:text-[100px] md:text-[140px] lg:text-[180px] font-bold leading-none drop-shadow-2xl ${
+                  className={`text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-bold leading-none drop-shadow-2xl ${
                     isFirstNumber 
                       ? 'text-primary' 
                       : isAddition 
@@ -709,7 +709,7 @@ export const NumberTrainer = () => {
                 
                 {/* Asosiy son - juda katta */}
                 <span 
-                  className="text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-black leading-none text-foreground dark:text-white drop-shadow-2xl"
+                  className="text-[100px] sm:text-[180px] md:text-[280px] lg:text-[360px] font-black leading-none text-foreground dark:text-white drop-shadow-2xl"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     letterSpacing: '-0.02em',
