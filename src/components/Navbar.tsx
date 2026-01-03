@@ -371,7 +371,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </div>
 
         {/* Mobile menu navigation */}
-        <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto mobile-menu-scroll p-3 space-y-1">
+        <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-3 space-y-1">
           {navItems.map((item, index) => (
             <button
               key={item.path}
