@@ -654,7 +654,7 @@ export const NumberTrainer = () => {
         </div>
         
         {/* Asosiy son ko'rsatish joyi - pastroqda */}
-        <div className="flex-1 flex flex-col items-center justify-end pb-[20vh] sm:pb-[25vh]">
+        <div className="flex-1 flex flex-col items-center justify-center">
           {/* Katta animatsiyali orqa fon */}
           <div className="relative">
             {/* Katta yorug'lik effekti */}
@@ -688,7 +688,7 @@ export const NumberTrainer = () => {
               <div className="flex items-center justify-center gap-3 sm:gap-6 w-full">
                 {/* Matematik amal belgisi - har doim ko'rsatiladi */}
                 <span 
-                  className={`text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-bold leading-none drop-shadow-2xl ${
+                  className={`text-[100px] sm:text-[180px] md:text-[260px] lg:text-[340px] font-bold leading-none drop-shadow-2xl ${
                     isFirstNumber 
                       ? 'text-primary' 
                       : isAddition 
@@ -709,7 +709,7 @@ export const NumberTrainer = () => {
                 
                 {/* Asosiy son - juda katta */}
                 <span 
-                  className="text-[100px] sm:text-[180px] md:text-[280px] lg:text-[360px] font-black leading-none text-foreground dark:text-white drop-shadow-2xl"
+                  className="text-[140px] sm:text-[240px] md:text-[360px] lg:text-[480px] font-black leading-none text-foreground dark:text-white drop-shadow-2xl"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     letterSpacing: '-0.02em',
