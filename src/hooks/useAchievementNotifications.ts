@@ -75,14 +75,29 @@ export const useAchievementNotifications = ({
     }
   }, []);
 
-  // Initialize on first render
+  // Initialize on first render - load from localStorage to prevent re-showing old achievements
   useEffect(() => {
     if (!initialized.current) {
+      // Load previously notified achievements from localStorage
+      const savedAchievements = localStorage.getItem('notified_achievements');
+      if (savedAchievements) {
+        try {
+          const parsed = JSON.parse(savedAchievements) as string[];
+          parsed.forEach(id => unlockedAchievements.current.add(id));
+        } catch {
+          // Ignore parse errors
+        }
+      }
+
+      // Also mark currently unlocked achievements as notified (don't show old ones)
       achievements.forEach((achievement) => {
         if (checkAchievement(achievement)) {
           unlockedAchievements.current.add(achievement.id);
         }
       });
+      
+      // Save to localStorage
+      localStorage.setItem('notified_achievements', JSON.stringify([...unlockedAchievements.current]));
       
       previousValues.current = {
         problems: totalProblems,
@@ -106,6 +121,9 @@ export const useAchievementNotifications = ({
       if (isNowUnlocked && !wasPreviouslyUnlocked && !alreadyNotified) {
         // New achievement unlocked!
         unlockedAchievements.current.add(achievement.id);
+        
+        // Save to localStorage
+        localStorage.setItem('notified_achievements', JSON.stringify([...unlockedAchievements.current]));
         
         // Show notification with delay for better UX
         setTimeout(() => {
