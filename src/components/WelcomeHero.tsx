@@ -1,4 +1,5 @@
 import { Sparkles, Sun, Moon, Sunrise } from 'lucide-react';
+import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 
 interface WelcomeHeroProps {
   username?: string;
@@ -66,12 +67,16 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
           </p>
         </div>
 
-        {/* Decorative icon section */}
+        {/* IQROMAX Logo */}
         <div className="hidden md:flex items-center justify-center">
           <div className="relative">
-            <div className="absolute inset-0 bg-primary-foreground/10 rounded-full blur-xl scale-150" />
-            <div className="relative h-24 w-24 rounded-full bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center animate-bounce-soft">
-              <Sparkles className="h-12 w-12" />
+            <div className="absolute inset-0 bg-primary-foreground/20 rounded-2xl blur-xl scale-110" />
+            <div className="relative bg-white/95 dark:bg-white rounded-2xl p-4 shadow-xl backdrop-blur-sm">
+              <img 
+                src={iqromaxLogo} 
+                alt="IQROMAX" 
+                className="h-16 w-auto object-contain"
+              />
             </div>
           </div>
         </div>

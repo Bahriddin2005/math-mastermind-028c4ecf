@@ -598,7 +598,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   // Fullscreen game mode when playing
   if (isPlaying) {
     return (
-      <div className="fixed inset-0 z-50 bg-background flex flex-col">
+      <div className="fixed inset-0 z-[100] bg-background flex flex-col">
         {/* Minimal Header */}
         <div className="flex justify-between items-center px-4 py-3 border-b border-border/50">
           <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
