@@ -22,16 +22,16 @@ const MentalArithmetic = () => {
               <img 
                 src={iqromaxLogo} 
                 alt="IQROMAX" 
-                className="h-12 sm:h-16 md:h-20 w-auto object-contain drop-shadow-md"
+                className="h-10 sm:h-14 md:h-16 w-auto object-contain drop-shadow-md dark:brightness-110 dark:contrast-110"
               />
             </div>
             
             <div className="space-y-2">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground flex items-center justify-center gap-2">
-                <Brain className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
+              <h1 className="text-lg sm:text-xl md:text-2xl font-display font-bold text-foreground flex items-center justify-center gap-2">
+                <Brain className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
                 Mental Arifmetika
               </h1>
-              <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">
+              <p className="text-muted-foreground max-w-lg mx-auto text-sm">
                 Abakus usulida tez hisoblash ko'nikmalarini rivojlantiring
               </p>
             </div>
