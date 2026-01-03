@@ -254,9 +254,12 @@ const Dashboard = () => {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <PageBackground className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary dark:border-primary/80"></div>
+          <p className="text-muted-foreground dark:text-muted-foreground/80 text-sm">Yuklanmoqda...</p>
+        </div>
+      </PageBackground>
     );
   }
 
@@ -392,19 +395,19 @@ const Dashboard = () => {
             {/* Statistics Charts */}
             <StatsCharts sessions={sessions} />
 
-            {/* Quick Access Section */}
+            {/* Quick Access Section - Dark mode enhanced */}
             <div className="space-y-4 sm:space-y-6">
               <div className="flex items-center justify-between opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl gradient-primary flex items-center justify-center shadow-glow dark:shadow-lg dark:shadow-primary/30">
                     <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Tez kirish</h2>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Mashqlarni tanlang va boshlang</p>
+                    <h2 className="text-lg sm:text-xl font-display font-bold text-foreground dark:text-foreground/95">Tez kirish</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">Mashqlarni tanlang va boshlang</p>
                   </div>
                 </div>
-                <div className="hidden sm:block h-px flex-1 mx-6 bg-gradient-to-r from-border to-transparent" />
+                <div className="hidden sm:block h-px flex-1 mx-6 bg-gradient-to-r from-border dark:from-border/50 to-transparent" />
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
@@ -441,42 +444,42 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Mental Arifmetika Card - Dark mode optimized */}
+            {/* Mental Arifmetika Card - Dark mode enhanced */}
             <Card 
-              className="overflow-hidden border-border/40 dark:border-border/30 cursor-pointer hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-orange-500/10 transition-all group opacity-0 animate-slide-up"
+              className="overflow-hidden border-border/40 dark:border-border/20 cursor-pointer hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-orange-500/20 transition-all group opacity-0 animate-slide-up"
               style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}
               onClick={() => navigate('/mental-arithmetic')}
             >
-              <div className="p-4 sm:p-5 md:p-6 bg-gradient-to-br from-amber-500 to-orange-500 dark:from-amber-600 dark:to-orange-600 text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-20 sm:w-24 h-20 sm:h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+              <div className="p-4 sm:p-5 md:p-6 bg-gradient-to-br from-amber-500 to-orange-500 dark:from-amber-600/90 dark:to-orange-600/90 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-white/10 dark:bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-20 sm:w-24 h-20 sm:h-24 bg-white/5 dark:bg-white/3 rounded-full translate-y-1/2 -translate-x-1/2" />
                 
                 <div className="relative z-10 flex items-center gap-3 sm:gap-4">
-                  <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-white/20 dark:bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 shadow-lg dark:shadow-xl">
                     <Calculator className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-display font-bold mb-0.5 sm:mb-1 truncate">Mental Arifmetika</h2>
-                    <p className="text-xs sm:text-sm opacity-90">Abakus bilan mashq qiling</p>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-display font-bold mb-0.5 sm:mb-1 truncate drop-shadow-sm">Mental Arifmetika</h2>
+                    <p className="text-xs sm:text-sm opacity-90 dark:opacity-80">Abakus bilan mashq qiling</p>
                   </div>
-                  <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 rounded-lg sm:rounded-xl backdrop-blur-sm shrink-0">
+                  <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 dark:bg-white/15 rounded-lg sm:rounded-xl backdrop-blur-sm shrink-0 shadow-md">
                     <Play className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="font-medium text-sm sm:text-base">Boshlash</span>
                   </div>
                 </div>
                 
                 <div className="relative z-10 mt-3 sm:mt-4 grid grid-cols-3 gap-2 sm:gap-3 text-center">
-                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
                     <p className="text-base sm:text-lg font-bold">10+</p>
-                    <p className="text-[9px] sm:text-[10px] opacity-80">Formulalar</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Formulalar</p>
                   </div>
-                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
                     <p className="text-base sm:text-lg font-bold">⚡</p>
-                    <p className="text-[9px] sm:text-[10px] opacity-80">Flash-kartalar</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Flash-kartalar</p>
                   </div>
-                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
                     <p className="text-base sm:text-lg font-bold">🏆</p>
-                    <p className="text-[9px] sm:text-[10px] opacity-80">Multiplayer</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Multiplayer</p>
                   </div>
                 </div>
               </div>
@@ -490,19 +493,19 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Tabs for History & Leaderboard - Mobile optimized & Dark mode */}
+            {/* Tabs for History & Leaderboard - Mobile optimized & Dark mode enhanced */}
             <Tabs defaultValue="history" className="w-full opacity-0 animate-slide-up" style={{ animationDelay: '650ms', animationFillMode: 'forwards' }}>
-              <TabsList className="grid w-full grid-cols-2 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 bg-secondary/60 dark:bg-secondary/40 backdrop-blur-sm">
+              <TabsList className="grid w-full grid-cols-2 rounded-xl sm:rounded-2xl p-1 sm:p-1.5 bg-secondary/60 dark:bg-secondary/30 backdrop-blur-sm border border-border/30 dark:border-border/20">
                 <TabsTrigger
                   value="history"
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:text-primary transition-all py-2.5 sm:py-2.5"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/15 data-[state=active]:text-primary transition-all py-2.5 sm:py-2.5"
                 >
                   <Zap className="h-4 w-4 sm:h-4 sm:w-4" />
                   <span>Tarix</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="leaderboard"
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/10 data-[state=active]:text-primary transition-all py-2.5 sm:py-2.5"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-semibold text-xs sm:text-sm data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md dark:data-[state=active]:shadow-lg dark:data-[state=active]:shadow-primary/15 data-[state=active]:text-primary transition-all py-2.5 sm:py-2.5"
                 >
                   <Trophy className="h-4 w-4 sm:h-4 sm:w-4" />
                   <span>Reyting</span>
@@ -510,10 +513,10 @@ const Dashboard = () => {
               </TabsList>
 
               <TabsContent value="history" className="mt-3 sm:mt-4 md:mt-6">
-                <Card className="border-border/40 dark:border-border/30 shadow-md dark:shadow-xl overflow-hidden">
-                  <CardHeader className="pb-2 sm:pb-3 md:pb-4 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-secondary/50 dark:from-secondary/30 to-transparent">
-                    <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 sm:gap-3">
-                      <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                <Card className="border-border/40 dark:border-border/20 shadow-md dark:shadow-xl dark:shadow-primary/5 overflow-hidden bg-card dark:bg-card/80">
+                  <CardHeader className="pb-2 sm:pb-3 md:pb-4 px-3 sm:px-4 md:px-6 bg-gradient-to-r from-secondary/50 dark:from-secondary/20 to-transparent">
+                    <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 sm:gap-3 text-foreground dark:text-foreground/95">
+                      <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-9 md:w-9 rounded-lg bg-primary/10 dark:bg-primary/25 flex items-center justify-center">
                         <BarChart3 className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5 text-primary" />
                       </div>
                       So'nggi o'yinlar
@@ -522,18 +525,18 @@ const Dashboard = () => {
                   <CardContent className="pt-2 sm:pt-3 md:pt-4 px-2 sm:px-3 md:px-6 pb-3 sm:pb-4 md:pb-6">
                     {sessions.length === 0 ? (
                       <div className="text-center py-8 sm:py-10 md:py-16">
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-secondary/50 dark:from-secondary/60 dark:to-secondary/30 flex items-center justify-center mx-auto mb-3 sm:mb-4 md:mb-6">
-                          <Zap className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-muted-foreground" />
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-secondary to-secondary/50 dark:from-secondary/40 dark:to-secondary/20 flex items-center justify-center mx-auto mb-3 sm:mb-4 md:mb-6 border border-border/30 dark:border-border/20">
+                          <Zap className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-muted-foreground dark:text-muted-foreground/80" />
                         </div>
-                        <h3 className="font-display font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2 dark:text-foreground">Hali o'yin o'ynalmagan</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 md:mb-6 max-w-sm mx-auto px-4">
+                        <h3 className="font-display font-bold text-sm sm:text-base md:text-lg mb-1 sm:mb-2 text-foreground dark:text-foreground/95">Hali o'yin o'ynalmagan</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80 mb-3 sm:mb-4 md:mb-6 max-w-sm mx-auto px-4">
                           Birinchi mashqingizni yakunlang va natijalaringizni bu yerda ko'ring
                         </p>
                         <Button 
                           variant="default" 
                           size="lg"
                           onClick={() => navigate('/train')}
-                          className="gap-2 h-11 sm:h-12 md:h-10 text-sm sm:text-base px-6 sm:px-8"
+                          className="gap-2 h-11 sm:h-12 md:h-10 text-sm sm:text-base px-6 sm:px-8 shadow-lg dark:shadow-primary/20"
                         >
                           <Play className="h-4 w-4" />
                           Birinchi o'yinni boshlash
