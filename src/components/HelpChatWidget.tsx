@@ -91,6 +91,10 @@ const generateSessionId = () => {
 
 export const HelpChatWidget = () => {
   const location = useLocation();
+  
+  // Faqat bosh sahifada ko'rsatish - hooklardan OLDIN tekshirish
+  const isHomePage = location.pathname === '/';
+  
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFaq, setSelectedFaq] = useState<FAQItem | null>(null);
@@ -124,8 +128,8 @@ export const HelpChatWidget = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Faqat bosh sahifada ko'rsatish
-  if (location.pathname !== '/') {
+  // Agar bosh sahifa bo'lmasa, hech narsa ko'rsatma
+  if (!isHomePage) {
     return null;
   }
 
