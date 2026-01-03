@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2 } from 'lucide-react';
+import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useAuth } from '@/hooks/useAuth';
 import { useConfetti } from '@/hooks/useConfetti';
@@ -706,34 +706,35 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-200px)] sm:min-h-[calc(100vh-180px)]">
-      {/* Settings - Sticky at bottom when not playing */}
+    <div className="flex flex-col min-h-[calc(100vh-280px)] sm:min-h-[calc(100vh-260px)]">
+      {/* Settings - At Top when not playing */}
       {showSettings && !isFinished && (
         <>
-          {/* Large Display Area for Preview */}
-          <div className="flex-1 flex items-center justify-center py-6 xs:py-8 sm:py-12 md:py-16">
-            <div className="text-center space-y-3 sm:space-y-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-[60px] sm:blur-[80px] scale-150 sm:scale-[2]" />
-                <div className="relative text-[80px] xs:text-[100px] sm:text-[160px] md:text-[220px] lg:text-[280px] font-bold font-display text-emerald-600/40 dark:text-emerald-400/40 select-none leading-none">
-                  ?
+          {/* Settings Panel - At Top - Beautiful Mobile Optimized Design */}
+          <div className="bg-gradient-to-b from-card/95 to-card/80 backdrop-blur-lg border border-border/50 rounded-2xl sm:rounded-3xl shadow-lg p-3 xs:p-4 sm:p-6 space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <Settings2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                 </div>
+                <span className="text-xs sm:text-sm font-semibold text-foreground">Sozlamalar</span>
               </div>
-              <p className="text-muted-foreground text-xs xs:text-sm sm:text-base">
-                Sozlamalarni tanlang va boshlang
-              </p>
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-muted-foreground">
+                <Sparkles className="h-3 w-3 text-amber-500" />
+                <span>Flash Card</span>
+              </div>
             </div>
-          </div>
 
-          {/* Settings Panel - Fixed at Bottom - Mobile Optimized */}
-          <div className="bg-card/95 backdrop-blur-lg border-t border-border/50 rounded-t-2xl sm:rounded-t-3xl shadow-2xl p-3 xs:p-4 sm:p-6 space-y-3 sm:space-y-4">
             {/* Quick Settings Row - 2x2 grid on mobile */}
-            <div className="grid grid-cols-2 gap-2 xs:gap-3 sm:grid-cols-4 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 xs:gap-3 sm:grid-cols-4 sm:gap-4">
               {/* Formula */}
-              <div className="space-y-1">
-                <Label className="text-[10px] xs:text-xs text-muted-foreground">📚 Formula</Label>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
+                  <span className="text-sm">📚</span> Formula
+                </Label>
                 <Select value={formulaType} onValueChange={(v) => setFormulaType(v as FormulaType)}>
-                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm bg-background/50 border-border/50 hover:border-primary/30 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -745,10 +746,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               </div>
 
               {/* Digits */}
-              <div className="space-y-1">
-                <Label className="text-[10px] xs:text-xs text-muted-foreground">🔢 Xonalar</Label>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
+                  <span className="text-sm">🔢</span> Xonalar
+                </Label>
                 <Select value={digitLevel} onValueChange={(v) => setDigitLevel(v as DigitLevel)}>
-                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm bg-background/50 border-border/50 hover:border-primary/30 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -760,10 +763,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               </div>
 
               {/* Terms */}
-              <div className="space-y-1">
-                <Label className="text-[10px] xs:text-xs text-muted-foreground">📊 Hadlar</Label>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
+                  <span className="text-sm">📊</span> Hadlar
+                </Label>
                 <Select value={String(termsCount)} onValueChange={(v) => setTermsCount(Number(v))}>
-                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm bg-background/50 border-border/50 hover:border-primary/30 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -775,10 +780,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               </div>
 
               {/* Answer Time */}
-              <div className="space-y-1">
-                <Label className="text-[10px] xs:text-xs text-muted-foreground">⏱️ Javob vaqti</Label>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
+                  <span className="text-sm">⏱️</span> Javob vaqti
+                </Label>
                 <Select value={String(answerTimeLimit)} onValueChange={(v) => setAnswerTimeLimit(Number(v))}>
-                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm">
+                  <SelectTrigger className="h-9 xs:h-10 sm:h-11 text-xs xs:text-sm bg-background/50 border-border/50 hover:border-primary/30 transition-colors">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -793,25 +800,29 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
 
             {/* Speed & Problems - Compact horizontal scroll */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {/* Speed Selection */}
-              <div className="space-y-1.5">
+              <div className="space-y-2 bg-background/30 rounded-xl p-2.5 sm:p-3 border border-border/30">
                 <div className="flex justify-between items-center">
-                  <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="h-2.5 w-2.5 xs:h-3 xs:w-3" /> Tezlik
+                  <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Clock className="h-3 w-3 xs:h-3.5 xs:w-3.5 text-primary/60" /> Tezlik
                   </Label>
-                  <span className="text-[10px] xs:text-xs font-medium text-primary">
+                  <span className="text-xs sm:text-sm font-semibold text-primary px-2 py-0.5 bg-primary/10 rounded-md">
                     {(showTime / 1000).toFixed(1)}s
                   </span>
                 </div>
-                <div className="flex gap-1 xs:gap-1.5 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                <div className="flex gap-1.5 xs:gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-0.5 px-0.5">
                   {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((speed) => (
                     <Button
                       key={speed}
                       variant={showTime === speed ? "default" : "outline"}
                       size="sm"
                       onClick={() => setShowTime(speed)}
-                      className="text-[10px] xs:text-xs h-7 xs:h-8 px-2 xs:px-3 flex-shrink-0"
+                      className={`text-[10px] xs:text-xs h-8 xs:h-9 px-2.5 xs:px-3 flex-shrink-0 rounded-lg ${
+                        showTime === speed 
+                          ? 'bg-primary shadow-md' 
+                          : 'bg-background/50 hover:bg-primary/10 hover:border-primary/30'
+                      }`}
                     >
                       {(speed / 1000).toFixed(1)}
                     </Button>
@@ -820,19 +831,27 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               </div>
 
               {/* Problems Count */}
-              <div className="space-y-1.5">
+              <div className="space-y-2 bg-background/30 rounded-xl p-2.5 sm:p-3 border border-border/30">
                 <div className="flex justify-between items-center">
-                  <Label className="text-[10px] xs:text-xs text-muted-foreground">Misollar</Label>
-                  <span className="text-[10px] xs:text-xs font-medium text-primary">{problemCount} ta</span>
+                  <Label className="text-[10px] xs:text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Zap className="h-3 w-3 xs:h-3.5 xs:w-3.5 text-amber-500/60" /> Misollar
+                  </Label>
+                  <span className="text-xs sm:text-sm font-semibold text-amber-500 px-2 py-0.5 bg-amber-500/10 rounded-md">
+                    {problemCount} ta
+                  </span>
                 </div>
-                <div className="flex gap-1 xs:gap-1.5 overflow-x-auto pb-1 hide-scrollbar -mx-1 px-1">
+                <div className="flex gap-1.5 xs:gap-2 overflow-x-auto pb-1 hide-scrollbar -mx-0.5 px-0.5">
                   {[3, 5, 7, 10, 15, 20].map((count) => (
                     <Button
                       key={count}
                       variant={problemCount === count ? "default" : "outline"}
                       size="sm"
                       onClick={() => setProblemCount(count)}
-                      className="text-[10px] xs:text-xs h-7 xs:h-8 px-2.5 xs:px-4 flex-shrink-0"
+                      className={`text-[10px] xs:text-xs h-8 xs:h-9 px-3 xs:px-4 flex-shrink-0 rounded-lg ${
+                        problemCount === count 
+                          ? 'bg-amber-500 hover:bg-amber-600 shadow-md' 
+                          : 'bg-background/50 hover:bg-amber-500/10 hover:border-amber-500/30'
+                      }`}
                     >
                       {count}
                     </Button>
@@ -845,11 +864,28 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             <Button 
               onClick={startGame} 
               size="lg" 
-              className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-semibold gap-2 xs:gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg rounded-xl sm:rounded-2xl"
+              className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-bold gap-2 xs:gap-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               <Play className="h-5 w-5 xs:h-6 xs:w-6" />
               Mashqni boshlash
             </Button>
+          </div>
+
+          {/* Large Display Area for Preview */}
+          <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-8">
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-[40px] sm:blur-[60px] scale-125 sm:scale-150" />
+                <div className="relative text-[60px] xs:text-[80px] sm:text-[120px] md:text-[160px] lg:text-[200px] font-bold font-display text-primary/30 dark:text-primary/20 select-none leading-none">
+                  ?
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-2 text-muted-foreground/60">
+                <div className="w-8 h-px bg-border" />
+                <p className="text-xs xs:text-sm">Tayyor bo'lgach boshlang</p>
+                <div className="w-8 h-px bg-border" />
+              </div>
+            </div>
           </div>
         </>
       )}
