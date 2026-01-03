@@ -94,8 +94,9 @@ export const HelpChatWidget = () => {
   const location = useLocation();
   const { user } = useAuth();
   
-  // Faqat bosh sahifada va tizimga kirgan foydalanuvchilarga ko'rsatish
-  const isHomePage = location.pathname === '/';
+  // Faqat bosh sahifa yoki dashboard'da va tizimga kirgan foydalanuvchilarga ko'rsatish
+  const allowedPages = ['/', '/dashboard'];
+  const isAllowedPage = allowedPages.includes(location.pathname);
   const isLoggedIn = !!user;
   
   const [isOpen, setIsOpen] = useState(false);
@@ -131,8 +132,8 @@ export const HelpChatWidget = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Agar bosh sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
-  if (!isHomePage || !isLoggedIn) {
+  // Agar ruxsat berilgan sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
+  if (!isAllowedPage || !isLoggedIn) {
     return null;
   }
 
