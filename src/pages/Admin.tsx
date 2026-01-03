@@ -612,111 +612,111 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Tabs defaultValue="users" className="space-y-4 sm:space-y-6">
-            {/* Mobile: Grid tabs - all visible */}
+          <Tabs defaultValue="users" className="space-y-3 sm:space-y-4 md:space-y-6">
+            {/* Mobile: Grid tabs - all visible - Dark mode optimized */}
             <div className="block md:hidden">
-              <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-sm overflow-hidden">
-                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1.5 gap-1">
-                  <TabsTrigger value="users" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <Users className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Users</span>
+              <Card className="bg-card/70 dark:bg-card/50 backdrop-blur-md border-border/50 dark:border-border/30 shadow-lg dark:shadow-xl overflow-hidden">
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1 sm:p-1.5 gap-0.5 sm:gap-1">
+                  <TabsTrigger value="users" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-blue-500/30 transition-all">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Users</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reports" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-purple-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <BarChart2 className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Hisobot</span>
+                  <TabsTrigger value="reports" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-purple-500/30 transition-all">
+                    <BarChart2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Hisobot</span>
                   </TabsTrigger>
-                  <TabsTrigger value="competitions" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-yellow-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <Trophy className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Musobaqa</span>
+                  <TabsTrigger value="competitions" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-yellow-500/30 transition-all">
+                    <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Musobaqa</span>
                   </TabsTrigger>
-                  <TabsTrigger value="courses" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <GraduationCap className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Kurs</span>
+                  <TabsTrigger value="courses" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-emerald-500/30 transition-all">
+                    <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Kurs</span>
                   </TabsTrigger>
-                  <TabsTrigger value="files" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-amber-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <FolderOpen className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Fayl</span>
+                  <TabsTrigger value="files" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-amber-500/30 transition-all">
+                    <FolderOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Fayl</span>
                   </TabsTrigger>
                 </TabsList>
-                <TabsList className="grid w-full grid-cols-6 h-auto bg-transparent p-1.5 pt-0 gap-1">
-                  <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <HelpCircle className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">FAQ</span>
+                <TabsList className="grid w-full grid-cols-6 h-auto bg-transparent p-1 sm:p-1.5 pt-0 gap-0.5 sm:gap-1">
+                  <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-indigo-500/30 transition-all">
+                    <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">FAQ</span>
                   </TabsTrigger>
-                  <TabsTrigger value="testimonials" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <Quote className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Sharh</span>
+                  <TabsTrigger value="testimonials" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-pink-500/30 transition-all">
+                    <Quote className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Sharh</span>
                   </TabsTrigger>
-                  <TabsTrigger value="team" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-violet-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <Users className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Jamoa</span>
+                  <TabsTrigger value="team" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-violet-500/30 transition-all">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Jamoa</span>
                   </TabsTrigger>
-                  <TabsTrigger value="chats" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-teal-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <MessageCircle className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Chat</span>
+                  <TabsTrigger value="chats" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-teal-500/30 transition-all">
+                    <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Chat</span>
                   </TabsTrigger>
-                  <TabsTrigger value="messages" className="relative flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-red-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <Mail className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Xabar</span>
-                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 p-0 flex items-center justify-center text-[8px]">{unreadCount}</Badge>}
+                  <TabsTrigger value="messages" className="relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-red-500/30 transition-all">
+                    <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Xabar</span>
+                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 w-4 p-0 flex items-center justify-center text-[8px] animate-pulse shadow-lg">{unreadCount}</Badge>}
                   </TabsTrigger>
-                  <TabsTrigger value="blog" className="flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg data-[state=active]:bg-orange-500 data-[state=active]:text-white data-[state=active]:shadow-md">
-                    <FileText className="h-4 w-4" />
-                    <span className="text-[9px] font-medium">Blog</span>
+                  <TabsTrigger value="blog" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-orange-500/30 transition-all">
+                    <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-[9px] sm:text-[10px] font-medium">Blog</span>
                   </TabsTrigger>
                 </TabsList>
               </Card>
             </div>
 
-            {/* Desktop: Beautiful horizontal navigation */}
+            {/* Desktop: Beautiful horizontal navigation - Dark mode optimized */}
             <div className="hidden md:block">
-              <Card className="bg-card/60 backdrop-blur-md border-border/50 shadow-lg overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5" />
+              <Card className="bg-card/70 dark:bg-card/50 backdrop-blur-md border-border/50 dark:border-border/30 shadow-lg dark:shadow-xl overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 dark:from-primary/10 via-transparent to-accent/5 dark:to-accent/10" />
                 <TabsList className="relative grid w-full grid-cols-11 h-14 gap-0.5 bg-transparent p-1.5">
-                  <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <Users className="h-4 w-4 text-blue-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Users</span>
+                  <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 dark:hover:bg-blue-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-blue-500/40">
+                    <Users className="h-4 w-4 text-blue-500 dark:text-blue-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Users</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reports" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-purple-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <BarChart2 className="h-4 w-4 text-purple-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Hisobot</span>
+                  <TabsTrigger value="reports" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-purple-500/15 dark:hover:bg-purple-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-purple-500/40">
+                    <BarChart2 className="h-4 w-4 text-purple-500 dark:text-purple-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Hisobot</span>
                   </TabsTrigger>
-                  <TabsTrigger value="competitions" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-yellow-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <Trophy className="h-4 w-4 text-yellow-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Musobaqa</span>
+                  <TabsTrigger value="competitions" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-yellow-500/15 dark:hover:bg-yellow-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-yellow-500/40">
+                    <Trophy className="h-4 w-4 text-yellow-500 dark:text-yellow-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Musobaqa</span>
                   </TabsTrigger>
-                  <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <GraduationCap className="h-4 w-4 text-emerald-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Kurslar</span>
+                  <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 dark:hover:bg-emerald-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-emerald-500/40">
+                    <GraduationCap className="h-4 w-4 text-emerald-500 dark:text-emerald-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Kurslar</span>
                   </TabsTrigger>
-                  <TabsTrigger value="files" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-amber-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <FolderOpen className="h-4 w-4 text-amber-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Fayllar</span>
+                  <TabsTrigger value="files" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-amber-500/15 dark:hover:bg-amber-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-amber-500/40">
+                    <FolderOpen className="h-4 w-4 text-amber-500 dark:text-amber-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Fayllar</span>
                   </TabsTrigger>
-                  <TabsTrigger value="faq" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-indigo-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <HelpCircle className="h-4 w-4 text-indigo-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">FAQ</span>
+                  <TabsTrigger value="faq" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-indigo-500/15 dark:hover:bg-indigo-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-indigo-500/40">
+                    <HelpCircle className="h-4 w-4 text-indigo-500 dark:text-indigo-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">FAQ</span>
                   </TabsTrigger>
-                  <TabsTrigger value="testimonials" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-pink-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <Quote className="h-4 w-4 text-pink-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Sharhlar</span>
+                  <TabsTrigger value="testimonials" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-pink-500/15 dark:hover:bg-pink-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-pink-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-pink-500/40">
+                    <Quote className="h-4 w-4 text-pink-500 dark:text-pink-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Sharhlar</span>
                   </TabsTrigger>
-                  <TabsTrigger value="team" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-violet-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <Users className="h-4 w-4 text-violet-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Jamoa</span>
+                  <TabsTrigger value="team" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-violet-500/15 dark:hover:bg-violet-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-violet-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-violet-500/40">
+                    <Users className="h-4 w-4 text-violet-500 dark:text-violet-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Jamoa</span>
                   </TabsTrigger>
-                  <TabsTrigger value="chats" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-teal-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <MessageCircle className="h-4 w-4 text-teal-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Chatlar</span>
+                  <TabsTrigger value="chats" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-teal-500/15 dark:hover:bg-teal-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-teal-500 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-teal-500/40">
+                    <MessageCircle className="h-4 w-4 text-teal-500 dark:text-teal-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Chatlar</span>
                   </TabsTrigger>
-                  <TabsTrigger value="messages" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-red-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <Mail className="h-4 w-4 text-red-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Xabarlar</span>
-                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] animate-pulse">{unreadCount}</Badge>}
+                  <TabsTrigger value="messages" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-red-500/15 dark:hover:bg-red-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-red-500/40">
+                    <Mail className="h-4 w-4 text-red-500 dark:text-red-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Xabarlar</span>
+                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] animate-pulse shadow-lg">{unreadCount}</Badge>}
                   </TabsTrigger>
-                  <TabsTrigger value="blog" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-orange-500/15 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg">
-                    <FileText className="h-4 w-4 text-orange-500 group-data-[state=active]:text-white" />
-                    <span className="text-[10px] font-medium truncate">Maqolalar</span>
+                  <TabsTrigger value="blog" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-orange-500/15 dark:hover:bg-orange-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-orange-500/40">
+                    <FileText className="h-4 w-4 text-orange-500 dark:text-orange-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Maqolalar</span>
                   </TabsTrigger>
                 </TabsList>
               </Card>
