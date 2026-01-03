@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useTTS } from '@/hooks/useTTS';
 
 interface DailyChallenge {
   id: string;
@@ -52,11 +53,16 @@ const RULES_ALL: Record<number, { add: number[]; subtract: number[] }> = {
 
 export const DailyChallenge = () => {
   const { user } = useAuth();
+  const { speakNumber, stop: stopTTS } = useTTS({ useElevenLabs: true });
   const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
   const [results, setResults] = useState<ChallengeResult[]>([]);
   const [userResult, setUserResult] = useState<ChallengeResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null } | null>(null);
+  const [voiceEnabled] = useState(() => {
+    const saved = localStorage.getItem('numberTrainer_voiceEnabled');
+    return saved !== null ? saved === 'true' : true;
+  });
   
   // O'yin holati
   const [view, setView] = useState<'info' | 'playing' | 'answer' | 'done'>('info');
@@ -261,6 +267,11 @@ export const DailyChallenge = () => {
     setElapsedTime(0);
     setView('playing');
     
+    // Speak first number with ElevenLabs
+    if (voiceEnabled) {
+      speakNumber(String(initialResult), true, true);
+    }
+    
     // Taymer
     timerRef.current = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 100) / 10);
@@ -286,9 +297,14 @@ export const DailyChallenge = () => {
         setCurrentDisplay(String(result.num));
         setDisplayedNumbers(prev => [...prev, { num: String(result.num), isAdd: result.isAdd }]);
         setIsAddition(result.isAdd);
+        
+        // Speak subsequent numbers with ElevenLabs
+        if (voiceEnabled) {
+          speakNumber(String(result.num), result.isAdd, false);
+        }
       }
     }, speedMs);
-  }, [challenge, generateNextNumberWithSeed]);
+  }, [challenge, generateNextNumberWithSeed, voiceEnabled, speakNumber]);
 
   // Javobni yuborish
   const submitAnswer = async () => {
