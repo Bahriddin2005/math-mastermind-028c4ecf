@@ -11,8 +11,8 @@ const MentalArithmetic = () => {
     <PageBackground className="flex flex-col min-h-screen">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
       
-      <main className="flex-1 container px-3 sm:px-6 py-4 sm:py-8">
-        <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+      <main className="flex-1 container px-3 sm:px-6 py-4 sm:py-8 flex items-center justify-center">
+        <div className="max-w-5xl w-full mx-auto space-y-4 sm:space-y-6">
           {/* Beautiful Header */}
           <div className="relative opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
             <div className="flex flex-col items-center text-center gap-2 sm:gap-3">
