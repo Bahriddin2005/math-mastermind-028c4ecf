@@ -694,111 +694,112 @@ export const NumberTrainer = () => {
     );
   }
 
-  // Natija sahifasi
+  // Natija sahifasi - pastroqda joylashgan
   if (isFinished) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10 flex flex-col items-center justify-center z-50 p-4 sm:p-6 overflow-hidden">
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10 flex flex-col z-50 p-4 sm:p-6 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 -right-20 w-64 sm:w-96 h-64 sm:h-96 bg-accent/5 dark:bg-accent/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-lg w-full space-y-4 sm:space-y-6 animate-fade-in">
-          {/* Header card */}
-          <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-border/50 dark:border-slate-700/50 shadow-lg dark:shadow-2xl p-4 sm:p-6 text-center">
-            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
-                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
-              </div>
-              <div className="text-left">
-                <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400">Umumiy vaqt</p>
-                <p className="text-xl sm:text-2xl font-bold font-mono text-accent">{elapsedTime.toFixed(1)}s</p>
-              </div>
+        {/* Yuqori qism - vaqt ko'rsatkichi */}
+        <div className="flex justify-center pt-4">
+          <div className="flex items-center gap-2 bg-muted/80 dark:bg-slate-800/80 backdrop-blur-sm px-4 py-2 rounded-full border border-border/50">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <span className="font-mono text-lg sm:text-xl font-bold text-foreground">{elapsedTime.toFixed(1)}s</span>
+          </div>
+        </div>
+
+        {/* Asosiy kontent - pastroqda */}
+        <div className="flex-1 flex flex-col items-center justify-end pb-[12vh] sm:pb-[15vh]">
+          <div className="relative max-w-lg w-full space-y-4 sm:space-y-5 animate-fade-in">
+            {/* Header */}
+            <div className="text-center mb-2">
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
+              <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm mt-1">Javobingizni kiriting</p>
             </div>
             
-            <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white mb-1 sm:mb-2">Mashq tugadi!</h2>
-            <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm">Javobingizni kiriting</p>
-          </div>
-          
-          {!showResult ? (
-            <div className="space-y-3 sm:space-y-4 animate-fade-in">
-              <div className="relative">
-                <Input
-                  type="number"
-                  value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
-                  placeholder="Javobni kiriting..."
-                  className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-xl sm:rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
-                  autoFocus
-                />
+            {!showResult ? (
+              <div className="space-y-3 sm:space-y-4 animate-fade-in">
+                <div className="relative">
+                  <Input
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
+                    placeholder="Javobni kiriting..."
+                    className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
+                    autoFocus
+                  />
+                </div>
+                <Button
+                  onClick={checkAnswer}
+                  disabled={!userAnswer}
+                  size="lg"
+                  className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                >
+                  <Check className="h-5 w-5 sm:h-6 sm:w-6" />
+                  Tekshirish
+                </Button>
               </div>
+            ) : (
+              <div className={`space-y-4 sm:space-y-5 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
+                {/* Result card */}
+                <div className={`p-5 sm:p-6 rounded-2xl text-center ${
+                  isCorrect 
+                    ? 'bg-gradient-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 border-2 border-success/30 dark:border-success/40' 
+                    : 'bg-gradient-to-br from-destructive/10 to-destructive/5 dark:from-destructive/20 dark:to-destructive/10 border-2 border-destructive/30 dark:border-destructive/40'
+                }`}>
+                  <div className={`text-5xl sm:text-6xl mb-2 sm:mb-3 ${isCorrect ? 'animate-celebrate' : ''}`}>
+                    {isCorrect ? '🎉' : '😔'}
+                  </div>
+                  <p className={`text-lg sm:text-xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
+                    {isCorrect ? "Zo'r! To'g'ri javob!" : "Noto'g'ri javob"}
+                  </p>
+                </div>
+
+                {/* Answer details */}
+                <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-border/50 dark:border-slate-700/50 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground dark:text-slate-400">To'g'ri javob:</span>
+                    <span className="text-xl sm:text-2xl font-bold text-foreground dark:text-white font-mono">{runningResultRef.current}</span>
+                  </div>
+                  {!isCorrect && (
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
+                      <span className="text-sm text-muted-foreground dark:text-slate-400">Sizning javobingiz:</span>
+                      <span className="text-lg sm:text-xl font-bold text-destructive font-mono">{userAnswer}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
+                    <span className="text-sm text-muted-foreground dark:text-slate-400">Javob vaqti:</span>
+                    <span className="text-base sm:text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-3 sm:gap-4 pt-1">
               <Button
-                onClick={checkAnswer}
-                disabled={!userAnswer}
+                onClick={resetGame}
+                variant="outline"
                 size="lg"
-                className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
               >
-                <Check className="h-5 w-5 sm:h-6 sm:w-6" />
-                Tekshirish
+                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+                Orqaga
+              </Button>
+              <Button
+                onClick={startGame}
+                size="lg"
+                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
+              >
+                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                Yangi mashq
               </Button>
             </div>
-          ) : (
-            <div className={`space-y-4 sm:space-y-6 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
-              {/* Result card */}
-              <div className={`p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-center ${
-                isCorrect 
-                  ? 'bg-gradient-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 border-2 border-success/30 dark:border-success/40' 
-                  : 'bg-gradient-to-br from-destructive/10 to-destructive/5 dark:from-destructive/20 dark:to-destructive/10 border-2 border-destructive/30 dark:border-destructive/40'
-              }`}>
-                <div className={`text-6xl sm:text-8xl mb-3 sm:mb-4 ${isCorrect ? 'animate-celebrate' : ''}`}>
-                  {isCorrect ? '🎉' : '😔'}
-                </div>
-                <p className={`text-xl sm:text-2xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
-                  {isCorrect ? "Zo'r! To'g'ri javob!" : "Noto'g'ri javob"}
-                </p>
-              </div>
-
-              {/* Answer details */}
-              <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 p-4 sm:p-5 space-y-2 sm:space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground dark:text-slate-400">To'g'ri javob:</span>
-                  <span className="text-xl sm:text-2xl font-bold text-foreground dark:text-white font-mono">{runningResultRef.current}</span>
-                </div>
-                {!isCorrect && (
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
-                    <span className="text-sm text-muted-foreground dark:text-slate-400">Sizning javobingiz:</span>
-                    <span className="text-lg sm:text-xl font-bold text-destructive font-mono">{userAnswer}</span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
-                  <span className="text-sm text-muted-foreground dark:text-slate-400">Javob vaqti:</span>
-                  <span className="text-base sm:text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div className="flex gap-3 sm:gap-4 pt-1 sm:pt-2">
-            <Button
-              onClick={resetGame}
-              variant="outline"
-              size="lg"
-              className="flex-1 gap-2 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
-            >
-              <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
-              Orqaga
-            </Button>
-            <Button
-              onClick={startGame}
-              size="lg"
-              className="flex-1 gap-2 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
-            >
-              <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-              Yangi mashq
-            </Button>
           </div>
         </div>
       </div>
