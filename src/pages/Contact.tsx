@@ -302,57 +302,86 @@ const Contact = () => {
             </Card>
 
             {/* Contact Info & Social Links */}
-            <div className="space-y-6">
-              {/* Contact Info */}
-              <Card className="border-border/40 shadow-lg h-[280px] flex flex-col">
-                <CardHeader className="flex-shrink-0">
-                  <CardTitle>Aloqa ma'lumotlari</CardTitle>
+            <div className="space-y-4 sm:space-y-6">
+              {/* Contact Info - Beautiful Design */}
+              <Card className="border-border/40 shadow-xl overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <CardHeader className="pb-2 relative">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/20">
+                      <Phone className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Aloqa ma'lumotlari</CardTitle>
+                      <CardDescription className="text-xs">Biz bilan bog'laning</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col justify-center">
-                  {contactInfo.map((info) => (
-                    <div key={info.label} className="flex items-center gap-4 h-[56px]">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CardContent className="space-y-3 relative pt-2">
+                  {contactInfo.map((info, index) => (
+                    <div 
+                      key={info.label} 
+                      className="group/item flex items-center gap-4 p-3 rounded-xl bg-gradient-to-r from-muted/50 to-transparent hover:from-primary/10 hover:to-primary/5 border border-transparent hover:border-primary/20 transition-all duration-300"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 group-hover/item:scale-110 transition-transform duration-300 shadow-sm">
                         <info.icon className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">{info.label}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{info.label}</p>
                         {info.href ? (
                           <a 
                             href={info.href}
-                            className="font-medium text-foreground hover:text-primary transition-colors"
+                            className="font-semibold text-foreground hover:text-primary transition-colors text-sm sm:text-base truncate block"
                           >
                             {info.value}
                           </a>
                         ) : (
-                          <p className="font-medium text-foreground">{info.value}</p>
+                          <p className="font-semibold text-foreground text-sm sm:text-base truncate">{info.value}</p>
                         )}
                       </div>
+                      {info.href && (
+                        <ExternalLink className="h-4 w-4 text-muted-foreground group-hover/item:text-primary transition-colors flex-shrink-0" />
+                      )}
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              {/* Social Links */}
-              <Card className="border-border/40 shadow-lg h-[280px] flex flex-col">
-                <CardHeader className="flex-shrink-0">
-                  <CardTitle>Ijtimoiy tarmoqlar</CardTitle>
-                  <CardDescription>Bizni kuzatib boring</CardDescription>
+              {/* Social Links - Beautiful Design */}
+              <Card className="border-border/40 shadow-xl overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-accent/10 to-transparent rounded-full blur-2xl" />
+                <CardHeader className="pb-3 relative">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 border border-accent/20">
+                      <MessageCircle className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">Ijtimoiy tarmoqlar</CardTitle>
+                      <CardDescription className="text-xs">Bizni kuzatib boring</CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-3 flex-1 flex flex-col justify-center">
-                  {socialLinks.map((social) => (
+                <CardContent className="space-y-3 relative">
+                  {socialLinks.map((social, index) => (
                     <a
                       key={social.name}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`flex items-center gap-4 p-4 rounded-xl text-white transition-all h-[72px] ${social.color}`}
+                      className={`group/social flex items-center gap-4 p-4 rounded-2xl text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] ${social.color}`}
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <social.icon className="h-6 w-6 flex-shrink-0" />
+                      <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 group-hover/social:bg-white/30 transition-colors">
+                        <social.icon className="h-5 w-5" />
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold">{social.name}</p>
+                        <p className="font-bold text-base">{social.name}</p>
                         <p className="text-sm text-white/80 truncate">{social.description}</p>
                       </div>
-                      <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover/social:bg-white/20 transition-colors">
+                        <ExternalLink className="h-4 w-4" />
+                      </div>
                     </a>
                   ))}
                 </CardContent>
