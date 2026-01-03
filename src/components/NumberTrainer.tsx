@@ -676,16 +676,10 @@ export const NumberTrainer = () => {
               <div className="flex items-center justify-center gap-3 sm:gap-6 w-full">
                 {/* Matematik amal belgisi - har doim ko'rsatiladi */}
                 <span 
-                  className={`text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl ${
-                    isAddition 
-                      ? 'text-emerald-500 dark:text-emerald-400' 
-                      : 'text-red-500 dark:text-red-400'
-                  }`}
+                  className="text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl text-foreground dark:text-white"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
-                    textShadow: isAddition
-                      ? '0 0 60px rgba(16, 185, 129, 0.5), 0 0 120px rgba(16, 185, 129, 0.3)'
-                      : '0 0 60px rgba(239, 68, 68, 0.5), 0 0 120px rgba(239, 68, 68, 0.3)'
+                    filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
                   }}
                 >
                   {isAddition ? '+' : '−'}
