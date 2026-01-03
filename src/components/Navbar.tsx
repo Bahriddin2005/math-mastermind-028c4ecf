@@ -346,13 +346,13 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         )}
 
         {/* Mobile menu navigation */}
-        <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto mobile-menu-scroll p-4 space-y-2">
+        <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto mobile-menu-scroll p-3 space-y-1">
           {navItems.map((item, index) => (
             <button
               key={item.path}
               data-active={isActive(item.path)}
               onClick={() => handleNavigation(item.path)}
-              className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 touch-target ${
+              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 touch-target ${
                 isActive(item.path)
                   ? 'bg-primary text-primary-foreground shadow-lg'
                   : item.highlight
@@ -361,20 +361,20 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               }`}
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
                 isActive(item.path)
                   ? 'bg-primary-foreground/20'
                   : item.highlight
                     ? 'bg-primary/20'
                     : 'bg-secondary'
               }`}>
-                <item.icon className="h-6 w-6" />
+                <item.icon className="h-5 w-5" />
               </div>
-              <span className="text-lg font-semibold">{item.label}</span>
+              <span className="text-base font-semibold">{item.label}</span>
             </button>
           ))}
 
-          <div className="h-px bg-border/50 my-4" />
+          <div className="h-px bg-border/50 my-3" />
 
           {/* Sound toggle in mobile menu */}
           <button
@@ -382,40 +382,40 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               onToggleSound();
               setMobileMenuOpen(false);
             }}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-200 touch-target"
+            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/80 transition-all duration-200 touch-target"
           >
-            <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-secondary flex items-center justify-center">
               {soundEnabled ? (
-                <Volume2 className="h-6 w-6" />
+                <Volume2 className="h-5 w-5" />
               ) : (
-                <VolumeX className="h-6 w-6 text-muted-foreground" />
+                <VolumeX className="h-5 w-5 text-muted-foreground" />
               )}
             </div>
-            <span className="text-lg font-semibold">
+            <span className="text-base font-semibold">
               {soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
             </span>
           </button>
 
           <button
             onClick={() => handleNavigation('/settings')}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-200 touch-target"
+            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/80 transition-all duration-200 touch-target"
           >
-            <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center">
-              <Settings className="h-6 w-6" />
+            <div className="h-10 w-10 rounded-lg bg-secondary flex items-center justify-center">
+              <Settings className="h-5 w-5" />
             </div>
-            <span className="text-lg font-semibold">Sozlamalar</span>
+            <span className="text-base font-semibold">Sozlamalar</span>
           </button>
 
           {isAdmin && (
             <button
               onClick={() => handleNavigation('/admin')}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary/10 hover:bg-primary/20 transition-all duration-200 touch-target"
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 transition-all duration-200 touch-target"
             >
-              <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
-                <ShieldCheck className="h-6 w-6 text-primary" />
+              <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
-              <span className="text-lg font-semibold text-primary">Admin panel</span>
-              <Badge className="ml-auto bg-primary/20 text-primary border-0">Admin</Badge>
+              <span className="text-base font-semibold text-primary">Admin panel</span>
+              <Badge className="ml-auto bg-primary/20 text-primary border-0 text-xs">Admin</Badge>
             </button>
           )}
         </div>
