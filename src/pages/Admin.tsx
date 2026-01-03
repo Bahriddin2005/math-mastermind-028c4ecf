@@ -439,59 +439,82 @@ const Admin = () => {
 
       <main className="flex-1 container px-2 sm:px-4 py-4 sm:py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-display font-bold truncate">Admin Panel</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground truncate">Platforma boshqaruvi</p>
+          {/* Header - Enhanced Design */}
+          <div className="relative mb-6 sm:mb-10 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-accent/10 border border-primary/20 overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.15),transparent_50%)]" />
+            <div className="absolute top-0 right-0 w-32 h-32 sm:w-48 sm:h-48 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-3xl" />
+            
+            <div className="relative flex items-center gap-3 sm:gap-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/30">
+                <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-3xl font-display font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">Admin Panel</h1>
+                <p className="text-sm sm:text-base text-muted-foreground mt-0.5">Platforma boshqaruvi va statistika</p>
+              </div>
+              <div className="hidden sm:flex items-center gap-2">
+                <Badge variant="outline" className="bg-background/50 backdrop-blur-sm border-primary/30 text-primary">
+                  <Bell className="h-3 w-3 mr-1" />
+                  {unreadCount} yangi xabar
+                </Badge>
+              </div>
             </div>
           </div>
 
-          {/* Stats Cards - 3 columns on mobile */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-4 sm:mb-8">
-            <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+          {/* Stats Cards - Enhanced with animations */}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 sm:gap-4 mb-6 sm:mb-10">
+            <Card className="bg-gradient-to-br from-blue-500/15 to-blue-500/5 border-blue-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalUsers}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Users</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.totalUsers}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Foydalanuvchilar</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+            <Card className="bg-gradient-to-br from-green-500/15 to-green-500/5 border-green-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-green-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <Target className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalProblems.toLocaleString()}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Yechilgan</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-green-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.totalProblems.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Yechilgan</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+            <Card className="bg-gradient-to-br from-yellow-500/15 to-yellow-500/5 border-yellow-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-yellow-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <Trophy className="h-4 w-4 sm:h-6 sm:w-6 text-yellow-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalScore.toLocaleString()}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Ball</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-yellow-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.totalScore.toLocaleString()}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Jami ball</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+            <Card className="bg-gradient-to-br from-purple-500/15 to-purple-500/5 border-purple-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <BarChart3 className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.totalGames}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">O'yin</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.totalGames}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">O'yinlar</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+            <Card className="bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 border-emerald-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.newUsersToday}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Yangi</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.newUsersToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Bugun yangi</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 overflow-hidden h-[80px] sm:h-[100px] flex flex-col">
+            <Card className="bg-gradient-to-br from-orange-500/15 to-orange-500/5 border-orange-500/30 overflow-hidden h-[90px] sm:h-[110px] flex flex-col group hover:shadow-lg hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300">
               <CardContent className="p-2 sm:p-4 text-center flex-1 flex flex-col justify-center">
-                <Flame className="h-4 w-4 sm:h-6 sm:w-6 text-orange-500 mx-auto mb-1" />
-                <p className="text-sm sm:text-xl font-bold truncate">{stats.activeToday}</p>
-                <p className="text-[9px] sm:text-xs text-muted-foreground truncate">Faol</p>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-500/20 flex items-center justify-center mx-auto mb-1.5 group-hover:scale-110 transition-transform">
+                  <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
+                </div>
+                <p className="text-lg sm:text-2xl font-bold">{stats.activeToday}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Bugun faol</p>
               </CardContent>
             </Card>
           </div>
