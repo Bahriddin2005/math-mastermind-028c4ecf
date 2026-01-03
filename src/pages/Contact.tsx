@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { useSound } from '@/hooks/useSound';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,9 @@ import {
   MessageCircle,
   Instagram,
   Youtube,
-  ExternalLink
+  ExternalLink,
+  User,
+  CheckCircle2
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -31,6 +34,7 @@ const contactSchema = z.object({
 
 const Contact = () => {
   const { soundEnabled, toggleSound } = useSound();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,6 +43,36 @@ const Contact = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // Foydalanuvchi ma'lumotlarini avtomatik to'ldirish
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (!user) {
+        setProfileLoaded(false);
+        return;
+      }
+
+      // Email ni auth dan olish
+      const userEmail = user.email || '';
+
+      // Username ni profiles dan olish
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', user.id)
+        .single();
+
+      setFormData(prev => ({
+        ...prev,
+        name: profile?.username || prev.name,
+        email: userEmail || prev.email,
+      }));
+      setProfileLoaded(true);
+    };
+
+    loadUserProfile();
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -171,16 +205,32 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Logged in user info badge */}
+                  {user && profileLoaded && (
+                    <div className="flex items-center gap-2 p-3 bg-primary/5 border border-primary/20 rounded-lg mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm text-muted-foreground">
+                        Ma'lumotlaringiz avtomatik to'ldirildi
+                      </span>
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <Label htmlFor="name">Ism</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      placeholder="Ismingizni kiriting"
-                      className={errors.name ? 'border-destructive' : ''}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Ismingizni kiriting"
+                        className={`${errors.name ? 'border-destructive' : ''} ${profileLoaded && user ? 'bg-muted/50 pr-10' : ''}`}
+                        readOnly={profileLoaded && !!user}
+                      />
+                      {profileLoaded && user && (
+                        <User className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60" />
+                      )}
+                    </div>
                     {errors.name && (
                       <p className="text-sm text-destructive">{errors.name}</p>
                     )}
@@ -188,15 +238,21 @@ const Contact = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="email@example.com"
-                      className={errors.email ? 'border-destructive' : ''}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="email@example.com"
+                        className={`${errors.email ? 'border-destructive' : ''} ${profileLoaded && user ? 'bg-muted/50 pr-10' : ''}`}
+                        readOnly={profileLoaded && !!user}
+                      />
+                      {profileLoaded && user && (
+                        <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/60" />
+                      )}
+                    </div>
                     {errors.email && (
                       <p className="text-sm text-destructive">{errors.email}</p>
                     )}
