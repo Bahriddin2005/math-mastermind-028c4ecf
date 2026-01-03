@@ -39,32 +39,47 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
       </div>
       
       <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div className="flex-1">
-          {/* Time greeting badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/15 backdrop-blur-sm mb-4">
-            <TimeIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{timeInfo.greeting}</span>
-            <span className="text-base">{timeInfo.emoji}</span>
+        <div className="flex-1 space-y-5">
+          {/* Time greeting badge - Enhanced */}
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-primary-foreground/20 backdrop-blur-md border border-primary-foreground/10 shadow-lg">
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-foreground/20">
+              <TimeIcon className="h-4 w-4" />
+            </div>
+            <span className="text-base font-semibold tracking-wide">{timeInfo.greeting}</span>
+            <span className="text-xl animate-bounce-soft">{timeInfo.emoji}</span>
           </div>
           
-          {/* Main heading */}
-          <h1 className="text-3xl md:text-4xl font-display font-bold mb-3 leading-tight">
-            {username ? (
-              <>
-                Salom, <span className="relative">
-                  {username}
-                  <span className="absolute -bottom-1 left-0 w-full h-1 bg-accent/60 rounded-full" />
-                </span>! 👋
-              </>
-            ) : (
-              'Xush kelibsiz! 🎉'
-            )}
-          </h1>
+          {/* Main heading - Enhanced with gradient effect */}
+          <div className="space-y-2">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-extrabold leading-tight tracking-tight">
+              {username ? (
+                <span className="flex flex-wrap items-baseline gap-x-3">
+                  <span className="opacity-90">Salom,</span>
+                  <span className="relative inline-block">
+                    <span className="relative z-10 bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent drop-shadow-lg">
+                      {username}
+                    </span>
+                    <span className="absolute -bottom-2 left-0 w-full h-2 bg-gradient-to-r from-amber-400/60 via-yellow-300/80 to-amber-400/60 rounded-full blur-sm" />
+                    <span className="absolute -bottom-1.5 left-0 w-full h-1.5 bg-gradient-to-r from-amber-300 to-yellow-200 rounded-full" />
+                  </span>
+                  <span className="text-4xl md:text-5xl animate-wave inline-block">👋</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-3">
+                  Xush kelibsiz! 
+                  <span className="text-4xl animate-bounce-soft">🎉</span>
+                </span>
+              )}
+            </h1>
+          </div>
           
-          {/* Description */}
-          <p className="text-base md:text-lg opacity-90 max-w-lg leading-relaxed">
-            Mental arifmetika bo'yicha treninglarni davom ettiring va o'z natijalaringizni kuzating.
-          </p>
+          {/* Description - Enhanced with glass effect */}
+          <div className="relative max-w-lg">
+            <div className="absolute inset-0 bg-primary-foreground/5 rounded-2xl blur-xl" />
+            <p className="relative text-lg md:text-xl font-medium opacity-95 leading-relaxed pl-4 border-l-4 border-primary-foreground/30">
+              Mental arifmetika bo'yicha treninglarni davom ettiring va o'z natijalaringizni kuzating.
+            </p>
+          </div>
         </div>
 
         {/* IQROMAX Logo */}
