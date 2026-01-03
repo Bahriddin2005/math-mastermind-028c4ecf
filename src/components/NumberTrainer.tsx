@@ -1293,60 +1293,60 @@ export const NumberTrainer = () => {
           </TabsContent>
 
           <TabsContent value="stats" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`stats-${activeTab}`}>
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {/* Statistika kartalar */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-primary-glow" />
-                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                      <Target className="h-6 w-6 text-primary" />
+                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                      <Target className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                     </div>
-                    <p className="text-3xl font-bold text-foreground">{stats.totalProblems}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Jami mashqlar</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-foreground dark:text-white">{stats.totalProblems}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Jami mashqlar</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-success to-green-400" />
-                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-12 w-12 rounded-2xl bg-success/10 flex items-center justify-center mx-auto mb-3">
-                      <Check className="h-6 w-6 text-success" />
+                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-success/10 dark:bg-success/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                      <Check className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
                     </div>
-                    <p className="text-3xl font-bold text-success">{accuracy}%</p>
-                    <p className="text-sm text-muted-foreground mt-1">Aniqlik</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-success">{accuracy}%</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Aniqlik</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400" />
-                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-12 w-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
-                      <Clock className="h-6 w-6 text-blue-500" />
+                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                      <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" />
                     </div>
-                    <p className="text-3xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-                    <p className="text-sm text-muted-foreground mt-1">O'rtacha vaqt</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">O'rtacha vaqt</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[160px] flex flex-col relative">
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden h-[140px] sm:h-[160px] flex flex-col relative">
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-warning to-amber-400" />
-                  <CardContent className="p-5 text-center flex flex-col items-center justify-center flex-1">
-                    <div className="h-12 w-12 rounded-2xl bg-warning/10 flex items-center justify-center mx-auto mb-3">
-                      <Trophy className="h-6 w-6 text-warning" />
+                  <CardContent className="p-3 sm:p-5 text-center flex flex-col items-center justify-center flex-1">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-warning/10 dark:bg-warning/20 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+                      <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
                     </div>
-                    <p className="text-3xl font-bold text-warning">{stats.bestStreak}</p>
-                    <p className="text-sm text-muted-foreground mt-1">Eng uzun seriya</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-warning">{stats.bestStreak}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mt-1">Eng uzun seriya</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Haftalik grafik */}
-              <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
+              <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-accent to-primary" />
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
-                  <CardTitle className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <BarChart3 className="h-5 w-5 text-primary" />
+                <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent dark:from-primary/10 px-3 sm:px-6">
+                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-sm sm:text-base">
+                    <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                     </div>
-                    Haftalik progress
+                    <span className="dark:text-white">Haftalik progress</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
