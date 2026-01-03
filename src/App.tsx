@@ -8,6 +8,7 @@ import { AuthProvider } from "./hooks/useAuth";
 import { HelpChatWidget } from "./components/HelpChatWidget";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { MobileBottomNav } from "./components/MobileBottomNav";
+import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -61,6 +62,7 @@ const App = () => (
               </Routes>
             </div>
             <MobileBottomNav />
+            <PWAInstallBanner />
             <HelpChatWidget />
           </BrowserRouter>
         </AuthProvider>

@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
 import { Achievements } from '@/components/Achievements';
+import { DailyRemindersSettings } from '@/components/DailyRemindersSettings';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -553,8 +554,13 @@ const Settings = () => {
             </Card>
           </div>
 
-          {/* Achievements Section */}
+          {/* Daily Reminders Section */}
           <div className="opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+            <DailyRemindersSettings />
+          </div>
+
+          {/* Achievements Section */}
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
             <Achievements
               totalProblems={profileStats.totalProblems}
               bestStreak={profileStats.bestStreak}
