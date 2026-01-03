@@ -89,7 +89,8 @@ export const DailyChallenge = () => {
     speakNumber,
     stop: stopTTS
   } = useTTS({
-    useElevenLabs: true
+    // Temporarily use browser TTS until ElevenLabs key has text_to_speech permission
+    useElevenLabs: false
   });
   const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
   const [results, setResults] = useState<ChallengeResult[]>([]);
