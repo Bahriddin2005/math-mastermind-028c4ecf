@@ -58,24 +58,24 @@ export const StatsCard = ({
 
   return (
     <Card
-      className={`group relative overflow-hidden p-3 sm:p-4 md:p-5 bg-gradient-to-br from-card via-card to-secondary/20 border border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all duration-300 hover:-translate-y-1 h-[100px] flex flex-col justify-center ${colors.borderHover}`}
+      className={`group relative overflow-hidden p-2.5 xs:p-3 sm:p-4 md:p-5 bg-gradient-to-br from-card via-card to-secondary/20 border border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all duration-300 hover:-translate-y-1 min-h-[80px] xs:min-h-[90px] sm:h-[100px] flex flex-col justify-center ${colors.borderHover}`}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
     >
       {/* Background decoration */}
-      <div className={`absolute -top-8 -right-8 w-20 sm:w-24 h-20 sm:h-24 ${colors.valueBg} rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition-opacity`} />
+      <div className={`absolute -top-6 -right-6 xs:-top-8 xs:-right-8 w-16 xs:w-20 sm:w-24 h-16 xs:h-20 sm:h-24 ${colors.valueBg} rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition-opacity`} />
       
-      <div className="relative flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4 text-center sm:text-left">
-        {/* Icon container */}
-        <div className={`h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-xl ${colors.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${colors.iconColor}`} strokeWidth={2} />
+      <div className="relative flex items-center gap-2 xs:gap-3 sm:gap-4">
+        {/* Icon container - smaller on mobile */}
+        <div className={`h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg xs:rounded-xl ${colors.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className={`h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${colors.iconColor}`} strokeWidth={2} />
         </div>
         
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground font-medium truncate mb-0.5">
+          <p className="text-[9px] xs:text-[10px] sm:text-xs md:text-sm text-muted-foreground font-medium truncate mb-0.5">
             {label}
           </p>
-          <p className={`text-xl sm:text-2xl md:text-3xl font-display font-bold ${colors.valueColor} tracking-tight`}>
+          <p className={`text-base xs:text-lg sm:text-2xl md:text-3xl font-display font-bold ${colors.valueColor} tracking-tight`}>
             {value}
           </p>
         </div>
