@@ -460,59 +460,65 @@ export const DailyChallenge = () => {
     );
   }
 
-  // Javob kiritish - Mobile optimized
+  // Javob kiritish - pastroqda joylashgan
   if (view === 'answer') {
     return (
-      <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50 p-4 sm:p-6">
-        <div className="max-w-md w-full space-y-4 sm:space-y-6 text-center">
-          <Badge className="text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2">
-            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-background to-primary/5 flex flex-col z-50 p-4 sm:p-6">
+        {/* Yuqori qism - badge */}
+        <div className="flex justify-center pt-4">
+          <Badge className="text-sm sm:text-lg px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-500/30">
+            <Flame className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 text-amber-500" />
             Kunlik musobaqa
           </Badge>
-          
-          <h2 className="text-xl sm:text-2xl font-bold">Javobingizni kiriting!</h2>
-          
-          <div className="flex items-center justify-center gap-2 text-muted-foreground bg-muted/50 px-4 py-2 rounded-xl mx-auto w-fit">
-            <Clock className="h-5 w-5 sm:h-6 sm:w-6" />
-            <span className="font-mono text-lg sm:text-xl font-bold">{elapsedTime.toFixed(1)}s</span>
+        </div>
+        
+        {/* Asosiy kontent - pastroqda */}
+        <div className="flex-1 flex flex-col items-center justify-end pb-[15vh] sm:pb-[20vh]">
+          <div className="max-w-md w-full space-y-4 sm:space-y-5 text-center">
+            <h2 className="text-xl sm:text-2xl font-bold">Javobingizni kiriting!</h2>
+            
+            <div className="flex items-center justify-center gap-2 text-muted-foreground bg-muted/80 backdrop-blur-sm px-4 py-2 rounded-full mx-auto w-fit border border-border/50">
+              <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <span className="font-mono text-lg sm:text-xl font-bold">{elapsedTime.toFixed(1)}s</span>
+            </div>
+            
+            <div className="bg-muted/50 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-border/30">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
+              <p className="text-base sm:text-lg font-mono leading-relaxed">
+                {displayedNumbers.map((item, i) => (
+                  <span key={i}>
+                    {i > 0 ? (item.isAdd ? ' + ' : ' - ') : ''}{item.num}
+                  </span>
+                ))}
+              </p>
+            </div>
+            
+            <Input
+              type="number"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
+              placeholder="Javob"
+              className="text-center text-3xl sm:text-4xl h-16 sm:h-20 text-primary font-bold rounded-2xl border-2 border-primary/20 focus:border-primary bg-card/80 backdrop-blur-sm"
+              autoFocus
+            />
+            
+            <Button 
+              onClick={submitAnswer} 
+              disabled={!userAnswer || !user} 
+              size="lg" 
+              className="w-full h-14 sm:h-12 text-lg sm:text-base rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg"
+            >
+              <Check className="h-5 w-5 sm:h-5 sm:w-5 mr-2" />
+              Yuborish
+            </Button>
+            
+            {!user && (
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Natijani saqlash uchun tizimga kiring
+              </p>
+            )}
           </div>
-          
-          <div className="bg-muted/50 rounded-xl p-3 sm:p-4">
-            <p className="text-xs sm:text-sm text-muted-foreground mb-2">Ko'rsatilgan sonlar:</p>
-            <p className="text-base sm:text-lg font-mono leading-relaxed">
-              {displayedNumbers.map((item, i) => (
-                <span key={i}>
-                  {i > 0 ? (item.isAdd ? ' + ' : ' - ') : ''}{item.num}
-                </span>
-              ))}
-            </p>
-          </div>
-          
-          <Input
-            type="number"
-            value={userAnswer}
-            onChange={(e) => setUserAnswer(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
-            placeholder="Javob"
-            className="text-center text-3xl sm:text-4xl h-16 sm:h-20 text-primary font-bold"
-            autoFocus
-          />
-          
-          <Button 
-            onClick={submitAnswer} 
-            disabled={!userAnswer || !user} 
-            size="lg" 
-            className="w-full h-14 sm:h-12 text-lg sm:text-base"
-          >
-            <Check className="h-5 w-5 sm:h-5 sm:w-5 mr-2" />
-            Yuborish
-          </Button>
-          
-          {!user && (
-            <p className="text-xs sm:text-sm text-muted-foreground">
-              Natijani saqlash uchun tizimga kiring
-            </p>
-          )}
         </div>
       </div>
     );
