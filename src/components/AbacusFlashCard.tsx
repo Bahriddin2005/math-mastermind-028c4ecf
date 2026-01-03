@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2 } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useAuth } from '@/hooks/useAuth';
+import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -175,6 +176,7 @@ const SPEED_CONFIG = {
 export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
+  const { triggerCompletionConfetti } = useConfetti();
   
   // Settings
   const [problemCount, setProblemCount] = useState(5);
@@ -503,12 +505,19 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setIsFinished(true);
     setIsPlaying(false);
     playSound('complete');
+    
+    // Trigger confetti effect based on accuracy
+    const finalAccuracy = Math.round((finalScore.correct / (finalScore.correct + finalScore.incorrect)) * 100);
+    setTimeout(() => {
+      triggerCompletionConfetti(finalAccuracy);
+    }, 300);
+    
     onComplete?.(finalScore.correct, problemCount);
     
     if (user) {
       saveResult(finalScore);
     }
-  }, [problemCount, playSound, onComplete, user]);
+  }, [problemCount, playSound, onComplete, user, triggerCompletionConfetti]);
 
   // Save result to database
   const saveResult = async (finalScore: { correct: number; incorrect: number; totalPoints: number }) => {
@@ -694,20 +703,20 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-200px)]">
+    <div className="flex flex-col min-h-[calc(100vh-180px)]">
       {/* Settings - Sticky at bottom when not playing */}
       {showSettings && !isFinished && (
         <>
           {/* Large Display Area for Preview */}
-          <div className="flex-1 flex items-center justify-center py-8 sm:py-12">
-            <div className="text-center space-y-4">
+          <div className="flex-1 flex items-center justify-center py-12 sm:py-16 md:py-20">
+            <div className="text-center space-y-6">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-3xl scale-150" />
-                <div className="relative text-[80px] sm:text-[120px] md:text-[160px] font-bold font-display text-emerald-600/30 dark:text-emerald-400/30 select-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/30 to-amber-500/30 rounded-full blur-[80px] scale-[2]" />
+                <div className="relative text-[120px] sm:text-[180px] md:text-[240px] lg:text-[300px] font-bold font-display text-emerald-600/40 dark:text-emerald-400/40 select-none leading-none">
                   ?
                 </div>
               </div>
-              <p className="text-muted-foreground text-sm sm:text-base">
+              <p className="text-muted-foreground text-base sm:text-lg">
                 Sozlamalarni tanlang va mashqni boshlang
               </p>
             </div>
