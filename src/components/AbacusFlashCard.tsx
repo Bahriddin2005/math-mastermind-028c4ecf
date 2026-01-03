@@ -178,7 +178,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
   const { triggerCompletionConfetti } = useConfetti();
-  const { speakNumber, stop: stopTTS } = useTTS({ useElevenLabs: true });
+  // Temporarily use browser TTS until ElevenLabs key has text_to_speech permission
+  const { speakNumber, stop: stopTTS } = useTTS({ useElevenLabs: false });
   
   // Settings
   const [problemCount, setProblemCount] = useState(5);
