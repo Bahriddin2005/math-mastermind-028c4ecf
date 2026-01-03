@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -89,6 +90,7 @@ const generateSessionId = () => {
 };
 
 export const HelpChatWidget = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFaq, setSelectedFaq] = useState<FAQItem | null>(null);
@@ -121,6 +123,11 @@ export const HelpChatWidget = () => {
   const audioChunksRef = useRef<Blob[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const pdfInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Faqat bosh sahifada ko'rsatish
+  if (location.pathname !== '/') {
+    return null;
+  }
 
   const copyToClipboard = async (text: string, index: number) => {
     try {
