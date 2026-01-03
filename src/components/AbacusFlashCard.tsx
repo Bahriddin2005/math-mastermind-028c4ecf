@@ -644,8 +644,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Progress Bar */}
         <Progress value={(currentProblem / problemCount) * 100} className="h-0.5 xs:h-1 rounded-none" />
 
-        {/* Main Content - Centered Number Display - Mobile Optimized */}
-        <div className="flex-1 flex items-center justify-center px-4">
+        {/* Main Content - Scrollable from top */}
+        <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start pt-8 sm:pt-12 px-4">
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
             <div className="relative flex items-center justify-center w-full">
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[80px] xs:blur-[100px] sm:blur-[120px] scale-150 sm:scale-175" />
