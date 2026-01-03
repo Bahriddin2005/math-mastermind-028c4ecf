@@ -13,6 +13,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 import { PageTransition } from "./components/PageTransition";
 import { PageLoader } from "./components/PageLoader";
 import { PullToRefresh } from "./components/PullToRefresh";
+import { OnboardingScreen, useOnboarding } from "./components/OnboardingScreen";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -32,6 +33,8 @@ import Badges from "./pages/Badges";
 import Install from "./pages/Install";
 import MentalArithmetic from "./pages/MentalArithmetic";
 import Achievements from "./pages/Achievements";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +43,59 @@ const handleRefresh = async () => {
   // Simulate refresh - reload data
   await new Promise(resolve => setTimeout(resolve, 1000));
   window.location.reload();
+};
+
+// App content with onboarding check
+const AppContent = () => {
+  const { showOnboarding, isLoading } = useOnboarding();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (showOnboarding) {
+    return <OnboardingScreen />;
+  }
+
+  return (
+    <>
+      <ScrollToTop />
+      <PullToRefresh onRefresh={handleRefresh}>
+        <div className="pb-16 md:pb-0">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogPostPage />} />
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
+              <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
+              <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
+              <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
+              <Route path="/badges" element={<Badges />} />
+              <Route path="/install" element={<Install />} />
+              <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
+              <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </PageTransition>
+        </div>
+      </PullToRefresh>
+      <MobileBottomNav />
+      <PWAInstallBanner />
+      <HelpChatWidget />
+    </>
+  );
 };
 
 const App = () => (
@@ -51,39 +107,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <ScrollToTop />
-            <PullToRefresh onRefresh={handleRefresh}>
-              <div className="pb-16 md:pb-0">
-                <PageTransition>
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/pricing" element={<Pricing />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:id" element={<BlogPostPage />} />
-                    <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                    <Route path="/faq" element={<FAQ />} />
-                    <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
-                    <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
-                    <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
-                    <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
-                    <Route path="/badges" element={<Badges />} />
-                    <Route path="/install" element={<Install />} />
-                    <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
-                    <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </PageTransition>
-              </div>
-            </PullToRefresh>
-            <MobileBottomNav />
-            <PWAInstallBanner />
-            <HelpChatWidget />
+            <AppContent />
           </BrowserRouter>
         </AuthProvider>
       </TooltipProvider>
