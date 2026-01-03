@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from '@/hooks/useAuth';
@@ -20,6 +20,7 @@ import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice'
 import { WeeklyCompetition } from '@/components/WeeklyCompetition';
 import { UserBadges } from '@/components/UserBadges';
 import { ProgressVisualization } from '@/components/ProgressVisualization';
+import { PullToRefresh } from '@/components/PullToRefresh';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -202,6 +203,40 @@ const Dashboard = () => {
     fetchData();
   }, [user, authLoading]);
 
+  // Pull to refresh handler
+  const handleRefresh = useCallback(async () => {
+    if (!user) return;
+    
+    // Re-fetch all data
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (profileData) {
+      setProfile({
+        username: profileData.username,
+        total_score: profileData.total_score || 0,
+        total_problems_solved: profileData.total_problems_solved || 0,
+        best_streak: profileData.best_streak || 0,
+        daily_goal: profileData.daily_goal || 20,
+        current_streak: profileData.current_streak || 0,
+      });
+    }
+
+    const { data: sessionsData } = await supabase
+      .from('game_sessions')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (sessionsData) {
+      setSessions(sessionsData);
+    }
+  }, [user]);
+
   const getSessionStats = () => {
     if (sessions.length === 0) return { totalGames: 0, avgAccuracy: 0, totalCorrect: 0 };
 
@@ -239,10 +274,11 @@ const Dashboard = () => {
   }
 
   return (
-    <PageBackground className="flex flex-col">
-      <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
+    <PullToRefresh onRefresh={handleRefresh}>
+      <PageBackground className="flex flex-col">
+        <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      <main className="flex-1">
+        <main className="flex-1">
         {/* Hero Section with gradient */}
         <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10">
           {/* Animated background elements */}
@@ -491,6 +527,7 @@ const Dashboard = () => {
       </main>
       <Footer />
     </PageBackground>
+    </PullToRefresh>
   );
 };
 
