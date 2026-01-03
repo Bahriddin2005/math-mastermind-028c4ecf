@@ -3,7 +3,8 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MentalArithmeticPractice } from '@/components/MentalArithmeticPractice';
 import { useSound } from '@/hooks/useSound';
-import { Calculator, Brain } from 'lucide-react';
+import { Brain, Calculator } from 'lucide-react';
+import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 
 const MentalArithmetic = () => {
   const { soundEnabled, toggleSound } = useSound();
@@ -14,18 +15,26 @@ const MentalArithmetic = () => {
       
       <main className="flex-1 container px-3 sm:px-4 py-4 sm:py-8">
         <div className="max-w-5xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-3 opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg mb-2">
-              <Calculator className="w-8 h-8 text-white" />
+          {/* Header with Logo */}
+          <div className="text-center space-y-4 opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
+            {/* IQROMAX Logo */}
+            <div className="flex justify-center mb-2">
+              <img 
+                src={iqromaxLogo} 
+                alt="IQROMAX" 
+                className="h-12 sm:h-16 md:h-20 w-auto object-contain drop-shadow-md"
+              />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground">
-              Mental Arifmetika
-            </h1>
-            <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">
-              Abakus usulida tez hisoblash ko'nikmalarini rivojlantiring. 
-              Formulalar, flash-kartalar va multiplayer rejimlar bilan mashq qiling.
-            </p>
+            
+            <div className="space-y-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground flex items-center justify-center gap-2">
+                <Brain className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-500" />
+                Mental Arifmetika
+              </h1>
+              <p className="text-muted-foreground max-w-lg mx-auto text-sm sm:text-base">
+                Abakus usulida tez hisoblash ko'nikmalarini rivojlantiring
+              </p>
+            </div>
           </div>
 
           {/* Features highlights */}
