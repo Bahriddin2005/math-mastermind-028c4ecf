@@ -623,13 +623,13 @@ export const NumberTrainer = () => {
       : (isAddition ? currentDisplay : `-${currentDisplay}`);
     
     return (
-      <div className="fixed inset-0 bg-background flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-background dark:bg-slate-950 flex items-center justify-center z-50">
         <div 
           key={countRef.current}
           className="animate-fade-in"
         >
           <span 
-            className="text-[180px] sm:text-[220px] md:text-[280px] lg:text-[350px] font-light text-foreground tracking-tight"
+            className="text-[120px] sm:text-[180px] md:text-[220px] lg:text-[280px] xl:text-[350px] font-light text-foreground dark:text-white tracking-tight"
             style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
           >
             {displayNumber}
@@ -642,32 +642,32 @@ export const NumberTrainer = () => {
   // Natija sahifasi
   if (isFinished) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6 overflow-hidden">
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 dark:from-slate-950 dark:via-slate-900 dark:to-primary/10 flex flex-col items-center justify-center z-50 p-4 sm:p-6 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-primary/5 dark:bg-primary/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 -right-20 w-64 sm:w-96 h-64 sm:h-96 bg-accent/5 dark:bg-accent/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative max-w-lg w-full space-y-6 animate-fade-in">
+        <div className="relative max-w-lg w-full space-y-4 sm:space-y-6 animate-fade-in">
           {/* Header card */}
-          <div className="bg-card/80 backdrop-blur-sm rounded-3xl border border-border/50 shadow-lg p-6 text-center">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-accent" />
+          <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl border border-border/50 dark:border-slate-700/50 shadow-lg dark:shadow-2xl p-4 sm:p-6 text-center">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
+                <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
               </div>
               <div className="text-left">
-                <p className="text-sm text-muted-foreground">Umumiy vaqt</p>
-                <p className="text-2xl font-bold font-mono text-accent">{elapsedTime.toFixed(1)}s</p>
+                <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400">Umumiy vaqt</p>
+                <p className="text-xl sm:text-2xl font-bold font-mono text-accent">{elapsedTime.toFixed(1)}s</p>
               </div>
             </div>
             
-            <h2 className="text-2xl font-display font-bold text-foreground mb-2">Mashq tugadi!</h2>
-            <p className="text-muted-foreground text-sm">Javobingizni kiriting</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white mb-1 sm:mb-2">Mashq tugadi!</h2>
+            <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm">Javobingizni kiriting</p>
           </div>
           
           {!showResult ? (
-            <div className="space-y-4 animate-fade-in">
+            <div className="space-y-3 sm:space-y-4 animate-fade-in">
               <div className="relative">
                 <Input
                   type="number"
@@ -675,7 +675,7 @@ export const NumberTrainer = () => {
                   onChange={(e) => setUserAnswer(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
                   placeholder="Javobni kiriting..."
-                  className="text-center text-3xl h-20 rounded-2xl bg-card/80 backdrop-blur-sm border-2 border-primary/20 focus:border-primary shadow-lg font-mono"
+                  className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-xl sm:rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
                   autoFocus
                 />
               </div>
@@ -683,65 +683,65 @@ export const NumberTrainer = () => {
                 onClick={checkAnswer}
                 disabled={!userAnswer}
                 size="lg"
-                className="w-full gap-3 h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
               >
-                <Check className="h-6 w-6" />
+                <Check className="h-5 w-5 sm:h-6 sm:w-6" />
                 Tekshirish
               </Button>
             </div>
           ) : (
-            <div className={`space-y-6 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
+            <div className={`space-y-4 sm:space-y-6 ${isCorrect ? 'animate-scale-in' : 'animate-shake'}`}>
               {/* Result card */}
-              <div className={`p-8 rounded-3xl text-center ${
+              <div className={`p-6 sm:p-8 rounded-2xl sm:rounded-3xl text-center ${
                 isCorrect 
-                  ? 'bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30' 
-                  : 'bg-gradient-to-br from-destructive/10 to-destructive/5 border-2 border-destructive/30'
+                  ? 'bg-gradient-to-br from-success/10 to-success/5 dark:from-success/20 dark:to-success/10 border-2 border-success/30 dark:border-success/40' 
+                  : 'bg-gradient-to-br from-destructive/10 to-destructive/5 dark:from-destructive/20 dark:to-destructive/10 border-2 border-destructive/30 dark:border-destructive/40'
               }`}>
-                <div className={`text-8xl mb-4 ${isCorrect ? 'animate-celebrate' : ''}`}>
+                <div className={`text-6xl sm:text-8xl mb-3 sm:mb-4 ${isCorrect ? 'animate-celebrate' : ''}`}>
                   {isCorrect ? '🎉' : '😔'}
                 </div>
-                <p className={`text-2xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
+                <p className={`text-xl sm:text-2xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
                   {isCorrect ? "Zo'r! To'g'ri javob!" : "Noto'g'ri javob"}
                 </p>
               </div>
 
               {/* Answer details */}
-              <div className="bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 p-5 space-y-3">
+              <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 p-4 sm:p-5 space-y-2 sm:space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">To'g'ri javob:</span>
-                  <span className="text-2xl font-bold text-foreground font-mono">{runningResultRef.current}</span>
+                  <span className="text-sm text-muted-foreground dark:text-slate-400">To'g'ri javob:</span>
+                  <span className="text-xl sm:text-2xl font-bold text-foreground dark:text-white font-mono">{runningResultRef.current}</span>
                 </div>
                 {!isCorrect && (
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                    <span className="text-muted-foreground">Sizning javobingiz:</span>
-                    <span className="text-xl font-bold text-destructive font-mono">{userAnswer}</span>
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
+                    <span className="text-sm text-muted-foreground dark:text-slate-400">Sizning javobingiz:</span>
+                    <span className="text-lg sm:text-xl font-bold text-destructive font-mono">{userAnswer}</span>
                   </div>
                 )}
-                <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                  <span className="text-muted-foreground">Javob vaqti:</span>
-                  <span className="text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
+                <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
+                  <span className="text-sm text-muted-foreground dark:text-slate-400">Javob vaqti:</span>
+                  <span className="text-base sm:text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
                 </div>
               </div>
             </div>
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-4 pt-2">
+          <div className="flex gap-3 sm:gap-4 pt-1 sm:pt-2">
             <Button
               onClick={resetGame}
               variant="outline"
               size="lg"
-              className="flex-1 gap-2 h-14 rounded-2xl bg-card/80 backdrop-blur-sm border-border/50 hover:bg-muted transition-all duration-300"
+              className="flex-1 gap-2 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
             >
-              <RotateCcw className="h-5 w-5" />
+              <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
               Orqaga
             </Button>
             <Button
               onClick={startGame}
               size="lg"
-              className="flex-1 gap-2 h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+              className="flex-1 gap-2 h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
             >
-              <Play className="h-5 w-5" />
+              <Play className="h-4 w-4 sm:h-5 sm:w-5" />
               Yangi mashq
             </Button>
           </div>
@@ -750,79 +750,78 @@ export const NumberTrainer = () => {
     );
   }
 
-
   // Sozlamalar sahifasi
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen dark:bg-slate-950">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
       
-      <div className="container py-8 px-4 md:px-8">
+      <div className="container py-4 sm:py-6 md:py-8 px-3 sm:px-4 md:px-8">
         {/* Hero Section */}
-        <div className="relative text-center mb-10 py-8 animate-fade-in">
+        <div className="relative text-center mb-6 sm:mb-8 md:mb-10 py-4 sm:py-6 md:py-8 animate-fade-in">
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-40 h-40 bg-accent/10 rounded-full blur-3xl" />
+            <div className="absolute top-0 left-1/4 w-24 sm:w-32 h-24 sm:h-32 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-32 sm:w-40 h-32 sm:h-40 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl" />
           </div>
           
           {/* Floating icons */}
-          <div className="absolute top-4 left-[15%] animate-bounce-soft opacity-60">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center rotate-12">
-              <span className="text-xl">🧮</span>
+          <div className="absolute top-2 sm:top-4 left-[10%] sm:left-[15%] animate-bounce-soft opacity-60">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center rotate-12">
+              <span className="text-base sm:text-xl">🧮</span>
             </div>
           </div>
-          <div className="absolute top-8 right-[15%] animate-bounce-soft opacity-60" style={{ animationDelay: '0.5s' }}>
-            <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center -rotate-12">
-              <span className="text-xl">🧠</span>
+          <div className="absolute top-4 sm:top-8 right-[10%] sm:right-[15%] animate-bounce-soft opacity-60" style={{ animationDelay: '0.5s' }}>
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-accent/10 dark:bg-accent/20 flex items-center justify-center -rotate-12">
+              <span className="text-base sm:text-xl">🧠</span>
             </div>
           </div>
           <div className="absolute bottom-2 left-[20%] animate-bounce-soft opacity-50 hidden md:block" style={{ animationDelay: '1s' }}>
-            <div className="h-8 w-8 rounded-lg bg-warning/10 flex items-center justify-center rotate-6">
+            <div className="h-8 w-8 rounded-lg bg-warning/10 dark:bg-warning/20 flex items-center justify-center rotate-6">
               <span className="text-lg">⚡</span>
             </div>
           </div>
           <div className="absolute bottom-4 right-[20%] animate-bounce-soft opacity-50 hidden md:block" style={{ animationDelay: '0.7s' }}>
-            <div className="h-8 w-8 rounded-lg bg-success/10 flex items-center justify-center -rotate-6">
+            <div className="h-8 w-8 rounded-lg bg-success/10 dark:bg-success/20 flex items-center justify-center -rotate-6">
               <span className="text-lg">🎯</span>
             </div>
           </div>
 
           {/* Main content */}
           <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 rounded-full text-sm text-primary font-medium mb-4">
-              <Flame className="h-4 w-4" />
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-primary/10 dark:bg-primary/20 rounded-full text-xs sm:text-sm text-primary font-medium mb-3 sm:mb-4">
+              <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Kundalik mashq qiling
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold text-foreground dark:text-white mb-2 sm:mb-4 px-2">
               Mental Arifmetika{' '}
-              <span className="relative">
+              <span className="relative inline-block">
                 <span className="text-gradient-primary">Treneri</span>
-                <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none">
+                <svg className="absolute -bottom-1 sm:-bottom-2 left-0 w-full" height="6" viewBox="0 0 200 8" fill="none">
                   <path d="M2 6C50 2 150 2 198 6" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round" className="opacity-50"/>
                 </svg>
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground dark:text-slate-400 max-w-xl mx-auto leading-relaxed px-4">
               Aql hisoblash ko&apos;nikmalarini rivojlantiring va{' '}
-              <span className="text-foreground font-medium">o&apos;z darajangizni</span> oshiring
+              <span className="text-foreground dark:text-white font-medium">o&apos;z darajangizni</span> oshiring
             </p>
 
             {/* Stats badges */}
             {user && stats.totalProblems > 0 && (
-              <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
-                  <Target className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">{stats.totalProblems} mashq</span>
+              <div className="flex items-center justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 flex-wrap px-2">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full border border-border/50 dark:border-slate-700/50 shadow-sm">
+                  <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                  <span className="text-xs sm:text-sm font-medium dark:text-white">{stats.totalProblems} mashq</span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
-                  <Trophy className="h-4 w-4 text-warning" />
-                  <span className="text-sm font-medium">{accuracy}% aniqlik</span>
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full border border-border/50 dark:border-slate-700/50 shadow-sm">
+                  <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-warning" />
+                  <span className="text-xs sm:text-sm font-medium dark:text-white">{accuracy}% aniqlik</span>
                 </div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-sm">
-                  <Flame className="h-4 w-4 text-accent" />
-                  <span className="text-sm font-medium">{stats.bestStreak} seriya</span>
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full border border-border/50 dark:border-slate-700/50 shadow-sm">
+                  <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent" />
+                  <span className="text-xs sm:text-sm font-medium dark:text-white">{stats.bestStreak} seriya</span>
                 </div>
               </div>
             )}
@@ -831,42 +830,42 @@ export const NumberTrainer = () => {
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* Desktop TabsList - tepa qismda */}
-          <TabsList className="hidden md:grid w-full max-w-3xl mx-auto grid-cols-6 mb-8 bg-card/80 backdrop-blur-sm border border-border/50 p-1.5 rounded-2xl shadow-md">
-            <TabsTrigger value="train" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
-              <Play className="h-4 w-4" />
+          <TabsList className="hidden md:grid w-full max-w-3xl mx-auto grid-cols-6 mb-6 lg:mb-8 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border border-border/50 dark:border-slate-700/50 p-1 lg:p-1.5 rounded-xl lg:rounded-2xl shadow-md dark:shadow-2xl">
+            <TabsTrigger value="train" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <Play className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">Mashq</span>
             </TabsTrigger>
-            <TabsTrigger value="learn" className="gap-2 data-[state=active]:bg-success data-[state=active]:text-success-foreground rounded-xl transition-all duration-300">
-              <BookOpen className="h-4 w-4" />
+            <TabsTrigger value="learn" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-success data-[state=active]:text-success-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <BookOpen className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">O'quv</span>
             </TabsTrigger>
-            <TabsTrigger value="daily" className="gap-2 data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-xl transition-all duration-300">
-              <Flame className="h-4 w-4" />
+            <TabsTrigger value="daily" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-accent data-[state=active]:text-accent-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <Flame className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">Kunlik</span>
             </TabsTrigger>
-            <TabsTrigger value="multiplayer" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
-              <Users className="h-4 w-4" />
+            <TabsTrigger value="multiplayer" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <Users className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">Multiplayer</span>
             </TabsTrigger>
-            <TabsTrigger value="leaderboard" className="gap-2 data-[state=active]:bg-warning data-[state=active]:text-warning-foreground rounded-xl transition-all duration-300">
-              <Trophy className="h-4 w-4" />
+            <TabsTrigger value="leaderboard" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-warning data-[state=active]:text-warning-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <Trophy className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">Reyting</span>
             </TabsTrigger>
-            <TabsTrigger value="stats" className="gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl transition-all duration-300">
-              <BarChart3 className="h-4 w-4" />
+            <TabsTrigger value="stats" className="gap-1.5 lg:gap-2 text-xs lg:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg lg:rounded-xl transition-all duration-300">
+              <BarChart3 className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
               <span className="font-medium">Statistika</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Mobile TabsList - pastki navigatsiya with animations */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 shadow-lg safe-area-bottom">
-            <TabsList className="grid w-full grid-cols-6 p-2 bg-transparent h-auto relative">
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-border/50 dark:border-slate-800 shadow-lg safe-area-bottom">
+            <TabsList className="grid w-full grid-cols-6 p-1.5 sm:p-2 bg-transparent h-auto relative">
               {/* Animated background indicator */}
               <div 
-                className="absolute h-[calc(100%-16px)] top-2 rounded-2xl bg-gradient-to-r transition-all duration-300 ease-out"
+                className="absolute h-[calc(100%-12px)] sm:h-[calc(100%-16px)] top-1.5 sm:top-2 rounded-xl sm:rounded-2xl bg-gradient-to-r transition-all duration-300 ease-out"
                 style={{
-                  width: 'calc((100% - 16px) / 6)',
-                  left: `calc(${['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 16px) / 6) + 8px)`,
+                  width: 'calc((100% - 12px) / 6)',
+                  left: `calc(${['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'].indexOf(activeTab)} * ((100% - 12px) / 6) + 6px)`,
                   background: activeTab === 'train' ? 'hsl(var(--primary) / 0.15)' :
                               activeTab === 'learn' ? 'hsl(var(--success) / 0.15)' :
                               activeTab === 'daily' ? 'hsl(var(--accent) / 0.15)' :
@@ -879,138 +878,138 @@ export const NumberTrainer = () => {
               <TabsTrigger 
                 value="train" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Play className="h-5 w-5 transition-transform duration-300 data-[state=active]:scale-110" />
-                <span className="text-[10px] font-medium transition-all duration-300">Mashq</span>
+                <Play className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 data-[state=active]:scale-110" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Mashq</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="learn" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-success rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-success rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <BookOpen className="h-5 w-5 transition-transform duration-300" />
-                <span className="text-[10px] font-medium transition-all duration-300">O'quv</span>
+                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">O'quv</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="daily" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-accent rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-accent rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Flame className="h-5 w-5 transition-transform duration-300" />
-                <span className="text-[10px] font-medium transition-all duration-300">Kunlik</span>
+                <Flame className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Kunlik</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="multiplayer" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Users className="h-5 w-5 transition-transform duration-300" />
-                <span className="text-[10px] font-medium transition-all duration-300">Ko'p</span>
+                <Users className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Ko'p</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="leaderboard" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-warning rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-warning rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <Trophy className="h-5 w-5 transition-transform duration-300" />
-                <span className="text-[10px] font-medium transition-all duration-300">Reyting</span>
+                <Trophy className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Reyting</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="stats" 
                 onClick={(e) => { createRipple(e); triggerHaptic(); }}
-                className="ripple-container relative flex flex-col items-center gap-0.5 py-2.5 px-1 text-muted-foreground data-[state=active]:text-primary rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
+                className="ripple-container relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-0.5 sm:px-1 text-muted-foreground dark:text-slate-500 data-[state=active]:text-primary rounded-lg sm:rounded-xl transition-all duration-300 data-[state=active]:scale-105 z-10"
               >
-                <BarChart3 className="h-5 w-5 transition-transform duration-300" />
-                <span className="text-[10px] font-medium transition-all duration-300">Stat</span>
+                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300" />
+                <span className="text-[9px] sm:text-[10px] font-medium transition-all duration-300">Stat</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="learn" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`learn-${activeTab}`}>
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-success/10 rounded-full text-sm text-success font-medium mb-4">
-                  <GraduationCap className="h-4 w-4" />
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1 sm:py-1.5 bg-success/10 dark:bg-success/20 rounded-full text-xs sm:text-sm text-success font-medium mb-3 sm:mb-4">
+                  <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   Video darslar
                 </div>
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground dark:text-white mb-2">
                   Mental Arifmetika Darslari
                 </h2>
-                <p className="text-muted-foreground max-w-lg mx-auto">
+                <p className="text-sm sm:text-base text-muted-foreground dark:text-slate-400 max-w-lg mx-auto px-4">
                   Professional video darslar orqali mental arifmetika sirlarini o'rganing
                 </p>
               </div>
               
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {/* Kurs kartasi 1 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
+                  className="group bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[200px] sm:h-[220px] flex flex-col"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-28 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center flex-shrink-0">
-                    <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <BookOpen className="h-7 w-7 text-primary" />
+                  <div className="h-24 sm:h-28 bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 flex items-center justify-center flex-shrink-0">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-primary/20 dark:bg-primary/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
                     </div>
                   </div>
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">Boshlang'ich kurs</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Soroban asoslari va oddiy formulalar</p>
+                  <CardContent className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground dark:text-white mb-1 line-clamp-1 text-sm sm:text-base">Boshlang'ich kurs</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-2 sm:mb-3 line-clamp-2 flex-1">Soroban asoslari va oddiy formulalar</p>
                     <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-primary font-medium">Bepul</span>
-                      <span className="text-xs text-muted-foreground">10+ dars</span>
+                      <span className="text-xs text-muted-foreground dark:text-slate-500">10+ dars</span>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Kurs kartasi 2 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
+                  className="group bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[200px] sm:h-[220px] flex flex-col"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-28 bg-gradient-to-br from-accent/20 to-warning/20 flex items-center justify-center flex-shrink-0">
-                    <div className="h-14 w-14 rounded-2xl bg-accent/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Target className="h-7 w-7 text-accent" />
+                  <div className="h-24 sm:h-28 bg-gradient-to-br from-accent/20 to-warning/20 dark:from-accent/30 dark:to-warning/30 flex items-center justify-center flex-shrink-0">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-accent/20 dark:bg-accent/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Target className="h-6 w-6 sm:h-7 sm:w-7 text-accent" />
                     </div>
                   </div>
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">O'rta daraja</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Formula 5 va Formula 10</p>
+                  <CardContent className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground dark:text-white mb-1 line-clamp-1 text-sm sm:text-base">O'rta daraja</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-2 sm:mb-3 line-clamp-2 flex-1">Formula 5 va Formula 10</p>
                     <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-accent font-medium">Premium</span>
-                      <span className="text-xs text-muted-foreground">15+ dars</span>
+                      <span className="text-xs text-muted-foreground dark:text-slate-500">15+ dars</span>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Kurs kartasi 3 */}
                 <Card 
-                  className="group bg-card/80 backdrop-blur-sm border-border/50 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[220px] flex flex-col"
+                  className="group bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden h-[200px] sm:h-[220px] flex flex-col sm:col-span-2 lg:col-span-1"
                   onClick={() => navigate('/courses')}
                 >
-                  <div className="h-28 bg-gradient-to-br from-warning/20 to-destructive/20 flex items-center justify-center flex-shrink-0">
-                    <div className="h-14 w-14 rounded-2xl bg-warning/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Trophy className="h-7 w-7 text-warning" />
+                  <div className="h-24 sm:h-28 bg-gradient-to-br from-warning/20 to-destructive/20 dark:from-warning/30 dark:to-destructive/30 flex items-center justify-center flex-shrink-0">
+                    <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-warning/20 dark:bg-warning/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Trophy className="h-6 w-6 sm:h-7 sm:w-7 text-warning" />
                     </div>
                   </div>
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <h3 className="font-bold text-foreground mb-1 line-clamp-1">Yuqori daraja</h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-1">Murakkab formulalar va tezlik</p>
+                  <CardContent className="p-3 sm:p-4 flex flex-col flex-1">
+                    <h3 className="font-bold text-foreground dark:text-white mb-1 line-clamp-1 text-sm sm:text-base">Yuqori daraja</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400 mb-2 sm:mb-3 line-clamp-2 flex-1">Murakkab formulalar va tezlik</p>
                     <div className="flex items-center justify-between mt-auto">
                       <span className="text-xs text-warning font-medium">Premium</span>
-                      <span className="text-xs text-muted-foreground">20+ dars</span>
+                      <span className="text-xs text-muted-foreground dark:text-slate-500">20+ dars</span>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              <div className="mt-8 text-center">
+              <div className="mt-6 sm:mt-8 text-center">
                 <Button 
                   size="lg" 
                   onClick={() => navigate('/courses')}
-                  className="gap-2 h-12 px-8 rounded-2xl bg-gradient-to-r from-success to-green-400 hover:from-green-400 hover:to-success text-white font-bold shadow-lg"
+                  className="gap-2 h-10 sm:h-12 px-6 sm:px-8 rounded-xl sm:rounded-2xl bg-gradient-to-r from-success to-green-400 hover:from-green-400 hover:to-success text-white font-bold shadow-lg text-sm sm:text-base"
                 >
-                  <GraduationCap className="h-5 w-5" />
+                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5" />
                   Barcha kurslarni ko'rish
                 </Button>
               </div>
@@ -1028,51 +1027,51 @@ export const NumberTrainer = () => {
           </TabsContent>
 
           <TabsContent value="train" className={`mt-0 mb-20 md:mb-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`train-${activeTab}`}>
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Target className="h-5 w-5 text-primary" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
+                  <div className="group relative p-3 sm:p-4 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 shadow-sm dark:shadow-lg hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                        <Target className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xl font-bold text-foreground">{stats.totalProblems}</p>
-                        <p className="text-xs text-muted-foreground">Jami mashqlar</p>
+                        <p className="text-lg sm:text-xl font-bold text-foreground dark:text-white">{stats.totalProblems}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-400">Jami mashqlar</p>
                       </div>
                     </div>
                   </div>
-                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center">
-                        <Check className="h-5 w-5 text-success" />
+                  <div className="group relative p-3 sm:p-4 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 shadow-sm dark:shadow-lg hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-success/10 dark:bg-success/20 flex items-center justify-center">
+                        <Check className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                       </div>
                       <div>
-                        <p className="text-xl font-bold text-success">{accuracy}%</p>
-                        <p className="text-xs text-muted-foreground">Aniqlik</p>
+                        <p className="text-lg sm:text-xl font-bold text-success">{accuracy}%</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-400">Aniqlik</p>
                       </div>
                     </div>
                   </div>
-                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                        <Clock className="h-5 w-5 text-blue-500" />
+                  <div className="group relative p-3 sm:p-4 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 shadow-sm dark:shadow-lg hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center">
+                        <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
                       </div>
                       <div>
-                        <p className="text-xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
-                        <p className="text-xs text-muted-foreground">O'rtacha vaqt</p>
+                        <p className="text-lg sm:text-xl font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-400">O'rtacha vaqt</p>
                       </div>
                     </div>
                   </div>
-                  <div className="group relative p-4 bg-card/80 backdrop-blur-sm rounded-2xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center">
-                        <Flame className="h-5 w-5 text-warning" />
+                  <div className="group relative p-3 sm:p-4 bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-border/50 dark:border-slate-700/50 shadow-sm dark:shadow-lg hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-warning/10 dark:bg-warning/20 flex items-center justify-center">
+                        <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                       </div>
                       <div>
-                        <p className="text-xl font-bold text-warning">{stats.bestStreak}</p>
-                        <p className="text-xs text-muted-foreground">Eng uzun seriya</p>
+                        <p className="text-lg sm:text-xl font-bold text-warning">{stats.bestStreak}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-400">Eng uzun seriya</p>
                       </div>
                     </div>
                   </div>
@@ -1080,22 +1079,22 @@ export const NumberTrainer = () => {
               )}
 
               {/* Settings Cards */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                 {/* Misol turi */}
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden h-[280px] flex flex-col">
-                  <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 to-transparent">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Square className="h-4 w-4 text-primary" />
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden h-auto md:h-[280px] flex flex-col">
+                  <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-primary/5 to-transparent dark:from-primary/10 px-3 sm:px-4 md:px-6">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
+                      <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md sm:rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                        <Square className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-primary" />
                       </div>
-                      Misol turi
+                      <span className="dark:text-white">Misol turi</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-3">
+                  <CardContent className="pt-2 sm:pt-3 px-3 sm:px-4 md:px-6">
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="grid grid-cols-2 gap-2"
+                      className="grid grid-cols-2 gap-1.5 sm:gap-2"
                     >
                       {[
                         { value: 'oddiy', label: 'Oddiy', icon: '📘' },
@@ -1112,14 +1111,14 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-2 w-full px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 border-2 
+                            className={`flex items-center gap-1.5 sm:gap-2 w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 
                               ${formulaType === item.value 
                                 ? 'bg-primary text-primary-foreground border-primary shadow-glow' 
-                                : 'bg-muted/50 border-transparent hover:bg-muted hover:border-border'
+                                : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
                               }`}
                           >
-                            <span className="text-lg">{item.icon}</span>
-                            <span className="font-medium text-sm">{item.label}</span>
+                            <span className="text-sm sm:text-lg">{item.icon}</span>
+                            <span className="font-medium text-xs sm:text-sm">{item.label}</span>
                           </Label>
                         </div>
                       ))}
@@ -1128,20 +1127,20 @@ export const NumberTrainer = () => {
                 </Card>
 
                 {/* Son xonasi */}
-                <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden h-[280px] flex flex-col">
-                  <CardHeader className="pb-3 bg-gradient-to-r from-accent/5 to-transparent">
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
-                        <span className="text-accent font-bold">123</span>
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden h-auto md:h-[280px] flex flex-col">
+                  <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-accent/5 to-transparent dark:from-accent/10 px-3 sm:px-4 md:px-6">
+                    <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
+                      <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md sm:rounded-lg bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
+                        <span className="text-accent font-bold text-xs sm:text-sm">123</span>
                       </div>
-                      Son xonasi
+                      <span className="dark:text-white">Son xonasi</span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-3">
+                  <CardContent className="pt-2 sm:pt-3 px-3 sm:px-4 md:px-6">
                     <RadioGroup
                       value={String(digitCount)}
                       onValueChange={(v) => setDigitCount(Number(v))}
-                      className="grid grid-cols-2 gap-2"
+                      className="grid grid-cols-2 gap-1.5 sm:gap-2"
                     >
                       {[
                         { value: 1, label: '1 xonali', desc: '1-9' },
@@ -1157,14 +1156,14 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`digit-${item.value}`}
-                            className={`flex flex-col w-full px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 border-2 
+                            className={`flex flex-col w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 
                               ${digitCount === item.value 
                                 ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow' 
-                                : 'bg-muted/50 border-transparent hover:bg-muted hover:border-border'
+                                : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
                               }`}
                           >
-                            <span className="font-medium text-sm">{item.label}</span>
-                            <span className="text-xs opacity-70">{item.desc}</span>
+                            <span className="font-medium text-xs sm:text-sm">{item.label}</span>
+                            <span className="text-[10px] sm:text-xs opacity-70">{item.desc}</span>
                           </Label>
                         </div>
                       ))}
@@ -1174,21 +1173,21 @@ export const NumberTrainer = () => {
               </div>
 
               {/* Tezligi va Misollar soni */}
-              <Card className="bg-card/80 backdrop-blur-sm border-border/50 shadow-md overflow-hidden">
-                <CardHeader className="pb-3 bg-gradient-to-r from-primary/5 via-accent/5 to-transparent">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Clock className="h-4 w-4 text-primary" />
+              <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden">
+                <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-primary/5 via-accent/5 to-transparent dark:from-primary/10 dark:via-accent/10 px-3 sm:px-4 md:px-6">
+                  <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
+                    <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md sm:rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-primary" />
                     </div>
-                    Tezlik va misollar soni
+                    <span className="dark:text-white">Tezlik va misollar soni</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-3 space-y-6">
+                <CardContent className="pt-2 sm:pt-3 space-y-4 sm:space-y-6 px-3 sm:px-4 md:px-6">
                   {/* Tezligi */}
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-muted-foreground">Tezligi (soniyada)</Label>
-                      <div className="flex items-center gap-2">
+                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400">Tezligi (soniyada)</Label>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <Input
                           type="number"
                           min={0.1}
@@ -1201,20 +1200,20 @@ export const NumberTrainer = () => {
                               setSpeed(Math.round(val * 10) / 10);
                             }
                           }}
-                          className="w-20 h-8 text-center text-sm font-bold bg-primary/10 border-primary/30"
+                          className="w-16 sm:w-20 h-7 sm:h-8 text-center text-xs sm:text-sm font-bold bg-primary/10 dark:bg-primary/20 border-primary/30 dark:border-primary/40 dark:text-white"
                         />
-                        <span className="text-sm text-muted-foreground">s</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400">s</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5">
                       {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.5, 2, 2.5, 3].map((s) => (
                         <button
                           key={s}
                           onClick={() => setSpeed(s)}
-                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 
+                          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 
                             ${speed === s 
                               ? 'bg-primary text-primary-foreground shadow-glow' 
-                              : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                              : 'bg-muted/70 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 hover:bg-muted dark:hover:bg-slate-700 hover:text-foreground dark:hover:text-white'
                             }`}
                         >
                           {s}
@@ -1224,10 +1223,10 @@ export const NumberTrainer = () => {
                   </div>
 
                   {/* Misollar soni */}
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium text-muted-foreground">Misollar soni</Label>
-                      <div className="flex items-center gap-2">
+                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400">Misollar soni</Label>
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <Input
                           type="number"
                           min={1}
@@ -1239,20 +1238,20 @@ export const NumberTrainer = () => {
                               setProblemCount(val);
                             }
                           }}
-                          className="w-20 h-8 text-center text-sm font-bold bg-accent/10 border-accent/30"
+                          className="w-16 sm:w-20 h-7 sm:h-8 text-center text-xs sm:text-sm font-bold bg-accent/10 dark:bg-accent/20 border-accent/30 dark:border-accent/40 dark:text-white"
                         />
-                        <span className="text-sm text-muted-foreground">ta</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400">ta</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5">
                       {[3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40, 50].map((num) => (
                         <button
                           key={num}
                           onClick={() => setProblemCount(num)}
-                          className={`w-9 h-9 rounded-lg text-sm font-medium transition-all duration-200 
+                          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 
                             ${problemCount === num 
                               ? 'bg-accent text-accent-foreground shadow-accent-glow' 
-                              : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground'
+                              : 'bg-muted/70 dark:bg-slate-800 text-muted-foreground dark:text-slate-400 hover:bg-muted dark:hover:bg-slate-700 hover:text-foreground dark:hover:text-white'
                             }`}
                         >
                           {num}
@@ -1264,24 +1263,24 @@ export const NumberTrainer = () => {
               </Card>
 
               {/* Boshlash va Reset tugmalari */}
-              <div className="flex flex-col sm:flex-row justify-center gap-3 pt-4">
+              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 pt-2 sm:pt-4">
                 <Button
                   onClick={resetToDefaults}
                   variant="outline"
                   size="lg"
-                  className="px-6 py-6 text-base font-medium rounded-2xl border-border/50 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-all duration-300"
+                  className="px-4 sm:px-6 py-4 sm:py-6 text-xs sm:text-base font-medium rounded-xl sm:rounded-2xl border-border/50 dark:border-slate-600 hover:bg-destructive/10 dark:hover:bg-destructive/20 hover:text-destructive hover:border-destructive/50 transition-all duration-300"
                 >
-                  <RotateCcw className="h-5 w-5 mr-2" />
+                  <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                   Default holatga qaytarish
                 </Button>
                 <Button
                   onClick={startGame}
                   size="lg"
-                  className="relative group bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-12 py-6 text-lg font-bold rounded-2xl shadow-glow transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  className="relative group bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground px-8 sm:px-12 py-4 sm:py-6 text-sm sm:text-lg font-bold rounded-xl sm:rounded-2xl shadow-glow transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 >
-                  <Play className="h-6 w-6 mr-3 group-hover:scale-110 transition-transform" />
+                  <Play className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 group-hover:scale-110 transition-transform" />
                   Mashqni boshlash
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" />
+                  <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse" />
                 </Button>
               </div>
             </div>
