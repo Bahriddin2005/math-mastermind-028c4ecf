@@ -49,6 +49,12 @@
 
     --radius: 1rem;
 
+    /* Mobile-first spacing scale */
+    --spacing-safe: env(safe-area-inset-bottom, 0px);
+    --nav-height: 3.5rem;
+    --touch-target: 2.75rem;
+    --touch-target-lg: 3.25rem;
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(145 80% 42%), hsl(145 80% 50%));
     --gradient-accent: linear-gradient(135deg, hsl(28 95% 55%), hsl(35 95% 60%));
@@ -128,18 +134,113 @@
     @apply border-border;
   }
 
+  html {
+    /* Smooth scrolling for mobile */
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    /* Prevent text size adjustment on orientation change */
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
     background: var(--gradient-hero);
     min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    /* Safe padding for notched phones */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    /* Better text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent overscroll bounce on iOS */
+    overscroll-behavior-y: none;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-display font-bold;
   }
+
+  /* Mobile-optimized font sizes */
+  h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight;
+  }
+
+  h2 {
+    @apply text-xl sm:text-2xl md:text-3xl leading-tight;
+  }
+
+  h3 {
+    @apply text-lg sm:text-xl md:text-2xl leading-snug;
+  }
+
+  p {
+    @apply text-base sm:text-lg leading-relaxed;
+  }
+
+  /* Better touch targets for interactive elements */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Prevent zoom on input focus (iOS) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 640px) {
+    input, select, textarea {
+      font-size: inherit !important;
+    }
+  }
 }
 
 @layer utilities {
+  /* Mobile-first utility classes */
+  .touch-target {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+  }
+
+  .touch-target-lg {
+    min-height: var(--touch-target-lg);
+    min-width: var(--touch-target-lg);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Container with mobile-friendly padding */
+  .container-mobile {
+    @apply px-4 sm:px-6 md:px-8;
+    max-width: 100%;
+  }
+
+  /* Card spacing for mobile */
+  .card-mobile {
+    @apply p-4 sm:p-5 md:p-6;
+  }
+
+  /* Gap utilities for mobile */
+  .gap-mobile {
+    @apply gap-3 sm:gap-4 md:gap-6;
+  }
+
+  /* Text utilities for readability */
+  .text-readable {
+    @apply text-base sm:text-lg leading-relaxed;
+    max-width: 65ch;
+  }
+
+  /* One-hand reach zone indicator */
+  .one-hand-zone {
+    @apply pb-16 sm:pb-0;
+  }
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -221,6 +322,27 @@
       0 4px 20px hsl(var(--accent) / 0.2),
       0 0 40px hsl(var(--accent) / 0.15);
   }
+
+  /* Mobile menu overlay */
+  .mobile-menu-overlay {
+    @apply fixed inset-0 bg-background/80 backdrop-blur-md z-40;
+  }
+
+  /* Mobile menu slide */
+  .mobile-menu-slide {
+    @apply fixed top-0 right-0 h-full w-[85%] max-w-sm bg-card border-l border-border z-50 shadow-2xl;
+  }
+
+  /* Pull to refresh indicator */
+  .pull-indicator {
+    @apply absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full;
+  }
+
+  /* Sticky bottom nav for mobile */
+  .sticky-bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border z-50;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }
 
 /* Custom animations */
@@ -267,9 +389,64 @@
   }
 }
 
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile menu animations */
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-to-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in-overlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-out-overlay {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .animate-bounce-soft {
@@ -292,15 +469,41 @@
   animation: slide-up 0.4s ease-out forwards;
 }
 
+.animate-slide-down {
+  animation: slide-down 0.4s ease-out forwards;
+}
+
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
 }
 
+.animate-scale-up {
+  animation: scale-up 0.3s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-from-right 0.3s ease-out forwards;
+}
+
+.animate-slide-out-right {
+  animation: slide-out-to-right 0.3s ease-out forwards;
+}
+
+.animate-fade-in-overlay {
+  animation: fade-in-overlay 0.2s ease-out forwards;
+}
+
+.animate-fade-out-overlay {
+  animation: fade-out-overlay 0.2s ease-out forwards;
+}
+
 /* Stagger animation delays */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
 
 /* Ripple effect */
 @keyframes ripple {
@@ -354,7 +557,7 @@
   animation: slide-in-left 0.3s ease-out forwards;
 }
 
-.animate-slide-in-right {
+.animate-slide-in-right-tab {
   animation: slide-in-right 0.3s ease-out forwards;
 }
 
@@ -422,3 +625,42 @@
 .voice-wave-bar:nth-child(3) { animation-delay: 0.2s; height: 100%; }
 .voice-wave-bar:nth-child(4) { animation-delay: 0.3s; height: 80%; }
 .voice-wave-bar:nth-child(5) { animation-delay: 0.15s; height: 60%; }
+
+/* Scrollbar styling for mobile */
+@media (max-width: 640px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 999px;
+  }
+}
+
+/* Hide scrollbar on touch devices but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Better focus states for accessibility */
+.focus-visible-ring:focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Active state for buttons on touch */
+@media (hover: none) and (pointer: coarse) {
+  .btn-touch-active:active {
+    @apply scale-95 transition-transform duration-100;
+  }
+}

@@ -201,31 +201,29 @@ export const GuestDashboard = () => {
   };
 
   return (
-    <div className="space-y-10">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl gradient-primary p-8 md:p-12 text-primary-foreground shadow-xl opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-        <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-primary-foreground/5 rounded-full" />
+    <div className="space-y-8 sm:space-y-10 pb-8 sm:pb-0">
+      {/* Hero Banner - Mobile optimized */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl gradient-primary p-6 sm:p-8 md:p-12 text-primary-foreground shadow-xl opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
+        <div className="absolute top-0 right-0 w-40 sm:w-64 h-40 sm:h-64 bg-primary-foreground/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-primary-foreground/5 rounded-full translate-y-1/2 -translate-x-1/2" />
         
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-foreground/20 rounded-full text-sm font-medium mb-4 backdrop-blur-sm">
-            <Sparkles className="h-4 w-4" />
-            IQROMAX - Mental Arifmetika Platformasi
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-primary-foreground/20 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4 backdrop-blur-sm">
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="truncate">IQROMAX - Mental Arifmetika</span>
           </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 sm:mb-4 leading-tight">
             Tez hisoblash ko'nikmalarini rivojlantiring
           </h1>
-          <p className="text-base md:text-lg opacity-90 mb-6 leading-relaxed">
-            Zamonaviy onlayn platforma orqali mental arifmetika, diqqat va xotirani mustahkamlang. 
-            Bolalar va kattalar uchun interaktiv mashqlar.
+          <p className="text-sm sm:text-base md:text-lg opacity-90 mb-5 sm:mb-6 leading-relaxed">
+            Zamonaviy onlayn platforma orqali mental arifmetika, diqqat va xotirani mustahkamlang.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col xs:flex-row gap-3">
             <Button 
               variant="secondary" 
               size="lg"
               onClick={() => navigate('/auth')}
-              className="gap-2 shadow-lg"
+              className="gap-2 shadow-lg h-12 sm:h-11 text-base sm:text-sm w-full xs:w-auto touch-target"
             >
               <Play className="h-5 w-5" />
               Bepul boshlash
@@ -233,8 +231,8 @@ export const GuestDashboard = () => {
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => navigate('/auth')}
-              className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20"
+              onClick={() => navigate('/courses')}
+              className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 h-12 sm:h-11 text-base sm:text-sm w-full xs:w-auto touch-target"
             >
               <GraduationCap className="h-5 w-5" />
               Video darslar
@@ -243,44 +241,44 @@ export const GuestDashboard = () => {
         </div>
       </div>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+      {/* Stats Bar - Mobile grid */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
         {displayStats.map((stat, index) => (
-          <Card key={index} className="p-4 text-center border-border/40 hover:shadow-md transition-shadow">
-            <stat.icon className="h-6 w-6 mx-auto mb-2 text-primary" />
-            <div className="text-2xl md:text-3xl font-display font-bold text-foreground">{stat.value}</div>
-            <div className="text-sm text-muted-foreground">{stat.label}</div>
+          <Card key={index} className="p-3 sm:p-4 text-center border-border/40 hover:shadow-md transition-shadow">
+            <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1.5 sm:mb-2 text-primary" />
+            <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground">{stat.value}</div>
+            <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
           </Card>
         ))}
       </div>
 
-      {/* Features Grid */}
-      <div className="space-y-6">
+      {/* Features Grid - Mobile optimized cards */}
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
-          <div className="h-10 w-10 rounded-xl gradient-primary flex items-center justify-center">
-            <Zap className="h-5 w-5 text-primary-foreground" />
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
+            <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
           </div>
-          <div>
-            <h2 className="text-xl font-display font-bold text-foreground">Platforma imkoniyatlari</h2>
-            <p className="text-sm text-muted-foreground">Barcha xususiyatlardan bepul foydalaning</p>
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Platforma imkoniyatlari</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">Barcha xususiyatlardan bepul foydalaning</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {features.map((feature, index) => (
             <Card 
               key={index}
-              className={`p-5 bg-gradient-to-br ${feature.gradient} border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all group cursor-pointer`}
+              className={`p-4 sm:p-5 bg-gradient-to-br ${feature.gradient} border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all group cursor-pointer active:scale-[0.98] touch-target`}
               style={{ animationDelay: `${200 + index * 50}ms`, animationFillMode: 'forwards' }}
               onClick={() => navigate('/auth')}
             >
-              <div className="flex items-start gap-4">
-                <div className={`h-12 w-12 rounded-xl ${feature.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                  <feature.icon className={`h-6 w-6 ${feature.iconColor}`} />
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl ${feature.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                  <feature.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${feature.iconColor}`} />
                 </div>
-                <div>
-                  <h3 className="font-display font-bold text-lg mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <div className="min-w-0">
+                  <h3 className="font-display font-bold text-base sm:text-lg mb-0.5 sm:mb-1">{feature.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               </div>
             </Card>
@@ -288,19 +286,38 @@ export const GuestDashboard = () => {
         </div>
       </div>
 
-      {/* How It Works */}
-      <div className="space-y-6">
+      {/* How It Works - Mobile horizontal scroll or vertical */}
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-            <Gamepad2 className="h-5 w-5 text-white" />
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+            <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-display font-bold text-foreground">Qanday ishlaydi?</h2>
-            <p className="text-sm text-muted-foreground">4 oddiy qadamda boshlang</p>
+          <div className="min-w-0">
+            <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Qanday ishlaydi?</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">4 oddiy qadamda boshlang</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
+        {/* Mobile: horizontal scroll, Desktop: grid */}
+        <div className="sm:hidden opacity-0 animate-slide-up -mx-4 px-4 overflow-x-auto hide-scrollbar" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
+          <div className="flex gap-3 pb-2" style={{ width: 'max-content' }}>
+            {howItWorks.map((item, index) => (
+              <Card key={index} className="p-4 text-center border-border/40 relative w-[160px] flex-shrink-0">
+                <div className="absolute -top-2 -left-2 w-7 h-7 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold text-xs shadow-lg">
+                  {item.step}
+                </div>
+                <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center mx-auto mb-2">
+                  <item.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-sm mb-0.5">{item.title}</h3>
+                <p className="text-xs text-muted-foreground">{item.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop grid */}
+        <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '450ms', animationFillMode: 'forwards' }}>
           {howItWorks.map((item, index) => (
             <Card key={index} className="p-5 text-center border-border/40 relative group hover:shadow-lg transition-all">
               <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-lg">

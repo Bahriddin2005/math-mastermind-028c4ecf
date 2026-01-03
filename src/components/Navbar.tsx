@@ -1,10 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, BookOpen } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
-  DropdownMenuLabel,
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
@@ -31,6 +30,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   const [mounted, setMounted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null; total_score: number } | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const isTrainPage = location.pathname === '/train';
   const isHomePage = location.pathname === '/';
@@ -38,6 +38,23 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -76,217 +93,346 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   const handleSignOut = async () => {
     await signOut();
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
+  const handleNavigation = useCallback((path: string) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  }, [navigate]);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = [
+    { path: '/', icon: Home, label: "Bosh sahifa" },
+    { path: '/train', icon: Play, label: "Mashq", highlight: true },
+    { path: '/courses', icon: GraduationCap, label: "Darslar" },
+    { path: '/weekly-game', icon: Trophy, label: "Musobaqa" },
+    { path: '/blog', icon: BookOpen, label: "Blog" },
+    { path: '/contact', icon: MessageCircle, label: "Aloqa" },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/70 backdrop-blur-xl">
-      {/* Gradient line at top */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-      
-      <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
-        {/* Logo with hover effect */}
-        <Link to="/" className="group relative">
-          <div className="absolute -inset-2 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <Logo size="md" />
-        </Link>
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/80 backdrop-blur-xl safe-top">
+        {/* Gradient line at top */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
         
-        {/* Center Navigation - Desktop only */}
-        <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 rounded-full px-1.5 py-1 border border-border/30">
-          <NavButton 
-            active={isHomePage} 
-            onClick={() => navigate('/')}
-            icon={Home}
-            label="Bosh sahifa"
-          />
-          <NavButton 
-            active={location.pathname === '/train'} 
-            onClick={() => navigate('/train')}
-            icon={Play}
-            label="Mashq"
-            highlight
-          />
-          <NavButton 
-            active={location.pathname === '/courses'} 
-            onClick={() => navigate('/courses')}
-            icon={GraduationCap}
-            label="Darslar"
-          />
-          <NavButton 
-            active={location.pathname === '/weekly-game'} 
-            onClick={() => navigate('/weekly-game')}
-            icon={Trophy}
-            label="Musobaqa"
-          />
-        </nav>
-        
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mobile Navigation Buttons */}
-          {user && (
-            <div className="flex lg:hidden items-center gap-1">
-              {isTrainPage ? (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/')}
-                  className="h-9 w-9 p-0"
-                >
-                  <Home className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  onClick={() => navigate('/train')}
-                  className="gap-1.5 h-9 px-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-glow"
-                >
-                  <Play className="h-3.5 w-3.5" />
-                  <span className="hidden xs:inline text-xs font-semibold">Mashq</span>
-                </Button>
-              )}
-            </div>
-          )}
+        <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
+          {/* Logo with hover effect */}
+          <Link to="/" className="group relative flex-shrink-0">
+            <div className="absolute -inset-2 rounded-xl bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <Logo size="md" />
+          </Link>
+          
+          {/* Center Navigation - Desktop only */}
+          <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 rounded-full px-1.5 py-1 border border-border/30">
+            {navItems.slice(0, 4).map((item) => (
+              <NavButton 
+                key={item.path}
+                active={isActive(item.path)} 
+                onClick={() => navigate(item.path)}
+                icon={item.icon}
+                label={item.label}
+                highlight={item.highlight}
+              />
+            ))}
+          </nav>
+          
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Desktop: Train button for non-logged users */}
+            {!user && (
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={() => navigate('/auth')}
+                className="hidden sm:flex gap-2 h-10 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-glow touch-target"
+              >
+                <Sparkles className="h-4 w-4" />
+                <span className="text-sm font-semibold">Boshlash</span>
+              </Button>
+            )}
 
-          {/* Desktop: Train button for non-logged users */}
-          {!user && (
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={() => navigate('/auth')}
-              className="hidden sm:flex gap-2 h-9 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-glow"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="text-xs font-semibold">Boshlash</span>
-            </Button>
-          )}
+            {/* Theme toggle */}
+            {mounted && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
+                className="h-10 w-10 rounded-full hover:bg-secondary/80 transition-colors touch-target"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-5 w-5 text-warning transition-transform hover:rotate-45" />
+                ) : (
+                  <Moon className="h-5 w-5 transition-transform hover:-rotate-12" />
+                )}
+              </Button>
+            )}
 
-          {/* Theme toggle */}
-          {mounted && (
+            {/* Sound toggle - Desktop only */}
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
-              className="h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
+              onClick={onToggleSound}
+              aria-label={soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+              className="hidden sm:flex h-10 w-10 rounded-full hover:bg-secondary/80 transition-colors touch-target"
             >
-              {theme === 'dark' ? (
-                <Sun className="h-4 w-4 text-warning transition-transform hover:rotate-45" />
+              {soundEnabled ? (
+                <Volume2 className="h-5 w-5" />
               ) : (
-                <Moon className="h-4 w-4 transition-transform hover:-rotate-12" />
+                <VolumeX className="h-5 w-5 text-muted-foreground" />
               )}
             </Button>
-          )}
 
-          {/* Sound toggle */}
+            {/* User menu - Desktop */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className="hidden sm:flex gap-2 h-11 px-2 pr-3 rounded-full bg-secondary/50 hover:bg-secondary/80 border border-border/30 transition-all touch-target"
+                  >
+                    <Avatar className="h-8 w-8 border-2 border-primary/30">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-sm font-bold">
+                        {profile?.username?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden md:inline text-sm font-medium max-w-[100px] truncate">
+                      {profile?.username || 'Profil'}
+                    </span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-60 p-2">
+                  {/* User info header */}
+                  <div className="flex items-center gap-3 p-3 mb-2 rounded-xl bg-secondary/50">
+                    <Avatar className="h-12 w-12 border-2 border-primary/30">
+                      <AvatarImage src={profile?.avatar_url || undefined} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-lg font-bold">
+                        {profile?.username?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-base truncate">{profile?.username || 'Foydalanuvchi'}</p>
+                      <div className="flex items-center gap-1.5">
+                        <Trophy className="h-3.5 w-3.5 text-warning" />
+                        <span className="text-sm text-muted-foreground">{profile?.total_score || 0} ball</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <DropdownMenuGroup>
+                    {navItems.map((item) => (
+                      <DropdownMenuItem 
+                        key={item.path}
+                        onClick={() => navigate(item.path)} 
+                        className="gap-3 py-3 rounded-xl cursor-pointer touch-target"
+                      >
+                        <item.icon className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-base">{item.label}</span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                  
+                  <DropdownMenuSeparator className="my-2" />
+                  
+                  <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-3 py-3 rounded-xl cursor-pointer touch-target">
+                    <Settings className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-base">Sozlamalar</span>
+                  </DropdownMenuItem>
+                  
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-3 py-3 rounded-xl cursor-pointer touch-target">
+                      <ShieldCheck className="h-5 w-5 text-primary" />
+                      <span className="text-base text-primary font-medium">Admin panel</span>
+                      <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.5 bg-primary/10 text-primary">
+                        Admin
+                      </Badge>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  <DropdownMenuSeparator className="my-2" />
+                  
+                  <DropdownMenuItem onClick={handleSignOut} className="gap-3 py-3 rounded-xl cursor-pointer text-destructive focus:text-destructive touch-target">
+                    <LogOut className="h-5 w-5" />
+                    <span className="text-base">Chiqish</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => navigate('/auth')} 
+                className="hidden sm:flex h-10 px-4 gap-2 rounded-full border border-border/30 touch-target"
+              >
+                <User className="h-4 w-4" />
+                <span className="text-sm font-medium">Kirish</span>
+              </Button>
+            )}
+
+            {/* Mobile menu button */}
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Menyuni ochish"
+              className="flex sm:hidden h-10 w-10 rounded-full hover:bg-secondary/80 transition-colors touch-target"
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-md z-[60] animate-fade-in-overlay"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Panel */}
+      <div 
+        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-card border-l border-border z-[70] shadow-2xl transform transition-transform duration-300 ease-out ${
+          mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Mobile menu header */}
+        <div className="flex items-center justify-between p-4 border-b border-border/50">
+          <Logo size="sm" />
           <Button 
             variant="ghost" 
             size="icon"
-            onClick={onToggleSound}
-            aria-label={soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
-            className="h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+            className="h-10 w-10 rounded-full touch-target"
           >
-            {soundEnabled ? (
-              <Volume2 className="h-4 w-4" />
-            ) : (
-              <VolumeX className="h-4 w-4 text-muted-foreground" />
-            )}
+            <X className="h-6 w-6" />
           </Button>
+        </div>
 
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="gap-2 h-10 px-2 pr-3 rounded-full bg-secondary/50 hover:bg-secondary/80 border border-border/30 transition-all"
-                >
-                  <Avatar className="h-7 w-7 border-2 border-primary/30">
-                    <AvatarImage src={profile?.avatar_url || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
-                      {profile?.username?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="hidden sm:inline text-sm font-medium max-w-[80px] truncate">
-                    {profile?.username || 'Profil'}
-                  </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 p-2">
-                {/* User info header */}
-                <div className="flex items-center gap-3 p-2 mb-2 rounded-lg bg-secondary/50">
-                  <Avatar className="h-10 w-10 border-2 border-primary/30">
-                    <AvatarImage src={profile?.avatar_url || undefined} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                      {profile?.username?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{profile?.username || 'Foydalanuvchi'}</p>
-                    <div className="flex items-center gap-1">
-                      <Trophy className="h-3 w-3 text-warning" />
-                      <span className="text-xs text-muted-foreground">{profile?.total_score || 0} ball</span>
-                    </div>
-                  </div>
+        {/* User info in mobile menu */}
+        {user && profile && (
+          <div className="p-4 border-b border-border/50">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
+              <Avatar className="h-14 w-14 border-3 border-primary/30 shadow-lg">
+                <AvatarImage src={profile.avatar_url || undefined} />
+                <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
+                  {profile.username?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-lg truncate">{profile.username}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <Trophy className="h-4 w-4 text-warning" />
+                  <span className="text-sm font-medium text-muted-foreground">{profile.total_score} ball</span>
                 </div>
-                
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => navigate('/')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                    <Home className="h-4 w-4 text-muted-foreground" />
-                    <span>Bosh sahifa</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/train')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                    <Play className="h-4 w-4 text-muted-foreground" />
-                    <span>Mashq qilish</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/courses')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                    <GraduationCap className="h-4 w-4 text-muted-foreground" />
-                    <span>Video darslar</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/weekly-game')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
-                    <span>Haftalik musobaqa</span>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                
-                <DropdownMenuSeparator className="my-2" />
-                
-                <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                  <Settings className="h-4 w-4 text-muted-foreground" />
-                  <span>Sozlamalar</span>
-                </DropdownMenuItem>
-                
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-3 py-2.5 rounded-lg cursor-pointer">
-                    <ShieldCheck className="h-4 w-4 text-primary" />
-                    <span className="text-primary font-medium">Admin panel</span>
-                    <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary">
-                      Admin
-                    </Badge>
-                  </DropdownMenuItem>
-                )}
-                
-                <DropdownMenuSeparator className="my-2" />
-                
-                <DropdownMenuItem onClick={handleSignOut} className="gap-3 py-2.5 rounded-lg cursor-pointer text-destructive focus:text-destructive">
-                  <LogOut className="h-4 w-4" />
-                  <span>Chiqish</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile menu navigation */}
+        <div className="flex-1 overflow-y-auto hide-scrollbar p-4 space-y-2">
+          {navItems.map((item, index) => (
+            <button
+              key={item.path}
+              onClick={() => handleNavigation(item.path)}
+              className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-200 touch-target ${
+                isActive(item.path)
+                  ? 'bg-primary text-primary-foreground shadow-lg'
+                  : item.highlight
+                    ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                    : 'hover:bg-secondary/80'
+              }`}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+                isActive(item.path)
+                  ? 'bg-primary-foreground/20'
+                  : item.highlight
+                    ? 'bg-primary/20'
+                    : 'bg-secondary'
+              }`}>
+                <item.icon className="h-6 w-6" />
+              </div>
+              <span className="text-lg font-semibold">{item.label}</span>
+            </button>
+          ))}
+
+          <div className="h-px bg-border/50 my-4" />
+
+          {/* Sound toggle in mobile menu */}
+          <button
+            onClick={() => {
+              onToggleSound();
+              setMobileMenuOpen(false);
+            }}
+            className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-200 touch-target"
+          >
+            <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center">
+              {soundEnabled ? (
+                <Volume2 className="h-6 w-6" />
+              ) : (
+                <VolumeX className="h-6 w-6 text-muted-foreground" />
+              )}
+            </div>
+            <span className="text-lg font-semibold">
+              {soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+            </span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('/settings')}
+            className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-200 touch-target"
+          >
+            <div className="h-12 w-12 rounded-xl bg-secondary flex items-center justify-center">
+              <Settings className="h-6 w-6" />
+            </div>
+            <span className="text-lg font-semibold">Sozlamalar</span>
+          </button>
+
+          {isAdmin && (
+            <button
+              onClick={() => handleNavigation('/admin')}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl bg-primary/10 hover:bg-primary/20 transition-all duration-200 touch-target"
+            >
+              <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-lg font-semibold text-primary">Admin panel</span>
+              <Badge className="ml-auto bg-primary/20 text-primary border-0">Admin</Badge>
+            </button>
+          )}
+        </div>
+
+        {/* Mobile menu footer */}
+        <div className="p-4 border-t border-border/50 safe-bottom">
+          {user ? (
+            <Button 
+              variant="destructive" 
+              onClick={handleSignOut}
+              className="w-full h-14 text-lg font-semibold rounded-2xl touch-target-lg"
+            >
+              <LogOut className="h-5 w-5 mr-2" />
+              Chiqish
+            </Button>
           ) : (
             <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => navigate('/auth')} 
-              className="h-9 px-3 gap-2 rounded-full border border-border/30"
+              onClick={() => handleNavigation('/auth')}
+              className="w-full h-14 text-lg font-semibold rounded-2xl gradient-primary shadow-glow touch-target-lg"
             >
-              <User className="h-4 w-4" />
-              <span className="hidden xs:inline text-sm">Kirish</span>
+              <Sparkles className="h-5 w-5 mr-2" />
+              Boshlash
             </Button>
           )}
         </div>
       </div>
-    </header>
+    </>
   );
 };
 
@@ -307,7 +453,7 @@ const NavButton = ({
   <button
     onClick={onClick}
     className={`
-      flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+      flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200
       ${active 
         ? 'bg-primary text-primary-foreground shadow-md' 
         : highlight 

@@ -7,8 +7,16 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+        md: "2rem",
+      },
       screens: {
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
         "2xl": "1400px",
       },
     },
@@ -16,6 +24,18 @@ export default {
       fontFamily: {
         display: ["Nunito", "system-ui", "sans-serif"],
         body: ["Poppins", "system-ui", "sans-serif"],
+      },
+      // Custom breakpoint for extra small devices
+      screens: {
+        'xs': '475px',
+        '3xl': '1600px',
+      },
+      // Mobile-first spacing
+      spacing: {
+        'safe': 'env(safe-area-inset-bottom, 0px)',
+        'safe-top': 'env(safe-area-inset-top, 0px)',
+        'touch': '2.75rem', // 44px minimum touch target
+        'touch-lg': '3.25rem', // 52px
       },
       colors: {
         border: "hsl(var(--border))",
@@ -79,6 +99,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
+        "3xl": "calc(var(--radius) + 12px)",
       },
       boxShadow: {
         sm: "var(--shadow-sm)",
@@ -86,6 +107,22 @@ export default {
         lg: "var(--shadow-lg)",
         glow: "var(--shadow-glow)",
         "accent-glow": "var(--shadow-accent-glow)",
+      },
+      // Mobile-optimized font sizes
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
+        '5xl': ['3rem', { lineHeight: '1.1' }],
+        // Mobile-specific
+        'mobile-h1': ['1.75rem', { lineHeight: '2.25rem', fontWeight: '800' }],
+        'mobile-h2': ['1.5rem', { lineHeight: '2rem', fontWeight: '700' }],
+        'mobile-h3': ['1.25rem', { lineHeight: '1.75rem', fontWeight: '600' }],
       },
       keyframes: {
         "accordion-down": {
@@ -104,9 +141,17 @@ export default {
           from: { opacity: "0", transform: "translateX(20px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        "slide-in-up": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
         "pulse-slow": {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.85" },
+        },
+        "bounce-gentle": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
         },
       },
       animation: {
@@ -114,7 +159,25 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
+        "slide-in-up": "slide-in-up 0.4s ease-out",
         "pulse-slow": "pulse-slow 2s ease-in-out infinite",
+        "bounce-gentle": "bounce-gentle 2s ease-in-out infinite",
+      },
+      // Safe area insets
+      padding: {
+        'safe-bottom': 'env(safe-area-inset-bottom, 0px)',
+        'safe-top': 'env(safe-area-inset-top, 0px)',
+        'safe-left': 'env(safe-area-inset-left, 0px)',
+        'safe-right': 'env(safe-area-inset-right, 0px)',
+      },
+      // Minimum touch target heights
+      minHeight: {
+        'touch': '2.75rem',
+        'touch-lg': '3.25rem',
+      },
+      minWidth: {
+        'touch': '2.75rem',
+        'touch-lg': '3.25rem',
       },
     },
   },
