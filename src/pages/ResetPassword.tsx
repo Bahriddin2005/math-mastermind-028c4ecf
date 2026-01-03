@@ -84,14 +84,20 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
-        <Card className="w-full max-w-md animate-fade-in">
-          <CardContent className="pt-8 pb-8 text-center">
-            <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-4">
-              <Check className="h-8 w-8 text-success" />
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10">
+        {/* Background decorations */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-success/10 dark:bg-success/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+        
+        <Card className="w-full max-w-md animate-fade-in border-border/40 dark:border-border/20 shadow-2xl dark:shadow-success/10 bg-card/80 dark:bg-card/90 backdrop-blur-sm relative z-10">
+          <CardContent className="pt-8 sm:pt-10 pb-8 sm:pb-10 text-center px-4 sm:px-6">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
+              <Check className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
             </div>
-            <h2 className="text-2xl font-display font-bold mb-2">Parol yangilandi!</h2>
-            <p className="text-muted-foreground">Bosh sahifaga yo'naltirilmoqdasiz...</p>
+            <h2 className="text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Parol yangilandi!</h2>
+            <p className="text-muted-foreground dark:text-muted-foreground/80 text-sm sm:text-base">Bosh sahifaga yo'naltirilmoqdasiz...</p>
           </CardContent>
         </Card>
       </div>
@@ -99,26 +105,39 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10">
+      {/* Background decorations - Dark Mode optimized */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+      
+      {/* Subtle grid pattern - Dark mode enhanced */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+      <div className="w-full max-w-md space-y-6 sm:space-y-8 relative z-10 px-1 sm:px-0">
         <div className="text-center">
           <Logo size="lg" className="mx-auto" />
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2">Mental Matematika Platformasi</p>
         </div>
 
-        <Card className="animate-fade-in">
-          <CardHeader className="text-center">
-            <div className="h-12 w-12 rounded-xl gradient-primary flex items-center justify-center mx-auto mb-2">
-              <KeyRound className="h-6 w-6 text-primary-foreground" />
+        <Card className="animate-fade-in border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 bg-card/80 dark:bg-card/90 backdrop-blur-sm overflow-hidden">
+          {/* Card top decoration */}
+          <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+          
+          <CardHeader className="text-center pt-6 sm:pt-8 px-4 sm:px-6">
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
+              <KeyRound className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
             </div>
-            <CardTitle className="text-2xl font-display">Yangi parol</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl sm:text-2xl font-display">Yangi parol</CardTitle>
+            <CardDescription className="text-sm mt-1.5">
               Yangi parolingizni kiriting
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6 pb-6 sm:pb-8">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Yangi parol</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Yangi parol</Label>
                 <Input
                   id="password"
                   type="password"
@@ -126,15 +145,18 @@ const ResetPassword = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={loading}
-                  className={errors.password ? 'border-destructive' : ''}
+                  className={`h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                 />
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
+                  <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                    <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                    {errors.password}
+                  </p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Parolni tasdiqlang</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium">Parolni tasdiqlang</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -142,10 +164,13 @@ const ResetPassword = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={loading}
-                  className={errors.confirmPassword ? 'border-destructive' : ''}
+                  className={`h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                 />
                 {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword}</p>
+                  <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                    <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                    {errors.confirmPassword}
+                  </p>
                 )}
               </div>
 
@@ -153,14 +178,14 @@ const ResetPassword = () => {
                 type="submit" 
                 variant="game" 
                 size="lg" 
-                className="w-full"
+                className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold rounded-xl shadow-lg shadow-primary/20 dark:shadow-primary/30 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/40 transition-all group mt-2"
                 disabled={loading}
               >
                 {loading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <>
-                    <KeyRound className="h-5 w-5 mr-2" />
+                    <KeyRound className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
                     Parolni yangilash
                   </>
                 )}
@@ -171,7 +196,7 @@ const ResetPassword = () => {
               <button
                 type="button"
                 onClick={() => navigate('/auth')}
-                className="text-primary hover:underline text-sm inline-flex items-center gap-1"
+                className="text-primary hover:text-primary/80 text-sm inline-flex items-center gap-1.5 transition-colors hover:underline"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Kirish sahifasiga qaytish

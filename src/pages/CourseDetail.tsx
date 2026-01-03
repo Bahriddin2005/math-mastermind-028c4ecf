@@ -162,125 +162,126 @@ const CourseDetail = () => {
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <main className="flex-1">
-        {/* Hero Header */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 py-12 md:py-20">
-          {/* Background decorations */}
+        {/* Hero Header - Dark Mode & Mobile Enhanced */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 dark:from-primary/15 dark:via-background dark:to-accent/10 py-10 sm:py-12 md:py-20">
+          {/* Background decorations - Enhanced for dark mode */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-accent/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary/5 to-transparent rounded-full" />
+            <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/15 dark:bg-primary/25 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/15 dark:bg-accent/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] bg-gradient-radial from-primary/5 dark:from-primary/10 to-transparent rounded-full" />
           </div>
 
-          {/* Floating icons */}
-          <div className="absolute top-20 right-20 opacity-10 hidden lg:block animate-float">
+          {/* Floating icons - Hidden on mobile */}
+          <div className="absolute top-20 right-20 opacity-10 dark:opacity-20 hidden lg:block animate-float">
             <GraduationCap className="h-32 w-32 text-primary" />
           </div>
-          <div className="absolute bottom-20 left-20 opacity-10 hidden lg:block animate-float" style={{ animationDelay: '1.5s' }}>
+          <div className="absolute bottom-20 left-20 opacity-10 dark:opacity-20 hidden lg:block animate-float" style={{ animationDelay: '1.5s' }}>
             <BookOpen className="h-24 w-24 text-accent" />
           </div>
 
           <div className="container px-4 relative">
-            {/* Back button */}
+            {/* Back button - Mobile optimized */}
             <Button 
               variant="ghost" 
-              className="mb-8 gap-2 hover:bg-secondary/50 opacity-0 animate-fade-in"
+              className="mb-6 sm:mb-8 gap-2 hover:bg-secondary/50 dark:hover:bg-secondary/30 opacity-0 animate-fade-in h-10 text-sm sm:text-base"
               style={{ animationFillMode: 'forwards' }}
               onClick={() => navigate('/courses')}
             >
               <ArrowLeft className="h-4 w-4" />
-              Barcha kurslar
+              <span className="hidden xs:inline">Barcha kurslar</span>
+              <span className="xs:hidden">Orqaga</span>
             </Button>
 
             <div className="max-w-4xl">
-              {/* Badges */}
-              <div className="flex flex-wrap items-center gap-3 mb-6 opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
-                <Badge className={`${difficulty.bg} ${difficulty.text} font-semibold px-4 py-1.5 text-sm border ${difficulty.text.replace('text-', 'border-')}/30`}>
-                  <Zap className="h-3.5 w-3.5 mr-1.5" />
+              {/* Badges - Mobile optimized */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6 opacity-0 animate-fade-in" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+                <Badge className={`${difficulty.bg} ${difficulty.text} font-semibold px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm border ${difficulty.text.replace('text-', 'border-')}/30 dark:${difficulty.text.replace('text-', 'border-')}/40`}>
+                  <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5" />
                   {difficulty.label}
                 </Badge>
                 {isCompleted && (
-                  <Badge className="bg-success/20 text-success border-success/30 gap-1.5 px-4 py-1.5">
-                    <Trophy className="h-3.5 w-3.5" />
+                  <Badge className="bg-success/20 dark:bg-success/30 text-success border-success/30 dark:border-success/40 gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm">
+                    <Trophy className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     Tugatilgan
                   </Badge>
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-6 opacity-0 animate-fade-in leading-tight" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
+              {/* Title - Mobile optimized */}
+              <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 sm:mb-6 opacity-0 animate-fade-in leading-tight" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
                 {course.title}
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground dark:text-muted-foreground/80 mb-8 sm:mb-10 max-w-2xl leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
                 {course.description}
               </p>
 
-              {/* Stats Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 opacity-0 animate-fade-in" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
-                <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl p-4 hover:bg-card/80 transition-colors">
-                  <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                    <BookOpen className="h-5 w-5 text-primary" />
+              {/* Stats Cards - Mobile optimized */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 opacity-0 animate-fade-in" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+                <div className="bg-card/50 dark:bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-card/80 dark:hover:bg-card/90 transition-colors shadow-sm dark:shadow-lg dark:shadow-primary/5">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center mb-2 sm:mb-3">
+                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   </div>
-                  <p className="text-2xl font-display font-bold text-foreground">{totalCount}</p>
-                  <p className="text-sm text-muted-foreground">Video darslar</p>
+                  <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{totalCount}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">Video darslar</p>
                 </div>
                 
-                <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl p-4 hover:bg-card/80 transition-colors">
-                  <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
-                    <Clock className="h-5 w-5 text-accent" />
+                <div className="bg-card/50 dark:bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-card/80 dark:hover:bg-card/90 transition-colors shadow-sm dark:shadow-lg dark:shadow-accent/5">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-accent/10 dark:bg-accent/20 flex items-center justify-center mb-2 sm:mb-3">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
                   </div>
-                  <p className="text-2xl font-display font-bold text-foreground">{totalDuration}</p>
-                  <p className="text-sm text-muted-foreground">Daqiqa</p>
+                  <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{totalDuration}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">Daqiqa</p>
                 </div>
                 
                 {user && (
                   <>
-                    <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl p-4 hover:bg-card/80 transition-colors">
-                      <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center mb-3">
-                        <CheckCircle2 className="h-5 w-5 text-success" />
+                    <div className="bg-card/50 dark:bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-card/80 dark:hover:bg-card/90 transition-colors shadow-sm dark:shadow-lg dark:shadow-success/5">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-success/10 dark:bg-success/20 flex items-center justify-center mb-2 sm:mb-3">
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                       </div>
-                      <p className="text-2xl font-display font-bold text-foreground">{completedCount}</p>
-                      <p className="text-sm text-muted-foreground">Tugatilgan</p>
+                      <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{completedCount}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">Tugatilgan</p>
                     </div>
                     
-                    <div className="bg-card/50 backdrop-blur-sm border border-border/40 rounded-2xl p-4 hover:bg-card/80 transition-colors">
-                      <div className="h-10 w-10 rounded-xl bg-warning/10 flex items-center justify-center mb-3">
-                        <Target className="h-5 w-5 text-warning" />
+                    <div className="bg-card/50 dark:bg-card/80 backdrop-blur-sm border border-border/40 dark:border-border/30 rounded-xl sm:rounded-2xl p-3 sm:p-4 hover:bg-card/80 dark:hover:bg-card/90 transition-colors shadow-sm dark:shadow-lg dark:shadow-warning/5">
+                      <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-warning/10 dark:bg-warning/20 flex items-center justify-center mb-2 sm:mb-3">
+                        <Target className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                       </div>
-                      <p className="text-2xl font-display font-bold text-foreground">{totalCount - completedCount}</p>
-                      <p className="text-sm text-muted-foreground">Qolgan</p>
+                      <p className="text-xl sm:text-2xl font-display font-bold text-foreground">{totalCount - completedCount}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">Qolgan</p>
                     </div>
                   </>
                 )}
               </div>
 
-              {/* Progress bar */}
+              {/* Progress bar - Mobile optimized */}
               {user && totalCount > 0 && (
-                <div className="mt-8 max-w-md opacity-0 animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
-                  <div className="flex items-center justify-between text-sm mb-3">
-                    <span className="text-muted-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-primary" />
+                <div className="mt-6 sm:mt-8 max-w-md opacity-0 animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
+                  <div className="flex items-center justify-between text-xs sm:text-sm mb-2 sm:mb-3">
+                    <span className="text-muted-foreground dark:text-muted-foreground/80 flex items-center gap-1.5 sm:gap-2">
+                      <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                       Jarayon
                     </span>
                     <span className="font-bold text-foreground">{Math.round(progressPercent)}%</span>
                   </div>
                   <div className="relative">
-                    <Progress value={progressPercent} className="h-3" />
+                    <Progress value={progressPercent} className="h-2.5 sm:h-3" />
                     {isCompleted && (
                       <div className="absolute -right-1 -top-1">
-                        <Trophy className="h-5 w-5 text-success" />
+                        <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                       </div>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* CTA Button */}
+              {/* CTA Button - Mobile optimized */}
               {lessons.length > 0 && (
-                <div className="mt-10 opacity-0 animate-fade-in" style={{ animationDelay: '350ms', animationFillMode: 'forwards' }}>
+                <div className="mt-8 sm:mt-10 opacity-0 animate-fade-in" style={{ animationDelay: '350ms', animationFillMode: 'forwards' }}>
                   <Button 
                     size="lg" 
-                    className="gap-2 text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                    className="gap-2 text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-xl shadow-lg dark:shadow-primary/30 hover:shadow-xl dark:hover:shadow-primary/40 transition-all h-12 sm:h-auto touch-target"
                     onClick={() => {
                       const firstIncomplete = lessons.find(l => !completedLessons.has(l.id));
                       navigate(`/lessons/${firstIncomplete?.id || lessons[0].id}`);
