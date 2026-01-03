@@ -647,10 +647,13 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         {/* Main Content - Centered Number Display */}
         <div className="flex-1 flex items-center justify-center">
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
-            <div className="text-[140px] sm:text-[200px] md:text-[280px] font-bold font-display leading-none tracking-tight text-emerald-800 dark:text-emerald-400 animate-fade-in select-none">
-              {displayNumbers[currentDisplayIndex] < 0 
-                ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
-                : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[100px] scale-150" />
+              <div className="relative text-[180px] sm:text-[260px] md:text-[340px] lg:text-[400px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 animate-fade-in select-none drop-shadow-lg">
+                {displayNumbers[currentDisplayIndex] < 0 
+                  ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
+                  : (currentDisplayIndex > 0 ? `+${displayNumbers[currentDisplayIndex]}` : displayNumbers[currentDisplayIndex])}
+              </div>
             </div>
           )}
 
