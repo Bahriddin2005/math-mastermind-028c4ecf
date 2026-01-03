@@ -54,6 +54,10 @@
     --nav-height: 3.5rem;
     --touch-target: 2.75rem;
     --touch-target-lg: 3.25rem;
+    
+    /* Native app specific */
+    --status-bar-height: env(safe-area-inset-top, 0px);
+    --bottom-nav-height: 4rem;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(145 80% 42%), hsl(145 80% 50%));
@@ -695,4 +699,67 @@
   .btn-touch-active:active {
     @apply scale-95 transition-transform duration-100;
   }
+}
+
+/* Native App Specific Styles */
+.native-app {
+  /* Prevent text selection in native app */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.native-app input,
+.native-app textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* iOS specific adjustments */
+.ios-shell {
+  /* iOS bounce effect disable */
+  overscroll-behavior: none;
+}
+
+/* Android specific adjustments */
+.android-shell {
+  /* Android ripple effect support */
+}
+
+/* Native shell main container */
+.native-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Status bar safe area */
+.safe-status-bar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Full safe area padding */
+.safe-area-all {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+/* Native card with better touch feedback */
+.native-card {
+  @apply bg-card rounded-xl border border-border/50 transition-all duration-150;
+}
+
+.native-card:active {
+  @apply scale-[0.98] opacity-90;
+}
+
+/* Native button with better touch feedback */
+.native-btn {
+  @apply touch-target transition-all duration-100;
+}
+
+.native-btn:active {
+  @apply scale-95 opacity-80;
 }

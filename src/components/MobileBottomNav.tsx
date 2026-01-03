@@ -1,19 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Dumbbell, BookOpen, Trophy, Calculator } from 'lucide-react';
+import { Home, Dumbbell, BookOpen, Trophy, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { Capacitor } from '@capacitor/core';
 
 const navItems = [
-  { icon: Home, label: "Bosh sahifa", path: "/" },
+  { icon: Home, label: "Asosiy", path: "/" },
   { icon: Dumbbell, label: "Mashq", path: "/train" },
-  { icon: Calculator, label: "Abakus", path: "/mental-arithmetic" },
   { icon: BookOpen, label: "Kurslar", path: "/courses" },
   { icon: Trophy, label: "Haftalik", path: "/weekly-game" },
+  { icon: User, label: "Profil", path: "/settings" },
 ];
 
 export const MobileBottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const isNative = Capacitor.isNativePlatform();
 
   // Hide on auth page
   if (location.pathname === '/auth' || location.pathname === '/reset-password') {
@@ -21,14 +23,22 @@ export const MobileBottomNav = () => {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-xl border-t border-border/50 safe-bottom">
-      <div className="flex items-center justify-around h-16 px-2">
+    <nav 
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-xl border-t border-border/50",
+        "transition-transform duration-200 ease-out",
+        isNative ? "pb-[env(safe-area-inset-bottom,0.5rem)]" : "pb-2"
+      )}
+      style={{ height: 'var(--bottom-nav-height)' }}
+    >
+      <div className="flex items-center justify-around h-full px-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== '/' && location.pathname.startsWith(item.path));
           
           // If not logged in, show auth for protected routes
-          const href = !user && ['/train', '/courses', '/weekly-game', '/mental-arithmetic'].includes(item.path) 
+          const protectedRoutes = ['/train', '/courses', '/weekly-game', '/settings'];
+          const href = !user && protectedRoutes.includes(item.path) 
             ? '/auth' 
             : item.path;
 
@@ -37,26 +47,24 @@ export const MobileBottomNav = () => {
               key={item.path}
               to={href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 flex-1 py-2 px-1 rounded-xl transition-all duration-200 touch-target",
+                "flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 px-1 rounded-xl transition-all duration-150",
+                "active:scale-95 touch-target",
                 isActive 
                   ? "text-primary" 
-                  : "text-muted-foreground hover:text-foreground active:scale-95"
+                  : "text-muted-foreground"
               )}
             >
               <div className={cn(
-                "relative p-1.5 rounded-xl transition-all duration-200",
-                isActive && "bg-primary/10"
+                "relative p-2 rounded-xl transition-all duration-150",
+                isActive && "bg-primary/15"
               )}>
                 <item.icon className={cn(
-                  "w-5 h-5 transition-all duration-200",
+                  "w-5 h-5 transition-transform duration-150",
                   isActive && "scale-110"
-                )} />
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
-                )}
+                )} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={cn(
-                "text-[10px] font-medium transition-all duration-200",
+                "text-[10px] font-medium transition-all",
                 isActive && "text-primary font-semibold"
               )}>
                 {item.label}
