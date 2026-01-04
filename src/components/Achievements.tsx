@@ -30,7 +30,7 @@ interface Achievement {
   bgColor: string;
   glowColor: string;
   requirement: number;
-  type: 'problems' | 'streak' | 'score' | 'games';
+  type: 'problems' | 'streak' | 'score' | 'games' | 'level' | 'xp';
 }
 
 const achievements: Achievement[] = [
@@ -51,6 +51,18 @@ const achievements: Achievement[] = [
   { id: 'score100', name: 'Yuz ball', description: '100 ball to\'pla', icon: Medal, color: 'text-primary', bgColor: 'bg-primary/10', glowColor: '', requirement: 100, type: 'score' },
   { id: 'score500', name: 'Yuqori ball', description: '500 ball to\'pla', icon: Award, color: 'text-accent', bgColor: 'bg-accent/10', glowColor: '', requirement: 500, type: 'score' },
   { id: 'score1000', name: 'Ming ball', description: '1000 ball to\'pla', icon: Trophy, color: 'text-warning', bgColor: 'bg-warning/20', glowColor: '', requirement: 1000, type: 'score' },
+
+  // Level achievements (NEW)
+  { id: 'level5', name: 'Yangi boshlovchi', description: '5-levelga yetish', icon: Star, color: 'text-blue-500', bgColor: 'bg-blue-500/10', glowColor: '', requirement: 5, type: 'level' },
+  { id: 'level10', name: 'Rivojlanuvchi', description: '10-levelga yetish', icon: Star, color: 'text-purple-500', bgColor: 'bg-purple-500/10', glowColor: '', requirement: 10, type: 'level' },
+  { id: 'level25', name: 'Tajribali', description: '25-levelga yetish', icon: Crown, color: 'text-amber-500', bgColor: 'bg-amber-500/10', glowColor: 'shadow-glow', requirement: 25, type: 'level' },
+  { id: 'level50', name: 'Professional', description: '50-levelga yetish', icon: Crown, color: 'text-pink-500', bgColor: 'bg-gradient-to-br from-pink-500/20 to-purple-500/20', glowColor: 'shadow-glow', requirement: 50, type: 'level' },
+
+  // XP achievements (NEW)
+  { id: 'xp1000', name: 'Birinchi ming', description: '1000 XP to\'plash', icon: Zap, color: 'text-emerald-500', bgColor: 'bg-emerald-500/10', glowColor: '', requirement: 1000, type: 'xp' },
+  { id: 'xp5000', name: 'XP yig\'uvchi', description: '5000 XP to\'plash', icon: Zap, color: 'text-cyan-500', bgColor: 'bg-cyan-500/10', glowColor: '', requirement: 5000, type: 'xp' },
+  { id: 'xp10000', name: 'XP ustasi', description: '10,000 XP to\'plash', icon: Sparkles, color: 'text-violet-500', bgColor: 'bg-violet-500/10', glowColor: 'shadow-glow', requirement: 10000, type: 'xp' },
+  { id: 'xp50000', name: 'XP imperatori', description: '50,000 XP to\'plash', icon: Crown, color: 'text-rose-500', bgColor: 'bg-gradient-to-br from-rose-500/20 to-orange-500/20', glowColor: 'shadow-glow', requirement: 50000, type: 'xp' },
 ];
 
 interface AchievementsProps {
@@ -58,6 +70,8 @@ interface AchievementsProps {
   bestStreak: number;
   totalScore: number;
   totalGames: number;
+  level?: number;
+  totalXp?: number;
 }
 
 export const Achievements = ({
@@ -65,6 +79,8 @@ export const Achievements = ({
   bestStreak,
   totalScore,
   totalGames,
+  level = 1,
+  totalXp = 0,
 }: AchievementsProps) => {
   const checkAchievement = (achievement: Achievement): boolean => {
     switch (achievement.type) {
@@ -76,6 +92,10 @@ export const Achievements = ({
         return totalScore >= achievement.requirement;
       case 'games':
         return totalGames >= achievement.requirement;
+      case 'level':
+        return level >= achievement.requirement;
+      case 'xp':
+        return totalXp >= achievement.requirement;
       default:
         return false;
     }
@@ -95,6 +115,12 @@ export const Achievements = ({
         break;
       case 'games':
         current = totalGames;
+        break;
+      case 'level':
+        current = level;
+        break;
+      case 'xp':
+        current = totalXp;
         break;
     }
     return Math.min((current / achievement.requirement) * 100, 100);
