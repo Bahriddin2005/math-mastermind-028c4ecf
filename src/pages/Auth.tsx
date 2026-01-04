@@ -24,7 +24,9 @@ import {
   Zap,
   Star,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -64,6 +66,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
   
   const { signIn, signUp, resetPassword, user } = useAuth();
   const navigate = useNavigate();
@@ -411,13 +414,25 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-10 pr-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors touch-target"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                        ) : (
+                          <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                        )}
+                      </button>
                     </div>
                     {errors.password && (
                       <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
