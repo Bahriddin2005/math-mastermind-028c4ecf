@@ -17,6 +17,7 @@ import { GameInvitations } from "./components/GameInvitations";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import KidsHome from "./pages/KidsHome";
 import Settings from "./pages/Settings";
 import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
@@ -62,7 +63,8 @@ const App = () => (
               <div className="pb-16 md:pb-0">
                 <PageTransition>
                   <Routes>
-                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/" element={<KidsHome />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
