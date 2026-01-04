@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2, KeyRound, ArrowLeft, Check } from 'lucide-react';
+import { Loader2, KeyRound, ArrowLeft, Check, Eye, EyeOff, Lock } from 'lucide-react';
 import { z } from 'zod';
 
 const passwordSchema = z.object({
@@ -24,6 +24,8 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { updatePassword, user } = useAuth();
   const navigate = useNavigate();
@@ -138,15 +140,30 @@ const ResetPassword = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5 sm:space-y-2">
                 <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Yangi parol</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  className={`h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                />
+                <div className="relative group">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className={`pl-10 pr-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                    ) : (
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
                     <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
@@ -157,15 +174,30 @@ const ResetPassword = () => {
 
               <div className="space-y-1.5 sm:space-y-2">
                 <Label htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium">Parolni tasdiqlang</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={loading}
-                  className={`h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                />
+                <div className="relative group">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={loading}
+                    className={`pl-10 pr-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
+                    ) : (
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
                     <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
