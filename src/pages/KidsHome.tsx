@@ -13,14 +13,15 @@ import { useGameCurrency } from '@/hooks/useGameCurrency';
 import { useConfetti } from '@/hooks/useConfetti';
 import { toast } from 'sonner';
 
-// New home components
-import { AvatarBlock } from '@/components/home/AvatarBlock';
-import { MotivationalGreeting } from '@/components/home/MotivationalGreeting';
-import { BigStartButton } from '@/components/home/BigStartButton';
+// Home components
+import { HeroCharacter } from '@/components/home/HeroCharacter';
+import { MainActionButton } from '@/components/home/MainActionButton';
+import { QuickActionButtons } from '@/components/home/QuickActionButtons';
 import { XPProgressPath } from '@/components/home/XPProgressPath';
 import { QuickStats } from '@/components/home/QuickStats';
 import { DailyMissionCard } from '@/components/home/DailyMissionCard';
 import { WeeklyRankingPreview } from '@/components/home/WeeklyRankingPreview';
+import { EnergyReadyBanner } from '@/components/home/EnergyReadyBanner';
 
 interface Profile {
   username: string;
@@ -42,12 +43,13 @@ const KidsHome = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound, playSound } = useSound();
-  const { triggerAchievementConfetti } = useConfetti();
+  const { triggerAchievementConfetti, triggerLevelUpConfetti } = useConfetti();
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [todayStats, setTodayStats] = useState<TodayStats>({ problems: 0, score: 0 });
   const [loading, setLoading] = useState(true);
   const [dailyStep, setDailyStep] = useState(0);
+  const [showEnergyBanner, setShowEnergyBanner] = useState(true);
 
   // Gamification
   const gamification = useAdaptiveGamification({
@@ -153,39 +155,36 @@ const KidsHome = () => {
     navigate('/train');
   };
 
-  // Start battle handler
-  const handleStartBattle = () => {
+  // Navigation handlers
+  const handleBattle = () => {
     playSound?.('start');
     navigate('/train?tab=multiplayer');
   };
 
-  // View all rankings
-  const handleViewAllRankings = () => {
-    navigate('/train?tab=leaderboard');
-  };
+  const handleFriends = () => navigate('/settings?tab=friends');
+  const handleRanking = () => navigate('/train?tab=leaderboard');
+  const handleLearn = () => navigate('/courses');
 
   // Claim daily reward
   const handleClaimDailyReward = () => {
-    triggerAchievementConfetti();
+    triggerLevelUpConfetti();
     playSound?.('complete');
-    toast.success('Tabriklaymiz! 🎉', {
-      description: '+50 coin va +100 XP qo\'shildi!',
+    toast.success('🎉 Ajoyib! Sovrin qo\'shildi!', {
+      description: '+50 tanga va +100 XP oldingiz!',
     });
-    // Reset daily step
     setDailyStep(0);
   };
 
-  // Start mission
+  // Mission handlers
   const handleStartMission = (missionId: string) => {
     playSound?.('start');
     navigate('/train');
   };
 
-  // Claim mission reward
   const handleClaimMissionReward = (missionId: string) => {
     triggerAchievementConfetti();
     playSound?.('correct');
-    toast.success('Missiya bajarildi! 🎯');
+    toast.success('🎯 Missiya bajarildi!');
   };
 
   // Loading state
@@ -193,8 +192,10 @@ const KidsHome = () => {
     return (
       <PageBackground className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          <p className="text-muted-foreground text-sm">Yuklanmoqda...</p>
+          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-primary to-emerald-400 animate-pulse flex items-center justify-center">
+            <span className="text-4xl">🧠</span>
+          </div>
+          <p className="text-muted-foreground text-sm animate-pulse">Yuklanmoqda...</p>
         </div>
       </PageBackground>
     );
@@ -220,34 +221,40 @@ const KidsHome = () => {
       <PageBackground className="flex flex-col min-h-screen">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
+        {/* Energy Ready Banner */}
+        {showEnergyBanner && (
+          <EnergyReadyBanner
+            energy={gamification.energy}
+            maxEnergy={gamification.maxEnergy}
+            onStart={handleStartGame}
+            onDismiss={() => setShowEnergyBanner(false)}
+          />
+        )}
+
         <main className="flex-1">
-          {/* Hero Section */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/10 dark:from-primary/15 dark:via-background dark:to-accent/15">
+          {/* Hero Section with Character */}
+          <div className="relative overflow-hidden">
             {/* Animated background */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-              <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-accent/20 to-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background">
+              {/* Floating particles */}
+              <div className="absolute top-10 left-10 w-4 h-4 rounded-full bg-amber-400/30 animate-float" style={{ animationDelay: '0s' }} />
+              <div className="absolute top-20 right-20 w-3 h-3 rounded-full bg-purple-400/30 animate-float" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-40 left-1/4 w-2 h-2 rounded-full bg-cyan-400/30 animate-float" style={{ animationDelay: '2s' }} />
+              <div className="absolute top-32 right-1/3 w-3 h-3 rounded-full bg-emerald-400/30 animate-float" style={{ animationDelay: '0.5s' }} />
             </div>
 
-            <div className="container px-4 py-6 sm:py-8 relative">
-              <div className="max-w-lg mx-auto space-y-6">
-                {/* Avatar Block */}
-                <div className="animate-fade-in">
-                  <AvatarBlock
-                    username={profile?.username || 'O\'yinchi'}
+            <div className="container px-4 py-8 sm:py-12 relative">
+              <div className="max-w-lg mx-auto">
+                {/* Hero Character */}
+                <div className="animate-bounce-in">
+                  <HeroCharacter
+                    username={profile?.username || "O'yinchi"}
                     level={gamification.level}
                     avatarUrl={profile?.avatar_url}
-                    levelTitle=""
+                    characterType="wizard"
                     isVip={isVip}
-                  />
-                </div>
-
-                {/* Motivational Greeting */}
-                <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-                  <MotivationalGreeting
-                    username={profile?.username || 'O\'yinchi'}
                     streak={profile?.current_streak || 0}
-                    todayProblems={todayStats.problems}
+                    onAvatarClick={() => navigate('/settings')}
                   />
                 </div>
               </div>
@@ -255,10 +262,29 @@ const KidsHome = () => {
           </div>
 
           {/* Main Content */}
-          <div className="container px-4 py-6 sm:py-8">
+          <div className="container px-4 py-4 sm:py-6">
             <div className="max-w-lg mx-auto space-y-6">
+              
+              {/* MAIN START BUTTON - The most important element */}
+              <MainActionButton
+                onClick={handleStartGame}
+                disabled={gamification.energy <= 0}
+                energy={gamification.energy}
+                maxEnergy={gamification.maxEnergy}
+              />
+
+              {/* Quick Action Buttons */}
+              <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+                <QuickActionButtons
+                  onBattle={handleBattle}
+                  onFriends={handleFriends}
+                  onRanking={handleRanking}
+                  onLearn={handleLearn}
+                />
+              </div>
+
               {/* Quick Stats */}
-              <div className="animate-fade-in" style={{ animationDelay: '150ms' }}>
+              <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
                 <QuickStats
                   todayProblems={todayStats.problems}
                   todayScore={todayStats.score}
@@ -272,7 +298,7 @@ const KidsHome = () => {
               </div>
 
               {/* XP Progress Path */}
-              <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+              <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
                 <XPProgressPath
                   currentStep={dailyStep}
                   totalSteps={5}
@@ -282,28 +308,8 @@ const KidsHome = () => {
                 />
               </div>
 
-              {/* Big Start Button */}
-              <div className="animate-fade-in py-4" style={{ animationDelay: '250ms' }}>
-                <BigStartButton
-                  onClick={handleStartGame}
-                  variant="start"
-                  energy={gamification.energy}
-                  disabled={gamification.energy <= 0}
-                />
-              </div>
-
-              {/* Battle Button */}
-              <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
-                <BigStartButton
-                  onClick={handleStartBattle}
-                  variant="battle"
-                  energy={gamification.energy}
-                  disabled={gamification.energy <= 0}
-                />
-              </div>
-
               {/* Daily Missions */}
-              <div className="animate-fade-in" style={{ animationDelay: '350ms' }}>
+              <div className="animate-fade-in" style={{ animationDelay: '500ms' }}>
                 <DailyMissionCard
                   onStartMission={handleStartMission}
                   onClaimReward={handleClaimMissionReward}
@@ -311,17 +317,22 @@ const KidsHome = () => {
               </div>
 
               {/* Weekly Ranking Preview */}
-              <div className="animate-fade-in" style={{ animationDelay: '400ms' }}>
-                <WeeklyRankingPreview onViewAll={handleViewAllRankings} />
+              <div className="animate-fade-in" style={{ animationDelay: '600ms' }}>
+                <WeeklyRankingPreview onViewAll={handleRanking} />
               </div>
 
-              {/* Parent Stats (hidden in card) */}
-              <div className="animate-fade-in bg-card/50 backdrop-blur-sm rounded-2xl border border-border/30 p-4" style={{ animationDelay: '450ms' }}>
-                <p className="text-sm text-muted-foreground text-center">
-                  📊 Bugun {profile?.username} <span className="font-bold text-primary">{todayStats.problems}</span> misol yechdi, 
-                  <span className="font-bold text-primary"> {todayStats.score}</span> ball to'pladi.
+              {/* Parent Stats Card */}
+              <div className="animate-fade-in bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-sm rounded-2xl border border-border/30 p-4" style={{ animationDelay: '700ms' }}>
+                <p className="text-sm text-center">
+                  📊 Bugun <span className="font-bold text-primary">{profile?.username}</span> {' '}
+                  <span className="font-bold text-primary">{todayStats.problems}</span> misol yechdi, {' '}
+                  <span className="font-bold text-accent">{todayStats.score}</span> ball to'pladi.
+                  {todayStats.problems > 0 && (
+                    <span className="text-muted-foreground"> Zo'r harakat! 💪</span>
+                  )}
                 </p>
               </div>
+
             </div>
           </div>
         </main>
