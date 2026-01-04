@@ -429,6 +429,39 @@ export type Database = {
         }
         Relationships: []
       }
+      game_invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          game_type: string
+          id: string
+          receiver_id: string
+          room_code: string | null
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          game_type?: string
+          id?: string
+          receiver_id: string
+          room_code?: string | null
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          game_type?: string
+          id?: string
+          receiver_id?: string
+          room_code?: string | null
+          sender_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
       game_levels: {
         Row: {
           coin_reward: number
