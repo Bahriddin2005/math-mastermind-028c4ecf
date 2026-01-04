@@ -15,6 +15,7 @@ import { Leaderboard } from '@/components/Leaderboard';
 import { InfoCarousel } from '@/components/InfoCarousel';
 import { TestimonialForm } from '@/components/TestimonialForm';
 import { GuestDashboard } from '@/components/GuestDashboard';
+import { FriendsManager } from '@/components/FriendsManager';
 import { Footer } from '@/components/Footer';
 
 import { WeeklyCompetition } from '@/components/WeeklyCompetition';
@@ -610,6 +611,13 @@ const Dashboard = () => {
                 />
               </div>
             </div>
+
+            {/* Friends Manager */}
+            {user && (
+              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '460ms', animationFillMode: 'forwards' }}>
+                <FriendsManager />
+              </div>
+            )}
 
             {/* Statistics Charts */}
             <StatsCharts sessions={sessions} />
