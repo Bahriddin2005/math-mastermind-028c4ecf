@@ -33,6 +33,9 @@ import Install from "./pages/Install";
 import MentalArithmetic from "./pages/MentalArithmetic";
 import Achievements from "./pages/Achievements";
 import ChallengeStats from "./pages/ChallengeStats";
+import GameHub from "./pages/GameHub";
+import GameShop from "./pages/GameShop";
+import GamePlay from "./pages/GamePlay";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -77,6 +80,9 @@ const App = () => (
                     <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
                     <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
                     <Route path="/challenge-stats" element={<ChallengeStats />} />
+                    <Route path="/game-hub" element={<ProtectedRoute><GameHub /></ProtectedRoute>} />
+                    <Route path="/game-shop" element={<ProtectedRoute><GameShop /></ProtectedRoute>} />
+                    <Route path="/game-play/:levelId" element={<ProtectedRoute><GamePlay /></ProtectedRoute>} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

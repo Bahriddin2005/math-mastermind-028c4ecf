@@ -402,6 +402,51 @@ export type Database = {
         }
         Relationships: []
       }
+      game_levels: {
+        Row: {
+          coin_reward: number
+          created_at: string
+          description: string | null
+          difficulty: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          level_number: number
+          name: string
+          problem_count: number
+          required_xp: number
+          time_limit: number | null
+        }
+        Insert: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_number: number
+          name: string
+          problem_count?: number
+          required_xp?: number
+          time_limit?: number | null
+        }
+        Update: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_number?: number
+          name?: string
+          problem_count?: number
+          required_xp?: number
+          time_limit?: number | null
+        }
+        Relationships: []
+      }
       game_sessions: {
         Row: {
           best_streak: number | null
@@ -750,6 +795,45 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          is_available: boolean | null
+          item_type: string
+          name: string
+          price: number
+          stock: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_available?: boolean | null
+          item_type?: string
+          name: string
+          price: number
+          stock?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_available?: boolean | null
+          item_type?: string
+          name?: string
+          price?: number
+          stock?: number | null
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           avatar_url: string | null
@@ -1090,6 +1174,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_game_currency: {
+        Row: {
+          coins: number
+          created_at: string
+          id: string
+          last_life_regen: string
+          lives: number
+          max_lives: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins?: number
+          created_at?: string
+          id?: string
+          last_life_regen?: string
+          lives?: number
+          max_lives?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          id?: string
+          last_life_regen?: string
+          lives?: number
+          max_lives?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_gamification: {
         Row: {
           bonus_cooldown_until: string | null
@@ -1159,6 +1276,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_inventory: {
+        Row: {
+          id: string
+          item_id: string
+          purchased_at: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          item_id: string
+          purchased_at?: string
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          id?: string
+          item_id?: string
+          purchased_at?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_lesson_progress: {
         Row: {
           completed: boolean | null
@@ -1202,6 +1351,53 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_level_progress: {
+        Row: {
+          attempts: number
+          best_score: number
+          best_time: number | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          level_id: string
+          stars_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          best_score?: number
+          best_time?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id: string
+          stars_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          best_score?: number
+          best_time?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id?: string
+          stars_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_level_progress_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "game_levels"
             referencedColumns: ["id"]
           },
         ]
