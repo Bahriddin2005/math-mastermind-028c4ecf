@@ -9,9 +9,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGameCurrency } from "@/hooks/useGameCurrency";
 import { useSound } from "@/hooks/useSound";
 import { supabase } from "@/integrations/supabase/client";
+import { GameLeaderboard } from "@/components/GameLeaderboard";
 import { 
   Coins, Heart, Star, Trophy, ShoppingBag, 
-  Play, Lock, Crown, Zap, Target, Gift
+  Play, Lock, Crown, Zap, Target, Gift, Package
 } from "lucide-react";
 
 interface GameLevel {
@@ -179,22 +180,30 @@ const GameHub = () => {
         </Card>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-2 mb-6">
           <Button 
             variant="outline" 
-            className="h-auto py-4 flex-col gap-2 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800 hover:border-amber-400"
+            className="h-auto py-3 flex-col gap-1.5 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200 dark:border-amber-800 hover:border-amber-400"
             onClick={() => navigate('/game-shop')}
           >
-            <Gift className="h-6 w-6 text-amber-600" />
-            <span className="text-sm font-medium">Sovg'alar Do'koni</span>
+            <Gift className="h-5 w-5 text-amber-600" />
+            <span className="text-xs font-medium">Do'kon</span>
           </Button>
           <Button 
             variant="outline" 
-            className="h-auto py-4 flex-col gap-2 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800 hover:border-purple-400"
+            className="h-auto py-3 flex-col gap-1.5 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border-purple-200 dark:border-purple-800 hover:border-purple-400"
+            onClick={() => navigate('/game-inventory')}
+          >
+            <Package className="h-5 w-5 text-purple-600" />
+            <span className="text-xs font-medium">Inventar</span>
+          </Button>
+          <Button 
+            variant="outline" 
+            className="h-auto py-3 flex-col gap-1.5 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400"
             onClick={() => navigate('/achievements')}
           >
-            <Trophy className="h-6 w-6 text-purple-600" />
-            <span className="text-sm font-medium">Yutuqlar</span>
+            <Trophy className="h-5 w-5 text-emerald-600" />
+            <span className="text-xs font-medium">Yutuqlar</span>
           </Button>
         </div>
 
@@ -282,6 +291,11 @@ const GameHub = () => {
             </p>
           </Card>
         )}
+
+        {/* Leaderboard */}
+        <div className="mt-6">
+          <GameLeaderboard compact />
+        </div>
       </div>
     </PageBackground>
   );

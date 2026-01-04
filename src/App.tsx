@@ -36,6 +36,7 @@ import ChallengeStats from "./pages/ChallengeStats";
 import GameHub from "./pages/GameHub";
 import GameShop from "./pages/GameShop";
 import GamePlay from "./pages/GamePlay";
+import GameInventory from "./pages/GameInventory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,7 @@ const App = () => (
                     <Route path="/game-hub" element={<ProtectedRoute><GameHub /></ProtectedRoute>} />
                     <Route path="/game-shop" element={<ProtectedRoute><GameShop /></ProtectedRoute>} />
                     <Route path="/game-play/:levelId" element={<ProtectedRoute><GamePlay /></ProtectedRoute>} />
+                    <Route path="/game-inventory" element={<ProtectedRoute><GameInventory /></ProtectedRoute>} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
