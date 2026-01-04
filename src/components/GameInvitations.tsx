@@ -16,6 +16,7 @@ import {
   Gamepad2, Clock, Check, X, Crown, Sparkles, Loader2
 } from "lucide-react";
 import { useConfetti } from "@/hooks/useConfetti";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 interface Invitation {
   id: string;
@@ -36,6 +37,7 @@ export const GameInvitations = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { triggerAchievementConfetti } = useConfetti();
+  const { sendGameInviteNotification, permission } = usePushNotifications();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [showDialog, setShowDialog] = useState(false);
   const [currentInvitation, setCurrentInvitation] = useState<Invitation | null>(null);
@@ -75,6 +77,11 @@ export const GameInvitations = () => {
           
           setCurrentInvitation(invitationWithProfile);
           setShowDialog(true);
+          
+          // Send push notification if permission granted
+          if (permission === 'granted' && profile && newInvitation.room_code) {
+            sendGameInviteNotification(profile.username, newInvitation.room_code);
+          }
           
           // Play notification sound
           try {

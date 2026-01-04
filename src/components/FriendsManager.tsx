@@ -9,9 +9,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { usePresence } from "@/hooks/usePresence";
 import { 
   Users, UserPlus, UserCheck, UserX, Search, 
-  Clock, Check, X, Crown, Trophy, Star, Gamepad2, Loader2
+  Clock, Check, X, Crown, Trophy, Star, Gamepad2, Loader2, Circle
 } from "lucide-react";
 
 interface Friend {
@@ -51,6 +52,7 @@ interface FriendLeaderboardEntry {
 export const FriendsManager = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isUserOnline } = usePresence('friends-presence');
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<Friend[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -411,15 +413,28 @@ export const FriendsManager = () => {
               <div className="space-y-2">
                 {friends.map((friend) => {
                   const profile = friend.friend_profile || friend.user_profile;
+                  const friendUserId = friend.friend_profile ? friend.friend_id : friend.user_id;
+                  const isOnline = isUserOnline(friendUserId);
                   return (
                     <div key={friend.id} className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border-2 border-background">
-                          <AvatarImage src={profile?.avatar_url || undefined} />
-                          <AvatarFallback className="bg-primary/10">
-                            {profile?.username.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className="relative">
+                          <Avatar className="h-10 w-10 border-2 border-background">
+                            <AvatarImage src={profile?.avatar_url || undefined} />
+                            <AvatarFallback className="bg-primary/10">
+                              {profile?.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          {/* Online status indicator */}
+                          <div 
+                            className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-background ${
+                              isOnline 
+                                ? 'bg-green-500' 
+                                : 'bg-muted-foreground/50'
+                            }`}
+                            title={isOnline ? "Online" : "Offline"}
+                          />
+                        </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="font-medium">{profile?.username}</span>
@@ -430,7 +445,14 @@ export const FriendsManager = () => {
                               </Badge>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">Do'st</p>
+                          <div className="flex items-center gap-1.5">
+                            <Circle 
+                              className={`h-2 w-2 ${isOnline ? 'fill-green-500 text-green-500' : 'fill-muted-foreground/50 text-muted-foreground/50'}`} 
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              {isOnline ? "Online" : "Offline"}
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -438,13 +460,14 @@ export const FriendsManager = () => {
                           size="sm"
                           variant="default"
                           onClick={() => inviteToGame(
-                            friend.friend_profile ? friend.friend_id : friend.user_id,
+                            friendUserId,
                             profile?.username || ''
                           )}
-                          disabled={invitingFriend === (friend.friend_profile ? friend.friend_id : friend.user_id)}
-                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                          disabled={invitingFriend === friendUserId || !isOnline}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50"
+                          title={!isOnline ? "Foydalanuvchi offline" : "O'yinga taklif qilish"}
                         >
-                          {invitingFriend === (friend.friend_profile ? friend.friend_id : friend.user_id) ? (
+                          {invitingFriend === friendUserId ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                             <Gamepad2 className="h-4 w-4" />

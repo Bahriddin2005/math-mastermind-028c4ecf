@@ -33,6 +33,8 @@ export const usePushNotifications = () => {
             isSubscribed: !!subscription,
           }));
         });
+      }).catch(() => {
+        // Service worker not ready yet
       });
     }
   }, []);
@@ -69,19 +71,61 @@ export const usePushNotifications = () => {
     }
 
     try {
-      new Notification(title, {
+      const notification = new Notification(title, {
         icon: '/pwa-192x192.png',
         badge: '/pwa-192x192.png',
+        requireInteraction: false,
         ...options,
       });
+
+      // Auto-close after 5 seconds
+      setTimeout(() => notification.close(), 5000);
+
+      return notification;
     } catch (error) {
       console.error('Error sending notification:', error);
     }
   }, [state.permission]);
 
+  const sendGameInviteNotification = useCallback((senderName: string, roomCode: string) => {
+    return sendLocalNotification(
+      `🎮 O'yin taklifnomasi`,
+      {
+        body: `${senderName} sizni o'yinga taklif qildi!`,
+        tag: `game-invite-${roomCode}`,
+        data: { type: 'game-invite', roomCode },
+      }
+    );
+  }, [sendLocalNotification]);
+
+  const sendWeeklyResultsNotification = useCallback((rank: number, totalScore: number) => {
+    return sendLocalNotification(
+      `🏆 Haftalik natijalar`,
+      {
+        body: `Siz ${rank}-o'rinni egallangiz! Jami ball: ${totalScore}`,
+        tag: 'weekly-results',
+        data: { type: 'weekly-results', rank, totalScore },
+      }
+    );
+  }, [sendLocalNotification]);
+
+  const sendFriendRequestNotification = useCallback((senderName: string) => {
+    return sendLocalNotification(
+      `👋 Yangi do'stlik so'rovi`,
+      {
+        body: `${senderName} sizga do'stlik so'rovi yubordi`,
+        tag: 'friend-request',
+        data: { type: 'friend-request' },
+      }
+    );
+  }, [sendLocalNotification]);
+
   return {
     ...state,
     requestPermission,
     sendLocalNotification,
+    sendGameInviteNotification,
+    sendWeeklyResultsNotification,
+    sendFriendRequestNotification,
   };
 };
