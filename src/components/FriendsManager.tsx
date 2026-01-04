@@ -10,13 +10,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { usePresence } from "@/hooks/usePresence";
+import { useMessageNotifications } from "@/hooks/useMessageNotifications";
 import { GroupGameInvite } from "@/components/GroupGameInvite";
 import { FriendsStatsComparison } from "@/components/FriendsStatsComparison";
 import { FriendsChat } from "@/components/FriendsChat";
+import { VoiceChat } from "@/components/VoiceChat";
 import { 
   Users, UserPlus, UserCheck, UserX, Search, 
   Clock, Check, X, Crown, Trophy, Star, Gamepad2, Loader2, Circle, 
-  MessageCircle, BarChart3
+  MessageCircle, BarChart3, Phone
 } from "lucide-react";
 
 interface Friend {
@@ -68,6 +70,9 @@ export const FriendsManager = () => {
   const [showStats, setShowStats] = useState(false);
   const [chatFriend, setChatFriend] = useState<UserProfile | null>(null);
   const [showChat, setShowChat] = useState(false);
+  const [voiceFriend, setVoiceFriend] = useState<UserProfile | null>(null);
+  const [showVoice, setShowVoice] = useState(false);
+  const { getUnreadCount, markAsRead, totalUnread } = useMessageNotifications();
 
   useEffect(() => {
     if (user) {
@@ -348,6 +353,13 @@ export const FriendsManager = () => {
   const openChat = (profile: UserProfile) => {
     setChatFriend(profile);
     setShowChat(true);
+    // Mark messages as read when opening chat
+    markAsRead(profile.user_id);
+  };
+
+  const openVoiceChat = (profile: UserProfile) => {
+    setVoiceFriend(profile);
+    setShowVoice(true);
   };
 
   return (
@@ -358,6 +370,11 @@ export const FriendsManager = () => {
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
               Do'stlar
+              {totalUnread > 0 && (
+                <Badge className="bg-red-500 text-white text-xs px-1.5 min-w-[20px] h-5">
+                  {totalUnread > 99 ? '99+' : totalUnread}
+                </Badge>
+              )}
             </CardTitle>
             <div className="flex gap-2">
               <GroupGameInvite friends={friends} />
@@ -486,7 +503,7 @@ export const FriendsManager = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        {/* Chat button */}
+                        {/* Chat button with unread badge */}
                         <Button
                           size="sm"
                           variant="ghost"
@@ -496,10 +513,31 @@ export const FriendsManager = () => {
                             avatar_url: profile.avatar_url,
                             vip_expires_at: profile.vip_expires_at || null,
                           })}
-                          className="text-muted-foreground hover:text-primary"
+                          className="text-muted-foreground hover:text-primary relative"
                           title="Xabar yozish"
                         >
                           <MessageCircle className="h-4 w-4" />
+                          {getUnreadCount(friendUserId) > 0 && (
+                            <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                              {getUnreadCount(friendUserId) > 9 ? '9+' : getUnreadCount(friendUserId)}
+                            </span>
+                          )}
+                        </Button>
+                        {/* Voice chat button */}
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => profile && openVoiceChat({
+                            user_id: friendUserId,
+                            username: profile.username,
+                            avatar_url: profile.avatar_url,
+                            vip_expires_at: profile.vip_expires_at || null,
+                          })}
+                          disabled={!isOnline}
+                          className="text-muted-foreground hover:text-green-500 disabled:opacity-50"
+                          title={isOnline ? "Ovozli qo'ng'iroq" : "Foydalanuvchi offline"}
+                        >
+                          <Phone className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
@@ -650,6 +688,19 @@ export const FriendsManager = () => {
           onOpenChange={(open) => {
             setShowChat(open);
             if (!open) setChatFriend(null);
+          }}
+        />
+      )}
+
+      {/* Voice chat dialog */}
+      {voiceFriend && (
+        <VoiceChat
+          friend={voiceFriend}
+          isOnline={isUserOnline(voiceFriend.user_id)}
+          open={showVoice}
+          onOpenChange={(open) => {
+            setShowVoice(open);
+            if (!open) setVoiceFriend(null);
           }}
         />
       )}
