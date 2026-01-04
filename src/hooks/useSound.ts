@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh';
+type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh' | 'countdown' | 'levelUp' | 'combo' | 'winner';
 
 // Web Audio API based sound generator
 const createAudioContext = () => {
@@ -117,6 +117,51 @@ export const useSound = () => {
           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
           oscillator.start(now);
           oscillator.stop(now + 0.12);
+          break;
+
+        case 'countdown':
+          // Countdown beep - higher pitch for urgency
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(600, now);
+          gainNode.gain.setValueAtTime(0.25, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          oscillator.start(now);
+          oscillator.stop(now + 0.15);
+          break;
+
+        case 'levelUp':
+          // Level up - triumphant ascending
+          oscillator.frequency.setValueAtTime(440, now);
+          oscillator.frequency.setValueAtTime(554.37, now + 0.1);
+          oscillator.frequency.setValueAtTime(659.25, now + 0.2);
+          oscillator.frequency.setValueAtTime(880, now + 0.3);
+          gainNode.gain.setValueAtTime(0.3, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+          oscillator.start(now);
+          oscillator.stop(now + 0.5);
+          break;
+
+        case 'combo':
+          // Combo sound - quick double beep
+          oscillator.frequency.setValueAtTime(700, now);
+          oscillator.frequency.setValueAtTime(900, now + 0.08);
+          gainNode.gain.setValueAtTime(0.2, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+          oscillator.start(now);
+          oscillator.stop(now + 0.2);
+          break;
+
+        case 'winner':
+          // Winner fanfare - epic victory
+          oscillator.frequency.setValueAtTime(392, now);
+          oscillator.frequency.setValueAtTime(523.25, now + 0.15);
+          oscillator.frequency.setValueAtTime(659.25, now + 0.3);
+          oscillator.frequency.setValueAtTime(783.99, now + 0.45);
+          oscillator.frequency.setValueAtTime(1046.5, now + 0.6);
+          gainNode.gain.setValueAtTime(0.35, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+          oscillator.start(now);
+          oscillator.stop(now + 0.9);
           break;
       }
     } catch (e) {

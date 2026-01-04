@@ -6,13 +6,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap, Target, Flame, Swords, Timer, TrendingUp, Medal, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { GamificationDisplay } from '@/components/GamificationDisplay';
+import { useSound } from '@/hooks/useSound';
 
 type FormulaType = 'oddiy' | 'formula5' | 'formula10plus' | 'formula10minus' | 'hammasi';
 
@@ -61,7 +63,8 @@ interface MultiplayerModeProps {
 
 export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const { user } = useAuth();
-  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'playing' | 'results'>('menu');
+  const { playSound } = useSound();
+  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'countdown' | 'playing' | 'results'>('menu');
   const [room, setRoom] = useState<Room | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [roomCode, setRoomCode] = useState('');
@@ -91,6 +94,10 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const [hasAnswered, setHasAnswered] = useState(false);
   const [lastXpEarned, setLastXpEarned] = useState(0);
   const [lastScoreEarned, setLastScoreEarned] = useState(0);
+  const [countdown, setCountdown] = useState(3);
+  const [showScoreAnimation, setShowScoreAnimation] = useState(false);
+  const [liveRankings, setLiveRankings] = useState<Participant[]>([]);
+  const [showRankChange, setShowRankChange] = useState(false);
   
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
@@ -139,8 +146,24 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             setRoom(newRoom);
             
             if (newRoom.status === 'playing' && view === 'lobby') {
-              setView('playing');
-              startGameSequence(newRoom);
+              setView('countdown');
+              // Start countdown animation
+              let count = 3;
+              setCountdown(count);
+              playSound('countdown');
+              
+              const countdownInterval = setInterval(() => {
+                count--;
+                setCountdown(count);
+                if (count > 0) playSound('countdown');
+                
+                if (count <= 0) {
+                  clearInterval(countdownInterval);
+                  playSound('start');
+                  setView('playing');
+                  startGameSequence(newRoom);
+                }
+              }, 1000);
             }
           }
           if (payload.eventType === 'DELETE') {
@@ -500,42 +523,165 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     );
   }
 
-  // O'yin davomida
-  if (view === 'playing' && currentDisplay !== null) {
+  // Countdown view
+  if (view === 'countdown') {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 overflow-hidden">
-        {/* Animated Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/10 flex flex-col items-center justify-center z-50 overflow-hidden">
+        {/* Animated Background Particles */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        </div>
-
-        {/* Timer */}
-        <div className="absolute top-6 right-6 flex items-center gap-3 px-4 py-2 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50">
-          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
-          <Clock className="h-5 w-5 text-muted-foreground" />
-          <span className="text-xl font-mono font-bold tabular-nums">{elapsedTime.toFixed(1)}s</span>
-        </div>
-        
-        {/* Participants */}
-        <div className="absolute top-6 left-6 flex gap-2">
-          {participants.map((p, i) => (
-            <div key={p.id} className="relative" style={{ animationDelay: `${i * 100}ms` }}>
-              <Avatar className="h-12 w-12 border-3 border-primary/50 shadow-lg ring-2 ring-background">
-                <AvatarImage src={p.avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-bold">
-                  {p.username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-background text-xs font-medium border shadow-sm">
-                {p.username.slice(0, 6)}
-              </div>
-            </div>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-primary/30 rounded-full animate-ping"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${1 + Math.random() * 2}s`,
+              }}
+            />
           ))}
         </div>
 
+        {/* Countdown Number */}
+        <div className="relative">
+          {/* Outer Ring */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-64 h-64 rounded-full border-4 border-primary/20 animate-ping" />
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-48 h-48 rounded-full border-4 border-primary/40 animate-pulse" />
+          </div>
+          
+          {/* Number */}
+          <div 
+            key={countdown}
+            className="relative w-40 h-40 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-2xl shadow-primary/50 animate-scale-in"
+          >
+            <span className="text-7xl font-bold text-primary-foreground">
+              {countdown > 0 ? countdown : '🚀'}
+            </span>
+          </div>
+        </div>
+
+        {/* Message */}
+        <div className="mt-8 text-center animate-fade-in">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            {countdown > 0 ? 'Tayyorlaning!' : 'Boshlandi!'}
+          </h2>
+          <p className="text-muted-foreground mt-2">
+            {participants.length} o'yinchi tayyor
+          </p>
+        </div>
+
+        {/* Participants Circle */}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-4">
+          {participants.map((p, i) => (
+            <div 
+              key={p.id} 
+              className="flex flex-col items-center gap-2 animate-fade-in"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="relative">
+                <Avatar className="h-14 w-14 border-3 border-primary shadow-lg ring-2 ring-primary/30">
+                  <AvatarImage src={p.avatar_url || undefined} />
+                  <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground font-bold">
+                    {p.username.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center animate-pulse">
+                  <Check className="h-3 w-3 text-white" />
+                </div>
+              </div>
+              <span className="text-xs font-medium text-muted-foreground">{p.username.slice(0, 8)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  // O'yin davomida - Enhanced with real-time competition
+  if (view === 'playing' && currentDisplay !== null) {
+    return (
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 overflow-hidden">
+        {/* Animated Background with Particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          
+          {/* Flying particles */}
+          {Array.from({ length: 15 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-primary/40 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animation: `float ${3 + Math.random() * 4}s ease-in-out infinite`,
+                animationDelay: `${Math.random() * 2}s`,
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Live Timer with Pulse Effect */}
+        <div className="absolute top-6 right-6">
+          <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-muted/90 to-muted/70 backdrop-blur-sm border border-border/50 shadow-lg">
+            <div className="absolute inset-0 rounded-2xl bg-red-500/10 animate-pulse"></div>
+            <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse shadow-lg shadow-red-500/50"></div>
+            <Timer className="h-5 w-5 text-muted-foreground" />
+            <span className="text-2xl font-mono font-bold tabular-nums text-foreground">{elapsedTime.toFixed(1)}s</span>
+          </div>
+        </div>
+        
+        {/* Live Rankings - Real-time Competition Display */}
+        <div className="absolute top-6 left-6 space-y-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50">
+            <Swords className="h-4 w-4 text-primary" />
+            <span className="text-xs font-medium text-muted-foreground">Raqobat</span>
+          </div>
+          <div className="space-y-1.5">
+            {participants.slice(0, 4).map((p, i) => (
+              <div 
+                key={p.id} 
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl backdrop-blur-sm border transition-all duration-500 ${
+                  p.user_id === user?.id 
+                    ? 'bg-primary/20 border-primary/50 shadow-lg shadow-primary/20' 
+                    : 'bg-muted/60 border-border/30'
+                }`}
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                {/* Rank Badge */}
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  i === 0 ? 'bg-amber-400 text-amber-900' :
+                  i === 1 ? 'bg-gray-300 text-gray-700' :
+                  i === 2 ? 'bg-amber-700 text-amber-100' :
+                  'bg-muted text-muted-foreground'
+                }`}>
+                  {i + 1}
+                </div>
+                
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  <AvatarImage src={p.avatar_url || undefined} />
+                  <AvatarFallback className="text-xs bg-gradient-to-br from-primary to-primary/60 text-primary-foreground">
+                    {p.username.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium truncate">{p.username.slice(0, 10)}</p>
+                </div>
+                
+                {p.user_id === user?.id && (
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">Siz</Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Gamification Display - Compact */}
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2">
           <GamificationDisplay
             level={gamification.level}
             currentXp={gamification.currentXp}
@@ -551,191 +697,305 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           />
         </div>
 
-        {/* Problem Counter */}
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50">
-          <span className="text-sm font-medium text-muted-foreground">
-            Son {countRef.current} / {room?.problem_count || problemCount}
-          </span>
+        {/* Problem Counter with Progress Ring */}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2">
+          <div className="relative flex items-center gap-3 px-5 py-3 rounded-2xl bg-muted/80 backdrop-blur-sm border border-border/50">
+            <div className="relative w-10 h-10">
+              <svg className="w-10 h-10 -rotate-90">
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="16"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="none"
+                  className="text-muted"
+                />
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="16"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeDasharray={`${(countRef.current / (room?.problem_count || problemCount)) * 100.5} 100.5`}
+                  className="text-primary transition-all duration-300"
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+                {countRef.current}
+              </span>
+            </div>
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground">Son</p>
+              <p className="text-sm font-semibold">{countRef.current} / {room?.problem_count || problemCount}</p>
+            </div>
+          </div>
         </div>
         
-        {/* Main Number Display */}
+        {/* Main Number Display - Enhanced Animation */}
         <div className="relative flex items-center justify-center">
           {/* Glow Effect */}
-          <div className={`absolute inset-0 blur-3xl transition-colors duration-300 ${isAddition ? 'bg-emerald-500/20' : 'bg-rose-500/20'}`}></div>
+          <div className={`absolute inset-0 blur-3xl transition-colors duration-300 scale-150 ${isAddition ? 'bg-emerald-500/30' : 'bg-rose-500/30'}`}></div>
           
-          {/* Number Container */}
+          {/* Number Container with Enhanced Animation */}
           <div 
             key={currentDisplay}
-            className={`relative flex items-center justify-center transition-all animate-scale-in ${
-              isAddition ? 'text-foreground' : 'text-foreground'
-            }`}
+            className="relative flex items-center justify-center animate-scale-in"
           >
-            {/* Operation Sign */}
+            {/* Operation Sign with Glow */}
             {countRef.current > 1 && (
-              <span className={`text-6xl md:text-8xl font-light mr-4 ${isAddition ? 'text-emerald-500' : 'text-rose-500'}`}>
-                {isAddition ? '+' : '−'}
-              </span>
+              <div className="relative mr-4">
+                <span className={`text-7xl md:text-9xl font-light drop-shadow-lg ${isAddition ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  {isAddition ? '+' : '−'}
+                </span>
+                <div className={`absolute inset-0 blur-xl ${isAddition ? 'bg-emerald-500/30' : 'bg-rose-500/30'}`}></div>
+              </div>
             )}
             
-            {/* Number */}
-            <span className="text-[140px] md:text-[200px] font-extralight tracking-tight">
+            {/* Number with Shadow */}
+            <span className="text-[140px] md:text-[200px] font-extralight tracking-tight drop-shadow-2xl">
               {currentDisplay}
             </span>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-64 h-2 rounded-full bg-muted overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
-            style={{ width: `${(countRef.current / (room?.problem_count || problemCount)) * 100}%` }}
-          ></div>
+        {/* Progress Bar with Gradient */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-72">
+          <Progress 
+            value={(countRef.current / (room?.problem_count || problemCount)) * 100} 
+            className="h-2 bg-muted/50"
+          />
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            <span>Boshlanish</span>
+            <span>Tugash</span>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Javob kiritish
+  // Javob kiritish - Enhanced with urgency animations
   if (view === 'playing' && currentDisplay === null && !hasAnswered) {
     const answeredCount = participants.filter(p => p.answer !== null).length;
     
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6">
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-amber-500/10 flex flex-col items-center justify-center z-50 p-6">
+        {/* Urgency Background Animation */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 animate-pulse"></div>
+        </div>
+
         <div className="max-w-md w-full space-y-6 text-center animate-fade-in">
-          {/* Header */}
-          <div>
-            <div className="h-16 w-16 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg mb-4">
-              <span className="text-3xl">✏️</span>
+          {/* Header with Timer */}
+          <div className="relative">
+            <div className="h-20 w-20 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-2xl shadow-orange-500/30 mb-4 animate-pulse">
+              <Target className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-3xl font-bold">Javobingizni kiriting!</h2>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+              Javobingizni kiriting!
+            </h2>
+            <p className="text-muted-foreground mt-2 flex items-center justify-center gap-2">
+              <Flame className="h-4 w-4 text-orange-500 animate-pulse" />
+              Tez bo'ling!
+              <Flame className="h-4 w-4 text-orange-500 animate-pulse" />
+            </p>
           </div>
           
-          {/* Answer Input */}
+          {/* Answer Input - Enhanced */}
           <div className="space-y-4">
-            <Input
-              type="number"
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
-              placeholder="Javob"
-              className="text-center text-4xl h-20 font-mono border-2 focus:border-primary"
-              autoFocus
-            />
+            <div className="relative">
+              <Input
+                type="number"
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && userAnswer && submitAnswer()}
+                placeholder="?"
+                className="text-center text-5xl h-24 font-mono border-3 border-amber-400/50 focus:border-amber-500 bg-muted/30 shadow-lg"
+                autoFocus
+              />
+              {userAnswer && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <Sparkles className="h-6 w-6 text-amber-500 animate-pulse" />
+                </div>
+              )}
+            </div>
             
             <Button 
               onClick={submitAnswer} 
               disabled={!userAnswer} 
               size="lg" 
-              className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg"
+              className="w-full h-16 text-xl font-bold bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-xl shadow-green-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <Check className="h-6 w-6 mr-2" />
+              <Zap className="h-6 w-6 mr-2" />
               Yuborish
             </Button>
           </div>
 
-          {/* Other Players Status */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-            <p className="text-sm text-muted-foreground mb-3">O'yinchilar holati</p>
-            <div className="flex justify-center gap-3 flex-wrap">
-              {participants.map((p) => (
-                <div key={p.id} className="flex flex-col items-center gap-1">
+          {/* Real-time Competition Status */}
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Swords className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium text-muted-foreground">Raqobat holati</p>
+            </div>
+            
+            <div className="flex justify-center gap-4 flex-wrap">
+              {participants.map((p, i) => (
+                <div 
+                  key={p.id} 
+                  className="flex flex-col items-center gap-2 animate-fade-in"
+                  style={{ animationDelay: `${i * 100}ms` }}
+                >
                   <div className="relative">
-                    <Avatar className={`h-10 w-10 border-2 transition-all ${p.answer !== null ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-border opacity-60'}`}>
+                    <Avatar className={`h-12 w-12 border-3 transition-all duration-500 ${
+                      p.answer !== null 
+                        ? 'border-emerald-500 ring-4 ring-emerald-500/30 scale-110' 
+                        : 'border-muted-foreground/30 opacity-70'
+                    }`}>
                       <AvatarImage src={p.avatar_url || undefined} />
-                      <AvatarFallback className="text-xs">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback className="text-sm font-bold">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    {p.answer !== null && (
-                      <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-emerald-500 rounded-full flex items-center justify-center">
-                        <Check className="h-3 w-3 text-white" />
+                    {p.answer !== null ? (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg animate-scale-in">
+                        <Check className="h-3.5 w-3.5 text-white" />
+                      </div>
+                    ) : (
+                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-amber-500/80 rounded-full flex items-center justify-center animate-pulse">
+                        <Clock className="h-3 w-3 text-white" />
                       </div>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground truncate max-w-[50px]">{p.username.slice(0, 6)}</span>
+                  <span className={`text-xs font-medium transition-colors ${
+                    p.answer !== null ? 'text-emerald-500' : 'text-muted-foreground'
+                  }`}>
+                    {p.username.slice(0, 6)}
+                  </span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              {answeredCount} / {participants.length} javob berdi
-            </p>
+            
+            {/* Progress Bar */}
+            <div className="mt-4 space-y-2">
+              <Progress value={(answeredCount / participants.length) * 100} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                <span className="font-bold text-foreground">{answeredCount}</span> / {participants.length} javob berdi
+              </p>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Javob kutish (javob bergandan keyin)
+  // Javob kutish (javob bergandan keyin) - Enhanced waiting screen
   if (view === 'playing' && currentDisplay === null && hasAnswered) {
     const answeredCount = participants.filter(p => p.answer !== null).length;
     const allAnswered = answeredCount === participants.length;
     
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center z-50 p-6">
+      <div className="fixed inset-0 bg-gradient-to-br from-background via-emerald-500/5 to-primary/5 flex flex-col items-center justify-center z-50 p-6">
         <div className="max-w-md w-full space-y-8 text-center animate-fade-in">
-          {/* Waiting Animation */}
+          {/* Success Animation */}
           <div className="relative">
-            <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center animate-pulse">
-                <Check className="h-8 w-8 text-primary-foreground" />
-              </div>
+            {/* Ripple Effect */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-40 w-40 rounded-full border-2 border-emerald-500/30 animate-ping" style={{ animationDuration: '2s' }}></div>
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-28 w-28 rounded-full border-4 border-primary/20 border-t-primary animate-spin"></div>
+              <div className="h-32 w-32 rounded-full border-2 border-emerald-500/40 animate-ping" style={{ animationDuration: '1.5s' }}></div>
+            </div>
+            
+            {/* Main Badge */}
+            <div className="relative h-28 w-28 mx-auto rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center shadow-2xl shadow-emerald-500/40">
+              <Check className="h-14 w-14 text-white animate-scale-in" />
             </div>
           </div>
 
-          <div>
-            <h2 className="text-2xl font-bold text-emerald-500">Javobingiz qabul qilindi!</h2>
-            <p className="text-muted-foreground mt-2">Boshqa o'yinchilarni kutmoqdamiz...</p>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
+              Javob yuborildi!
+            </h2>
+            <p className="text-muted-foreground flex items-center justify-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Raqiblarni kutmoqdamiz...
+            </p>
           </div>
 
-          {/* Players Status */}
-          <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-            <div className="flex justify-center gap-3 flex-wrap mb-4">
-              {participants.map((p) => (
-                <div key={p.id} className="flex flex-col items-center gap-1">
-                  <div className="relative">
-                    <Avatar className={`h-12 w-12 border-2 transition-all ${p.answer !== null ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-border'}`}>
-                      <AvatarImage src={p.avatar_url || undefined} />
-                      <AvatarFallback>{p.username.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    {p.answer !== null ? (
-                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-md">
-                        <Check className="h-3.5 w-3.5 text-white" />
-                      </div>
-                    ) : (
-                      <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
-                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                      </div>
-                    )}
+          {/* Live Rankings During Wait */}
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">Real-time holat</p>
+            </div>
+            
+            <div className="space-y-3">
+              {participants.map((p, i) => (
+                <div 
+                  key={p.id} 
+                  className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-500 ${
+                    p.answer !== null 
+                      ? 'bg-emerald-500/10 border border-emerald-500/30' 
+                      : 'bg-muted/30 border border-transparent'
+                  }`}
+                >
+                  {/* Rank */}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    i === 0 ? 'bg-amber-400 text-amber-900' :
+                    i === 1 ? 'bg-gray-300 text-gray-700' :
+                    i === 2 ? 'bg-amber-700 text-amber-100' :
+                    'bg-muted text-muted-foreground'
+                  }`}>
+                    {i + 1}
                   </div>
-                  <span className="text-xs text-muted-foreground">{p.username.slice(0, 8)}</span>
+                  
+                  <Avatar className={`h-10 w-10 border-2 transition-all ${
+                    p.answer !== null ? 'border-emerald-500' : 'border-muted'
+                  }`}>
+                    <AvatarImage src={p.avatar_url || undefined} />
+                    <AvatarFallback className="text-sm">{p.username.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-medium truncate">{p.username}</p>
+                  </div>
+                  
+                  {p.answer !== null ? (
+                    <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30">
+                      <Check className="h-3 w-3 mr-1" />
+                      Tayyor
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground animate-pulse">
+                      <Clock className="h-3 w-3 mr-1" />
+                      Kutilmoqda
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>
             
             {/* Progress */}
-            <div className="space-y-2">
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-green-500 transition-all duration-500"
-                  style={{ width: `${(answeredCount / participants.length) * 100}%` }}
-                ></div>
-              </div>
+            <div className="mt-4 space-y-2">
+              <Progress value={(answeredCount / participants.length) * 100} className="h-3" />
               <p className="text-sm font-medium">
-                {answeredCount} / {participants.length} o'yinchi javob berdi
+                <span className="text-emerald-500">{answeredCount}</span> / {participants.length} o'yinchi tayyor
               </p>
             </div>
           </div>
 
           {allAnswered && (
-            <p className="text-primary font-medium animate-pulse">Natijalar tayyorlanmoqda...</p>
+            <div className="flex items-center justify-center gap-3 text-primary font-semibold animate-pulse">
+              <Sparkles className="h-5 w-5" />
+              <span>Natijalar tayyorlanmoqda...</span>
+              <Sparkles className="h-5 w-5" />
+            </div>
           )}
         </div>
       </div>
     );
   }
 
-  // Natijalar
+  // Natijalar - Enhanced with winner celebration
   if (view === 'results') {
     const sortedParticipants = [...participants].sort((a, b) => {
       if (a.is_correct && !b.is_correct) return -1;
@@ -745,26 +1005,35 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
 
     const podiumParticipants = sortedParticipants.slice(0, 3);
     const otherParticipants = sortedParticipants.slice(3);
+    const isWinner = sortedParticipants[0]?.user_id === user?.id;
+    const myRank = sortedParticipants.findIndex(p => p.user_id === user?.id) + 1;
 
     // Confetti animation on first render
     useEffect(() => {
-      const duration = 3000;
+      // Play winner or complete sound
+      if (isWinner) {
+        playSound('winner');
+      } else {
+        playSound('complete');
+      }
+
+      const duration = 4000;
       const end = Date.now() + duration;
 
       const frame = () => {
         confetti({
-          particleCount: 3,
+          particleCount: 4,
           angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
+          spread: 65,
+          origin: { x: 0, y: 0.6 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899']
         });
         confetti({
-          particleCount: 3,
+          particleCount: 4,
           angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6']
+          spread: 65,
+          origin: { x: 1, y: 0.6 },
+          colors: ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899']
         });
 
         if (Date.now() < end) {
@@ -776,115 +1045,184 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     }, []);
     
     return (
-      <div className="w-full max-w-2xl mx-auto px-4 py-6 space-y-8 animate-fade-in">
+      <div className="w-full max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
+        {/* Winner Banner */}
+        {isWinner && (
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 p-6 text-center shadow-2xl shadow-amber-500/30">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnoiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii4xIi8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+            <div className="relative">
+              <Crown className="h-16 w-16 mx-auto text-white mb-3 drop-shadow-lg animate-bounce" />
+              <h2 className="text-3xl font-black text-white drop-shadow-lg">TABRIKLAYMIZ!</h2>
+              <p className="text-white/90 font-semibold mt-1">Siz g'olib bo'ldingiz!</p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center">
           <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl scale-150 animate-pulse"></div>
-            <Trophy className="relative h-20 w-20 text-amber-500 drop-shadow-lg" />
+            <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-2xl scale-150 animate-pulse"></div>
+            <Trophy className="relative h-16 w-16 text-amber-500 drop-shadow-lg" />
           </div>
-          <h2 className="text-3xl font-bold">O'yin yakunlandi!</h2>
-          <p className="text-muted-foreground mt-1">To'g'ri javob: <span className="font-mono font-bold text-foreground text-xl">{runningResultRef.current}</span></p>
+          <h2 className="text-2xl font-bold">O'yin yakunlandi!</h2>
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <p className="text-muted-foreground">To'g'ri javob:</p>
+            <Badge variant="outline" className="text-lg font-mono font-bold px-4 py-1">
+              {runningResultRef.current}
+            </Badge>
+          </div>
         </div>
 
-        {/* Your Gamification Results */}
-        <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-sm flex items-center gap-2">
-                <Star className="h-4 w-4 text-warning" />
-                Sizning natijangiz
-              </h3>
-              <Badge className="bg-primary/20 text-primary">
-                Level {gamification.level}
-              </Badge>
+        {/* Your Result Card - Enhanced */}
+        <Card className={`relative overflow-hidden border-2 ${
+          isWinner 
+            ? 'bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/30 dark:to-amber-900/20 border-amber-400' 
+            : 'bg-gradient-to-br from-primary/5 to-accent/5 border-primary/30'
+        }`}>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-400/20 to-transparent rounded-bl-full"></div>
+          <CardContent className="p-5 relative">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-black ${
+                  myRank === 1 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-white' :
+                  myRank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700' :
+                  myRank === 3 ? 'bg-gradient-to-br from-amber-600 to-amber-800 text-white' :
+                  'bg-muted text-muted-foreground'
+                }`}>
+                  #{myRank}
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">Sizning natijangiz</h3>
+                  <p className="text-sm text-muted-foreground">Level {gamification.level}</p>
+                </div>
+              </div>
+              {isWinner && (
+                <Medal className="h-10 w-10 text-amber-500 animate-pulse" />
+              )}
             </div>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
+            
+            <div className="grid grid-cols-4 gap-3 text-center">
+              <div className="p-3 rounded-xl bg-background/50">
                 <p className="text-2xl font-bold text-primary">{lastScoreEarned}</p>
                 <p className="text-xs text-muted-foreground">Ball</p>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-green-500">+{lastXpEarned}</p>
+              <div className="p-3 rounded-xl bg-background/50">
+                <p className="text-2xl font-bold text-emerald-500">+{lastXpEarned}</p>
                 <p className="text-xs text-muted-foreground">XP</p>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-warning">{gamification.totalXp.toLocaleString()}</p>
+              <div className="p-3 rounded-xl bg-background/50">
+                <p className="text-2xl font-bold text-amber-500">{gamification.combo}x</p>
+                <p className="text-xs text-muted-foreground">Combo</p>
+              </div>
+              <div className="p-3 rounded-xl bg-background/50">
+                <p className="text-2xl font-bold text-purple-500">{gamification.totalXp.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">Jami XP</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Podium */}
-        <div className="flex items-end justify-center gap-2 md:gap-4 h-64 px-4">
-          {/* 2nd Place */}
-          {podiumParticipants[1] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '200ms' }}>
-              <Avatar className="h-16 w-16 border-4 border-gray-400 shadow-lg mb-2">
-                <AvatarImage src={podiumParticipants[1].avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-gray-400 to-gray-500 text-white font-bold text-xl">
-                  {podiumParticipants[1].username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <p className="font-semibold text-sm mb-2 truncate max-w-[80px]">{podiumParticipants[1].username}</p>
-              <div className="w-20 md:w-28 h-24 bg-gradient-to-t from-gray-400 to-gray-300 rounded-t-lg flex flex-col items-center justify-start pt-3 shadow-lg">
-                <span className="text-3xl font-bold text-gray-700">2</span>
-                <span className="text-xs text-gray-600 mt-1">{podiumParticipants[1].answer_time?.toFixed(1)}s</span>
+        {/* Podium - Enhanced with animations */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-amber-500/10 to-transparent rounded-3xl"></div>
+          <div className="flex items-end justify-center gap-3 md:gap-6 h-72 px-4 pt-4">
+            {/* 2nd Place */}
+            {podiumParticipants[1] && (
+              <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '300ms' }}>
+                <div className="relative">
+                  <Avatar className="h-16 w-16 border-4 border-gray-300 shadow-xl mb-2 ring-4 ring-gray-300/30">
+                    <AvatarImage src={podiumParticipants[1].avatar_url || undefined} />
+                    <AvatarFallback className="bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700 font-bold text-xl">
+                      {podiumParticipants[1].username.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {podiumParticipants[1].user_id === user?.id && (
+                    <Badge className="absolute -top-2 -right-2 bg-primary text-[10px] px-1">Siz</Badge>
+                  )}
+                </div>
+                <p className="font-semibold text-sm mb-2 truncate max-w-[90px]">{podiumParticipants[1].username}</p>
+                <div className="w-24 md:w-32 h-28 bg-gradient-to-t from-gray-400 to-gray-200 rounded-t-2xl flex flex-col items-center justify-start pt-4 shadow-xl border-t-4 border-gray-300">
+                  <span className="text-4xl font-black text-gray-600">2</span>
+                  <span className="text-xs text-gray-500 mt-1 font-medium">{podiumParticipants[1].answer_time?.toFixed(1)}s</span>
+                  {podiumParticipants[1].is_correct && (
+                    <Check className="h-4 w-4 text-emerald-500 mt-1" />
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 1st Place */}
-          {podiumParticipants[0] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <div className="relative">
-                <Crown className="absolute -top-6 left-1/2 -translate-x-1/2 h-8 w-8 text-amber-400 drop-shadow-lg" />
-                <Avatar className="h-20 w-20 border-4 border-amber-400 shadow-xl">
-                  <AvatarImage src={podiumParticipants[0].avatar_url || undefined} />
-                  <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-500 text-white font-bold text-2xl">
-                    {podiumParticipants[0].username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+            {/* 1st Place */}
+            {podiumParticipants[0] && (
+              <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '100ms' }}>
+                <div className="relative">
+                  <Crown className="absolute -top-8 left-1/2 -translate-x-1/2 h-10 w-10 text-amber-400 drop-shadow-lg animate-bounce" />
+                  <div className="absolute inset-0 bg-amber-400/30 rounded-full blur-xl scale-110 animate-pulse"></div>
+                  <Avatar className="relative h-24 w-24 border-4 border-amber-400 shadow-2xl ring-4 ring-amber-400/40">
+                    <AvatarImage src={podiumParticipants[0].avatar_url || undefined} />
+                    <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-white font-bold text-3xl">
+                      {podiumParticipants[0].username.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {podiumParticipants[0].user_id === user?.id && (
+                    <Badge className="absolute -top-2 -right-2 bg-primary text-[10px] px-1">Siz</Badge>
+                  )}
+                </div>
+                <p className="font-bold text-lg mt-3 mb-2 truncate max-w-[120px]">{podiumParticipants[0].username}</p>
+                <div className="w-28 md:w-40 h-40 bg-gradient-to-t from-amber-500 to-amber-300 rounded-t-2xl flex flex-col items-center justify-start pt-4 shadow-2xl border-t-4 border-amber-400">
+                  <Sparkles className="h-6 w-6 text-amber-700 mb-1 animate-pulse" />
+                  <span className="text-5xl font-black text-amber-800">1</span>
+                  <span className="text-sm text-amber-700 font-bold mt-1">{podiumParticipants[0].answer_time?.toFixed(1)}s</span>
+                  {podiumParticipants[0].is_correct && (
+                    <Badge className="mt-2 bg-emerald-500 shadow-md">
+                      <Check className="h-3 w-3 mr-1" />
+                      To'g'ri
+                    </Badge>
+                  )}
+                </div>
               </div>
-              <p className="font-bold text-base mt-2 mb-2 truncate max-w-[100px]">{podiumParticipants[0].username}</p>
-              <div className="w-24 md:w-32 h-32 bg-gradient-to-t from-amber-400 to-amber-300 rounded-t-lg flex flex-col items-center justify-start pt-3 shadow-xl">
-                <span className="text-4xl font-bold text-amber-700">1</span>
-                <span className="text-sm text-amber-700 font-medium mt-1">{podiumParticipants[0].answer_time?.toFixed(1)}s</span>
-                {podiumParticipants[0].is_correct && (
-                  <Badge className="mt-2 bg-emerald-500">To'g'ri</Badge>
-                )}
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* 3rd Place */}
-          {podiumParticipants[2] && (
-            <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '300ms' }}>
-              <Avatar className="h-14 w-14 border-4 border-amber-700 shadow-lg mb-2">
-                <AvatarImage src={podiumParticipants[2].avatar_url || undefined} />
-                <AvatarFallback className="bg-gradient-to-br from-amber-700 to-amber-800 text-white font-bold">
-                  {podiumParticipants[2].username.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <p className="font-semibold text-sm mb-2 truncate max-w-[80px]">{podiumParticipants[2].username}</p>
-              <div className="w-20 md:w-28 h-16 bg-gradient-to-t from-amber-700 to-amber-600 rounded-t-lg flex flex-col items-center justify-start pt-2 shadow-lg">
-                <span className="text-2xl font-bold text-amber-200">3</span>
-                <span className="text-xs text-amber-300">{podiumParticipants[2].answer_time?.toFixed(1)}s</span>
+            {/* 3rd Place */}
+            {podiumParticipants[2] && (
+              <div className="flex flex-col items-center animate-fade-in" style={{ animationDelay: '500ms' }}>
+                <div className="relative">
+                  <Avatar className="h-14 w-14 border-4 border-amber-700 shadow-xl mb-2 ring-4 ring-amber-700/30">
+                    <AvatarImage src={podiumParticipants[2].avatar_url || undefined} />
+                    <AvatarFallback className="bg-gradient-to-br from-amber-700 to-amber-800 text-white font-bold">
+                      {podiumParticipants[2].username.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {podiumParticipants[2].user_id === user?.id && (
+                    <Badge className="absolute -top-2 -right-2 bg-primary text-[10px] px-1">Siz</Badge>
+                  )}
+                </div>
+                <p className="font-semibold text-sm mb-2 truncate max-w-[80px]">{podiumParticipants[2].username}</p>
+                <div className="w-20 md:w-28 h-20 bg-gradient-to-t from-amber-800 to-amber-600 rounded-t-2xl flex flex-col items-center justify-start pt-3 shadow-xl border-t-4 border-amber-700">
+                  <span className="text-3xl font-black text-amber-200">3</span>
+                  <span className="text-xs text-amber-300">{podiumParticipants[2].answer_time?.toFixed(1)}s</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Other Participants */}
+        {/* Other Participants - Enhanced */}
         {otherParticipants.length > 0 && (
           <div className="space-y-3">
-            <h3 className="font-semibold text-lg text-center text-muted-foreground">Boshqa ishtirokchilar</h3>
+            <h3 className="font-semibold text-lg text-center text-muted-foreground flex items-center justify-center gap-2">
+              <Users className="h-5 w-5" />
+              Boshqa ishtirokchilar
+            </h3>
             <div className="space-y-2">
               {otherParticipants.map((p, index) => (
-                <Card key={p.id} className="overflow-hidden">
+                <Card 
+                  key={p.id} 
+                  className={`overflow-hidden transition-all hover:border-primary/30 ${
+                    p.user_id === user?.id ? 'border-primary/50 bg-primary/5' : ''
+                  }`}
+                >
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className="text-xl font-bold text-muted-foreground w-8 text-center">
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground">
                       {index + 4}
                     </div>
                     <Avatar className="h-10 w-10 border-2 border-border">
@@ -892,12 +1230,17 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
                       <AvatarFallback>{p.username.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{p.username}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium truncate">{p.username}</p>
+                        {p.user_id === user?.id && (
+                          <Badge variant="outline" className="text-[10px]">Siz</Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">
-                        Javob: {p.answer ?? '-'} | {p.answer_time?.toFixed(1)}s
+                        <span className="font-mono">{p.answer ?? '-'}</span> • {p.answer_time?.toFixed(1)}s
                       </p>
                     </div>
-                    <Badge variant={p.is_correct ? 'default' : 'destructive'}>
+                    <Badge variant={p.is_correct ? 'default' : 'destructive'} className={p.is_correct ? 'bg-emerald-500' : ''}>
                       {p.is_correct ? "To'g'ri" : "Noto'g'ri"}
                     </Badge>
                   </CardContent>
@@ -907,36 +1250,59 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           </div>
         )}
 
-        {/* Stats Summary */}
-        <Card className="bg-muted/30">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
+        {/* Stats Summary - Enhanced */}
+        <Card className="bg-gradient-to-br from-muted/50 to-muted/30 border-border/50">
+          <CardContent className="p-5">
+            <h3 className="text-sm font-medium text-muted-foreground text-center mb-4">O'yin statistikasi</h3>
+            <div className="grid grid-cols-3 gap-6 text-center">
+              <div className="space-y-1">
+                <div className="w-12 h-12 mx-auto rounded-full bg-emerald-500/10 flex items-center justify-center">
+                  <Check className="h-6 w-6 text-emerald-500" />
+                </div>
                 <p className="text-2xl font-bold text-emerald-500">{sortedParticipants.filter(p => p.is_correct).length}</p>
-                <p className="text-xs text-muted-foreground">To'g'ri javob</p>
+                <p className="text-xs text-muted-foreground">To'g'ri</p>
               </div>
-              <div>
+              <div className="space-y-1">
+                <div className="w-12 h-12 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
                 <p className="text-2xl font-bold">{sortedParticipants.length}</p>
                 <p className="text-xs text-muted-foreground">O'yinchilar</p>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-primary">{room?.problem_count || problemCount}</p>
+              <div className="space-y-1">
+                <div className="w-12 h-12 mx-auto rounded-full bg-amber-500/10 flex items-center justify-center">
+                  <Target className="h-6 w-6 text-amber-500" />
+                </div>
+                <p className="text-2xl font-bold text-amber-500">{room?.problem_count || problemCount}</p>
                 <p className="text-xs text-muted-foreground">Sonlar</p>
               </div>
             </div>
           </CardContent>
         </Card>
         
-        {/* Action Button */}
-        <Button 
-          onClick={resetState} 
-          size="lg" 
-          className="w-full h-14 text-lg font-semibold"
-          variant="outline"
-        >
-          <ArrowLeft className="h-5 w-5 mr-2" />
-          Menyuga qaytish
-        </Button>
+        {/* Action Buttons - Enhanced */}
+        <div className="flex gap-3">
+          <Button 
+            onClick={resetState} 
+            size="lg" 
+            className="flex-1 h-14 text-lg font-semibold"
+            variant="outline"
+          >
+            <ArrowLeft className="h-5 w-5 mr-2" />
+            Menyuga
+          </Button>
+          <Button 
+            onClick={() => {
+              resetState();
+              setView('create');
+            }} 
+            size="lg" 
+            className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary/80 shadow-lg"
+          >
+            <Play className="h-5 w-5 mr-2" />
+            Qayta o'ynash
+          </Button>
+        </div>
       </div>
     );
   }
