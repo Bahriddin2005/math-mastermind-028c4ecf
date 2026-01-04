@@ -15,6 +15,9 @@ import confetti from 'canvas-confetti';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { GamificationDisplay } from '@/components/GamificationDisplay';
 import { useSound } from '@/hooks/useSound';
+import { MultiplayerChat } from './MultiplayerChat';
+import { SpectatorMode } from './SpectatorMode';
+import { TournamentMode } from './TournamentMode';
 
 type FormulaType = 'oddiy' | 'formula5' | 'formula10plus' | 'formula10minus' | 'hammasi';
 
@@ -64,7 +67,7 @@ interface MultiplayerModeProps {
 export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
-  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'countdown' | 'playing' | 'results'>('menu');
+  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'countdown' | 'playing' | 'results' | 'spectator' | 'tournament'>('menu');
   const [room, setRoom] = useState<Room | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [roomCode, setRoomCode] = useState('');
@@ -98,7 +101,7 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   const [liveRankings, setLiveRankings] = useState<Participant[]>([]);
   const [showRankChange, setShowRankChange] = useState(false);
-  
+  const [chatOpen, setChatOpen] = useState(false);
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -521,6 +524,16 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
         <Button onClick={onBack} variant="outline">Orqaga</Button>
       </div>
     );
+  }
+
+  // Spectator Mode View
+  if (view === 'spectator') {
+    return <SpectatorMode onBack={() => setView('menu')} />;
+  }
+
+  // Tournament Mode View
+  if (view === 'tournament') {
+    return <TournamentMode onBack={() => setView('menu')} />;
   }
 
   // Countdown view
@@ -1303,6 +1316,15 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             Qayta o'ynash
           </Button>
         </div>
+
+        {/* Chat in results */}
+        {room && (
+          <MultiplayerChat
+            roomId={room.id}
+            isOpen={chatOpen}
+            onClose={() => setChatOpen(!chatOpen)}
+          />
+        )}
       </div>
     );
   }
@@ -1437,6 +1459,13 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             </p>
           </div>
         )}
+
+        {/* Chat Widget */}
+        <MultiplayerChat
+          roomId={room.id}
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(!chatOpen)}
+        />
       </div>
     );
   }
@@ -1724,8 +1753,7 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
         {/* Spectator Mode Card */}
         <Card 
           className="group cursor-pointer border-2 border-transparent hover:border-purple-500/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
-          onClick={onBack}
-          data-spectator="true"
+          onClick={() => setView('spectator')}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <CardContent className="p-6 flex items-center gap-5 relative">
@@ -1745,8 +1773,7 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
         {/* Tournament Mode Card */}
         <Card 
           className="group cursor-pointer border-2 border-transparent hover:border-amber-500/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
-          onClick={onBack}
-          data-tournament="true"
+          onClick={() => setView('tournament')}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <CardContent className="p-6 flex items-center gap-5 relative">
@@ -1755,10 +1782,10 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
             </div>
             <div className="flex-1">
               <h3 className="font-bold text-lg group-hover:text-amber-500 transition-colors">Turnir rejimi</h3>
-              <p className="text-sm text-muted-foreground">Bracket tizimida raqobatlashing</p>
+              <p className="text-sm text-muted-foreground">Haqiqiy o'yinchilar bilan bracket tizimida</p>
             </div>
             <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 text-[10px]">
-              YANGI
+              REAL-TIME
             </Badge>
           </CardContent>
         </Card>
