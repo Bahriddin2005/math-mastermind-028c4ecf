@@ -586,6 +586,8 @@ const Dashboard = () => {
               bestStreak={profile?.best_streak || 0}
               totalScore={profile?.total_score || 0}
               totalGames={stats.totalGames}
+              level={gamification.level}
+              totalXp={gamification.totalXp}
             />
 
             {/* Weekly Competition, Badges & Bonus Challenge */}
