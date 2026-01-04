@@ -1574,17 +1574,8 @@ export const NumberTrainer = () => {
                 </CardContent>
               </Card>
 
-              {/* Boshlash va Reset tugmalari */}
-              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 pt-2 sm:pt-4">
-                <Button
-                  onClick={resetToDefaults}
-                  variant="outline"
-                  size="lg"
-                  className="px-4 sm:px-6 py-4 sm:py-6 text-xs sm:text-base font-medium rounded-xl sm:rounded-2xl border-border/50 dark:border-slate-600 hover:bg-destructive/10 dark:hover:bg-destructive/20 hover:text-destructive hover:border-destructive/50 transition-all duration-300"
-                >
-                  <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
-                  Default holatga qaytarish
-                </Button>
+              {/* Boshlash tugmasi */}
+              <div className="flex justify-center pt-2 sm:pt-4">
                 <Button
                   onClick={startGame}
                   size="lg"
