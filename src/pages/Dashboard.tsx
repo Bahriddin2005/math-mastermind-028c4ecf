@@ -20,6 +20,8 @@ import { Footer } from '@/components/Footer';
 import { WeeklyCompetition } from '@/components/WeeklyCompetition';
 import { UserBadges } from '@/components/UserBadges';
 import { ProgressVisualization } from '@/components/ProgressVisualization';
+import { BonusChallenge } from '@/components/BonusChallenge';
+import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,6 +99,12 @@ const Dashboard = () => {
 
   // Badge notifications hook (realtime)
   useBadgeNotifications();
+
+  // Gamification hook for bonus challenge
+  const gamification = useAdaptiveGamification({
+    gameType: 'bonus-challenge',
+    enabled: !!user,
+  });
 
   useEffect(() => {
     // If not logged in and auth is done loading, show guest dashboard
@@ -382,13 +390,21 @@ const Dashboard = () => {
               totalGames={stats.totalGames}
             />
 
-            {/* Weekly Competition & Badges */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            {/* Weekly Competition, Badges & Bonus Challenge */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
                 <WeeklyCompetition />
               </div>
               <div className="opacity-0 animate-slide-up" style={{ animationDelay: '420ms', animationFillMode: 'forwards' }}>
                 <UserBadges />
+              </div>
+              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '440ms', animationFillMode: 'forwards' }}>
+                <BonusChallenge
+                  energy={gamification.energy}
+                  maxEnergy={gamification.maxEnergy}
+                  onComplete={gamification.completeBonusChallenge}
+                  onEnergyUse={gamification.useEnergy}
+                />
               </div>
             </div>
 
