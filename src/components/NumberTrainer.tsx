@@ -1499,33 +1499,51 @@ export const NumberTrainer = () => {
                     </div>
                     <div className="flex flex-wrap gap-1 sm:gap-1.5">
                       {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.5, 2, 2.5, 3].map((s) => {
-                        // Speed-based color logic
-                        const getSpeedColor = (speedVal: number, isSelected: boolean) => {
-                          if (isSelected) {
-                            if (speedVal <= 0.5) return 'bg-green-500 text-white shadow-green-500/30';
-                            if (speedVal <= 0.6) return 'bg-yellow-500 text-white shadow-yellow-500/30';
-                            if (speedVal <= 0.9) return 'bg-orange-500 text-white shadow-orange-500/30';
-                            if (speedVal === 1) return 'bg-red-500 text-white shadow-red-500/30';
-                            if (speedVal <= 1.5) return 'bg-red-600 text-white shadow-red-600/30';
-                            if (speedVal <= 2) return 'bg-red-700 text-white shadow-red-700/30';
-                            return 'bg-red-900 text-white shadow-red-900/30';
-                          }
-                          // Unselected state - subtle hint of color
-                          if (speedVal <= 0.5) return 'bg-green-500/20 text-green-700 dark:text-green-400 hover:bg-green-500/30';
-                          if (speedVal <= 0.6) return 'bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/30';
-                          if (speedVal <= 0.9) return 'bg-orange-500/20 text-orange-700 dark:text-orange-400 hover:bg-orange-500/30';
-                          if (speedVal === 1) return 'bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500/30';
-                          if (speedVal <= 1.5) return 'bg-red-600/20 text-red-700 dark:text-red-500 hover:bg-red-600/30';
-                          if (speedVal <= 2) return 'bg-red-700/20 text-red-800 dark:text-red-600 hover:bg-red-700/30';
-                          return 'bg-red-900/20 text-red-900 dark:text-red-700 hover:bg-red-900/30';
+                        // Speed-based color logic - gradient from dark green to black
+                        const getSpeedTextColor = (speedVal: number) => {
+                          if (speedVal === 0.1) return 'text-green-800 dark:text-green-400';
+                          if (speedVal === 0.2) return 'text-green-700 dark:text-green-400';
+                          if (speedVal === 0.3) return 'text-green-600 dark:text-green-500';
+                          if (speedVal === 0.4) return 'text-green-500 dark:text-green-400';
+                          if (speedVal === 0.5) return 'text-lime-500 dark:text-lime-400';
+                          if (speedVal === 0.6) return 'text-yellow-500 dark:text-yellow-400';
+                          if (speedVal === 0.7) return 'text-yellow-600 dark:text-yellow-500';
+                          if (speedVal === 0.8) return 'text-orange-500 dark:text-orange-400';
+                          if (speedVal === 0.9) return 'text-orange-600 dark:text-orange-500';
+                          if (speedVal === 1) return 'text-red-500 dark:text-red-400';
+                          if (speedVal === 1.5) return 'text-red-700 dark:text-red-500';
+                          if (speedVal === 2) return 'text-red-800 dark:text-red-600';
+                          if (speedVal === 2.5) return 'text-red-900 dark:text-red-700';
+                          return 'text-stone-900 dark:text-stone-600';
+                        };
+
+                        const getSpeedBorderColor = (speedVal: number) => {
+                          if (speedVal === 0.1) return 'ring-green-800/50';
+                          if (speedVal === 0.2) return 'ring-green-700/50';
+                          if (speedVal === 0.3) return 'ring-green-600/50';
+                          if (speedVal === 0.4) return 'ring-green-500/50';
+                          if (speedVal === 0.5) return 'ring-lime-500/50';
+                          if (speedVal === 0.6) return 'ring-yellow-500/50';
+                          if (speedVal === 0.7) return 'ring-yellow-600/50';
+                          if (speedVal === 0.8) return 'ring-orange-500/50';
+                          if (speedVal === 0.9) return 'ring-orange-600/50';
+                          if (speedVal === 1) return 'ring-red-500/50';
+                          if (speedVal === 1.5) return 'ring-red-700/50';
+                          if (speedVal === 2) return 'ring-red-800/50';
+                          if (speedVal === 2.5) return 'ring-red-900/50';
+                          return 'ring-stone-900/50';
                         };
                         
                         return (
                           <button
                             key={s}
                             onClick={() => setSpeed(s)}
-                            className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm
-                              ${getSpeedColor(s, speed === s)}`}
+                            className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 
+                              ${getSpeedTextColor(s)}
+                              ${speed === s 
+                                ? `ring-2 ${getSpeedBorderColor(s)} bg-secondary dark:bg-slate-700 shadow-md` 
+                                : 'bg-secondary/50 dark:bg-slate-800/50 hover:bg-secondary dark:hover:bg-slate-700'
+                              }`}
                           >
                             {s}
                           </button>
