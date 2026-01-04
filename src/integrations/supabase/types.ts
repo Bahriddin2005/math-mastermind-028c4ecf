@@ -798,11 +798,13 @@ export type Database = {
           daily_goal: number | null
           id: string
           last_active_date: string | null
+          selected_frame: string | null
           total_problems_solved: number | null
           total_score: number | null
           updated_at: string
           user_id: string
           username: string
+          vip_expires_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -812,11 +814,13 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
           user_id: string
           username: string
+          vip_expires_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -826,11 +830,13 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
           user_id?: string
           username?: string
+          vip_expires_at?: string | null
         }
         Relationships: []
       }
@@ -1318,6 +1324,7 @@ export type Database = {
       user_inventory: {
         Row: {
           id: string
+          is_active: boolean | null
           item_id: string
           purchased_at: string
           quantity: number
@@ -1325,6 +1332,7 @@ export type Database = {
         }
         Insert: {
           id?: string
+          is_active?: boolean | null
           item_id: string
           purchased_at?: string
           quantity?: number
@@ -1332,6 +1340,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          is_active?: boolean | null
           item_id?: string
           purchased_at?: string
           quantity?: number
