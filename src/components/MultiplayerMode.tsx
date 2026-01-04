@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap, Target, Flame, Swords, Timer, TrendingUp, Medal, Sparkles } from 'lucide-react';
+import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap, Target, Flame, Swords, Timer, TrendingUp, Medal, Sparkles, Eye, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -1718,6 +1718,48 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               <p className="text-sm text-muted-foreground">Kod orqali o'yinga qo'shiling</p>
             </div>
             <ArrowLeft className="h-5 w-5 text-muted-foreground rotate-180 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+          </CardContent>
+        </Card>
+
+        {/* Spectator Mode Card */}
+        <Card 
+          className="group cursor-pointer border-2 border-transparent hover:border-purple-500/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
+          onClick={onBack}
+          data-spectator="true"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Eye className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-purple-500 transition-colors">Spectator rejimi</h3>
+              <p className="text-sm text-muted-foreground">Boshqalarning o'yinini tomosha qiling</p>
+            </div>
+            <Badge variant="secondary" className="bg-purple-500/10 text-purple-500 text-[10px]">
+              YANGI
+            </Badge>
+          </CardContent>
+        </Card>
+
+        {/* Tournament Mode Card */}
+        <Card 
+          className="group cursor-pointer border-2 border-transparent hover:border-amber-500/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
+          onClick={onBack}
+          data-tournament="true"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Trophy className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-amber-500 transition-colors">Turnir rejimi</h3>
+              <p className="text-sm text-muted-foreground">Bracket tizimida raqobatlashing</p>
+            </div>
+            <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 text-[10px]">
+              YANGI
+            </Badge>
           </CardContent>
         </Card>
       </div>
