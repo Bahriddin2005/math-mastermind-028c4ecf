@@ -1497,7 +1497,7 @@ export const NumberTrainer = () => {
                         <span className="text-xs sm:text-sm text-muted-foreground dark:text-slate-400">s</span>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.5, 2, 2.5, 3].map((s) => {
                         // Speed-based color logic - gradient from dark green to black
                         const getSpeedTextColor = (speedVal: number) => {
@@ -1518,31 +1518,33 @@ export const NumberTrainer = () => {
                         };
 
                         const getSpeedBorderColor = (speedVal: number) => {
-                          if (speedVal === 0.1) return 'ring-green-800/50';
-                          if (speedVal === 0.2) return 'ring-green-700/50';
-                          if (speedVal === 0.3) return 'ring-green-600/50';
-                          if (speedVal === 0.4) return 'ring-green-500/50';
-                          if (speedVal === 0.5) return 'ring-lime-500/50';
-                          if (speedVal === 0.6) return 'ring-yellow-500/50';
-                          if (speedVal === 0.7) return 'ring-yellow-600/50';
-                          if (speedVal === 0.8) return 'ring-orange-500/50';
-                          if (speedVal === 0.9) return 'ring-orange-600/50';
-                          if (speedVal === 1) return 'ring-red-500/50';
-                          if (speedVal === 1.5) return 'ring-red-700/50';
-                          if (speedVal === 2) return 'ring-red-800/50';
-                          if (speedVal === 2.5) return 'ring-red-900/50';
-                          return 'ring-stone-900/50';
+                          if (speedVal === 0.1) return 'ring-green-800 shadow-green-500/40';
+                          if (speedVal === 0.2) return 'ring-green-700 shadow-green-500/40';
+                          if (speedVal === 0.3) return 'ring-green-600 shadow-green-500/40';
+                          if (speedVal === 0.4) return 'ring-green-500 shadow-green-500/40';
+                          if (speedVal === 0.5) return 'ring-lime-500 shadow-lime-500/40';
+                          if (speedVal === 0.6) return 'ring-yellow-500 shadow-yellow-500/40';
+                          if (speedVal === 0.7) return 'ring-yellow-600 shadow-yellow-500/40';
+                          if (speedVal === 0.8) return 'ring-orange-500 shadow-orange-500/40';
+                          if (speedVal === 0.9) return 'ring-orange-600 shadow-orange-500/40';
+                          if (speedVal === 1) return 'ring-red-500 shadow-red-500/40';
+                          if (speedVal === 1.5) return 'ring-red-700 shadow-red-600/40';
+                          if (speedVal === 2) return 'ring-red-800 shadow-red-700/40';
+                          if (speedVal === 2.5) return 'ring-red-900 shadow-red-800/40';
+                          return 'ring-stone-900 shadow-stone-700/40';
                         };
+                        
+                        const isSelected = speed === s;
                         
                         return (
                           <button
                             key={s}
                             onClick={() => setSpeed(s)}
-                            className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 
+                            className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-sm sm:text-base font-extrabold transition-all duration-300 
                               ${getSpeedTextColor(s)}
-                              ${speed === s 
-                                ? `ring-2 ${getSpeedBorderColor(s)} bg-secondary dark:bg-slate-700 shadow-md` 
-                                : 'bg-secondary/50 dark:bg-slate-800/50 hover:bg-secondary dark:hover:bg-slate-700'
+                              ${isSelected 
+                                ? `ring-2 ${getSpeedBorderColor(s)} bg-background dark:bg-slate-800 shadow-lg scale-110 animate-pulse` 
+                                : 'bg-secondary/60 dark:bg-slate-800/60 hover:bg-secondary dark:hover:bg-slate-700 hover:scale-105'
                               }`}
                           >
                             {s}
