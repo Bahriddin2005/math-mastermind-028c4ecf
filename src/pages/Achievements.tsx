@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
+import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { 
@@ -81,7 +82,8 @@ const filterOptions: { type: AchievementType; label: string; icon: React.ReactNo
 
 const Achievements = () => {
   const { user } = useAuth();
-  const { soundEnabled, toggleSound } = useSound();
+  const { soundEnabled, toggleSound, playSound } = useSound();
+  const { triggerAchievementConfetti } = useConfetti();
   const [profile, setProfile] = useState<{
     total_problems_solved: number;
     best_streak: number;
@@ -93,7 +95,8 @@ const Achievements = () => {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<AchievementType>('all');
-
+  const [celebratedAchievements, setCelebratedAchievements] = useState<Set<string>>(new Set());
+  const previousUnlockedRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     const fetchData = async () => {
       if (!user) {
@@ -144,6 +147,33 @@ const Achievements = () => {
   const isUnlocked = (achievement: Achievement): boolean => {
     return getCurrentValue(achievement.type) >= achievement.requirement;
   };
+
+  // Celebrate newly unlocked achievements
+  const celebrateAchievement = (achievementId: string) => {
+    if (!celebratedAchievements.has(achievementId)) {
+      setCelebratedAchievements(prev => new Set([...prev, achievementId]));
+      triggerAchievementConfetti();
+      playSound('complete');
+    }
+  };
+
+  // Track unlocked achievements and celebrate new ones
+  useEffect(() => {
+    if (loading || !profile) return;
+    
+    const currentlyUnlocked = new Set(
+      achievements.filter(a => isUnlocked(a)).map(a => a.id)
+    );
+    
+    // Check for newly unlocked achievements
+    currentlyUnlocked.forEach(id => {
+      if (!previousUnlockedRef.current.has(id) && previousUnlockedRef.current.size > 0) {
+        celebrateAchievement(id);
+      }
+    });
+    
+    previousUnlockedRef.current = currentlyUnlocked;
+  }, [profile, gamification, loading]);
 
   const filteredAchievements = activeFilter === 'all' 
     ? achievements 
@@ -290,34 +320,60 @@ interface AchievementCardProps {
 }
 
 const AchievementCard = ({ achievement, progress, currentValue, isUnlocked, delay = 0 }: AchievementCardProps) => {
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    if (isUnlocked) {
+      const timer = setTimeout(() => setShowCelebration(true), delay + 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isUnlocked, delay]);
+
   return (
     <Card 
       className={cn(
-        'relative overflow-hidden transition-all duration-300 opacity-0 animate-slide-up',
+        'relative overflow-hidden transition-all duration-500 opacity-0 animate-slide-up group',
         isUnlocked 
-          ? 'bg-gradient-to-br from-card to-card/80 border-primary/30 shadow-lg' 
-          : 'bg-card/50 border-border/30 opacity-80'
+          ? 'bg-gradient-to-br from-card to-card/80 border-primary/30 shadow-lg hover:shadow-xl hover:scale-[1.02]' 
+          : 'bg-card/50 border-border/30 opacity-80 hover:opacity-100'
       )}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
     >
       <CardContent className="p-4 sm:p-5">
         <div className="flex items-center gap-4">
-          {/* Icon */}
+          {/* Icon with enhanced animations */}
           <div className={cn(
-            'relative p-3 sm:p-4 rounded-xl transition-transform duration-300',
+            'relative p-3 sm:p-4 rounded-xl transition-all duration-500',
             isUnlocked 
-              ? `bg-gradient-to-br ${achievement.color} text-white shadow-lg hover:scale-110` 
-              : 'bg-muted text-muted-foreground'
+              ? `bg-gradient-to-br ${achievement.color} text-white shadow-lg group-hover:scale-110 group-hover:rotate-3` 
+              : 'bg-muted text-muted-foreground group-hover:bg-muted/80'
           )}>
-            {achievement.icon}
+            <div className={cn(
+              'transition-transform duration-300',
+              isUnlocked && showCelebration && 'animate-[bounce_0.5s_ease-in-out]'
+            )}>
+              {achievement.icon}
+            </div>
             {isUnlocked && (
-              <div className="absolute -top-1 -right-1">
-                <CheckCircle2 className="h-4 w-4 text-white bg-green-500 rounded-full" />
+              <div className="absolute -top-1 -right-1 animate-scale-in">
+                <div className="relative">
+                  <CheckCircle2 className="h-4 w-4 text-white bg-green-500 rounded-full" />
+                  {showCelebration && (
+                    <span className="absolute inset-0 animate-ping rounded-full bg-green-400 opacity-75" />
+                  )}
+                </div>
               </div>
             )}
             {!isUnlocked && (
               <div className="absolute -top-1 -right-1">
                 <Lock className="h-4 w-4 text-muted-foreground" />
+              </div>
+            )}
+            
+            {/* Shimmer effect for unlocked */}
+            {isUnlocked && (
+              <div className="absolute inset-0 rounded-xl overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               </div>
             )}
           </div>
@@ -326,23 +382,27 @@ const AchievementCard = ({ achievement, progress, currentValue, isUnlocked, dela
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className={cn(
-                'font-semibold text-sm sm:text-base',
+                'font-semibold text-sm sm:text-base transition-colors',
                 isUnlocked ? 'text-foreground' : 'text-muted-foreground'
               )}>
                 {achievement.name}
               </h3>
               {isUnlocked && (
-                <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
+                <Sparkles className={cn(
+                  'h-4 w-4 text-amber-500',
+                  showCelebration ? 'animate-[spin_1s_ease-in-out]' : 'animate-pulse'
+                )} />
               )}
               <Badge 
                 variant="outline" 
                 className={cn(
-                  'ml-auto text-xs',
+                  'ml-auto text-xs transition-all',
                   achievement.type === 'problems' && 'border-blue-500/50 text-blue-500',
                   achievement.type === 'streak' && 'border-orange-500/50 text-orange-500',
                   achievement.type === 'score' && 'border-amber-500/50 text-amber-500',
                   achievement.type === 'level' && 'border-purple-500/50 text-purple-500',
                   achievement.type === 'xp' && 'border-emerald-500/50 text-emerald-500',
+                  isUnlocked && 'group-hover:scale-110'
                 )}
               >
                 {achievement.type === 'problems' && 'Misol'}
@@ -356,28 +416,54 @@ const AchievementCard = ({ achievement, progress, currentValue, isUnlocked, dela
               {achievement.description}
             </p>
             
-            {/* Progress */}
+            {/* Progress with animation */}
             <div className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">
                   {currentValue.toLocaleString()} / {achievement.requirement.toLocaleString()}
                 </span>
-                <span className={isUnlocked ? 'text-primary font-medium' : 'text-muted-foreground'}>
-                  {Math.round(progress)}%
+                <span className={cn(
+                  'font-medium transition-all',
+                  isUnlocked ? 'text-primary' : 'text-muted-foreground',
+                  isUnlocked && showCelebration && 'animate-pulse text-lg -mt-1'
+                )}>
+                  {isUnlocked ? '✓' : `${Math.round(progress)}%`}
                 </span>
               </div>
-              <Progress 
-                value={progress} 
-                className={cn('h-2', isUnlocked ? '' : 'opacity-50')}
-              />
+              <div className="relative">
+                <Progress 
+                  value={progress} 
+                  className={cn('h-2 transition-all duration-500', isUnlocked ? '' : 'opacity-50')}
+                />
+                {isUnlocked && (
+                  <div className="absolute inset-0 rounded-full overflow-hidden">
+                    <div className="h-full w-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer_2s_infinite]" 
+                      style={{ 
+                        animation: 'shimmer 2s infinite',
+                        background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                        backgroundSize: '200% 100%'
+                      }} 
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </CardContent>
       
-      {/* Unlocked glow effect */}
+      {/* Unlocked glow effect with animation */}
       {isUnlocked && (
-        <div className={`absolute inset-0 bg-gradient-to-r ${achievement.color} opacity-5 pointer-events-none`} />
+        <>
+          <div className={`absolute inset-0 bg-gradient-to-r ${achievement.color} opacity-5 pointer-events-none transition-opacity group-hover:opacity-10`} />
+          {/* Sparkle particles */}
+          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Sparkles className="h-3 w-3 text-amber-400 animate-pulse" />
+          </div>
+          <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity delay-100">
+            <Star className="h-2 w-2 text-amber-300 animate-pulse" />
+          </div>
+        </>
       )}
     </Card>
   );

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar, Clock, Trophy, Check, Play, Medal, Award, Flame, Timer } from 'lucide-react';
+import { Calendar, Clock, Trophy, Check, Play, Medal, Award, Flame, Timer, Zap, Target, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -558,11 +558,11 @@ export const DailyChallenge = () => {
   // Natijalar va info - Mobile optimized
   return <div className="space-y-4 sm:space-y-6">
       {/* Kunlik musobaqa ma'lumotlari */}
-      <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
+      <Card className="border-primary/30 bg-gradient-to-r from-primary/5 via-transparent to-transparent overflow-hidden">
         <CardHeader className="px-3 sm:px-6 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <CardTitle className="flex items-center gap-2 sm:gap-3">
-              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center animate-pulse">
                 <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div>
@@ -586,26 +586,42 @@ export const DailyChallenge = () => {
           </div>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-4 sm:pb-6">
+          {/* Challenge Type Badges */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge variant="outline" className="gap-1 text-xs border-blue-500/50 text-blue-500 bg-blue-500/10">
+              <Zap className="h-3 w-3" />
+              Tezlik sinovi
+            </Badge>
+            <Badge variant="outline" className="gap-1 text-xs border-green-500/50 text-green-500 bg-green-500/10">
+              <Target className="h-3 w-3" />
+              Aniqlik sinovi
+            </Badge>
+            <Badge variant="outline" className="gap-1 text-xs border-orange-500/50 text-orange-500 bg-orange-500/10">
+              <TrendingUp className="h-3 w-3" />
+              Reyting
+            </Badge>
+          </div>
+
           {challenge && <div className="grid grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                 <p className="text-[10px] sm:text-xs text-muted-foreground">Turi</p>
                 <p className="font-semibold text-xs sm:text-base">{challenge.formula_type}</p>
               </div>
-              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                 <p className="text-[10px] sm:text-xs text-muted-foreground">Xona</p>
                 <p className="font-semibold text-xs sm:text-base">{challenge.digit_count}-xon</p>
               </div>
-              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                 <p className="text-[10px] sm:text-xs text-muted-foreground">Tezlik</p>
                 <p className="font-semibold text-xs sm:text-base">{challenge.speed}s</p>
               </div>
-              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-2 sm:p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                 <p className="text-[10px] sm:text-xs text-muted-foreground">Sonlar</p>
                 <p className="font-semibold text-xs sm:text-base">{challenge.problem_count}</p>
               </div>
             </div>}
           
-          {view === 'info' && !userResult && <Button onClick={startChallenge} size="lg" className="w-full h-12 sm:h-11 text-base sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600" disabled={!user}>
+          {view === 'info' && !userResult && <Button onClick={startChallenge} size="lg" className="w-full h-12 sm:h-11 text-base sm:text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]" disabled={!user}>
               <Play className="h-5 w-5 sm:h-5 sm:w-5 mr-2" />
               Musobaqani boshlash
             </Button>}
@@ -614,13 +630,26 @@ export const DailyChallenge = () => {
               Qatnashish uchun tizimga kiring
             </p>}
           
-          {userResult && <div className={cn("p-3 sm:p-4 rounded-xl text-center", userResult.is_correct ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30")}>
+          {userResult && <div className={cn("p-3 sm:p-4 rounded-xl text-center animate-fade-in", userResult.is_correct ? "bg-green-500/10 border border-green-500/30" : "bg-red-500/10 border border-red-500/30")}>
               <p className="text-base sm:text-lg font-semibold">
                 {userResult.is_correct ? "✓ To'g'ri javob!" : "✗ Noto'g'ri"}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
                 Vaqt: <span className="font-mono font-bold">{userResult.completion_time.toFixed(1)}s</span> | Ball: <span className="font-bold text-primary">{userResult.score}</span>
               </p>
+              {/* Gamification bonus info */}
+              <div className="flex justify-center gap-3 mt-2">
+                <Badge variant="secondary" className="gap-1">
+                  <Zap className="h-3 w-3 text-warning" />
+                  +{userResult.score} XP
+                </Badge>
+                {gamification.combo > 1 && (
+                  <Badge variant="outline" className="gap-1 text-orange-500 border-orange-500/50">
+                    <Flame className="h-3 w-3" />
+                    x{gamification.comboMultiplier.toFixed(1)} combo
+                  </Badge>
+                )}
+              </div>
             </div>}
         </CardContent>
       </Card>
