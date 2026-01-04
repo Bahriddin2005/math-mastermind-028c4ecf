@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Trophy, Medal, Award, User, CalendarDays, CalendarRange, Sparkles, Flame } from 'lucide-react';
+import { Trophy, Medal, Award, User, CalendarDays, CalendarRange, Sparkles, Flame, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlayerProfileDialog } from './PlayerProfileDialog';
@@ -15,6 +15,8 @@ interface LeaderboardEntry {
   total_score: number;
   best_streak: number;
   avatar_url: string | null;
+  level?: number;
+  total_xp?: number;
 }
 
 interface LeaderboardProps {
@@ -35,14 +37,30 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
       setLoading(true);
 
       if (timeFilter === 'all') {
-        const { data } = await supabase
+        // Get profiles
+        const { data: profilesData } = await supabase
           .from('profiles')
           .select('id, user_id, username, total_score, best_streak, avatar_url')
           .order('total_score', { ascending: false })
           .limit(50);
 
-        if (data) {
-          setEntries(data);
+        if (profilesData) {
+          // Get gamification data for these users
+          const userIds = profilesData.map(p => p.user_id);
+          const { data: gamificationData } = await supabase
+            .from('user_gamification')
+            .select('user_id, level, total_xp')
+            .in('user_id', userIds);
+
+          const gamificationMap = new Map(
+            gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
+          );
+
+          setEntries(profilesData.map(p => ({
+            ...p,
+            level: gamificationMap.get(p.user_id)?.level || 1,
+            total_xp: gamificationMap.get(p.user_id)?.total_xp || 0,
+          })));
         }
       } else {
         const now = new Date();
@@ -80,6 +98,16 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
               .select('id, user_id, username, avatar_url')
               .in('user_id', userIds);
 
+            // Get gamification data
+            const { data: gamificationData } = await supabase
+              .from('user_gamification')
+              .select('user_id, level, total_xp')
+              .in('user_id', userIds);
+
+            const gamificationMap = new Map(
+              gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
+            );
+
             if (profilesData) {
               const leaderboardEntries: LeaderboardEntry[] = profilesData.map(profile => {
                 const scores = userScores.get(profile.user_id) || { totalScore: 0, bestStreak: 0 };
@@ -90,6 +118,8 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                   total_score: scores.totalScore,
                   best_streak: scores.bestStreak,
                   avatar_url: profile.avatar_url,
+                  level: gamificationMap.get(profile.user_id)?.level || 1,
+                  total_xp: gamificationMap.get(profile.user_id)?.total_xp || 0,
                 };
               });
 
@@ -285,6 +315,13 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
                         <span className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/70 flex items-center gap-1">
                           <Flame className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-accent" />
                           {entry.best_streak}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-primary flex items-center gap-1 font-medium">
+                          <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-primary" />
+                          Lv.{entry.level || 1}
+                        </span>
+                        <span className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/70">
+                          {(entry.total_xp || 0).toLocaleString()} XP
                         </span>
                       </div>
                     </div>
