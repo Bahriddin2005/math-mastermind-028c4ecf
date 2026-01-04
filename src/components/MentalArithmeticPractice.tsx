@@ -17,6 +17,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
+import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
+import { GamificationDisplay } from './GamificationDisplay';
 
 // Formulasiz qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
 const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
@@ -165,6 +167,13 @@ export const MentalArithmeticPractice = () => {
   const { user } = useAuth();
   const { playSound } = useSound();
   
+  // Adaptive Gamification hook
+  const gamification = useAdaptiveGamification({
+    gameType: 'mental-arithmetic',
+    baseScore: 15,
+    enabled: !!user,
+  });
+  
   // Sozlamalar
   const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
   const [formulaType, setFormulaType] = useState<FormulaType>('basic');
@@ -175,6 +184,18 @@ export const MentalArithmeticPractice = () => {
   const [abacusColumns, setAbacusColumns] = useState(1);
   const [continuousMode, setContinuousMode] = useState(false); // To'xtovsiz mashq rejimi
   const [currentProgress, setCurrentProgress] = useState(0);
+  const [bonusAvailable, setBonusAvailable] = useState(false);
+  
+  // Check bonus availability
+  useEffect(() => {
+    const checkBonus = async () => {
+      if (user) {
+        const available = await gamification.checkBonusAvailability();
+        setBonusAvailable(available);
+      }
+    };
+    checkBonus();
+  }, [user, gamification.checkBonusAvailability]);
   
   // O'yin holati
   const [isRunning, setIsRunning] = useState(false);
@@ -367,6 +388,7 @@ export const MentalArithmeticPractice = () => {
     const correctAnswer = runningResultRef.current;
     const isCorrect = userNum === correctAnswer;
     const timeTaken = (Date.now() - startTimeRef.current) / 1000;
+    const responseTimeMs = Math.floor(timeTaken * 1000);
     
     setFeedback(isCorrect ? 'correct' : 'incorrect');
     setShowResult(true);
@@ -384,10 +406,18 @@ export const MentalArithmeticPractice = () => {
       incorrectAnswers: prev.incorrectAnswers + (isCorrect ? 0 : 1),
       bestStreak: Math.max(prev.bestStreak, newStreak),
     }));
+
+    // Adaptive Gamification - process answer
+    if (user) {
+      const difficultyMultiplier = difficulty === 'hard' ? 2 : difficulty === 'medium' ? 1.5 : 1;
+      await gamification.processAnswer(isCorrect, responseTimeMs, difficultyMultiplier);
+    }
     
     // Supabase'ga saqlash
     if (user) {
       try {
+        const scoreEarned = isCorrect ? Math.floor(15 * gamification.comboMultiplier) : 0;
+        
         await supabase.from('game_sessions').insert({
           user_id: user.id,
           section: 'mental-arithmetic',
@@ -395,8 +425,8 @@ export const MentalArithmeticPractice = () => {
           mode: 'practice',
           correct: isCorrect ? 1 : 0,
           incorrect: isCorrect ? 0 : 1,
-          best_streak: newStreak,
-          score: isCorrect ? 10 : 0,
+          best_streak: Math.max(newStreak, gamification.maxCombo),
+          score: scoreEarned,
           total_time: timeTaken,
           problems_solved: 1,
         });
@@ -412,9 +442,9 @@ export const MentalArithmeticPractice = () => {
           await supabase
             .from('profiles')
             .update({
-              total_score: (profile.total_score || 0) + (isCorrect ? 10 : 0),
+              total_score: (profile.total_score || 0) + scoreEarned,
               total_problems_solved: (profile.total_problems_solved || 0) + 1,
-              best_streak: Math.max(profile.best_streak || 0, newStreak),
+              best_streak: Math.max(profile.best_streak || 0, newStreak, gamification.maxCombo),
               last_active_date: new Date().toISOString().split('T')[0],
             })
             .eq('user_id', user.id);
@@ -430,7 +460,7 @@ export const MentalArithmeticPractice = () => {
     if (isCorrect) {
       toast.success("To'g'ri javob! 🎉", { duration: 2000 });
     }
-  }, [userAnswer, user, difficulty, currentStreak, playSound]);
+  }, [userAnswer, user, difficulty, currentStreak, playSound, gamification]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
@@ -448,7 +478,8 @@ export const MentalArithmeticPractice = () => {
     setShowSettings(true);
     runningResultRef.current = 0;
     countRef.current = 0;
-  }, []);
+    gamification.resetCombo();
+  }, [gamification]);
 
   useEffect(() => {
     return () => {
@@ -471,6 +502,25 @@ export const MentalArithmeticPractice = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 px-0">
+      {/* Gamification Display */}
+      {user && !gamification.isLoading && (
+        <GamificationDisplay
+          level={gamification.level}
+          currentXp={gamification.currentXp}
+          requiredXp={gamification.requiredXp}
+          levelProgress={gamification.levelProgress}
+          energy={gamification.energy}
+          maxEnergy={gamification.maxEnergy}
+          combo={gamification.combo}
+          comboMultiplier={gamification.comboMultiplier}
+          difficultyLevel={gamification.difficultyLevel}
+          xpUntilLevelUp={gamification.xpUntilLevelUp}
+          isStruggling={gamification.isStruggling}
+          isFlagged={gamification.isFlagged}
+          showBonusHint={bonusAvailable}
+        />
+      )}
+
       {/* Statistika - Chiroyli gradient kartalar - Dark mode enhanced */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         <div className="relative group">

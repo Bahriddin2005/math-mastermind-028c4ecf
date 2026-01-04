@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { useSound } from "@/hooks/useSound";
 import { useConfetti } from "@/hooks/useConfetti";
+import { useAdaptiveGamification } from "@/hooks/useAdaptiveGamification";
+import { GamificationDisplay } from "@/components/GamificationDisplay";
 import { Trophy, Play, Clock, Target, ArrowLeft, Check, X, Loader2, Award } from "lucide-react";
 import { toast } from "sonner";
 import { format, differenceInDays, differenceInHours } from "date-fns";
@@ -72,6 +74,13 @@ const WeeklyGame = () => {
   const { soundEnabled, toggleSound, playSound } = useSound();
   const { triggerAchievementConfetti } = useConfetti();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Adaptive Gamification hook
+  const gamification = useAdaptiveGamification({
+    gameType: 'weekly-challenge',
+    baseScore: 20,
+    enabled: !!user,
+  });
 
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null } | null>(null);
   const [countdown, setCountdown] = useState(3);
@@ -245,6 +254,10 @@ const WeeklyGame = () => {
       playSound("incorrect");
     }
 
+    // Adaptive Gamification - process answer
+    const difficultyMultiplier = (challenge?.digit_count || 1) + (challenge?.formula_type === 'hammasi' ? 1 : 0);
+    gamification.processAnswer(isCorrect, timeTaken, difficultyMultiplier);
+
     const newResults = [
       ...gameState.results,
       {
@@ -402,6 +415,27 @@ const WeeklyGame = () => {
               </Badge>
             )}
           </div>
+
+          {/* Gamification Display */}
+          {user && !gamification.isLoading && gameState.status === "idle" && (
+            <div className="mb-4 sm:mb-6">
+              <GamificationDisplay
+                level={gamification.level}
+                currentXp={gamification.currentXp}
+                requiredXp={gamification.requiredXp}
+                levelProgress={gamification.levelProgress}
+                energy={gamification.energy}
+                maxEnergy={gamification.maxEnergy}
+                combo={gamification.combo}
+                comboMultiplier={gamification.comboMultiplier}
+                difficultyLevel={gamification.difficultyLevel}
+                xpUntilLevelUp={gamification.xpUntilLevelUp}
+                isStruggling={gamification.isStruggling}
+                isFlagged={gamification.isFlagged}
+                compact
+              />
+            </div>
+          )}
 
           {/* Challenge Info */}
           <Card className="mb-4 sm:mb-6 bg-gradient-to-br from-purple-500/10 to-pink-500/5 dark:from-purple-500/20 dark:to-pink-500/10 border-purple-500/20 dark:border-purple-500/30 shadow-lg dark:shadow-xl dark:shadow-purple-500/10">

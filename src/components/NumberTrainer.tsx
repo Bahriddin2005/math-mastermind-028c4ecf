@@ -18,6 +18,8 @@ import { Leaderboard } from './Leaderboard';
 import { useConfetti } from '@/hooks/useConfetti';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
+import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
+import { GamificationDisplay } from './GamificationDisplay';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -202,6 +204,16 @@ export const NumberTrainer = () => {
   const [activeTab, setActiveTab] = useState('train');
   const [prevTab, setPrevTab] = useState('train');
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  const [bonusAvailable, setBonusAvailable] = useState(false);
+  
+  // Adaptive Gamification hook
+  const gamification = useAdaptiveGamification({
+    gameType: 'number-trainer',
+    baseScore: 10,
+    enabled: !!user,
+  });
+
+  // Answer start time tracking for gamification - moved to refs section below
   
   const tabOrder = ['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'];
   
@@ -212,6 +224,17 @@ export const NumberTrainer = () => {
     setPrevTab(activeTab);
     setActiveTab(newTab);
   };
+
+  // Check bonus availability
+  useEffect(() => {
+    const checkBonus = async () => {
+      if (user) {
+        const available = await gamification.checkBonusAvailability();
+        setBonusAvailable(available);
+      }
+    };
+    checkBonus();
+  }, [user, gamification.checkBonusAvailability]);
   
   // Sozlamalar - localStorage dan yuklash
   const [formulaType, setFormulaType] = useState<FormulaType>(() => {
@@ -530,15 +553,15 @@ export const NumberTrainer = () => {
     const correct = userNum === correctAnswer;
     const totalTime = (Date.now() - startTimeRef.current) / 1000;
     const answerDuration = (Date.now() - answerStartTimeRef.current) / 1000;
+    const responseTimeMs = Math.floor(answerDuration * 1000);
     
     setIsCorrect(correct);
     setShowResult(true);
     setAnswerTime(answerDuration);
     
-    // Play sound and trigger confetti
+    // Play sound
     if (correct) {
       playSound('correct');
-      triggerLevelUpConfetti();
     } else {
       playSound('incorrect');
     }
@@ -551,9 +574,17 @@ export const NumberTrainer = () => {
     const newStreak = correct ? currentStreak + 1 : 0;
     setCurrentStreak(newStreak);
 
+    // Adaptive Gamification - process answer
+    if (user) {
+      const difficultyMultiplier = digitCount + (formulaType === 'hammasi' ? 1 : 0);
+      await gamification.processAnswer(correct, responseTimeMs, difficultyMultiplier);
+    }
+
     // Bazaga saqlash
     if (user) {
       try {
+        const scoreEarned = correct ? Math.floor(10 * gamification.comboMultiplier) : 0;
+        
         await supabase.from('game_sessions').insert({
           user_id: user.id,
           section: 'number-trainer',
@@ -561,8 +592,8 @@ export const NumberTrainer = () => {
           mode: `${digitCount}-xonali`,
           correct: correct ? 1 : 0,
           incorrect: correct ? 0 : 1,
-          best_streak: newStreak,
-          score: correct ? 10 : 0,
+          best_streak: Math.max(newStreak, gamification.maxCombo),
+          score: scoreEarned,
           total_time: totalTime,
           problems_solved: problemCount,
         });
@@ -578,9 +609,9 @@ export const NumberTrainer = () => {
           await supabase
             .from('profiles')
             .update({
-              total_score: (profile.total_score || 0) + (correct ? 10 : 0),
+              total_score: (profile.total_score || 0) + scoreEarned,
               total_problems_solved: (profile.total_problems_solved || 0) + 1,
-              best_streak: Math.max(profile.best_streak || 0, newStreak),
+              best_streak: Math.max(profile.best_streak || 0, newStreak, gamification.maxCombo),
               last_active_date: new Date().toISOString().split('T')[0],
             })
             .eq('user_id', user.id);
@@ -589,7 +620,7 @@ export const NumberTrainer = () => {
         console.error('Error saving session:', error);
       }
     }
-  }, [userAnswer, user, formulaType, digitCount, problemCount, currentStreak]);
+  }, [userAnswer, user, formulaType, digitCount, problemCount, currentStreak, gamification]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
@@ -605,7 +636,8 @@ export const NumberTrainer = () => {
     setIsCorrect(null);
     setElapsedTime(0);
     setAnswerTime(0);
-  }, []);
+    gamification.resetCombo();
+  }, [gamification]);
 
   useEffect(() => {
     return () => {
@@ -1079,6 +1111,25 @@ export const NumberTrainer = () => {
 
           <TabsContent value="train" className={`mt-0 ${slideDirection === 'right' ? 'animate-slide-in-right' : 'animate-slide-in-left'}`} key={`train-${activeTab}`}>
             <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+              {/* Gamification Display */}
+              {user && !gamification.isLoading && (
+                <GamificationDisplay
+                  level={gamification.level}
+                  currentXp={gamification.currentXp}
+                  requiredXp={gamification.requiredXp}
+                  levelProgress={gamification.levelProgress}
+                  energy={gamification.energy}
+                  maxEnergy={gamification.maxEnergy}
+                  combo={gamification.combo}
+                  comboMultiplier={gamification.comboMultiplier}
+                  difficultyLevel={gamification.difficultyLevel}
+                  xpUntilLevelUp={gamification.xpUntilLevelUp}
+                  isStruggling={gamification.isStruggling}
+                  isFlagged={gamification.isFlagged}
+                  showBonusHint={bonusAvailable}
+                />
+              )}
+
               {/* Mini statistika */}
               {user && stats.totalProblems > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">

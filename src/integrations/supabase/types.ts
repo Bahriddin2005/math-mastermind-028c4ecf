@@ -136,6 +136,42 @@ export type Database = {
         }
         Relationships: []
       }
+      bonus_challenges: {
+        Row: {
+          challenge_type: string
+          completed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          is_completed: boolean
+          reward_energy: number
+          reward_xp: number
+          user_id: string
+        }
+        Insert: {
+          challenge_type: string
+          completed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_completed?: boolean
+          reward_energy?: number
+          reward_xp?: number
+          user_id: string
+        }
+        Update: {
+          challenge_type?: string
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_completed?: boolean
+          reward_energy?: number
+          reward_xp?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -786,6 +822,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity_log: {
+        Row: {
+          activity_type: string
+          created_at: string
+          difficulty_level: number | null
+          game_type: string
+          id: string
+          ip_hash: string | null
+          is_correct: boolean | null
+          metadata: Json | null
+          response_time_ms: number | null
+          score_earned: number | null
+          session_id: string | null
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          difficulty_level?: number | null
+          game_type: string
+          id?: string
+          ip_hash?: string | null
+          is_correct?: boolean | null
+          metadata?: Json | null
+          response_time_ms?: number | null
+          score_earned?: number | null
+          session_id?: string | null
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          difficulty_level?: number | null
+          game_type?: string
+          id?: string
+          ip_hash?: string | null
+          is_correct?: boolean | null
+          metadata?: Json | null
+          response_time_ms?: number | null
+          score_earned?: number | null
+          session_id?: string | null
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: []
+      }
       user_badges: {
         Row: {
           badge_icon: string
@@ -818,6 +902,75 @@ export type Database = {
           description?: string | null
           earned_at?: string
           id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_gamification: {
+        Row: {
+          bonus_cooldown_until: string | null
+          combo: number
+          created_at: string
+          current_xp: number
+          difficulty_level: number
+          energy: number
+          flag_reason: string | null
+          id: string
+          is_flagged: boolean
+          last_5_results: boolean[]
+          last_energy_update: string
+          level: number
+          max_combo: number
+          max_energy: number
+          suspicious_score: number
+          total_correct: number
+          total_incorrect: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bonus_cooldown_until?: string | null
+          combo?: number
+          created_at?: string
+          current_xp?: number
+          difficulty_level?: number
+          energy?: number
+          flag_reason?: string | null
+          id?: string
+          is_flagged?: boolean
+          last_5_results?: boolean[]
+          last_energy_update?: string
+          level?: number
+          max_combo?: number
+          max_energy?: number
+          suspicious_score?: number
+          total_correct?: number
+          total_incorrect?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bonus_cooldown_until?: string | null
+          combo?: number
+          created_at?: string
+          current_xp?: number
+          difficulty_level?: number
+          energy?: number
+          flag_reason?: string | null
+          id?: string
+          is_flagged?: boolean
+          last_5_results?: boolean[]
+          last_energy_update?: string
+          level?: number
+          max_combo?: number
+          max_energy?: number
+          suspicious_score?: number
+          total_correct?: number
+          total_incorrect?: number
+          total_xp?: number
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

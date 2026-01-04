@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { useTTS } from '@/hooks/useTTS';
+import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
+import { GamificationDisplay } from './GamificationDisplay';
 interface DailyChallenge {
   id: string;
   challenge_date: string;
@@ -92,6 +94,14 @@ export const DailyChallenge = () => {
     // useElevenLabs=true enables ElevenLabs when provider setting is 'elevenlabs'
     useElevenLabs: true
   });
+
+  // Adaptive Gamification hook
+  const gamification = useAdaptiveGamification({
+    gameType: 'daily-challenge',
+    baseScore: 25,
+    enabled: !!user,
+  });
+
   const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
   const [results, setResults] = useState<ChallengeResult[]>([]);
   const [userResult, setUserResult] = useState<ChallengeResult | null>(null);
@@ -336,7 +346,13 @@ export const DailyChallenge = () => {
     const correctAnswer = runningResultRef.current;
     const isCorrect = userNum === correctAnswer;
     const completionTime = (Date.now() - startTimeRef.current) / 1000;
+    const responseTimeMs = Math.floor(completionTime * 1000);
     const score = isCorrect ? Math.max(100 - Math.floor(completionTime), 10) : 0;
+    
+    // Adaptive Gamification - process answer
+    const difficultyMultiplier = challenge.digit_count + (challenge.formula_type === 'hammasi' ? 1 : 0);
+    await gamification.processAnswer(isCorrect, responseTimeMs, difficultyMultiplier);
+    
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -354,7 +370,7 @@ export const DailyChallenge = () => {
         correct_answer: correctAnswer,
         is_correct: isCorrect,
         completion_time: completionTime,
-        score
+        score: Math.floor(score * gamification.comboMultiplier)
       }).select().single();
       if (error) {
         if (error.code === '23505') {
