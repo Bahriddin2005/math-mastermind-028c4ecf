@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useSound } from "@/hooks/useSound";
+import { useVipStatus } from "@/hooks/useVipStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AvatarWithFrame } from "@/components/AvatarWithFrame";
 import { 
   ArrowLeft, Package, Sparkles, Crown, Zap, 
   CheckCircle, ShoppingBag, Gift
@@ -20,6 +22,7 @@ interface InventoryItem {
   item_id: string;
   quantity: number;
   purchased_at: string;
+  is_active: boolean;
   item: {
     name: string;
     description: string;
@@ -29,18 +32,26 @@ interface InventoryItem {
   };
 }
 
+interface ProfileData {
+  avatar_url: string | null;
+  username: string;
+  selected_frame: string | null;
+}
+
 const GameInventory = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { soundEnabled, toggleSound } = useSound();
+  const { isVip, activateVip } = useVipStatus();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [activeFrame, setActiveFrame] = useState<string | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
 
   useEffect(() => {
     if (user) {
       loadInventory();
-      loadActiveItem();
+      loadProfile();
     }
   }, [user]);
 
@@ -55,6 +66,7 @@ const GameInventory = () => {
           item_id,
           quantity,
           purchased_at,
+          is_active,
           shop_items (name, description, icon, category, item_type)
         `)
         .eq('user_id', user.id)
@@ -66,6 +78,7 @@ const GameInventory = () => {
           item_id: item.item_id,
           quantity: item.quantity,
           purchased_at: item.purchased_at,
+          is_active: item.is_active || false,
           item: {
             name: item.shop_items.name,
             description: item.shop_items.description,
@@ -83,33 +96,80 @@ const GameInventory = () => {
     }
   };
 
-  const loadActiveItem = async () => {
+  const loadProfile = async () => {
     if (!user) return;
 
     const { data } = await supabase
       .from('profiles')
-      .select('avatar_url')
+      .select('avatar_url, username, selected_frame')
       .eq('user_id', user.id)
       .single();
 
-    if (data?.avatar_url?.startsWith('cosmetic:')) {
-      setActiveItem(data.avatar_url.replace('cosmetic:', ''));
+    if (data) {
+      setProfile(data);
+      setActiveFrame(data.selected_frame);
     }
   };
 
-  const activateCosmetic = async (item: InventoryItem) => {
-    if (!user || item.item.item_type !== 'cosmetic') return;
+  const activateFrame = async (item: InventoryItem) => {
+    if (!user || item.item.category !== 'cosmetic') return;
 
     try {
+      // Deactivate all frames first
       await supabase
-        .from('profiles')
-        .update({ avatar_url: `cosmetic:${item.item_id}` })
+        .from('user_inventory')
+        .update({ is_active: false })
         .eq('user_id', user.id);
 
-      setActiveItem(item.item_id);
+      // Activate this frame
+      await supabase
+        .from('user_inventory')
+        .update({ is_active: true })
+        .eq('id', item.id);
+
+      // Update profile with selected frame
+      await supabase
+        .from('profiles')
+        .update({ selected_frame: item.item.icon })
+        .eq('user_id', user.id);
+
+      setActiveFrame(item.item.icon);
+      setItems(prev => prev.map(i => ({ ...i, is_active: i.id === item.id })));
       toast.success(`${item.item.name} faollashtirildi!`);
     } catch (error) {
-      console.error('Error activating cosmetic:', error);
+      console.error('Error activating frame:', error);
+      toast.error('Xatolik yuz berdi');
+    }
+  };
+
+  const activateVipSubscription = async (item: InventoryItem) => {
+    if (!user) return;
+
+    // Determine VIP duration based on item name
+    let days = 7;
+    if (item.item.name.includes('1 oy')) days = 30;
+    else if (item.item.name.includes('3 oy')) days = 90;
+
+    const success = await activateVip(days);
+    if (success) {
+      // Remove one from inventory
+      if (item.quantity > 1) {
+        await supabase
+          .from('user_inventory')
+          .update({ quantity: item.quantity - 1 })
+          .eq('id', item.id);
+        setItems(prev => prev.map(i => 
+          i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i
+        ));
+      } else {
+        await supabase
+          .from('user_inventory')
+          .delete()
+          .eq('id', item.id);
+        setItems(prev => prev.filter(i => i.id !== item.id));
+      }
+      toast.success(`VIP ${days} kunga faollashtirildi! 👑`);
+    } else {
       toast.error('Xatolik yuz berdi');
     }
   };
@@ -134,7 +194,17 @@ const GameInventory = () => {
 
   const categories = [...new Set(items.map(i => i.item.category))];
   const powerups = items.filter(i => i.item.item_type === 'consumable');
-  const cosmetics = items.filter(i => i.item.item_type === 'cosmetic');
+  const cosmetics = items.filter(i => i.item.category === 'cosmetic');
+  const vipItems = items.filter(i => i.item.category === 'vip');
+  const subscriptions = items.filter(i => i.item.item_type === 'subscription');
+
+  const handleItemAction = (item: InventoryItem) => {
+    if (item.item.category === 'cosmetic') {
+      activateFrame(item);
+    } else if (item.item.item_type === 'subscription') {
+      activateVipSubscription(item);
+    }
+  };
 
   return (
     <PageBackground>
@@ -159,8 +229,32 @@ const GameInventory = () => {
           </div>
         </div>
 
+        {/* Avatar Preview with Frame */}
+        {profile && (
+          <Card className="mb-6 p-6 text-center bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-200 dark:border-purple-800">
+            <div className="flex flex-col items-center gap-3">
+              <AvatarWithFrame 
+                avatarUrl={profile.avatar_url}
+                username={profile.username}
+                selectedFrame={activeFrame}
+                isVip={isVip}
+                size="xl"
+              />
+              <div>
+                <p className="font-semibold">{profile.username}</p>
+                {isVip && (
+                  <Badge className="bg-gradient-to-r from-yellow-500 to-amber-600 text-white border-0">
+                    <Crown className="h-3 w-3 mr-1" />
+                    VIP
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Stats Card */}
-        <Card className="mb-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-200 dark:border-purple-800">
+        <Card className="mb-6 p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Jami buyumlar</p>
@@ -207,8 +301,9 @@ const GameInventory = () => {
                 <InventoryItemCard 
                   key={item.id} 
                   item={item} 
-                  isActive={activeItem === item.item_id}
-                  onActivate={() => activateCosmetic(item)}
+                  isActive={item.item.category === 'cosmetic' && activeFrame === item.item.icon}
+                  onActivate={() => handleItemAction(item)}
+                  isVip={isVip}
                 />
               ))}
             </TabsContent>
@@ -242,12 +337,28 @@ const GameInventory = () => {
                   <InventoryItemCard 
                     key={item.id} 
                     item={item} 
-                    isActive={activeItem === item.item_id}
-                    onActivate={() => activateCosmetic(item)}
+                    isActive={activeFrame === item.item.icon}
+                    onActivate={() => activateFrame(item)}
+                    isVip={isVip}
                   />
                 ))
               )}
             </TabsContent>
+
+            {/* VIP subscriptions */}
+            {subscriptions.length > 0 && (
+              <TabsContent value="vip" className="space-y-3">
+                {subscriptions.map(item => (
+                  <InventoryItemCard 
+                    key={item.id} 
+                    item={item} 
+                    isActive={false}
+                    onActivate={() => activateVipSubscription(item)}
+                    isVip={isVip}
+                  />
+                ))}
+              </TabsContent>
+            )}
           </Tabs>
         )}
 
@@ -273,10 +384,12 @@ interface InventoryItemCardProps {
   item: InventoryItem;
   isActive: boolean;
   onActivate: () => void;
+  isVip?: boolean;
 }
 
-const InventoryItemCard = ({ item, isActive, onActivate }: InventoryItemCardProps) => {
-  const isCosmetic = item.item.item_type === 'cosmetic';
+const InventoryItemCard = ({ item, isActive, onActivate, isVip }: InventoryItemCardProps) => {
+  const isCosmetic = item.item.category === 'cosmetic';
+  const isSubscription = item.item.item_type === 'subscription';
 
   return (
     <Card className={`overflow-hidden transition-all hover:shadow-md ${
@@ -319,6 +432,16 @@ const InventoryItemCard = ({ item, isActive, onActivate }: InventoryItemCardProp
             onClick={onActivate}
           >
             Faollashtirish
+          </Button>
+        )}
+        {isSubscription && (
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700"
+            onClick={onActivate}
+          >
+            <Crown className="h-4 w-4 mr-1" />
+            Yoqish
           </Button>
         )}
       </div>

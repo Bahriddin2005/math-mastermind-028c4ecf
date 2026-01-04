@@ -10,6 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGameCurrency } from "@/hooks/useGameCurrency";
 import { useSound } from "@/hooks/useSound";
 import { useConfetti } from "@/hooks/useConfetti";
+import { useVipStatus } from "@/hooks/useVipStatus";
+import { useTaskProgress } from "@/hooks/useTaskProgress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
@@ -48,6 +50,8 @@ const GamePlay = () => {
   const { coins, lives, useLife, addCoins } = useGameCurrency();
   const { playSound } = useSound();
   const { triggerLevelUpConfetti, triggerAchievementConfetti } = useConfetti();
+  const { xpMultiplier } = useVipStatus();
+  const { updateTaskProgress } = useTaskProgress();
 
   const [level, setLevel] = useState<GameLevel | null>(null);
   const [gameState, setGameState] = useState<GameState>('ready');
@@ -428,9 +432,12 @@ const GamePlay = () => {
 
       if (coinsEarned > 0) {
         await addCoins(coinsEarned);
+        // Update task progress for coins earned
+        updateTaskProgress('coins_earned', coinsEarned);
       }
 
-      const xpEarned = score;
+      // Apply VIP XP multiplier
+      const xpEarned = Math.floor(score * xpMultiplier);
       const { data: gamification } = await supabase
         .from('user_gamification')
         .select('*')
@@ -445,6 +452,13 @@ const GamePlay = () => {
             current_xp: gamification.current_xp + xpEarned
           })
           .eq('user_id', user.id);
+      }
+
+      // Update task progress
+      updateTaskProgress('problems_solved', level.problem_count);
+      updateTaskProgress('level_completed', 1);
+      if (streak >= 3) {
+        updateTaskProgress('streak', streak);
       }
 
     } catch (error) {
