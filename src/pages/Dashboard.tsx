@@ -27,9 +27,11 @@ import { PullToRefresh } from '@/components/PullToRefresh';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import { useSound } from '@/hooks/useSound';
 import { useAchievementNotifications } from '@/hooks/useAchievementNotifications';
 import { useBadgeNotifications } from '@/hooks/useBadgeNotifications';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import {
   Trophy,
   Target,
@@ -88,6 +90,8 @@ const Dashboard = () => {
   const [weekStats, setWeekStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
   const [monthStats, setMonthStats] = useState<PeriodStats>({ score: 0, solved: 0, accuracy: 0, bestStreak: 0, avgTime: 0 });
   const [chartData, setChartData] = useState<{ date: string; score: number; solved: number }[]>([]);
+  const [todayHourlyData, setTodayHourlyData] = useState<{ hour: string; score: number; problems: number }[]>([]);
+  const [sectionBreakdown, setSectionBreakdown] = useState<{ name: string; value: number; color: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Achievement notifications hook
@@ -206,6 +210,59 @@ const Dashboard = () => {
         }));
         
         setChartData(chartDataArray);
+
+        // Today's hourly breakdown
+        const hourlyData: { [key: string]: { score: number; problems: number } } = {};
+        for (let h = 0; h < 24; h++) {
+          hourlyData[h.toString().padStart(2, '0')] = { score: 0, problems: 0 };
+        }
+        
+        todaySessions.forEach(s => {
+          const hour = new Date(s.created_at).getHours().toString().padStart(2, '0');
+          if (hourlyData[hour]) {
+            hourlyData[hour].score += s.score || 0;
+            hourlyData[hour].problems += (s.correct || 0) + (s.incorrect || 0);
+          }
+        });
+        
+        // Only show hours with activity or current hour range
+        const currentHour = now.getHours();
+        const filteredHourly = Object.entries(hourlyData)
+          .filter(([h]) => {
+            const hour = parseInt(h);
+            return hour <= currentHour && hour >= Math.max(0, currentHour - 12);
+          })
+          .map(([hour, data]) => ({
+            hour: `${hour}:00`,
+            score: data.score,
+            problems: data.problems,
+          }));
+        
+        setTodayHourlyData(filteredHourly);
+
+        // Section breakdown for pie chart
+        const sectionScores: { [key: string]: number } = {};
+        const sectionColors: { [key: string]: string } = {
+          'mental-arithmetic': '#8b5cf6',
+          'addition': '#10b981',
+          'subtraction': '#ef4444',
+          'multiplication': '#f59e0b',
+          'division': '#3b82f6',
+        };
+        
+        todaySessions.forEach(s => {
+          sectionScores[s.section] = (sectionScores[s.section] || 0) + (s.score || 0);
+        });
+        
+        const sectionData = Object.entries(sectionScores)
+          .filter(([_, value]) => value > 0)
+          .map(([name, value]) => ({
+            name: name === 'mental-arithmetic' ? 'Mental' : name.charAt(0).toUpperCase() + name.slice(1),
+            value,
+            color: sectionColors[name] || '#6b7280',
+          }));
+        
+        setSectionBreakdown(sectionData);
       }
 
       setLoading(false);
@@ -402,6 +459,126 @@ const Dashboard = () => {
                 />
               )}
             </div>
+
+            {/* Today's Progress Charts */}
+            {user && todayStats.solved > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '370ms', animationFillMode: 'forwards' }}>
+                {/* Hourly Activity Chart */}
+                <Card className="border-border/40">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4 text-primary" />
+                      Bugungi faollik (soatlik)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[180px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={todayHourlyData}>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                          <XAxis dataKey="hour" tick={{ fontSize: 10 }} className="text-muted-foreground" />
+                          <YAxis tick={{ fontSize: 10 }} className="text-muted-foreground" />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(var(--card))', 
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px'
+                            }}
+                          />
+                          <Bar dataKey="score" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Ball" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Section Breakdown Pie Chart */}
+                {sectionBreakdown.length > 0 && (
+                  <Card className="border-border/40">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm flex items-center gap-2">
+                        <Target className="h-4 w-4 text-accent" />
+                        Bo'limlar bo'yicha ball
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-[180px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={sectionBreakdown}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={40}
+                              outerRadius={65}
+                              paddingAngle={5}
+                              dataKey="value"
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              labelLine={false}
+                            >
+                              {sectionBreakdown.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Today's Progress Summary */}
+                <Card className="lg:col-span-2 border-border/40 bg-gradient-to-br from-primary/5 to-accent/5">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-green-500" />
+                      Bugungi progress
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-primary">{todayStats.score}</p>
+                        <p className="text-xs text-muted-foreground">Ball</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-accent">{todayStats.solved}</p>
+                        <p className="text-xs text-muted-foreground">Masalalar</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-500">{todayStats.accuracy}%</p>
+                        <p className="text-xs text-muted-foreground">Aniqlik</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-warning">{todayStats.bestStreak}</p>
+                        <p className="text-xs text-muted-foreground">Eng yaxshi seriya</p>
+                      </div>
+                    </div>
+                    
+                    {/* Daily Goal Progress */}
+                    {profile && (
+                      <div className="mt-4 space-y-2">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Kunlik maqsad</span>
+                          <span className="font-medium">{todayStats.solved} / {profile.daily_goal} masala</span>
+                        </div>
+                        <Progress 
+                          value={Math.min((todayStats.solved / (profile.daily_goal || 20)) * 100, 100)} 
+                          className="h-2"
+                        />
+                        {todayStats.solved >= (profile.daily_goal || 20) && (
+                          <p className="text-xs text-green-500 text-center flex items-center justify-center gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            Kunlik maqsad bajarildi! 🎉
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
 
             {/* Achievements */}
             <Achievements
