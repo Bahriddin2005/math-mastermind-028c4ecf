@@ -113,7 +113,16 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItems = [
+  // Asosiy navigatsiya elementlari (desktop navbar uchun)
+  const mainNavItems = [
+    { path: '/', icon: Home, label: "Bosh sahifa" },
+    { path: '/train', icon: Play, label: "Mashq", highlight: true },
+    { path: '/game-hub', icon: Gamepad2, label: "O'yinlar" },
+    { path: '/courses', icon: GraduationCap, label: "Darslar" },
+  ];
+
+  // Barcha navigatsiya elementlari (dropdown va mobile menu uchun)
+  const allNavItems = [
     { path: '/', icon: Home, label: "Bosh sahifa" },
     { path: '/train', icon: Play, label: "Mashq", highlight: true },
     { path: '/game-hub', icon: Gamepad2, label: "O'yinlar" },
@@ -137,23 +146,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
             <Logo size="md" className="lg:scale-110 xl:scale-125" />
           </Link>
           
-          {/* Center Navigation - Desktop only - Enhanced dark mode */}
+          {/* Center Navigation - Desktop only - Faqat asosiy elementlar */}
           <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 dark:bg-secondary/30 rounded-full px-1.5 py-1 border border-border/30 dark:border-border/20 shadow-sm dark:shadow-lg dark:shadow-primary/5">
-            {navItems.slice(0, 6).map((item) => (
-              <NavButton 
-                key={item.path}
-                active={isActive(item.path)} 
-                onClick={() => navigate(item.path)}
-                icon={item.icon}
-                label={item.label}
-                highlight={item.highlight}
-              />
-            ))}
-          </nav>
-          
-          {/* Extra Navigation for XL screens */}
-          <nav className="hidden xl:flex items-center gap-1 bg-secondary/30 dark:bg-secondary/20 rounded-full px-1.5 py-1 border border-border/20 dark:border-border/10">
-            {navItems.slice(6).map((item) => (
+            {mainNavItems.map((item) => (
               <NavButton 
                 key={item.path}
                 active={isActive(item.path)} 
@@ -250,7 +245,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                   </div>
                   
                   <DropdownMenuGroup>
-                    {navItems.map((item) => (
+                    {allNavItems.map((item) => (
                       <DropdownMenuItem 
                         key={item.path}
                         onClick={() => navigate(item.path)} 
@@ -388,7 +383,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
         {/* Mobile menu navigation - Enhanced dark mode */}
         <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-3 space-y-1">
-          {navItems.map((item, index) => (
+          {allNavItems.map((item, index) => (
             <button
               key={item.path}
               data-active={isActive(item.path)}
