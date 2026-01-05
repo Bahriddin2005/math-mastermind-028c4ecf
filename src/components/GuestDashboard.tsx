@@ -201,84 +201,84 @@ export const GuestDashboard = () => {
   };
 
   return (
-    <div className="space-y-8 sm:space-y-10 pb-8 sm:pb-0">
-      {/* Hero Banner - Mobile optimized */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl gradient-primary p-6 sm:p-8 md:p-12 text-primary-foreground shadow-xl opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
+    <div className="space-y-8 sm:space-y-10 lg:space-y-12 xl:space-y-14 pb-8 sm:pb-0">
+      {/* Hero Banner - Responsive for all screen sizes */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl gradient-primary p-6 sm:p-8 md:p-12 lg:p-16 xl:p-20 text-primary-foreground shadow-xl opacity-0 animate-slide-up" style={{ animationFillMode: 'forwards' }}>
         <div className="absolute top-0 right-0 w-40 sm:w-64 h-40 sm:h-64 bg-primary-foreground/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-32 sm:w-48 h-32 sm:h-48 bg-primary-foreground/5 rounded-full translate-y-1/2 -translate-x-1/2" />
         
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-primary-foreground/20 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4 backdrop-blur-sm">
+        <div className="relative z-10 max-w-2xl lg:max-w-3xl xl:max-w-4xl">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-primary-foreground/20 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4 lg:mb-6 backdrop-blur-sm">
             <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="truncate">IQROMAX - Mental Arifmetika</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-3 sm:mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-display font-bold mb-3 sm:mb-4 lg:mb-6 leading-tight">
             Tez hisoblash ko'nikmalarini rivojlantiring
           </h1>
-          <p className="text-sm sm:text-base md:text-lg opacity-90 mb-5 sm:mb-6 leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl opacity-90 mb-5 sm:mb-6 lg:mb-8 leading-relaxed max-w-xl lg:max-w-2xl">
             Zamonaviy onlayn platforma orqali mental arifmetika, diqqat va xotirani mustahkamlang.
           </p>
-          <div className="flex flex-col xs:flex-row gap-3">
+          <div className="flex flex-col xs:flex-row gap-3 lg:gap-4">
             <Button 
               variant="secondary" 
               size="lg"
               onClick={() => navigate('/auth')}
-              className="gap-2 shadow-lg h-12 sm:h-11 text-base sm:text-sm w-full xs:w-auto touch-target"
+              className="gap-2 shadow-lg h-12 sm:h-11 lg:h-14 text-base sm:text-sm lg:text-lg w-full xs:w-auto touch-target lg:px-8"
             >
-              <Play className="h-5 w-5" />
+              <Play className="h-5 w-5 lg:h-6 lg:w-6" />
               Bepul boshlash
             </Button>
             <Button 
               variant="outline" 
               size="lg"
               onClick={() => navigate('/courses')}
-              className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 h-12 sm:h-11 text-base sm:text-sm w-full xs:w-auto touch-target"
+              className="gap-2 bg-primary-foreground/10 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/20 h-12 sm:h-11 lg:h-14 text-base sm:text-sm lg:text-lg w-full xs:w-auto touch-target lg:px-8"
             >
-              <GraduationCap className="h-5 w-5" />
+              <GraduationCap className="h-5 w-5 lg:h-6 lg:w-6" />
               Video darslar
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Stats Bar - Mobile grid */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
+      {/* Stats Bar - Responsive grid for all sizes */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-6 xl:gap-8 opacity-0 animate-slide-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
         {displayStats.map((stat, index) => (
-          <Card key={index} className="p-3 sm:p-4 text-center border-border/40 hover:shadow-md transition-shadow">
-            <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 mx-auto mb-1.5 sm:mb-2 text-primary" />
-            <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground">{stat.value}</div>
-            <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
+          <Card key={index} className="p-3 sm:p-4 lg:p-6 xl:p-8 text-center border-border/40 hover:shadow-md transition-shadow">
+            <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 xl:h-10 xl:w-10 mx-auto mb-1.5 sm:mb-2 lg:mb-3 text-primary" />
+            <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-display font-bold text-foreground">{stat.value}</div>
+            <div className="text-xs sm:text-sm lg:text-base xl:text-lg text-muted-foreground">{stat.label}</div>
           </Card>
         ))}
       </div>
 
-      {/* Features Grid - Mobile optimized cards */}
-      <div className="space-y-4 sm:space-y-6">
-        <div className="flex items-center gap-3 opacity-0 animate-slide-up" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
-          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
-            <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
+      {/* Features Grid - Responsive cards for all screen sizes */}
+      <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+        <div className="flex items-center gap-3 lg:gap-4 opacity-0 animate-slide-up" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
+          <div className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
+            <Zap className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-primary-foreground" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-display font-bold text-foreground">Platforma imkoniyatlari</h2>
-            <p className="text-xs sm:text-sm text-muted-foreground">Barcha xususiyatlardan bepul foydalaning</p>
+            <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-display font-bold text-foreground">Platforma imkoniyatlari</h2>
+            <p className="text-xs sm:text-sm lg:text-base text-muted-foreground">Barcha xususiyatlardan bepul foydalaning</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {features.map((feature, index) => (
             <Card 
               key={index}
-              className={`p-4 sm:p-5 bg-gradient-to-br ${feature.gradient} border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all group cursor-pointer active:scale-[0.98] touch-target`}
+              className={`p-4 sm:p-5 lg:p-6 xl:p-8 bg-gradient-to-br ${feature.gradient} border-border/40 opacity-0 animate-slide-up hover:shadow-lg transition-all group cursor-pointer active:scale-[0.98] touch-target`}
               style={{ animationDelay: `${200 + index * 50}ms`, animationFillMode: 'forwards' }}
               onClick={() => navigate('/auth')}
             >
-              <div className="flex items-start gap-3 sm:gap-4">
-                <div className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl ${feature.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
-                  <feature.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${feature.iconColor}`} />
+              <div className="flex items-start gap-3 sm:gap-4 lg:gap-5">
+                <div className={`h-11 w-11 sm:h-12 sm:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16 rounded-xl ${feature.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                  <feature.icon className={`h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 xl:h-8 xl:w-8 ${feature.iconColor}`} />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-display font-bold text-base sm:text-lg mb-0.5 sm:mb-1">{feature.title}</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
+                  <h3 className="font-display font-bold text-base sm:text-lg lg:text-xl xl:text-2xl mb-0.5 sm:mb-1 lg:mb-2">{feature.title}</h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               </div>
             </Card>

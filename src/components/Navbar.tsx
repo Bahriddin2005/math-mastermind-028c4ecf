@@ -130,16 +130,30 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         {/* Gradient line at top - Enhanced for dark mode */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 dark:via-primary/70 to-transparent" />
         
-        <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
+        <div className="container flex h-14 sm:h-16 lg:h-18 xl:h-20 items-center justify-between px-3 sm:px-4 md:px-8 lg:px-12 xl:px-16 max-w-[1920px] mx-auto">
           {/* Logo with hover effect */}
           <Link to="/" className="group relative flex-shrink-0">
             <div className="absolute -inset-2 rounded-xl bg-primary/5 dark:bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Logo size="md" />
+            <Logo size="md" className="lg:scale-110 xl:scale-125" />
           </Link>
           
           {/* Center Navigation - Desktop only - Enhanced dark mode */}
           <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 dark:bg-secondary/30 rounded-full px-1.5 py-1 border border-border/30 dark:border-border/20 shadow-sm dark:shadow-lg dark:shadow-primary/5">
-            {navItems.slice(0, 4).map((item) => (
+            {navItems.slice(0, 6).map((item) => (
+              <NavButton 
+                key={item.path}
+                active={isActive(item.path)} 
+                onClick={() => navigate(item.path)}
+                icon={item.icon}
+                label={item.label}
+                highlight={item.highlight}
+              />
+            ))}
+          </nav>
+          
+          {/* Extra Navigation for XL screens */}
+          <nav className="hidden xl:flex items-center gap-1 bg-secondary/30 dark:bg-secondary/20 rounded-full px-1.5 py-1 border border-border/20 dark:border-border/10">
+            {navItems.slice(6).map((item) => (
               <NavButton 
                 key={item.path}
                 active={isActive(item.path)} 

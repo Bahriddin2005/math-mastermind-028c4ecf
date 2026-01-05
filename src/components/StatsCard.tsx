@@ -63,24 +63,24 @@ export const StatsCard = ({
 
   return (
     <Card
-      className={`group relative overflow-hidden p-2.5 xs:p-3 sm:p-4 md:p-5 bg-gradient-to-br ${colors.cardGradient} border border-border/40 dark:border-border/30 opacity-0 animate-slide-up hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 min-h-[80px] xs:min-h-[90px] sm:h-[100px] flex flex-col justify-center backdrop-blur-sm ${colors.borderHover}`}
+      className={`group relative overflow-hidden p-2.5 xs:p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 bg-gradient-to-br ${colors.cardGradient} border border-border/40 dark:border-border/30 opacity-0 animate-slide-up hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 min-h-[80px] xs:min-h-[90px] sm:h-[100px] lg:h-[120px] xl:h-[140px] flex flex-col justify-center backdrop-blur-sm ${colors.borderHover}`}
       style={{ animationDelay: `${delay}ms`, animationFillMode: 'forwards' }}
     >
       {/* Background decoration */}
-      <div className={`absolute -top-6 -right-6 xs:-top-8 xs:-right-8 w-16 xs:w-20 sm:w-24 h-16 xs:h-20 sm:h-24 ${colors.valueBg} rounded-full blur-2xl opacity-50 dark:opacity-60 group-hover:opacity-80 transition-opacity`} />
+      <div className={`absolute -top-6 -right-6 xs:-top-8 xs:-right-8 lg:-top-10 lg:-right-10 w-16 xs:w-20 sm:w-24 lg:w-32 xl:w-40 h-16 xs:h-20 sm:h-24 lg:h-32 xl:h-40 ${colors.valueBg} rounded-full blur-2xl opacity-50 dark:opacity-60 group-hover:opacity-80 transition-opacity`} />
       
-      <div className="relative flex items-center gap-2 xs:gap-3 sm:gap-4">
-        {/* Icon container - smaller on mobile */}
-        <div className={`h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg xs:rounded-xl ${colors.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
-          <Icon className={`h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${colors.iconColor}`} strokeWidth={2} />
+      <div className="relative flex items-center gap-2 xs:gap-3 sm:gap-4 lg:gap-5">
+        {/* Icon container - responsive sizes */}
+        <div className={`h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 xl:h-20 xl:w-20 rounded-lg xs:rounded-xl lg:rounded-2xl ${colors.iconBg} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+          <Icon className={`h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-10 xl:w-10 ${colors.iconColor}`} strokeWidth={2} />
         </div>
         
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <p className="text-[9px] xs:text-[10px] sm:text-xs md:text-sm text-muted-foreground font-medium truncate mb-0.5">
+          <p className="text-[9px] xs:text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg text-muted-foreground font-medium truncate mb-0.5 lg:mb-1">
             {label}
           </p>
-          <p className={`text-base xs:text-lg sm:text-2xl md:text-3xl font-display font-bold ${colors.valueColor} tracking-tight`}>
+          <p className={`text-base xs:text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-display font-bold ${colors.valueColor} tracking-tight`}>
             {value}
           </p>
         </div>

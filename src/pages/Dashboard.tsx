@@ -338,8 +338,8 @@ const Dashboard = () => {
     return (
       <PageBackground className="flex flex-col">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-        <main className="flex-1 container px-4 py-6 md:py-8">
-          <div className="max-w-5xl mx-auto">
+        <main className="flex-1 container px-4 lg:px-8 xl:px-12 py-6 md:py-8 lg:py-10 max-w-[1920px] mx-auto">
+          <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto">
             <GuestDashboard />
           </div>
         </main>
@@ -366,15 +366,15 @@ const Dashboard = () => {
           {/* Decorative dots pattern */}
           <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
           
-          <div className="container px-3 sm:px-4 py-8 sm:py-10 md:py-14 relative">
-            <div className="max-w-5xl mx-auto">
+          <div className="container px-3 sm:px-4 lg:px-8 xl:px-12 py-8 sm:py-10 md:py-14 lg:py-16 xl:py-20 relative max-w-[1920px] mx-auto">
+            <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto">
               <WelcomeHero username={profile?.username} />
             </div>
           </div>
         </div>
 
-        <div className="container px-3 sm:px-4 py-4 sm:py-6 md:py-8">
-          <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
+        <div className="container px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-6 md:py-8 lg:py-10 max-w-[1920px] mx-auto">
+          <div className="max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto space-y-6 sm:space-y-8 lg:space-y-10">
 
             {/* Gamification Display - Level, XP, Combo */}
             {user && !gamification.isLoading && (
@@ -396,8 +396,8 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Stats Overview - Mobile optimized Grid - Extended with new cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+            {/* Stats Overview - Responsive Grid for all screen sizes */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 lg:gap-5">
               <StatsCard
                 icon={Trophy}
                 label="Jami ball"
@@ -443,7 +443,7 @@ const Dashboard = () => {
             </div>
 
             {/* Daily Stats & Progress Visualization */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {user && profile && (
                 <DailyStats
                   todayStats={todayStats}
