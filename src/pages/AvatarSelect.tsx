@@ -127,7 +127,7 @@ const AvatarIntro = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const phrases = INTRO_PHRASES[avatar.id] || [{ text: "Salom!", display: "Salom! 👋" }];
   
-  // Play voice intro
+  // Play voice intro (optional - fails gracefully if TTS unavailable)
   const playVoiceIntro = useCallback(async () => {
     try {
       setIsPlayingVoice(true);
@@ -150,15 +150,18 @@ const AvatarIntro = ({
         }
       );
 
-      if (response.ok) {
+      // Only play if response is successful and is audio
+      if (response.ok && response.headers.get('content-type')?.includes('audio')) {
         const audioBlob = await response.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         audioRef.current = new Audio(audioUrl);
         audioRef.current.volume = 0.8;
         await audioRef.current.play();
       }
+      // If TTS fails, intro animation continues without voice
     } catch (error) {
-      console.log('Voice intro not available:', error);
+      // Silently fail - voice is optional enhancement
+      console.log('Voice intro skipped:', error);
     } finally {
       setIsPlayingVoice(false);
     }
