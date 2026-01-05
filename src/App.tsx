@@ -15,7 +15,7 @@ import { PageLoader } from "./components/PageLoader";
 import { PullToRefresh } from "./components/PullToRefresh";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import KidsHome from "./components/KidsHome";
 import Settings from "./pages/Settings";
 import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
@@ -33,6 +33,8 @@ import Install from "./pages/Install";
 import MentalArithmetic from "./pages/MentalArithmetic";
 import Achievements from "./pages/Achievements";
 import ChallengeStats from "./pages/ChallengeStats";
+import Statistics from "./pages/Statistics";
+import Records from "./pages/Records";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,7 +59,7 @@ const App = () => (
               <div className="pb-16 md:pb-0">
                 <PageTransition>
                   <Routes>
-                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/" element={<KidsHome />} />
                     <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -76,6 +78,8 @@ const App = () => (
                     <Route path="/install" element={<Install />} />
                     <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
                     <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+                    <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+                    <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
                     <Route path="/challenge-stats" element={<ChallengeStats />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
