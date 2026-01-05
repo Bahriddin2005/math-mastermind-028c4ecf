@@ -591,11 +591,13 @@ const Dashboard = () => {
               totalXp={gamification.totalXp}
             />
 
-            {/* Quick Math Challenge & Weekly Competition */}
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
-              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '380ms', animationFillMode: 'forwards' }}>
-                <QuickMathChallenge />
-              </div>
+            {/* Quick Math Challenge - Separate Section */}
+            <div className="opacity-0 animate-slide-up" style={{ animationDelay: '380ms', animationFillMode: 'forwards' }}>
+              <QuickMathChallenge />
+            </div>
+
+            {/* Weekly Competition, Badges & Bonus Challenge */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
                 <WeeklyCompetition />
               </div>
