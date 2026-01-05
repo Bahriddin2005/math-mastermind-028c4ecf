@@ -1,12 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { AbacusDisplay } from './AbacusDisplay';
 import { MentalArithmeticHistory } from './MentalArithmeticHistory';
 import { MentalArithmeticLeaderboard } from './MentalArithmeticLeaderboard';
 import { AbacusFlashCard } from './AbacusFlashCard';
@@ -17,15 +14,19 @@ import { AIGhostBattle } from './AIGhostBattle';
 import { MultiplayerCompetition } from './MultiplayerCompetition';
 import { ComboEffect } from './ComboEffect';
 import { LevelUpModal } from './LevelUpModal';
-import { Play, RotateCcw, Check, Settings2, Zap, BarChart3, Trophy, Lightbulb, Swords, Ghost, Bot } from 'lucide-react';
+import { 
+  Play, RotateCcw, Zap, BarChart3, Trophy, 
+  Swords, Users, BookOpen, Flame, Target, 
+  Clock, Gift, TrendingUp, Star, Check
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
-import { GamificationDisplay } from './GamificationDisplay';
+import { cn } from '@/lib/utils';
 
-// Formulasiz qoidalar: har bir natija uchun qo'shish/ayirish mumkin bo'lgan sonlar
+// Formula rules
 const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
   1: { add: [1, 2, 3, 5, 6, 7, 8], subtract: [1] },
@@ -39,63 +40,32 @@ const RULES_BASIC: Record<number, { add: number[]; subtract: number[] }> = {
   9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
 };
 
-// Kichik do'st +2/-2 formulasi
-const RULES_SMALL_FRIEND_2: Record<number, { add: number[]; subtract: number[] }> = {
+const RULES_SMALL_FRIEND: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [] },
   1: { add: [], subtract: [] },
   2: { add: [], subtract: [] },
   3: { add: [2], subtract: [] },
-  4: { add: [2], subtract: [] },
-  5: { add: [], subtract: [2] },
+  4: { add: [1, 2], subtract: [] },
+  5: { add: [], subtract: [1, 2] },
   6: { add: [], subtract: [2] },
   7: { add: [], subtract: [] },
   8: { add: [], subtract: [] },
   9: { add: [], subtract: [] },
 };
 
-// Kichik do'st +1/-1 formulasi
-const RULES_SMALL_FRIEND_1: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [], subtract: [] },
-  3: { add: [], subtract: [] },
-  4: { add: [1], subtract: [] },
-  5: { add: [], subtract: [1] },
-  6: { add: [], subtract: [] },
-  7: { add: [], subtract: [] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// Katta do'st +3/-3 formulasi
-const RULES_BIG_FRIEND_3: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [3], subtract: [] },
-  3: { add: [3], subtract: [] },
-  4: { add: [], subtract: [] },
-  5: { add: [], subtract: [] },
-  6: { add: [], subtract: [3] },
-  7: { add: [], subtract: [3] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// Katta do'st +4/-4 formulasi
-const RULES_BIG_FRIEND_4: Record<number, { add: number[]; subtract: number[] }> = {
+const RULES_BIG_FRIEND: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [] },
   1: { add: [4], subtract: [] },
-  2: { add: [4], subtract: [] },
-  3: { add: [4], subtract: [] },
+  2: { add: [3, 4], subtract: [] },
+  3: { add: [3, 4], subtract: [] },
   4: { add: [], subtract: [] },
   5: { add: [], subtract: [] },
-  6: { add: [], subtract: [4] },
-  7: { add: [], subtract: [4] },
+  6: { add: [], subtract: [3, 4] },
+  7: { add: [], subtract: [3, 4] },
   8: { add: [], subtract: [4] },
   9: { add: [], subtract: [] },
 };
 
-// Aralash formula - barcha formulalarni birlashtiradi
 const RULES_MIXED: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
   1: { add: [1, 2, 3, 4, 5, 6, 7, 8], subtract: [1] },
@@ -109,56 +79,27 @@ const RULES_MIXED: Record<number, { add: number[]; subtract: number[] }> = {
   9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
 };
 
-// Formula turlari
-type FormulaType = 'basic' | 'small_friend_1' | 'small_friend_2' | 'big_friend_3' | 'big_friend_4' | 'mixed';
+type FormulaType = 'basic' | 'small_friend' | 'big_friend' | 'mixed' | 'negative' | 'multiply' | 'divide';
 
-const FORMULA_CONFIG = {
-  basic: { 
-    label: "Formulasiz", 
-    rules: RULES_BASIC,
-    example: "Natija 4 → +5, -1, -2, -3, -4 | Natija 6 → +1, +2, +3, -1, -5, -6",
-    description: "Abakusda formulasiz asosiy qo'shish va ayirish amallari"
-  },
-  small_friend_1: { 
-    label: "Kichik do'st +1/-1", 
-    rules: RULES_SMALL_FRIEND_1,
-    example: "Natija 4 → +1 (5-4=1) | Natija 5 → -1 (4+1=5)",
-    description: "4+1=5 yoki 5-1=4 formulasi orqali amal bajariladi"
-  },
-  small_friend_2: { 
-    label: "Kichik do'st +2/-2", 
-    rules: RULES_SMALL_FRIEND_2,
-    example: "Natija 3 → +2 (5-3=2) | Natija 6 → -2 (5+1=6)",
-    description: "3+2=5 yoki 6-2=4 formulasi orqali amal bajariladi"
-  },
-  big_friend_3: { 
-    label: "Katta do'st +3/-3", 
-    rules: RULES_BIG_FRIEND_3,
-    example: "Natija 2 → +3 (5-2=3) | Natija 7 → -3 (5+2=7)",
-    description: "2+3=5 yoki 7-3=4 formulasi orqali amal bajariladi"
-  },
-  big_friend_4: { 
-    label: "Katta do'st +4/-4", 
-    rules: RULES_BIG_FRIEND_4,
-    example: "Natija 1 → +4 (5-1=4) | Natija 8 → -4 (5+3=8)",
-    description: "1+4=5 yoki 8-4=4 formulasi orqali amal bajariladi"
-  },
-  mixed: { 
-    label: "Aralash (barcha formulalar)", 
-    rules: RULES_MIXED,
-    example: "Barcha formulalar aralashtirilgan holda",
-    description: "Formulasiz + Kichik do'st + Katta do'st formulalari birgalikda"
-  },
+const FORMULA_CONFIG: Record<string, { label: string; icon: string; rules: Record<number, { add: number[]; subtract: number[] }> }> = {
+  basic: { label: "Formulasiz", icon: "📊", rules: RULES_BASIC },
+  small_friend: { label: "Kichik formula (5)", icon: "🔢", rules: RULES_SMALL_FRIEND },
+  big_friend: { label: "Katta formula (10)", icon: "➕", rules: RULES_BIG_FRIEND },
+  mixed: { label: "Mix formula", icon: "🎲", rules: RULES_MIXED },
+  negative: { label: "Manfiy sonlar", icon: "➖", rules: RULES_BASIC },
+  multiply: { label: "Ko'paytirish", icon: "✖️", rules: RULES_BASIC },
+  divide: { label: "Bo'lish", icon: "➗", rules: RULES_BASIC },
 };
 
-// Qiyinlik darajalari
-const DIFFICULTY_CONFIG = {
-  easy: { label: "Oson", count: 3, speed: 1500 },
-  medium: { label: "O'rta", count: 5, speed: 1000 },
-  hard: { label: "Qiyin", count: 10, speed: 700 },
-};
+const DIGIT_OPTIONS = [
+  { value: 1, label: "1 xonali", range: "1-9" },
+  { value: 2, label: "2 xonali", range: "10-99" },
+  { value: 3, label: "3 xonali", range: "100-999" },
+  { value: 4, label: "4 xonali", range: "1000-9999" },
+];
 
-type DifficultyLevel = keyof typeof DIFFICULTY_CONFIG;
+const SPEED_OPTIONS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.5, 2, 2.5, 3];
+const COUNT_OPTIONS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25];
 
 interface PracticeStats {
   totalProblems: number;
@@ -172,37 +113,21 @@ export const MentalArithmeticPractice = () => {
   const { user } = useAuth();
   const { playSound } = useSound();
   
-  // Adaptive Gamification hook
   const gamification = useAdaptiveGamification({
     gameType: 'mental-arithmetic',
     baseScore: 15,
     enabled: !!user,
   });
   
-  // Sozlamalar
-  const [difficulty, setDifficulty] = useState<DifficultyLevel>('medium');
+  // Settings
   const [formulaType, setFormulaType] = useState<FormulaType>('basic');
-  const [customSpeed, setCustomSpeed] = useState(500); // ms - default 0.5 sekund
-  const [customCount, setCustomCount] = useState(5); // sonlar soni
-  const [showAbacus, setShowAbacus] = useState(true);
-  const [showSettings, setShowSettings] = useState(true);
-  const [abacusColumns, setAbacusColumns] = useState(1);
-  const [continuousMode, setContinuousMode] = useState(false); // To'xtovsiz mashq rejimi
-  const [currentProgress, setCurrentProgress] = useState(0);
+  const [digitCount, setDigitCount] = useState(1);
+  const [customSpeed, setCustomSpeed] = useState(3); // seconds
+  const [customCount, setCustomCount] = useState(10);
   const [bonusAvailable, setBonusAvailable] = useState(false);
+  const [activeTab, setActiveTab] = useState('mashq');
   
-  // Check bonus availability
-  useEffect(() => {
-    const checkBonus = async () => {
-      if (user) {
-        const available = await gamification.checkBonusAvailability();
-        setBonusAvailable(available);
-      }
-    };
-    checkBonus();
-  }, [user, gamification.checkBonusAvailability]);
-  
-  // O'yin holati
+  // Game state
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -212,11 +137,9 @@ export const MentalArithmeticPractice = () => {
   const [showResult, setShowResult] = useState(false);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [refreshHistory, setRefreshHistory] = useState(0);
-  
-  // Combo effect state
   const [showComboEffect, setShowComboEffect] = useState(false);
   
-  // Statistika
+  // Stats
   const [stats, setStats] = useState<PracticeStats>({
     totalProblems: 0,
     correctAnswers: 0,
@@ -230,7 +153,16 @@ export const MentalArithmeticPractice = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
-  // Statistikani yuklash
+  useEffect(() => {
+    const checkBonus = async () => {
+      if (user) {
+        const available = await gamification.checkBonusAvailability();
+        setBonusAvailable(available);
+      }
+    };
+    checkBonus();
+  }, [user, gamification.checkBonusAvailability]);
+
   useEffect(() => {
     if (!user) return;
     
@@ -263,28 +195,17 @@ export const MentalArithmeticPractice = () => {
     loadStats();
   }, [user, refreshHistory]);
 
-  // Boncuk harakati ovozi
-  const handleBeadMove = useCallback(() => {
-    playSound('bead');
-  }, [playSound]);
-
-  // Keyingi sonni generatsiya qilish
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
     const selectedRules = FORMULA_CONFIG[formulaType].rules;
-    const rules = selectedRules[currentResult];
+    const rules = selectedRules[currentResult % 10]; // Use last digit for multi-digit
     
     if (!rules) return null;
 
     const possibleOperations: { number: number; isAdd: boolean }[] = [];
     
-    rules.add.forEach(num => {
-      possibleOperations.push({ number: num, isAdd: true });
-    });
-    
-    rules.subtract.forEach(num => {
-      possibleOperations.push({ number: num, isAdd: false });
-    });
+    rules.add.forEach(num => possibleOperations.push({ number: num, isAdd: true }));
+    rules.subtract.forEach(num => possibleOperations.push({ number: num, isAdd: false }));
 
     if (possibleOperations.length === 0) return null;
 
@@ -292,16 +213,18 @@ export const MentalArithmeticPractice = () => {
     
     if (randomOp.isAdd) {
       runningResultRef.current += randomOp.number;
-      return randomOp.number; // Musbat son (+)
+      return randomOp.number;
     } else {
       runningResultRef.current -= randomOp.number;
-      return -randomOp.number; // Manfiy son (-) bilan qaytarish
+      return -randomOp.number;
     }
   }, [formulaType]);
 
-  // O'yinni boshlash
   const startGame = useCallback(() => {
-    const initialResult = Math.floor(Math.random() * 10);
+    const maxInitial = digitCount === 1 ? 9 : digitCount === 2 ? 99 : digitCount === 3 ? 999 : 9999;
+    const minInitial = digitCount === 1 ? 1 : digitCount === 2 ? 10 : digitCount === 3 ? 100 : 1000;
+    const initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
+    
     runningResultRef.current = initialResult;
     countRef.current = 1;
     startTimeRef.current = Date.now();
@@ -312,11 +235,9 @@ export const MentalArithmeticPractice = () => {
     setDisplayedNumbers([initialResult]);
     setIsRunning(true);
     setIsFinished(false);
-    setShowSettings(false);
     setUserAnswer('');
     setFeedback(null);
     setShowResult(false);
-    setCurrentProgress((1 / customCount) * 100);
 
     intervalRef.current = setInterval(() => {
       countRef.current += 1;
@@ -329,55 +250,7 @@ export const MentalArithmeticPractice = () => {
         playSound('complete');
         setIsRunning(false);
         setCurrentNumber(null);
-        setCurrentProgress(100);
-        
-        // To'xtovsiz rejimda avtomatik keyingi mashqqa o'tish
-        if (continuousMode) {
-          // 1.5 sekunddan keyin yangi mashq boshlash
-          setTimeout(() => {
-            const newInitialResult = Math.floor(Math.random() * 10);
-            runningResultRef.current = newInitialResult;
-            countRef.current = 1;
-            startTimeRef.current = Date.now();
-            
-            setCurrentNumber(newInitialResult);
-            setDisplayedNumbers([newInitialResult]);
-            setIsRunning(true);
-            setCurrentProgress((1 / customCount) * 100);
-
-            intervalRef.current = setInterval(() => {
-              countRef.current += 1;
-              
-              if (countRef.current > customCount) {
-                if (intervalRef.current) {
-                  clearInterval(intervalRef.current);
-                  intervalRef.current = null;
-                }
-                playSound('complete');
-                setIsRunning(false);
-                setCurrentNumber(null);
-                setCurrentProgress(100);
-                
-                // Rekursiv davom ettirish
-                if (continuousMode) {
-                  setTimeout(() => startGame(), 1500);
-                } else {
-                  setIsFinished(true);
-                }
-                return;
-              }
-
-              const nextNum = generateNextNumber();
-              if (nextNum !== null) {
-                setCurrentNumber(nextNum);
-                setDisplayedNumbers(prev => [...prev, nextNum]);
-                setCurrentProgress((countRef.current / customCount) * 100);
-              }
-            }, customSpeed);
-          }, 1500);
-        } else {
-          setIsFinished(true);
-        }
+        setIsFinished(true);
         return;
       }
 
@@ -385,12 +258,10 @@ export const MentalArithmeticPractice = () => {
       if (nextNum !== null) {
         setCurrentNumber(nextNum);
         setDisplayedNumbers(prev => [...prev, nextNum]);
-        setCurrentProgress((countRef.current / customCount) * 100);
       }
-    }, customSpeed);
-  }, [customCount, customSpeed, generateNextNumber, playSound, continuousMode]);
+    }, customSpeed * 1000);
+  }, [customCount, customSpeed, generateNextNumber, playSound, digitCount]);
 
-  // Javobni tekshirish va saqlash
   const checkAnswer = useCallback(async () => {
     const userNum = parseInt(userAnswer, 10);
     const correctAnswer = runningResultRef.current;
@@ -406,12 +277,10 @@ export const MentalArithmeticPractice = () => {
     const newStreak = isCorrect ? currentStreak + 1 : 0;
     setCurrentStreak(newStreak);
     
-    // Trigger combo effect for streaks of 2+
     if (isCorrect && newStreak >= 2) {
       setShowComboEffect(true);
     }
     
-    // Statistikani yangilash
     setStats(prev => ({
       ...prev,
       totalProblems: prev.totalProblems + 1,
@@ -420,21 +289,17 @@ export const MentalArithmeticPractice = () => {
       bestStreak: Math.max(prev.bestStreak, newStreak),
     }));
 
-    // Adaptive Gamification - process answer
     if (user) {
-      const difficultyMultiplier = difficulty === 'hard' ? 2 : difficulty === 'medium' ? 1.5 : 1;
+      const difficultyMultiplier = digitCount >= 3 ? 2 : digitCount === 2 ? 1.5 : 1;
       await gamification.processAnswer(isCorrect, responseTimeMs, difficultyMultiplier);
-    }
-    
-    // Supabase'ga saqlash
-    if (user) {
+      
       try {
         const scoreEarned = isCorrect ? Math.floor(15 * gamification.comboMultiplier) : 0;
         
         await supabase.from('game_sessions').insert({
           user_id: user.id,
           section: 'mental-arithmetic',
-          difficulty: difficulty,
+          difficulty: digitCount === 1 ? 'easy' : digitCount === 2 ? 'medium' : 'hard',
           mode: 'practice',
           correct: isCorrect ? 1 : 0,
           incorrect: isCorrect ? 0 : 1,
@@ -444,26 +309,6 @@ export const MentalArithmeticPractice = () => {
           problems_solved: 1,
         });
         
-        // Profilni yangilash
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('total_score, total_problems_solved, best_streak')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (profile) {
-          await supabase
-            .from('profiles')
-            .update({
-              total_score: (profile.total_score || 0) + scoreEarned,
-              total_problems_solved: (profile.total_problems_solved || 0) + 1,
-              best_streak: Math.max(profile.best_streak || 0, newStreak, gamification.maxCombo),
-              last_active_date: new Date().toISOString().split('T')[0],
-            })
-            .eq('user_id', user.id);
-        }
-        
-        // Tarixni yangilash
         setRefreshHistory(prev => prev + 1);
       } catch (error) {
         console.error('Error saving session:', error);
@@ -471,17 +316,10 @@ export const MentalArithmeticPractice = () => {
     }
     
     if (isCorrect) {
-      const messages = [
-        "Zo'r! Sen uddalading! 🔥",
-        "A'lo! Davom et! 🎉",
-        "Ajoyib! Sen ustasan! ⭐",
-        "Super! Yana bir to'g'ri! 💪",
-      ];
-      toast.success(messages[Math.floor(Math.random() * messages.length)], { duration: 2000 });
+      toast.success("Zo'r! To'g'ri javob! 🎉", { duration: 2000 });
     }
-  }, [userAnswer, user, difficulty, currentStreak, playSound, gamification]);
+  }, [userAnswer, user, currentStreak, playSound, gamification, digitCount]);
 
-  // Qayta boshlash
   const resetGame = useCallback(() => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -494,7 +332,6 @@ export const MentalArithmeticPractice = () => {
     setUserAnswer('');
     setFeedback(null);
     setShowResult(false);
-    setShowSettings(true);
     runningResultRef.current = 0;
     countRef.current = 0;
     gamification.resetCombo();
@@ -514,21 +351,21 @@ export const MentalArithmeticPractice = () => {
     }
   };
 
-  const config = DIFFICULTY_CONFIG[difficulty];
   const accuracy = stats.totalProblems > 0 
     ? Math.round((stats.correctAnswers / stats.totalProblems) * 100) 
     : 0;
 
+  const difficultyLevel = gamification.difficultyLevel || 1;
+  const coefficient = (1 + (difficultyLevel - 1) * 0.1).toFixed(2);
+
   return (
-    <div className="space-y-4 sm:space-y-6 px-0">
-      {/* Combo Effect */}
+    <div className="space-y-4">
       <ComboEffect
         combo={currentStreak}
         showEffect={showComboEffect}
         onEffectComplete={() => setShowComboEffect(false)}
       />
 
-      {/* Level Up Modal */}
       <LevelUpModal
         isOpen={gamification.showLevelUpModal}
         onClose={gamification.closeLevelUpModal}
@@ -536,142 +373,358 @@ export const MentalArithmeticPractice = () => {
         rewards={gamification.levelUpRewards}
       />
 
-      {/* Gamification Display */}
-      {user && !gamification.isLoading && (
-        <GamificationDisplay
-          level={gamification.level}
-          currentXp={gamification.currentXp}
-          requiredXp={gamification.requiredXp}
-          levelProgress={gamification.levelProgress}
-          energy={gamification.energy}
-          maxEnergy={gamification.maxEnergy}
-          combo={gamification.combo}
-          comboMultiplier={gamification.comboMultiplier}
-          difficultyLevel={gamification.difficultyLevel}
-          xpUntilLevelUp={gamification.xpUntilLevelUp}
-          isStruggling={gamification.isStruggling}
-          isFlagged={gamification.isFlagged}
-          showBonusHint={bonusAvailable}
-        />
-      )}
+      {/* Main Tab Navigation */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Card className="p-1.5 bg-card/80 backdrop-blur-sm border-border/50">
+          <TabsList className="grid w-full grid-cols-6 h-auto p-0 bg-transparent gap-1">
+            {[
+              { value: 'mashq', icon: Play, label: 'Mashq' },
+              { value: 'oquv', icon: BookOpen, label: "O'quv" },
+              { value: 'kunlik', icon: Flame, label: 'Kunlik' },
+              { value: 'multiplayer', icon: Users, label: 'Multiplayer' },
+              { value: 'reyting', icon: Trophy, label: 'Reyting' },
+              { value: 'statistika', icon: BarChart3, label: 'Statistika' },
+            ].map(tab => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className={cn(
+                  "flex items-center gap-1.5 py-2.5 px-2 rounded-lg text-xs font-medium transition-all",
+                  "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md",
+                  "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:bg-muted/50"
+                )}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Card>
 
-      {/* Statistika - Chiroyli gradient kartalar - Dark mode enhanced */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-        <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-primary/20 dark:border-primary/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-primary/10">
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-primary/40 dark:text-primary/60" />
+        {/* Mashq Tab Content */}
+        <TabsContent value="mashq" className="mt-4 space-y-4">
+          {/* Level & Gamification Header */}
+          <Card className="p-4 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground font-bold text-lg">
+                {gamification.level}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold">Level {gamification.level}</span>
+                  <span className="text-xs text-muted-foreground">{gamification.currentXp} / {gamification.requiredXp} XP</span>
+                </div>
+                <Progress value={gamification.levelProgress} className="h-2" />
+              </div>
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Jami</div>
-            <div className="text-xl sm:text-3xl font-bold text-primary mt-0.5">{stats.totalProblems}</div>
-          </Card>
-        </div>
-        
-        <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-green-500/5 dark:from-green-500/30 dark:to-green-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-green-500/20 dark:border-green-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-green-500/10">
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Check className="h-3 w-3 sm:h-4 sm:w-4 text-green-500/40 dark:text-green-500/60" />
+            
+            {/* Gamification Stats Row */}
+            <div className="grid grid-cols-4 gap-2">
+              <div className="p-3 rounded-xl bg-primary/10">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                  <Zap className="h-3 w-3 text-primary" />
+                  Energiya
+                </div>
+                <div className="text-lg font-bold text-primary">{gamification.energy}/{gamification.maxEnergy}</div>
+              </div>
+              <div className="p-3 rounded-xl bg-muted/50">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                  <Flame className="h-3 w-3" />
+                  Combo
+                </div>
+                <div className="text-lg font-bold">-</div>
+              </div>
+              <div className="p-3 rounded-xl bg-blue-500/10">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                  <TrendingUp className="h-3 w-3 text-blue-500" />
+                  Qiyinlik
+                </div>
+                <div className="text-lg font-bold text-blue-500">{difficultyLevel}/10</div>
+              </div>
+              <div className="p-3 rounded-xl bg-amber-500/10">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1">
+                  <Star className="h-3 w-3 text-amber-500" />
+                  Koeffitsient
+                </div>
+                <div className="text-lg font-bold text-amber-500">×{coefficient}</div>
+              </div>
             </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">To'g'ri</div>
-            <div className="text-xl sm:text-3xl font-bold text-green-500 mt-0.5">{stats.correctAnswers}</div>
           </Card>
-        </div>
-        
-        <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-blue-500/5 dark:from-blue-500/30 dark:to-blue-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-blue-500/20 dark:border-blue-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-blue-500/10">
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500/40 dark:text-blue-500/60" />
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Aniqlik</div>
-            <div className="text-xl sm:text-3xl font-bold text-blue-500 mt-0.5">{accuracy}%</div>
-          </Card>
-        </div>
-        
-        <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-500/5 dark:from-amber-500/30 dark:to-amber-500/10 rounded-xl blur-sm group-hover:blur-md transition-all" />
-          <Card className="relative p-3 sm:p-4 text-center border-amber-500/20 dark:border-amber-500/30 bg-card/80 dark:bg-card/60 backdrop-blur-sm shadow-sm dark:shadow-lg dark:shadow-amber-500/10">
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
-              <Trophy className="h-3 w-3 sm:h-4 sm:w-4 text-amber-500/40 dark:text-amber-500/60" />
-            </div>
-            <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80 font-medium uppercase tracking-wide">Seriya</div>
-            <div className="text-xl sm:text-3xl font-bold text-amber-500 mt-0.5">{stats.bestStreak}</div>
-          </Card>
-        </div>
-      </div>
 
-      {/* Tabs - Chiroyli dizayn - Dark mode enhanced */}
-      <Tabs defaultValue="flashcard" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 h-auto p-1 sm:p-1.5 bg-muted/50 dark:bg-muted/30 backdrop-blur-sm rounded-xl border border-border/50 dark:border-border/30">
-          <TabsTrigger 
-            value="flashcard" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">Flash</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="ghost" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <Ghost className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">Ghost</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="ai" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <Bot className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">AI</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="multiplayer" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <Swords className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">Battle</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="leaderboard" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">Reyting</span>
-          </TabsTrigger>
-          <TabsTrigger 
-            value="history" 
-            className="gap-1 sm:gap-2 text-xs sm:text-sm py-2.5 sm:py-3 flex-col sm:flex-row px-1 sm:px-3 rounded-lg data-[state=active]:bg-card dark:data-[state=active]:bg-card/80 data-[state=active]:shadow-md transition-all"
-          >
-            <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="text-[9px] sm:text-sm font-medium">Tarix</span>
-          </TabsTrigger>
-        </TabsList>
+          {/* Bonus Challenge Banner */}
+          {bonusAvailable && (
+            <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30 flex items-center gap-2">
+              <Gift className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-primary">Bonus tayyor — challenge o'yna!</span>
+            </div>
+          )}
 
-        <TabsContent value="flashcard" className="mt-4 sm:mt-6">
+          {/* Quick Stats */}
+          <div className="grid grid-cols-4 gap-2">
+            <Card className="p-3 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-muted">
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div>
+                <div className="text-lg font-bold">{stats.totalProblems}</div>
+                <div className="text-[10px] text-muted-foreground">Jami mashqlar</div>
+              </div>
+            </Card>
+            <Card className="p-3 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-green-500/10">
+                <Check className="h-4 w-4 text-green-500" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-green-500">{accuracy}%</div>
+                <div className="text-[10px] text-muted-foreground">Aniqlik</div>
+              </div>
+            </Card>
+            <Card className="p-3 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Clock className="h-4 w-4 text-blue-500" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-blue-500">{stats.averageTime.toFixed(1)}s</div>
+                <div className="text-[10px] text-muted-foreground">O'rtacha vaqt</div>
+              </div>
+            </Card>
+            <Card className="p-3 flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-amber-500/10">
+                <Flame className="h-4 w-4 text-amber-500" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-amber-500">{stats.bestStreak}</div>
+                <div className="text-[10px] text-muted-foreground">Eng uzun seriya</div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Settings Section - Only show when not running */}
+          {!isRunning && !isFinished && (
+            <>
+              {/* Formula Type Selection */}
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 rounded-lg bg-muted">
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <span className="font-medium">Misol turi</span>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {Object.entries(FORMULA_CONFIG).map(([key, config]) => (
+                    <button
+                      key={key}
+                      onClick={() => setFormulaType(key as FormulaType)}
+                      className={cn(
+                        "p-3 rounded-xl text-left transition-all",
+                        formulaType === key
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "bg-muted/50 hover:bg-muted"
+                      )}
+                    >
+                      <span className="text-lg">{config.icon}</span>
+                      <div className="text-xs font-medium mt-1 line-clamp-1">{config.label}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Digit Count Selection */}
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary font-bold text-sm">
+                    123
+                  </div>
+                  <span className="font-medium">Son xonasi</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  {DIGIT_OPTIONS.map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => setDigitCount(option.value)}
+                      className={cn(
+                        "p-3 rounded-xl text-left transition-all",
+                        digitCount === option.value
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "bg-muted/50 hover:bg-muted"
+                      )}
+                    >
+                      <div className="text-sm font-medium">{option.label}</div>
+                      <div className="text-xs opacity-70">{option.range}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Speed & Count Settings */}
+              <Card className="p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-1.5 rounded-lg bg-muted">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                  <span className="font-medium">Tezlik va misollar soni</span>
+                </div>
+                
+                {/* Speed Selection */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Tezligi (soniyada)</span>
+                    <div className="px-3 py-1 rounded-lg border text-sm font-medium">{customSpeed} s</div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {SPEED_OPTIONS.map(speed => (
+                      <button
+                        key={speed}
+                        onClick={() => setCustomSpeed(speed)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                          customSpeed === speed
+                            ? "bg-foreground text-background"
+                            : "bg-muted/50 hover:bg-muted"
+                        )}
+                      >
+                        {speed}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Count Selection */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Misollar soni</span>
+                    <div className="px-3 py-1 rounded-lg border text-sm font-medium">{customCount} ta</div>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {COUNT_OPTIONS.map(count => (
+                      <button
+                        key={count}
+                        onClick={() => setCustomCount(count)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                          customCount === count
+                            ? "bg-accent text-accent-foreground"
+                            : "bg-muted/50 hover:bg-muted"
+                        )}
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Start Button */}
+              <Button 
+                onClick={startGame} 
+                size="lg" 
+                className="w-full h-14 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                <Play className="h-5 w-5 mr-2" />
+                Mashqni boshlash
+              </Button>
+            </>
+          )}
+
+          {/* Game Running State */}
+          {isRunning && (
+            <Card className="p-8 text-center">
+              <div className="text-7xl sm:text-9xl font-bold mb-4 animate-pulse">
+                {currentNumber !== null && (
+                  <span className={currentNumber >= 0 ? 'text-primary' : 'text-destructive'}>
+                    {currentNumber >= 0 ? `+${currentNumber}` : currentNumber}
+                  </span>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {countRef.current} / {customCount}
+              </div>
+              <Progress value={(countRef.current / customCount) * 100} className="mt-4" />
+            </Card>
+          )}
+
+          {/* Game Finished - Answer Input */}
+          {isFinished && !showResult && (
+            <Card className="p-6 text-center">
+              <h3 className="text-lg font-semibold mb-4">Javobingizni kiriting</h3>
+              <div className="flex flex-col items-center gap-4">
+                <Input
+                  type="number"
+                  value={userAnswer}
+                  onChange={(e) => setUserAnswer(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Javob..."
+                  className="text-center text-2xl h-14 max-w-[200px]"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button onClick={checkAnswer} size="lg" disabled={!userAnswer}>
+                    <Check className="h-5 w-5 mr-2" />
+                    Tekshirish
+                  </Button>
+                  <Button onClick={resetGame} variant="outline" size="lg">
+                    <RotateCcw className="h-5 w-5" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Result Display */}
+          {showResult && (
+            <Card className={cn(
+              "p-6 text-center border-2",
+              feedback === 'correct' ? "border-green-500 bg-green-500/10" : "border-destructive bg-destructive/10"
+            )}>
+              <div className={cn(
+                "text-3xl font-bold mb-2",
+                feedback === 'correct' ? "text-green-500" : "text-destructive"
+              )}>
+                {feedback === 'correct' ? "To'g'ri! 🎉" : "Noto'g'ri 😔"}
+              </div>
+              <div className="text-muted-foreground mb-4">
+                To'g'ri javob: <span className="font-bold text-foreground">{runningResultRef.current}</span>
+              </div>
+              <div className="text-sm text-muted-foreground mb-4">
+                Sonlar ketma-ketligi: {displayedNumbers.map((n, i) => (
+                  <span key={i} className={i === 0 ? '' : n >= 0 ? 'text-primary' : 'text-destructive'}>
+                    {i === 0 ? n : (n >= 0 ? ` +${n}` : ` ${n}`)}
+                  </span>
+                ))}
+              </div>
+              <Button onClick={resetGame} size="lg" className="w-full max-w-xs">
+                <RotateCcw className="h-5 w-5 mr-2" />
+                Qayta boshlash
+              </Button>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* O'quv Tab - Flashcard */}
+        <TabsContent value="oquv" className="mt-4">
           <AbacusFlashCard onComplete={() => setRefreshHistory(prev => prev + 1)} />
         </TabsContent>
 
-        <TabsContent value="ghost" className="mt-4 sm:mt-6 space-y-4">
+        {/* Kunlik Tab - Ghost Battle */}
+        <TabsContent value="kunlik" className="mt-4 space-y-4">
           <GhostBattle />
           <GhostBattleStats />
           <GhostBattleRanking />
         </TabsContent>
 
-        <TabsContent value="ai" className="mt-4 sm:mt-6">
+        {/* Multiplayer Tab */}
+        <TabsContent value="multiplayer" className="mt-4 space-y-4">
           <AIGhostBattle />
-        </TabsContent>
-
-        <TabsContent value="multiplayer" className="mt-4 sm:mt-6">
           <MultiplayerCompetition />
         </TabsContent>
 
-        <TabsContent value="leaderboard" className="mt-4 sm:mt-6">
+        {/* Reyting Tab */}
+        <TabsContent value="reyting" className="mt-4">
           <MentalArithmeticLeaderboard />
         </TabsContent>
 
-        <TabsContent value="history" className="mt-4 sm:mt-6">
+        {/* Statistika Tab */}
+        <TabsContent value="statistika" className="mt-4">
           <MentalArithmeticHistory refreshTrigger={refreshHistory} />
         </TabsContent>
       </Tabs>
