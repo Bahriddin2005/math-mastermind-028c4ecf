@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Check, Crown, Sparkles, Wand2, Bot, Zap, Shield, Rocket, Star, Sword, Brain, Flame, Ghost, Heart, Diamond, Moon, Sun, Gamepad2 } from 'lucide-react';
+import { Check, Crown, Sparkles, Wand2, Bot, Zap, Shield, Rocket, Star, Sword, Brain, Flame, Ghost, Heart, Diamond, Moon, Sun, Gamepad2, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -12,6 +12,199 @@ import { cn } from '@/lib/utils';
 import { PageBackground } from '@/components/layout/PageBackground';
 import confetti from 'canvas-confetti';
 import { useSound } from '@/hooks/useSound';
+
+// Intro phrases for each avatar
+const INTRO_PHRASES: Record<string, string[]> = {
+  ninja: ["Soyada yashirinaman... ⚡", "Tezlik - mening kuchim!", "Hech kim meni tutolmaydi!"],
+  robot: ["Beep boop! Men tayorman 🤖", "Barcha hisoblarni bajaraman!", "Xatolik? Bu nima? 😎"],
+  star: ["Men porlab turaman ✨", "Qorong'ulikda ham yorug'man!", "Yulduzlar bilan birga!"],
+  gamer: ["O'yin boshlansin! 🎮", "Yangi rekord qo'yaman!", "Game over? Hech qachon!"],
+  wizard: ["Abrakadabra! ✨", "Sehr kuchim cheksiz!", "Matematika - bu sehr!"],
+  superhero: ["Kuch men bilan! 💪", "Yaxshilik g'alaba qiladi!", "Men yetib keldim!"],
+  astronaut: ["3... 2... 1... Uchish! 🚀", "Kosmosdan salom!", "Yulduzlarga yo'l olaman!"],
+  warrior: ["Jangga tayyorman! ⚔️", "Qo'rquv - bu nima?", "G'alaba bizniki!"],
+  genius: ["Fikrlash - bu oson! 🧠", "Aqlim o'tkir!", "Har qanday masalani yechaman!"],
+  phoenix: ["Men kul ichidan tug'ilaman! 🔥", "Mening kuchim yonadi!", "Hech narsa to'xtatolmaydi!"],
+  shadow: ["Men soyalardaman... 👻", "Sirli va tezkorman!", "Hech kim ko'rmaydi!"],
+  diamond: ["Men eng noyobman! 💎", "Porloq va bemisl!", "Olmos kabi mustahkam!"],
+  moonknight: ["Tunda uyg'onaman 🌙", "Oy nuri bilan!", "Qorong'ulik do'stim!"],
+  sunknight: ["Yorug'lik tarqataman ☀️", "Quyosh kabi kuchli!", "Nur sochaman!"],
+  loveheart: ["Sevgi bilan! ❤️", "Yuragim katta!", "Mehribonlik kuchim!"],
+};
+
+// Avatar intro component
+const AvatarIntro = ({ 
+  avatar, 
+  onClose 
+}: { 
+  avatar: AvatarOption; 
+  onClose: () => void;
+}) => {
+  const [phase, setPhase] = useState<'entering' | 'showing' | 'phrase' | 'exiting'>('entering');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const phrases = INTRO_PHRASES[avatar.id] || ["Salom! 👋"];
+  
+  useEffect(() => {
+    // Animation sequence
+    const timers: NodeJS.Timeout[] = [];
+    
+    timers.push(setTimeout(() => setPhase('showing'), 300));
+    timers.push(setTimeout(() => setPhase('phrase'), 800));
+    timers.push(setTimeout(() => setPhraseIndex(1), 1600));
+    timers.push(setTimeout(() => setPhraseIndex(2), 2400));
+    timers.push(setTimeout(() => setPhase('exiting'), 3200));
+    timers.push(setTimeout(() => onClose(), 3600));
+    
+    return () => timers.forEach(clearTimeout);
+  }, [onClose]);
+
+  // Confetti burst on show
+  useEffect(() => {
+    if (phase === 'showing') {
+      const colors = avatar.rarity === 'legendary' ? ['#FFD700', '#FFA500', '#FF69B4', '#00CED1'] :
+                     avatar.rarity === 'epic' ? ['#9B59B6', '#8E44AD', '#E74C3C'] :
+                     avatar.rarity === 'rare' ? ['#3498DB', '#2980B9', '#1ABC9C'] :
+                     ['#95A5A6', '#7F8C8D', '#BDC3C7'];
+      
+      confetti({
+        particleCount: avatar.rarity === 'legendary' ? 150 : 80,
+        spread: 100,
+        origin: { y: 0.5 },
+        colors,
+      });
+    }
+  }, [phase, avatar]);
+
+  return (
+    <div 
+      className={cn(
+        "fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300",
+        phase === 'entering' ? "bg-black/0" : "bg-black/70",
+        phase === 'exiting' && "bg-black/0"
+      )}
+      onClick={onClose}
+    >
+      {/* Close button */}
+      <button 
+        onClick={onClose}
+        className="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors z-10"
+      >
+        <X className="w-6 h-6 text-white" />
+      </button>
+
+      {/* Main avatar intro */}
+      <div 
+        className={cn(
+          "relative transition-all duration-500 ease-out",
+          phase === 'entering' && "scale-0 opacity-0",
+          phase === 'showing' && "scale-100 opacity-100",
+          phase === 'phrase' && "scale-100 opacity-100",
+          phase === 'exiting' && "scale-150 opacity-0"
+        )}
+      >
+        {/* Glow effect */}
+        <div 
+          className={cn(
+            "absolute inset-0 blur-3xl opacity-60 transition-all duration-500",
+            `bg-gradient-to-br ${avatar.gradient}`,
+            phase === 'showing' && "scale-150",
+            phase === 'phrase' && "scale-125 animate-pulse"
+          )}
+        />
+
+        {/* Ring animations for legendary */}
+        {avatar.rarity === 'legendary' && (
+          <>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-64 h-64 border-4 border-amber-400/50 rounded-full animate-ping" style={{ animationDuration: '2s' }} />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-48 h-48 border-2 border-yellow-400/60 rounded-full animate-spin" style={{ animationDuration: '3s' }} />
+            </div>
+          </>
+        )}
+
+        {/* Epic pulse rings */}
+        {avatar.rarity === 'epic' && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-56 h-56 border-4 border-purple-400/40 rounded-full animate-pulse" />
+          </div>
+        )}
+
+        {/* Content card */}
+        <div className={cn(
+          "relative z-10 p-8 rounded-3xl text-center",
+          "bg-gradient-to-br",
+          avatar.gradient,
+          "shadow-2xl"
+        )}>
+          {/* Crown for legendary */}
+          {avatar.rarity === 'legendary' && (
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2">
+              <div className="text-5xl animate-bounce">👑</div>
+            </div>
+          )}
+
+          {/* Big emoji with animation */}
+          <div 
+            className={cn(
+              "text-9xl mb-4 transition-all duration-700",
+              phase === 'phrase' && "animate-bounce"
+            )}
+            style={{
+              filter: avatar.rarity === 'legendary' ? 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.8))' : 
+                      avatar.rarity === 'epic' ? 'drop-shadow(0 0 15px rgba(147, 51, 234, 0.6))' : 
+                      'none'
+            }}
+          >
+            {avatar.emoji}
+          </div>
+
+          {/* Name with entrance */}
+          <div 
+            className={cn(
+              "text-3xl font-black text-white mb-2 transition-all duration-500",
+              phase === 'entering' && "translate-y-4 opacity-0",
+              phase !== 'entering' && "translate-y-0 opacity-100"
+            )}
+          >
+            {avatar.name}
+          </div>
+
+          {/* Rarity badge */}
+          <div className={cn(
+            "inline-block px-4 py-1 rounded-full text-sm font-bold mb-4",
+            "bg-white/20 text-white"
+          )}>
+            {avatar.rarity === 'legendary' && '👑 '}
+            {avatar.rarity === 'epic' && '💜 '}
+            {avatar.rarity === 'rare' && '💙 '}
+            {RARITY_CONFIG[avatar.rarity].label}
+          </div>
+
+          {/* Phrase display */}
+          <div 
+            className={cn(
+              "min-h-[60px] flex items-center justify-center transition-all duration-300",
+              phase !== 'phrase' && "opacity-0 scale-90",
+              phase === 'phrase' && "opacity-100 scale-100"
+            )}
+          >
+            <div className="text-xl font-bold text-white/95 px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-sm">
+              {phrases[Math.min(phraseIndex, phrases.length - 1)]}
+            </div>
+          </div>
+
+          {/* Sparkles */}
+          <div className="absolute top-4 left-4 text-2xl animate-pulse">✨</div>
+          <div className="absolute top-8 right-6 text-xl animate-pulse" style={{ animationDelay: '0.3s' }}>⭐</div>
+          <div className="absolute bottom-6 left-8 text-xl animate-pulse" style={{ animationDelay: '0.6s' }}>🌟</div>
+          <div className="absolute bottom-4 right-4 text-2xl animate-pulse" style={{ animationDelay: '0.9s' }}>💫</div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface AvatarOption {
   id: string;
@@ -196,6 +389,7 @@ export const AvatarSelect = () => {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentProfile, setCurrentProfile] = useState<any>(null);
+  const [showingIntro, setShowingIntro] = useState<AvatarOption | null>(null);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -224,26 +418,17 @@ export const AvatarSelect = () => {
     loadProfile();
   }, [user]);
 
+  const handleCloseIntro = useCallback(() => {
+    setShowingIntro(null);
+  }, []);
+
   const handleSelectAvatar = (avatar: AvatarOption) => {
-    setSelectedAvatar(avatar.id);
-    playSound?.('correct');
-    
-    // Confetti based on rarity
-    const particleCount = avatar.rarity === 'legendary' ? 80 : 
-                          avatar.rarity === 'epic' ? 50 : 
-                          avatar.rarity === 'rare' ? 35 : 20;
-    
-    const colors = avatar.rarity === 'legendary' ? ['#FFD700', '#FFA500', '#FF69B4', '#00CED1'] :
-                   avatar.rarity === 'epic' ? ['#9B59B6', '#8E44AD', '#E74C3C'] :
-                   avatar.rarity === 'rare' ? ['#3498DB', '#2980B9', '#1ABC9C'] :
-                   ['#95A5A6', '#7F8C8D', '#BDC3C7'];
-    
-    confetti({
-      particleCount,
-      spread: 60,
-      origin: { y: 0.7 },
-      colors,
-    });
+    // Only show intro if selecting a different avatar
+    if (selectedAvatar !== avatar.id) {
+      setSelectedAvatar(avatar.id);
+      playSound?.('levelUp');
+      setShowingIntro(avatar);
+    }
   };
 
   const handleSave = async () => {
@@ -304,6 +489,11 @@ export const AvatarSelect = () => {
 
   return (
     <PageBackground>
+      {/* Avatar Intro Modal */}
+      {showingIntro && (
+        <AvatarIntro avatar={showingIntro} onClose={handleCloseIntro} />
+      )}
+      
       <div className="min-h-screen py-6 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
           
