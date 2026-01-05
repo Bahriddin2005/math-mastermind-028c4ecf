@@ -23,6 +23,8 @@ import { QuickStats } from '@/components/home/QuickStats';
 import { DailyMissionCard } from '@/components/home/DailyMissionCard';
 import { WeeklyRankingPreview } from '@/components/home/WeeklyRankingPreview';
 import { EnergyReadyBanner } from '@/components/home/EnergyReadyBanner';
+import { StreakCalendar } from '@/components/StreakCalendar';
+import { AchievementsSystem } from '@/components/AchievementsSystem';
 
 interface Profile {
   username: string;
@@ -333,8 +335,27 @@ const KidsHome = () => {
                 <WeeklyRankingPreview onViewAll={handleRanking} />
               </div>
 
+              {/* Streak Calendar - Compact */}
+              <div className="animate-fade-in" style={{ animationDelay: '650ms' }}>
+                <StreakCalendar compact />
+              </div>
+
+              {/* Achievements - Compact */}
+              <div className="animate-fade-in" style={{ animationDelay: '700ms' }}>
+                <AchievementsSystem 
+                  stats={{
+                    totalProblems: profile?.total_problems_solved || 0,
+                    currentStreak: profile?.current_streak || 0,
+                    bestStreak: profile?.best_streak || 0,
+                    totalScore: profile?.total_score || 0,
+                    level: gamification.level,
+                    totalXp: gamification.totalXp,
+                  }}
+                />
+              </div>
+
               {/* Parent Stats Card */}
-              <div className="animate-fade-in bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-sm rounded-2xl border border-border/30 p-4" style={{ animationDelay: '700ms' }}>
+              <div className="animate-fade-in bg-gradient-to-r from-primary/5 to-accent/5 backdrop-blur-sm rounded-2xl border border-border/30 p-4" style={{ animationDelay: '750ms' }}>
                 <p className="text-sm text-center">
                   📊 Bugun <span className="font-bold text-primary">{profile?.username}</span> {' '}
                   <span className="font-bold text-primary">{todayStats.problems}</span> misol yechdi, {' '}
