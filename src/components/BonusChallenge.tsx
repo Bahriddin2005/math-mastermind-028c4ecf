@@ -62,36 +62,99 @@ const CHALLENGES: Record<ChallengeType, Challenge> = {
   },
 };
 
-// Simple random math problem generator
-const generateProblem = (difficulty: number) => {
-  const operators = ['+', '-', '*'];
-  const operator = operators[Math.floor(Math.random() * (difficulty > 2 ? 3 : 2))];
+// Mental arifmetika formula qoidalari
+const FORMULA_RULES = {
+  oddiy: {
+    0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
+    1: { add: [1, 2, 3, 5, 6, 7, 8], subtract: [1] },
+    2: { add: [1, 2, 5, 6, 7], subtract: [1, 2] },
+    3: { add: [1, 5, 6], subtract: [1, 2, 3] },
+    4: { add: [5], subtract: [1, 2, 3, 4] },
+    5: { add: [1, 2, 3, 4], subtract: [5] },
+    6: { add: [1, 2, 3], subtract: [1, 5, 6] },
+    7: { add: [1, 2], subtract: [1, 2, 5, 7] },
+    8: { add: [1], subtract: [1, 2, 3, 5, 8] },
+    9: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+  },
+  formula5: {
+    3: { add: [2], subtract: [] },
+    4: { add: [1, 2], subtract: [] },
+    5: { add: [], subtract: [1, 2] },
+    6: { add: [], subtract: [2] },
+  },
+  formula10plus: {
+    1: { add: [9], subtract: [] },
+    2: { add: [8, 9], subtract: [] },
+    3: { add: [7, 8, 9], subtract: [] },
+    4: { add: [6, 7, 8, 9], subtract: [] },
+    5: { add: [5, 6, 7, 8, 9], subtract: [] },
+    6: { add: [4, 5, 6, 7, 8, 9], subtract: [] },
+    7: { add: [3, 4, 5, 6, 7, 8, 9], subtract: [] },
+    8: { add: [2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
+    9: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
+  },
+  hammasi: {
+    0: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
+    1: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1] },
+    2: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2] },
+    3: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3] },
+    4: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4] },
+    5: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4, 5] },
+    6: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4, 5, 6] },
+    7: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4, 5, 6, 7] },
+    8: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4, 5, 6, 7, 8] },
+    9: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+  },
+};
+
+// Mental arifmetika formulalari bo'yicha masala generatsiyasi
+const generateMentalArithmeticProblem = (difficulty: number) => {
+  // Qiyinlik darajasiga qarab formula tanlash
+  const formulas = ['oddiy', 'formula5', 'formula10plus', 'hammasi'] as const;
+  const formulaIndex = Math.min(difficulty - 1, formulas.length - 1);
+  const selectedFormula = formulas[formulaIndex];
+  const rules = FORMULA_RULES[selectedFormula];
   
-  let a: number, b: number, answer: number;
+  // Boshlang'ich son tanlash (formula qoidalariga mos)
+  const validStarts = Object.keys(rules).map(Number).filter(n => {
+    const rule = rules[n as keyof typeof rules];
+    return rule && (rule.add.length > 0 || rule.subtract.length > 0);
+  });
   
-  switch (operator) {
-    case '+':
-      a = Math.floor(Math.random() * (10 * difficulty)) + 1;
-      b = Math.floor(Math.random() * (10 * difficulty)) + 1;
-      answer = a + b;
-      break;
-    case '-':
-      a = Math.floor(Math.random() * (10 * difficulty)) + 10;
-      b = Math.floor(Math.random() * a) + 1;
-      answer = a - b;
-      break;
-    case '*':
-      a = Math.floor(Math.random() * (5 * difficulty)) + 1;
-      b = Math.floor(Math.random() * 10) + 1;
-      answer = a * b;
-      break;
-    default:
-      a = 1;
-      b = 1;
-      answer = 2;
+  if (validStarts.length === 0) {
+    return { question: '5 + 3', answer: 8 };
   }
   
-  return { question: `${a} ${operator} ${b}`, answer };
+  const startNum = validStarts[Math.floor(Math.random() * validStarts.length)];
+  const rule = rules[startNum as keyof typeof rules];
+  
+  // Qo'shish yoki ayirish operatsiyasi
+  const canAdd = rule.add.length > 0;
+  const canSubtract = rule.subtract.length > 0;
+  
+  let operator: '+' | '-';
+  let operand: number;
+  
+  if (canAdd && canSubtract) {
+    operator = Math.random() > 0.5 ? '+' : '-';
+  } else if (canAdd) {
+    operator = '+';
+  } else {
+    operator = '-';
+  }
+  
+  if (operator === '+') {
+    operand = rule.add[Math.floor(Math.random() * rule.add.length)];
+  } else {
+    operand = rule.subtract[Math.floor(Math.random() * rule.subtract.length)];
+  }
+  
+  const answer = operator === '+' ? startNum + operand : startNum - operand;
+  
+  return { 
+    question: `${startNum} ${operator} ${operand}`, 
+    answer 
+  };
 };
 
 export const BonusChallenge = ({ energy, maxEnergy, onComplete, onEnergyUse }: BonusChallengeProps) => {
@@ -197,7 +260,7 @@ export const BonusChallenge = ({ energy, maxEnergy, onComplete, onEnergyUse }: B
     setCurrentStreak(0);
     setCorrectAnswers(0);
     setTotalAnswers(0);
-    setCurrentProblem(generateProblem(2));
+    setCurrentProblem(generateMentalArithmeticProblem(2));
     setUserAnswer('');
   };
 
@@ -269,7 +332,7 @@ export const BonusChallenge = ({ energy, maxEnergy, onComplete, onEnergyUse }: B
     }
 
     // Generate next problem
-    setCurrentProblem(generateProblem(2));
+    setCurrentProblem(generateMentalArithmeticProblem(2));
     setUserAnswer('');
   };
 

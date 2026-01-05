@@ -402,6 +402,138 @@ export type Database = {
         }
         Relationships: []
       }
+      friend_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      friends: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      game_invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          game_type: string
+          id: string
+          receiver_id: string
+          room_code: string | null
+          sender_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          game_type?: string
+          id?: string
+          receiver_id: string
+          room_code?: string | null
+          sender_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          game_type?: string
+          id?: string
+          receiver_id?: string
+          room_code?: string | null
+          sender_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      game_levels: {
+        Row: {
+          coin_reward: number
+          created_at: string
+          description: string | null
+          difficulty: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          level_number: number
+          name: string
+          problem_count: number
+          required_xp: number
+          time_limit: number | null
+        }
+        Insert: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_number: number
+          name: string
+          problem_count?: number
+          required_xp?: number
+          time_limit?: number | null
+        }
+        Update: {
+          coin_reward?: number
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_number?: number
+          name?: string
+          problem_count?: number
+          required_xp?: number
+          time_limit?: number | null
+        }
+        Relationships: []
+      }
       game_sessions: {
         Row: {
           best_streak: number | null
@@ -453,6 +585,90 @@ export type Database = {
           timer_duration?: number | null
           total_time?: number | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      game_tasks: {
+        Row: {
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          reward_coins: number
+          reward_xp: number
+          target_value: number
+          task_type: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward_coins?: number
+          reward_xp?: number
+          target_value?: number
+          task_type?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          reward_coins?: number
+          reward_xp?: number
+          target_value?: number
+          task_type?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      ghost_battle_results: {
+        Row: {
+          created_at: string
+          ghost_correct: number
+          ghost_score: number
+          ghost_time: number
+          ghost_user_id: string
+          ghost_username: string
+          id: string
+          is_winner: boolean
+          user_correct: number
+          user_id: string
+          user_score: number
+          user_time: number
+        }
+        Insert: {
+          created_at?: string
+          ghost_correct?: number
+          ghost_score?: number
+          ghost_time?: number
+          ghost_user_id: string
+          ghost_username: string
+          id?: string
+          is_winner?: boolean
+          user_correct?: number
+          user_id: string
+          user_score?: number
+          user_time?: number
+        }
+        Update: {
+          created_at?: string
+          ghost_correct?: number
+          ghost_score?: number
+          ghost_time?: number
+          ghost_user_id?: string
+          ghost_username?: string
+          id?: string
+          is_winner?: boolean
+          user_correct?: number
+          user_id?: string
+          user_score?: number
+          user_time?: number
         }
         Relationships: []
       }
@@ -714,11 +930,13 @@ export type Database = {
           daily_goal: number | null
           id: string
           last_active_date: string | null
+          selected_frame: string | null
           total_problems_solved: number | null
           total_score: number | null
           updated_at: string
           user_id: string
           username: string
+          vip_expires_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -728,11 +946,13 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
           user_id: string
           username: string
+          vip_expires_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -742,11 +962,52 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
           user_id?: string
           username?: string
+          vip_expires_at?: string | null
+        }
+        Relationships: []
+      }
+      shop_items: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          is_available: boolean | null
+          item_type: string
+          name: string
+          price: number
+          stock: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_available?: boolean | null
+          item_type?: string
+          name: string
+          price: number
+          stock?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          is_available?: boolean | null
+          item_type?: string
+          name?: string
+          price?: number
+          stock?: number | null
         }
         Relationships: []
       }
@@ -1090,6 +1351,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_game_currency: {
+        Row: {
+          coins: number
+          created_at: string
+          id: string
+          last_life_regen: string
+          lives: number
+          max_lives: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins?: number
+          created_at?: string
+          id?: string
+          last_life_regen?: string
+          lives?: number
+          max_lives?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          id?: string
+          last_life_regen?: string
+          lives?: number
+          max_lives?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_gamification: {
         Row: {
           bonus_cooldown_until: string | null
@@ -1159,6 +1453,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_inventory: {
+        Row: {
+          id: string
+          is_active: boolean | null
+          item_id: string
+          purchased_at: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean | null
+          item_id: string
+          purchased_at?: string
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean | null
+          item_id?: string
+          purchased_at?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_inventory_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_lesson_progress: {
         Row: {
           completed: boolean | null
@@ -1206,6 +1535,53 @@ export type Database = {
           },
         ]
       }
+      user_level_progress: {
+        Row: {
+          attempts: number
+          best_score: number
+          best_time: number | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          level_id: string
+          stars_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          best_score?: number
+          best_time?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id: string
+          stars_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          best_score?: number
+          best_time?: number | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          level_id?: string
+          stars_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_level_progress_level_id_fkey"
+            columns: ["level_id"]
+            isOneToOne: false
+            referencedRelation: "game_levels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1226,6 +1602,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_task_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_value: number
+          id: string
+          is_completed: boolean | null
+          reset_date: string
+          task_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          is_completed?: boolean | null
+          reset_date?: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          is_completed?: boolean | null
+          reset_date?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_task_progress_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "game_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       weekly_challenge_results: {
         Row: {
