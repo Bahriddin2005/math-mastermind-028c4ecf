@@ -21,6 +21,7 @@ import { WeeklyCompetition } from '@/components/WeeklyCompetition';
 import { UserBadges } from '@/components/UserBadges';
 import { ProgressVisualization } from '@/components/ProgressVisualization';
 import { BonusChallenge } from '@/components/BonusChallenge';
+import { QuickMathChallenge } from '@/components/QuickMathChallenge';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { GamificationDisplay } from '@/components/GamificationDisplay';
 import { PullToRefresh } from '@/components/PullToRefresh';
@@ -590,8 +591,11 @@ const Dashboard = () => {
               totalXp={gamification.totalXp}
             />
 
-            {/* Weekly Competition, Badges & Bonus Challenge */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Quick Math Challenge & Weekly Competition */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="opacity-0 animate-slide-up" style={{ animationDelay: '380ms', animationFillMode: 'forwards' }}>
+                <QuickMathChallenge />
+              </div>
               <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
                 <WeeklyCompetition />
               </div>
