@@ -17,171 +17,175 @@ interface AvatarOption {
   id: string;
   name: string;
   icon: React.ReactNode;
+  emoji: string;
   gradient: string;
   description: string;
   bgColor: string;
   rarity: 'common' | 'rare' | 'epic' | 'legendary';
-  specialEffect?: string;
 }
 
 const AVATAR_OPTIONS: AvatarOption[] = [
-  // Common
+  // Common - bolalar uchun sodda va tushunarli
   {
     id: 'ninja',
-    name: 'Matematik Ninja',
-    icon: <Zap className="h-10 w-10" />,
-    gradient: 'from-purple-600 via-indigo-600 to-blue-600',
-    description: 'Tez va aniq hisoblaydi',
-    bgColor: 'bg-purple-100 dark:bg-purple-900/30',
+    name: 'Ninja',
+    icon: <Zap className="h-8 w-8" />,
+    emoji: '🥷',
+    gradient: 'from-purple-500 to-indigo-600',
+    description: 'Tez va chaqqon',
+    bgColor: 'bg-purple-50 dark:bg-purple-950/30',
     rarity: 'common',
   },
   {
     id: 'robot',
-    name: 'Super Robot',
-    icon: <Bot className="h-10 w-10" />,
-    gradient: 'from-cyan-600 via-blue-600 to-indigo-600',
-    description: 'Xatosiz hisoblash mashinasi',
-    bgColor: 'bg-cyan-100 dark:bg-cyan-900/30',
+    name: 'Robot',
+    icon: <Bot className="h-8 w-8" />,
+    emoji: '🤖',
+    gradient: 'from-cyan-500 to-blue-600',
+    description: 'Aqlli robot',
+    bgColor: 'bg-cyan-50 dark:bg-cyan-950/30',
     rarity: 'common',
   },
   {
     id: 'star',
-    name: 'Yulduz',
-    icon: <Star className="h-10 w-10" />,
-    gradient: 'from-amber-500 via-yellow-500 to-orange-500',
-    description: 'Eng yorqin o\'quvchi',
-    bgColor: 'bg-amber-100 dark:bg-amber-900/30',
+    name: 'Yulduzcha',
+    icon: <Star className="h-8 w-8" />,
+    emoji: '⭐',
+    gradient: 'from-amber-400 to-yellow-500',
+    description: 'Porloq yulduz',
+    bgColor: 'bg-amber-50 dark:bg-amber-950/30',
     rarity: 'common',
   },
   {
     id: 'gamer',
-    name: 'Pro Gamer',
-    icon: <Gamepad2 className="h-10 w-10" />,
-    gradient: 'from-green-600 via-emerald-600 to-teal-600',
-    description: 'O\'yin ustasi',
-    bgColor: 'bg-green-100 dark:bg-green-900/30',
+    name: "O'yinchi",
+    icon: <Gamepad2 className="h-8 w-8" />,
+    emoji: '🎮',
+    gradient: 'from-green-500 to-emerald-600',
+    description: "O'yin ustasi",
+    bgColor: 'bg-green-50 dark:bg-green-950/30',
     rarity: 'common',
   },
   // Rare
   {
     id: 'wizard',
     name: 'Sehrgar',
-    icon: <Wand2 className="h-10 w-10" />,
-    gradient: 'from-violet-600 via-purple-600 to-fuchsia-600',
-    description: 'Sehrli formulalar ustasi',
-    bgColor: 'bg-violet-100 dark:bg-violet-900/30',
+    icon: <Wand2 className="h-8 w-8" />,
+    emoji: '🧙‍♂️',
+    gradient: 'from-violet-500 to-purple-600',
+    description: 'Sehr ustasi',
+    bgColor: 'bg-violet-50 dark:bg-violet-950/30',
     rarity: 'rare',
-    specialEffect: 'sparkle',
   },
   {
     id: 'superhero',
-    name: 'Super Qahramon',
-    icon: <Shield className="h-10 w-10" />,
-    gradient: 'from-red-600 via-orange-600 to-amber-600',
-    description: 'Har qanday muammoni yechadi',
-    bgColor: 'bg-red-100 dark:bg-red-900/30',
+    name: 'Qahramon',
+    icon: <Shield className="h-8 w-8" />,
+    emoji: '🦸',
+    gradient: 'from-red-500 to-orange-600',
+    description: 'Super kuchli',
+    bgColor: 'bg-red-50 dark:bg-red-950/30',
     rarity: 'rare',
-    specialEffect: 'glow',
   },
   {
     id: 'astronaut',
     name: 'Kosmonavt',
-    icon: <Rocket className="h-10 w-10" />,
-    gradient: 'from-slate-600 via-gray-600 to-zinc-600',
-    description: 'Koinot sirlarini ochadi',
-    bgColor: 'bg-slate-100 dark:bg-slate-900/30',
+    icon: <Rocket className="h-8 w-8" />,
+    emoji: '👨‍🚀',
+    gradient: 'from-slate-500 to-gray-600',
+    description: 'Koinot sayohatchisi',
+    bgColor: 'bg-slate-50 dark:bg-slate-950/30',
     rarity: 'rare',
-    specialEffect: 'float',
   },
   {
     id: 'warrior',
-    name: 'Matematik Jangchi',
-    icon: <Sword className="h-10 w-10" />,
-    gradient: 'from-rose-600 via-red-600 to-orange-600',
-    description: 'Qiyinchilikni yengadi',
-    bgColor: 'bg-rose-100 dark:bg-rose-900/30',
+    name: 'Jangchi',
+    icon: <Sword className="h-8 w-8" />,
+    emoji: '⚔️',
+    gradient: 'from-rose-500 to-red-600',
+    description: 'Jasur jangchi',
+    bgColor: 'bg-rose-50 dark:bg-rose-950/30',
     rarity: 'rare',
-    specialEffect: 'shake',
   },
   // Epic
   {
     id: 'genius',
-    name: 'Super Genius',
-    icon: <Brain className="h-10 w-10" />,
-    gradient: 'from-pink-600 via-rose-600 to-red-600',
-    description: 'Aql zakovat ustasi',
-    bgColor: 'bg-pink-100 dark:bg-pink-900/30',
+    name: 'Dono',
+    icon: <Brain className="h-8 w-8" />,
+    emoji: '🧠',
+    gradient: 'from-pink-500 to-rose-600',
+    description: 'Super aqlli',
+    bgColor: 'bg-pink-50 dark:bg-pink-950/30',
     rarity: 'epic',
-    specialEffect: 'pulse',
   },
   {
     id: 'phoenix',
     name: 'Feniks',
-    icon: <Flame className="h-10 w-10" />,
-    gradient: 'from-orange-500 via-red-500 to-rose-500',
-    description: 'Kuldan qayta tug\'iladi',
-    bgColor: 'bg-orange-100 dark:bg-orange-900/30',
+    icon: <Flame className="h-8 w-8" />,
+    emoji: '🔥',
+    gradient: 'from-orange-500 to-red-600',
+    description: "O't qushi",
+    bgColor: 'bg-orange-50 dark:bg-orange-950/30',
     rarity: 'epic',
-    specialEffect: 'fire',
   },
   {
     id: 'shadow',
-    name: 'Soya Master',
-    icon: <Ghost className="h-10 w-10" />,
-    gradient: 'from-gray-800 via-slate-700 to-zinc-600',
-    description: 'Sirli va tez',
-    bgColor: 'bg-gray-200 dark:bg-gray-800/50',
+    name: 'Soya',
+    icon: <Ghost className="h-8 w-8" />,
+    emoji: '👻',
+    gradient: 'from-gray-600 to-slate-700',
+    description: 'Sirli qahramon',
+    bgColor: 'bg-gray-100 dark:bg-gray-900/50',
     rarity: 'epic',
-    specialEffect: 'shadow',
   },
   // Legendary
   {
     id: 'diamond',
-    name: 'Olmos Ustoz',
-    icon: <Diamond className="h-10 w-10" />,
-    gradient: 'from-cyan-400 via-blue-500 to-purple-600',
-    description: 'Eng noyob qahramon',
-    bgColor: 'bg-cyan-100 dark:bg-cyan-900/30',
+    name: 'Olmos',
+    icon: <Diamond className="h-8 w-8" />,
+    emoji: '💎',
+    gradient: 'from-cyan-400 via-blue-500 to-purple-500',
+    description: 'Eng noyob',
+    bgColor: 'bg-cyan-50 dark:bg-cyan-950/30',
     rarity: 'legendary',
-    specialEffect: 'rainbow',
   },
   {
     id: 'moonknight',
     name: 'Oy Ritsari',
-    icon: <Moon className="h-10 w-10" />,
-    gradient: 'from-indigo-600 via-purple-600 to-pink-600',
-    description: 'Tun kuchlarini boshqaradi',
-    bgColor: 'bg-indigo-100 dark:bg-indigo-900/30',
+    icon: <Moon className="h-8 w-8" />,
+    emoji: '🌙',
+    gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+    description: 'Tun qahramoni',
+    bgColor: 'bg-indigo-50 dark:bg-indigo-950/30',
     rarity: 'legendary',
-    specialEffect: 'moon',
   },
   {
     id: 'sunknight',
-    name: 'Quyosh Qiroli',
-    icon: <Sun className="h-10 w-10" />,
+    name: 'Quyosh',
+    icon: <Sun className="h-8 w-8" />,
+    emoji: '☀️',
     gradient: 'from-yellow-400 via-orange-500 to-red-500',
-    description: 'Yorug\'lik keltiruvchi',
-    bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
+    description: "Yorug'lik beruvchi",
+    bgColor: 'bg-yellow-50 dark:bg-yellow-950/30',
     rarity: 'legendary',
-    specialEffect: 'sun',
   },
   {
     id: 'loveheart',
-    name: 'Sevgi Qahramoni',
-    icon: <Heart className="h-10 w-10" />,
-    gradient: 'from-pink-500 via-rose-500 to-red-500',
-    description: 'Mehribonlik kuchi',
-    bgColor: 'bg-pink-100 dark:bg-pink-900/30',
+    name: 'Sevgi',
+    icon: <Heart className="h-8 w-8" />,
+    emoji: '❤️',
+    gradient: 'from-pink-400 via-rose-500 to-red-500',
+    description: 'Mehribon yurak',
+    bgColor: 'bg-pink-50 dark:bg-pink-950/30',
     rarity: 'legendary',
-    specialEffect: 'hearts',
   },
 ];
 
 const RARITY_CONFIG = {
-  common: { label: 'Oddiy', color: 'text-gray-500', border: 'border-gray-300' },
-  rare: { label: 'Kam uchraydigan', color: 'text-blue-500', border: 'border-blue-500' },
-  epic: { label: 'Epic', color: 'text-purple-500', border: 'border-purple-500' },
-  legendary: { label: 'Afsonaviy', color: 'text-amber-500', border: 'border-amber-500' },
+  common: { label: 'Oddiy', color: 'text-gray-600 dark:text-gray-400', bgLabel: 'bg-gray-100 dark:bg-gray-800' },
+  rare: { label: 'Kam', color: 'text-blue-600 dark:text-blue-400', bgLabel: 'bg-blue-100 dark:bg-blue-900/50' },
+  epic: { label: 'Epic', color: 'text-purple-600 dark:text-purple-400', bgLabel: 'bg-purple-100 dark:bg-purple-900/50' },
+  legendary: { label: 'Afsonaviy', color: 'text-amber-600 dark:text-amber-400', bgLabel: 'bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/50 dark:to-yellow-900/50' },
 };
 
 export const AvatarSelect = () => {
@@ -192,7 +196,6 @@ export const AvatarSelect = () => {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentProfile, setCurrentProfile] = useState<any>(null);
-  const [hoveredAvatar, setHoveredAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -225,10 +228,10 @@ export const AvatarSelect = () => {
     setSelectedAvatar(avatar.id);
     playSound?.('correct');
     
-    // Different confetti based on rarity
-    const particleCount = avatar.rarity === 'legendary' ? 100 : 
-                          avatar.rarity === 'epic' ? 60 : 
-                          avatar.rarity === 'rare' ? 40 : 30;
+    // Confetti based on rarity
+    const particleCount = avatar.rarity === 'legendary' ? 80 : 
+                          avatar.rarity === 'epic' ? 50 : 
+                          avatar.rarity === 'rare' ? 35 : 20;
     
     const colors = avatar.rarity === 'legendary' ? ['#FFD700', '#FFA500', '#FF69B4', '#00CED1'] :
                    avatar.rarity === 'epic' ? ['#9B59B6', '#8E44AD', '#E74C3C'] :
@@ -237,15 +240,15 @@ export const AvatarSelect = () => {
     
     confetti({
       particleCount,
-      spread: 70,
-      origin: { y: 0.6 },
+      spread: 60,
+      origin: { y: 0.7 },
       colors,
     });
   };
 
   const handleSave = async () => {
     if (!user || !username.trim()) {
-      toast.error("Ism kiriting");
+      toast.error("Ism kiriting 📝");
       return;
     }
     
@@ -268,29 +271,19 @@ export const AvatarSelect = () => {
       
       playSound?.('levelUp');
       
-      // Epic celebration
-      const duration = 2000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
-
-      const interval = setInterval(() => {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) return clearInterval(interval);
-
-        confetti({
-          ...defaults,
-          particleCount: 50 * (timeLeft / duration),
-          origin: { x: Math.random(), y: Math.random() - 0.2 },
-          colors: ['#FFD700', '#4ECDC4', '#FF6B6B', '#45B7D1', '#96CEB4', '#9B59B6'],
-        });
-      }, 150);
+      // Celebration confetti
+      confetti({
+        particleCount: 100,
+        spread: 100,
+        origin: { y: 0.5 },
+        colors: ['#FFD700', '#4ECDC4', '#FF6B6B', '#45B7D1', '#96CEB4', '#9B59B6'],
+      });
       
-      toast.success(`${selectedAvatarData?.name} tanlandi! 🎉`);
+      toast.success(`${selectedAvatarData?.emoji} ${selectedAvatarData?.name} tanlandi!`);
       
       setTimeout(() => {
-        clearInterval(interval);
         navigate('/');
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error('Error saving profile:', error);
       toast.error("Xatolik yuz berdi");
@@ -309,55 +302,43 @@ export const AvatarSelect = () => {
     common: AVATAR_OPTIONS.filter(a => a.rarity === 'common'),
   };
 
-  const getSpecialEffectClass = (effect?: string) => {
-    switch (effect) {
-      case 'sparkle': return 'animate-pulse';
-      case 'glow': return 'animate-glow-pulse';
-      case 'float': return 'animate-float';
-      case 'shake': return 'hover:animate-shake';
-      case 'pulse': return 'animate-pulse';
-      case 'fire': return 'animate-float';
-      case 'shadow': return 'hover:shadow-2xl hover:shadow-purple-500/50';
-      case 'rainbow': return 'animate-spin-slow';
-      case 'moon': return 'animate-float';
-      case 'sun': return 'animate-glow-pulse';
-      case 'hearts': return 'animate-pulse';
-      default: return '';
-    }
-  };
-
   return (
     <PageBackground>
-      <div className="min-h-screen py-8 px-4">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-2 animate-bounce-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary animate-pulse">
-              <Sparkles className="h-5 w-5" />
-              <span className="font-medium">Qahramoningizni tanlang!</span>
+      <div className="min-h-screen py-6 px-4">
+        <div className="max-w-2xl mx-auto space-y-6">
+          
+          {/* Header - chiroyli va sodda */}
+          <div className="text-center space-y-3">
+            <div 
+              className="inline-block animate-fade-in"
+              style={{ animationDelay: '0ms' }}
+            >
+              <div className="text-6xl mb-2">🎭</div>
+              <h1 className="text-3xl sm:text-4xl font-black text-foreground">
+                Qahramoningizni tanlang!
+              </h1>
+              <p className="text-muted-foreground mt-2">
+                O'zingizga yoqqan qahramoni bosing ✨
+              </p>
             </div>
-            <h1 className="text-4xl font-black bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Avatar Tanlash
-            </h1>
-            <p className="text-muted-foreground">
-              O'zingizga mos qahramoni tanlang va sarguzashtni boshlang
-            </p>
           </div>
 
-          {/* Username Input */}
-          <Card className="border-primary/20 animate-fade-in">
-            <CardContent className="pt-6">
+          {/* Username Input - katta va tushunarli */}
+          <Card 
+            className="border-2 border-primary/30 shadow-lg animate-fade-in" 
+            style={{ animationDelay: '100ms' }}
+          >
+            <CardContent className="pt-5 pb-5">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-base font-medium flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-amber-500" />
-                  Sizning ismingiz
+                <Label htmlFor="username" className="text-lg font-bold flex items-center gap-2">
+                  👤 Sizning ismingiz
                 </Label>
                 <Input
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Masalan: Ali"
-                  className="text-lg h-12 border-2 focus:border-primary"
+                  placeholder="Masalan: Ali, Madina..."
+                  className="text-xl h-14 border-2 focus:border-primary font-medium"
                   maxLength={20}
                 />
               </div>
@@ -365,147 +346,125 @@ export const AvatarSelect = () => {
           </Card>
 
           {/* Avatar Groups */}
-          {Object.entries(groupedAvatars).map(([rarity, avatars]) => (
-            <div key={rarity} className="space-y-3 animate-fade-in">
-              <div className="flex items-center gap-2">
+          {Object.entries(groupedAvatars).map(([rarity, avatars], groupIndex) => (
+            <div 
+              key={rarity} 
+              className="space-y-3 animate-fade-in"
+              style={{ animationDelay: `${150 + groupIndex * 100}ms` }}
+            >
+              {/* Rarity Label */}
+              <div className="flex items-center justify-center gap-3">
                 <div className={cn(
-                  "h-1 flex-1 rounded-full",
-                  rarity === 'legendary' ? 'bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500' :
-                  rarity === 'epic' ? 'bg-gradient-to-r from-purple-500 to-pink-500' :
-                  rarity === 'rare' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
-                  'bg-gradient-to-r from-gray-400 to-gray-500'
-                )} />
-                <span className={cn(
-                  "font-bold text-sm uppercase tracking-wider",
+                  "px-4 py-1.5 rounded-full text-sm font-bold",
+                  RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].bgLabel,
                   RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].color
                 )}>
-                  {rarity === 'legendary' && '⭐ '}{RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].label}
-                </span>
-                <div className={cn(
-                  "h-1 flex-1 rounded-full",
-                  rarity === 'legendary' ? 'bg-gradient-to-r from-orange-500 via-yellow-500 to-amber-500' :
-                  rarity === 'epic' ? 'bg-gradient-to-r from-pink-500 to-purple-500' :
-                  rarity === 'rare' ? 'bg-gradient-to-r from-cyan-500 to-blue-500' :
-                  'bg-gradient-to-r from-gray-500 to-gray-400'
-                )} />
+                  {rarity === 'legendary' && '👑 '}
+                  {rarity === 'epic' && '💜 '}
+                  {rarity === 'rare' && '💙 '}
+                  {rarity === 'common' && '⚪ '}
+                  {RARITY_CONFIG[rarity as keyof typeof RARITY_CONFIG].label}
+                </div>
               </div>
 
+              {/* Avatar Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {avatars.map((avatar) => (
-                  <button
-                    key={avatar.id}
-                    onClick={() => handleSelectAvatar(avatar)}
-                    onMouseEnter={() => setHoveredAvatar(avatar.id)}
-                    onMouseLeave={() => setHoveredAvatar(null)}
-                    className={cn(
-                      "relative p-4 rounded-2xl border-2 transition-all duration-300",
-                      "hover:scale-105 hover:shadow-xl",
-                      selectedAvatar === avatar.id
-                        ? `border-transparent bg-gradient-to-br ${avatar.gradient} text-white shadow-xl scale-105`
-                        : `${RARITY_CONFIG[avatar.rarity].border} ${avatar.bgColor} hover:border-primary/50`,
-                      getSpecialEffectClass(avatar.specialEffect)
-                    )}
-                  >
-                    {/* Rarity glow for legendary */}
-                    {avatar.rarity === 'legendary' && selectedAvatar === avatar.id && (
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-amber-500/30 via-yellow-500/30 to-orange-500/30 animate-pulse blur-xl" />
-                    )}
-
-                    {/* Selected indicator */}
-                    {selectedAvatar === avatar.id && (
-                      <div className="absolute -top-2 -right-2 bg-white dark:bg-gray-900 rounded-full p-1 shadow-lg z-10 animate-bounce-in">
-                        <Check className="h-5 w-5 text-green-500" />
-                      </div>
-                    )}
-                    
-                    {/* Avatar icon */}
-                    <div className={cn(
-                      "relative mx-auto mb-2 p-3 rounded-full transition-transform",
-                      selectedAvatar === avatar.id
-                        ? "bg-white/20"
-                        : `bg-gradient-to-br ${avatar.gradient} text-white`,
-                      hoveredAvatar === avatar.id && "scale-110"
-                    )}>
-                      {avatar.icon}
-                      
-                      {/* Special particle effects for legendary */}
-                      {avatar.rarity === 'legendary' && (
-                        <>
-                          <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-amber-400 animate-pulse" />
-                          <Star className="absolute -bottom-1 -left-1 h-3 w-3 text-yellow-400 animate-spin-slow" />
-                        </>
+                {avatars.map((avatar, index) => {
+                  const isSelected = selectedAvatar === avatar.id;
+                  
+                  return (
+                    <button
+                      key={avatar.id}
+                      onClick={() => handleSelectAvatar(avatar)}
+                      className={cn(
+                        "relative p-4 rounded-2xl border-3 transition-all duration-200",
+                        "active:scale-95 focus:outline-none focus:ring-4 focus:ring-primary/30",
+                        isSelected
+                          ? "border-primary bg-primary/10 shadow-lg shadow-primary/20 scale-105"
+                          : cn(
+                              "border-border/50 hover:border-primary/50 hover:shadow-md",
+                              avatar.bgColor
+                            )
                       )}
-                    </div>
-                    
-                    {/* Name */}
-                    <div className={cn(
-                      "font-bold text-xs mb-0.5",
-                      selectedAvatar !== avatar.id && "text-foreground"
-                    )}>
-                      {avatar.name}
-                    </div>
-                    
-                    {/* Description */}
-                    <div className={cn(
-                      "text-[10px] line-clamp-1",
-                      selectedAvatar === avatar.id
-                        ? "text-white/80"
-                        : "text-muted-foreground"
-                    )}>
-                      {avatar.description}
-                    </div>
-                  </button>
-                ))}
+                      style={{
+                        animationDelay: `${200 + groupIndex * 100 + index * 50}ms`,
+                      }}
+                    >
+                      {/* Selected checkmark */}
+                      {isSelected && (
+                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-primary rounded-full flex items-center justify-center shadow-lg z-10">
+                          <Check className="h-4 w-4 text-primary-foreground" strokeWidth={3} />
+                        </div>
+                      )}
+
+                      {/* Legendary shimmer effect */}
+                      {avatar.rarity === 'legendary' && isSelected && (
+                        <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-300/30 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]" />
+                        </div>
+                      )}
+
+                      {/* Avatar Emoji - katta va ko'rinadigan */}
+                      <div className={cn(
+                        "text-5xl mb-2 transition-transform duration-200",
+                        isSelected && "scale-110"
+                      )}>
+                        {avatar.emoji}
+                      </div>
+
+                      {/* Name */}
+                      <div className={cn(
+                        "font-bold text-sm",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}>
+                        {avatar.name}
+                      </div>
+
+                      {/* Description - only on selected */}
+                      {isSelected && (
+                        <div className="text-[11px] text-muted-foreground mt-0.5">
+                          {avatar.description}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
 
-          {/* Preview */}
+          {/* Selected Avatar Preview */}
           {selectedAvatarData && (
-            <Card className="border-primary/20 overflow-hidden animate-scale-in">
+            <Card 
+              className="overflow-hidden border-2 border-primary/30 animate-scale-in"
+            >
               <div className={cn(
-                "relative p-6 bg-gradient-to-br",
+                "p-5 bg-gradient-to-br text-white",
                 selectedAvatarData.gradient
               )}>
-                {/* Background particles */}
-                {selectedAvatarData.rarity === 'legendary' && (
-                  <div className="absolute inset-0 overflow-hidden">
-                    {[...Array(10)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="absolute text-white/30 animate-float"
-                        style={{
-                          left: `${Math.random() * 100}%`,
-                          top: `${Math.random() * 100}%`,
-                          width: `${10 + Math.random() * 10}px`,
-                          animationDelay: `${Math.random() * 2}s`,
-                        }}
-                      />
-                    ))}
+                <div className="flex items-center gap-4">
+                  {/* Big emoji */}
+                  <div className="text-6xl bg-white/20 rounded-2xl p-3">
+                    {selectedAvatarData.emoji}
                   </div>
-                )}
-
-                <div className="relative flex items-center gap-4 text-white">
-                  <div className={cn(
-                    "p-4 bg-white/20 rounded-2xl",
-                    getSpecialEffectClass(selectedAvatarData.specialEffect)
-                  )}>
-                    {selectedAvatarData.icon}
-                  </div>
-                  <div>
-                    <div className="text-sm opacity-80 flex items-center gap-1">
-                      <span className={RARITY_CONFIG[selectedAvatarData.rarity].color}>
+                  
+                  {/* Info */}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded-full text-xs font-bold",
+                        "bg-white/20"
+                      )}>
                         {RARITY_CONFIG[selectedAvatarData.rarity].label}
                       </span>
-                      qahramon:
                     </div>
-                    <div className="text-2xl font-bold flex items-center gap-2">
+                    <div className="text-2xl font-black flex items-center gap-2">
                       {username || 'Ismingiz'}
                       {selectedAvatarData.rarity === 'legendary' && (
-                        <Crown className="h-5 w-5 text-amber-300 animate-bounce" />
+                        <span>👑</span>
                       )}
                     </div>
-                    <div className="text-sm opacity-80">
+                    <div className="text-sm opacity-90">
                       {selectedAvatarData.name} - {selectedAvatarData.description}
                     </div>
                   </div>
@@ -514,30 +473,46 @@ export const AvatarSelect = () => {
             </Card>
           )}
 
-          {/* Save Button */}
+          {/* Save Button - katta va chiroyli */}
           <Button
             onClick={handleSave}
             disabled={isLoading || !username.trim()}
             size="lg"
             className={cn(
-              "w-full h-16 text-xl font-bold",
+              "w-full h-16 text-xl font-bold rounded-2xl",
               "bg-gradient-to-r from-primary via-purple-600 to-pink-600",
-              "hover:from-primary/90 hover:via-purple-600/90 hover:to-pink-600/90",
-              "shadow-lg hover:shadow-xl transition-all",
-              "animate-glow-pulse"
+              "hover:opacity-90 transition-all",
+              "shadow-lg shadow-primary/30",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
           >
             {isLoading ? (
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white" />
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Saqlanmoqda...</span>
+              </div>
             ) : (
-              <>
-                <Rocket className="mr-2 h-6 w-6 animate-float" />
-                Sarguzashtni Boshlash!
-              </>
+              <span className="flex items-center gap-2">
+                <span className="text-2xl">🚀</span>
+                Boshlash!
+              </span>
             )}
           </Button>
+          
+          {/* Tip for kids */}
+          <p className="text-center text-sm text-muted-foreground animate-fade-in">
+            💡 Keyinroq sozlamalardan o'zgartirish mumkin
+          </p>
         </div>
       </div>
+      
+      {/* Shimmer animation keyframes */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+      `}</style>
     </PageBackground>
   );
 };
