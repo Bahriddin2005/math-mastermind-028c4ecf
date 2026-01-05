@@ -471,7 +471,13 @@ export const MentalArithmeticPractice = () => {
     }
     
     if (isCorrect) {
-      toast.success("To'g'ri javob! 🎉", { duration: 2000 });
+      const messages = [
+        "Zo'r! Sen uddalading! 🔥",
+        "A'lo! Davom et! 🎉",
+        "Ajoyib! Sen ustasan! ⭐",
+        "Super! Yana bir to'g'ri! 💪",
+      ];
+      toast.success(messages[Math.floor(Math.random() * messages.length)], { duration: 2000 });
     }
   }, [userAnswer, user, difficulty, currentStreak, playSound, gamification]);
 

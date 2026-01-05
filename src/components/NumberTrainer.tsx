@@ -942,8 +942,8 @@ export const NumberTrainer = () => {
           <div className="relative max-w-lg w-full space-y-4 sm:space-y-5 animate-fade-in mx-auto">
             {/* Header */}
             <div className="text-center mb-2">
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
-              <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm mt-1">Javobingizni kiriting</p>
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white">Natijani ko'raylik! 🎯</h2>
+              <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm mt-1">Javobingni yoz va tekshir!</p>
             </div>
             
             {!showResult ? (
