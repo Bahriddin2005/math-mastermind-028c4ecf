@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,26 +13,107 @@ import { PageBackground } from '@/components/layout/PageBackground';
 import confetti from 'canvas-confetti';
 import { useSound } from '@/hooks/useSound';
 
-// Intro phrases for each avatar
-const INTRO_PHRASES: Record<string, string[]> = {
-  ninja: ["Soyada yashirinaman... ⚡", "Tezlik - mening kuchim!", "Hech kim meni tutolmaydi!"],
-  robot: ["Beep boop! Men tayorman 🤖", "Barcha hisoblarni bajaraman!", "Xatolik? Bu nima? 😎"],
-  star: ["Men porlab turaman ✨", "Qorong'ulikda ham yorug'man!", "Yulduzlar bilan birga!"],
-  gamer: ["O'yin boshlansin! 🎮", "Yangi rekord qo'yaman!", "Game over? Hech qachon!"],
-  wizard: ["Abrakadabra! ✨", "Sehr kuchim cheksiz!", "Matematika - bu sehr!"],
-  superhero: ["Kuch men bilan! 💪", "Yaxshilik g'alaba qiladi!", "Men yetib keldim!"],
-  astronaut: ["3... 2... 1... Uchish! 🚀", "Kosmosdan salom!", "Yulduzlarga yo'l olaman!"],
-  warrior: ["Jangga tayyorman! ⚔️", "Qo'rquv - bu nima?", "G'alaba bizniki!"],
-  genius: ["Fikrlash - bu oson! 🧠", "Aqlim o'tkir!", "Har qanday masalani yechaman!"],
-  phoenix: ["Men kul ichidan tug'ilaman! 🔥", "Mening kuchim yonadi!", "Hech narsa to'xtatolmaydi!"],
-  shadow: ["Men soyalardaman... 👻", "Sirli va tezkorman!", "Hech kim ko'rmaydi!"],
-  diamond: ["Men eng noyobman! 💎", "Porloq va bemisl!", "Olmos kabi mustahkam!"],
-  moonknight: ["Tunda uyg'onaman 🌙", "Oy nuri bilan!", "Qorong'ulik do'stim!"],
-  sunknight: ["Yorug'lik tarqataman ☀️", "Quyosh kabi kuchli!", "Nur sochaman!"],
-  loveheart: ["Sevgi bilan! ❤️", "Yuragim katta!", "Mehribonlik kuchim!"],
+// Intro phrases for each avatar (text without emojis for TTS)
+const INTRO_PHRASES: Record<string, { text: string; display: string }[]> = {
+  ninja: [
+    { text: "Soyada yashirinaman", display: "Soyada yashirinaman... ⚡" },
+    { text: "Tezlik mening kuchim!", display: "Tezlik - mening kuchim!" },
+    { text: "Hech kim meni tutolmaydi!", display: "Hech kim meni tutolmaydi!" }
+  ],
+  robot: [
+    { text: "Bip bup! Men tayorman", display: "Beep boop! Men tayorman 🤖" },
+    { text: "Barcha hisoblarni bajaraman!", display: "Barcha hisoblarni bajaraman!" },
+    { text: "Xatolik? Bu nima?", display: "Xatolik? Bu nima? 😎" }
+  ],
+  star: [
+    { text: "Men porlab turaman", display: "Men porlab turaman ✨" },
+    { text: "Qorong'ulikda ham yorug'man!", display: "Qorong'ulikda ham yorug'man!" },
+    { text: "Yulduzlar bilan birga!", display: "Yulduzlar bilan birga!" }
+  ],
+  gamer: [
+    { text: "O'yin boshlansin!", display: "O'yin boshlansin! 🎮" },
+    { text: "Yangi rekord qo'yaman!", display: "Yangi rekord qo'yaman!" },
+    { text: "Game over? Hech qachon!", display: "Game over? Hech qachon!" }
+  ],
+  wizard: [
+    { text: "Abrakadabra!", display: "Abrakadabra! ✨" },
+    { text: "Sehr kuchim cheksiz!", display: "Sehr kuchim cheksiz!" },
+    { text: "Matematika bu sehr!", display: "Matematika - bu sehr!" }
+  ],
+  superhero: [
+    { text: "Kuch men bilan!", display: "Kuch men bilan! 💪" },
+    { text: "Yaxshilik g'alaba qiladi!", display: "Yaxshilik g'alaba qiladi!" },
+    { text: "Men yetib keldim!", display: "Men yetib keldim!" }
+  ],
+  astronaut: [
+    { text: "Uch, ikki, bir, Uchish!", display: "3... 2... 1... Uchish! 🚀" },
+    { text: "Kosmosdan salom!", display: "Kosmosdan salom!" },
+    { text: "Yulduzlarga yo'l olaman!", display: "Yulduzlarga yo'l olaman!" }
+  ],
+  warrior: [
+    { text: "Jangga tayyorman!", display: "Jangga tayyorman! ⚔️" },
+    { text: "Qo'rquv bu nima?", display: "Qo'rquv - bu nima?" },
+    { text: "G'alaba bizniki!", display: "G'alaba bizniki!" }
+  ],
+  genius: [
+    { text: "Fikrlash bu oson!", display: "Fikrlash - bu oson! 🧠" },
+    { text: "Aqlim o'tkir!", display: "Aqlim o'tkir!" },
+    { text: "Har qanday masalani yechaman!", display: "Har qanday masalani yechaman!" }
+  ],
+  phoenix: [
+    { text: "Men kul ichidan tug'ilaman!", display: "Men kul ichidan tug'ilaman! 🔥" },
+    { text: "Mening kuchim yonadi!", display: "Mening kuchim yonadi!" },
+    { text: "Hech narsa to'xtatolmaydi!", display: "Hech narsa to'xtatolmaydi!" }
+  ],
+  shadow: [
+    { text: "Men soyalardaman", display: "Men soyalardaman... 👻" },
+    { text: "Sirli va tezkorman!", display: "Sirli va tezkorman!" },
+    { text: "Hech kim ko'rmaydi!", display: "Hech kim ko'rmaydi!" }
+  ],
+  diamond: [
+    { text: "Men eng noyobman!", display: "Men eng noyobman! 💎" },
+    { text: "Porloq va bemisl!", display: "Porloq va bemisl!" },
+    { text: "Olmos kabi mustahkam!", display: "Olmos kabi mustahkam!" }
+  ],
+  moonknight: [
+    { text: "Tunda uyg'onaman", display: "Tunda uyg'onaman 🌙" },
+    { text: "Oy nuri bilan!", display: "Oy nuri bilan!" },
+    { text: "Qorong'ulik do'stim!", display: "Qorong'ulik do'stim!" }
+  ],
+  sunknight: [
+    { text: "Yorug'lik tarqataman", display: "Yorug'lik tarqataman ☀️" },
+    { text: "Quyosh kabi kuchli!", display: "Quyosh kabi kuchli!" },
+    { text: "Nur sochaman!", display: "Nur sochaman!" }
+  ],
+  loveheart: [
+    { text: "Sevgi bilan!", display: "Sevgi bilan! ❤️" },
+    { text: "Yuragim katta!", display: "Yuragim katta!" },
+    { text: "Mehribonlik kuchim!", display: "Mehribonlik kuchim!" }
+  ],
 };
 
-// Avatar intro component
+// Voice IDs for different avatar types - diverse voices for variety
+const AVATAR_VOICES: Record<string, string> = {
+  // Boys/Male characters
+  ninja: 'N2lVS1w4EtoT3dr4eOWO', // Callum - young, energetic
+  robot: 'iP95p4xoKVk53GoZ742B', // Chris - clear, robotic feel
+  gamer: 'TX3LPaxmHKxFdv7VOQHJ', // Liam - young, excited
+  superhero: 'JBFqnCBsd6RMkjVDRZzb', // George - heroic
+  astronaut: 'onwK4e9ZLuTAKqWW03F9', // Daniel - calm, professional
+  warrior: 'nPczCjzI2devNBz1zQrb', // Brian - strong, confident
+  genius: 'cjVigY5qzO86Huf0OWal', // Eric - intelligent
+  phoenix: 'CwhRBWXzGAHq8TQ4Fs17', // Roger - powerful
+  shadow: 'bIHbv24MWmeRgasZH58o', // Will - mysterious
+  // Girls/Female characters
+  star: 'pFZP5JQG7iQjIQuC4Bku', // Lily - cheerful
+  wizard: 'XrExE9yKIg1WjnnlVkGX', // Matilda - magical
+  diamond: 'cgSgspJ2msm6clMCkdW9', // Jessica - elegant
+  moonknight: 'FGY2WhTYpPnrIDTdsKH5', // Laura - calm, mystical
+  sunknight: 'EXAVITQu4vr4xnSDxMaL', // Sarah - warm, bright
+  loveheart: 'Xb7hH8MSUJpSbSDYk0k2', // Alice - sweet, caring
+};
+
+// Avatar intro component with voice
 const AvatarIntro = ({ 
   avatar, 
   onClose 
@@ -42,21 +123,70 @@ const AvatarIntro = ({
 }) => {
   const [phase, setPhase] = useState<'entering' | 'showing' | 'phrase' | 'exiting'>('entering');
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const phrases = INTRO_PHRASES[avatar.id] || ["Salom! 👋"];
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const phrases = INTRO_PHRASES[avatar.id] || [{ text: "Salom!", display: "Salom! 👋" }];
   
+  // Play voice intro
+  const playVoiceIntro = useCallback(async () => {
+    try {
+      setIsPlayingVoice(true);
+      const voiceId = AVATAR_VOICES[avatar.id] || 'EXAVITQu4vr4xnSDxMaL';
+      const introText = phrases[0].text;
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ 
+            text: introText, 
+            voiceId 
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioRef.current = new Audio(audioUrl);
+        audioRef.current.volume = 0.8;
+        await audioRef.current.play();
+      }
+    } catch (error) {
+      console.log('Voice intro not available:', error);
+    } finally {
+      setIsPlayingVoice(false);
+    }
+  }, [avatar.id, phrases]);
+
   useEffect(() => {
     // Animation sequence
     const timers: NodeJS.Timeout[] = [];
     
     timers.push(setTimeout(() => setPhase('showing'), 300));
-    timers.push(setTimeout(() => setPhase('phrase'), 800));
-    timers.push(setTimeout(() => setPhraseIndex(1), 1600));
-    timers.push(setTimeout(() => setPhraseIndex(2), 2400));
-    timers.push(setTimeout(() => setPhase('exiting'), 3200));
-    timers.push(setTimeout(() => onClose(), 3600));
+    timers.push(setTimeout(() => {
+      setPhase('phrase');
+      playVoiceIntro(); // Play voice when phrase starts
+    }, 800));
+    timers.push(setTimeout(() => setPhraseIndex(1), 1800));
+    timers.push(setTimeout(() => setPhraseIndex(2), 2800));
+    timers.push(setTimeout(() => setPhase('exiting'), 3800));
+    timers.push(setTimeout(() => onClose(), 4200));
     
-    return () => timers.forEach(clearTimeout);
-  }, [onClose]);
+    return () => {
+      timers.forEach(clearTimeout);
+      // Cleanup audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [onClose, playVoiceIntro]);
 
   // Confetti burst on show
   useEffect(() => {
@@ -191,7 +321,7 @@ const AvatarIntro = ({
             )}
           >
             <div className="text-xl font-bold text-white/95 px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-sm">
-              {phrases[Math.min(phraseIndex, phrases.length - 1)]}
+              {phrases[Math.min(phraseIndex, phrases.length - 1)].display}
             </div>
           </div>
 
