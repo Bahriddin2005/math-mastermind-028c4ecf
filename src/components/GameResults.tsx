@@ -22,31 +22,37 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
 
   const score = stats.correct * 10 + stats.bestStreak * 5;
 
-  // Determine result message based on accuracy
+  // Determine result message based on accuracy - child friendly
   let resultMessage = '';
   let resultEmoji = '';
+  let motivationText = '';
   if (accuracy >= 90) {
-    resultMessage = "Zo'r natija!";
+    resultMessage = "Ajoyib natija!";
     resultEmoji = '🏆';
+    motivationText = "Sen haqiqiy ustasan! 🌟";
   } else if (accuracy >= 70) {
     resultMessage = "Yaxshi ish!";
     resultEmoji = '⭐';
+    motivationText = "Yana bir oz va mukammal bo'lasan! 📈";
   } else if (accuracy >= 50) {
     resultMessage = "Yaxshi harakat!";
     resultEmoji = '💪';
+    motivationText = "Mashq qilsang, zo'r bo'lasan! 🚀";
   } else {
-    resultMessage = "Mashq qiling!";
+    resultMessage = "Davom et!";
     resultEmoji = '📚';
+    motivationText = "Har kuni mashq qil va ustaga aylanasan! 💎";
   }
 
   return (
     <Card variant="game" className="p-8 max-w-lg mx-auto animate-scale-in">
       <CardHeader className="text-center pb-2">
-        <div className="text-6xl mb-4">{resultEmoji}</div>
+        <div className="text-6xl mb-4 animate-bounce">{resultEmoji}</div>
         <CardTitle className="text-3xl">{resultMessage}</CardTitle>
+        <p className="text-sm text-muted-foreground mt-2">{motivationText}</p>
         {isLoggedIn && (
-          <p className="text-2xl font-display font-bold text-primary mt-2">
-            +{score} ball
+          <p className="text-2xl font-display font-bold text-primary mt-3">
+            +{score} ball to'plading! 🌟
           </p>
         )}
       </CardHeader>
@@ -56,7 +62,7 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-4 rounded-2xl bg-primary/10">
             <Target className="h-8 w-8 mx-auto mb-2 text-primary" />
-            <p className="text-sm text-muted-foreground">To'g'ri</p>
+            <p className="text-sm text-muted-foreground">To'g'ri ✓</p>
             <p className="text-3xl font-display font-bold text-primary">{stats.correct}</p>
           </div>
 
@@ -68,13 +74,13 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
 
           <div className="text-center p-4 rounded-2xl bg-accent/10">
             <Flame className="h-8 w-8 mx-auto mb-2 text-accent" />
-            <p className="text-sm text-muted-foreground">Eng uzun seriya</p>
+            <p className="text-sm text-muted-foreground">🔥 Seriya</p>
             <p className="text-3xl font-display font-bold text-accent">{stats.bestStreak}</p>
           </div>
 
           <div className="text-center p-4 rounded-2xl bg-secondary">
             <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">O'rtacha vaqt</p>
+            <p className="text-sm text-muted-foreground">⚡ Tezlik</p>
             <p className="text-3xl font-display font-bold">{avgTime}s</p>
           </div>
         </div>
@@ -117,7 +123,7 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
           </Button>
           <Button variant="game" size="lg" onClick={onPlayAgain} className="flex-1">
             <RotateCcw className="h-5 w-5 mr-2" />
-            Qayta o'ynash
+            Yana o'ynash 🎮
           </Button>
         </div>
       </CardContent>

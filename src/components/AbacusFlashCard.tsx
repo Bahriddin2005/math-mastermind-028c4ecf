@@ -681,10 +681,10 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-center gap-2 text-primary">
                   <div className="h-1 w-8 sm:w-12 bg-gradient-to-r from-transparent to-primary/50 rounded-full" />
-                  <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">Javobingizni kiriting</span>
+                  <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">Natija qancha? 🤔</span>
                   <div className="h-1 w-8 sm:w-12 bg-gradient-to-l from-transparent to-primary/50 rounded-full" />
                 </div>
-                <p className="text-sm xs:text-base sm:text-lg text-muted-foreground">Natijani yozing va tekshiring</p>
+                <p className="text-sm xs:text-base sm:text-lg text-muted-foreground">Javobingni yoz va tekshir!</p>
               </div>
               
               {/* Input Container */}
@@ -717,21 +717,48 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
           )}
 
-          {/* Feedback - Mobile Optimized */}
+          {/* Feedback - Mobile Optimized - Child Friendly */}
           {feedback && (
-            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 animate-fade-in px-4 flex flex-col items-center w-full">
-              <div className={`text-[120px] xs:text-[160px] sm:text-[220px] md:text-[300px] lg:text-[380px] font-bold font-display leading-none text-center ${
-                feedback === 'correct' ? 'text-green-500' : 'text-red-500'
-              }`}>
-                {correctAnswer}
-              </div>
+            <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 animate-fade-in px-4 flex flex-col items-center w-full">
+              {/* Celebration emoji for correct */}
+              {feedback === 'correct' && (
+                <div className="text-6xl xs:text-7xl sm:text-8xl animate-bounce">🎉</div>
+              )}
+              
               <div className={`text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center ${
                 feedback === 'correct' ? 'text-green-500' : 'text-red-500'
               }`}>
-                {feedback === 'correct' && "To'g'ri! ✓"}
-                {feedback === 'incorrect' && `Noto'g'ri`}
-                {feedback === 'timeout' && `Vaqt tugadi!`}
+                {feedback === 'correct' && "Zo'r! Sen uddalading! 🔥"}
+                {feedback === 'incorrect' && (
+                  <div className="space-y-2">
+                    <span>Deyarli to'g'ri! 💪</span>
+                    <div className="text-xl xs:text-2xl sm:text-3xl text-muted-foreground font-normal mt-2">
+                      To'g'ri javob: <span className="text-primary font-bold">{correctAnswer}</span>
+                    </div>
+                    <div className="text-sm xs:text-base sm:text-lg text-muted-foreground font-normal">
+                      Keyingi safar aniqroq bo'lasan! 🚀
+                    </div>
+                  </div>
+                )}
+                {feedback === 'timeout' && (
+                  <div className="space-y-2">
+                    <span>Vaqt tugadi! ⏰</span>
+                    <div className="text-xl xs:text-2xl sm:text-3xl text-muted-foreground font-normal mt-2">
+                      Javob: <span className="text-primary font-bold">{correctAnswer}</span>
+                    </div>
+                    <div className="text-sm xs:text-base sm:text-lg text-muted-foreground font-normal">
+                      Keyingi safar tezroq bo'lasan! 💨
+                    </div>
+                  </div>
+                )}
               </div>
+              
+              {/* Show answer for correct with speed feedback */}
+              {feedback === 'correct' && (
+                <div className="text-lg xs:text-xl sm:text-2xl text-muted-foreground">
+                  ⚡ Juda tez! Davom et!
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -907,46 +934,59 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         </>
       )}
 
-      {/* Results - Mobile Optimized */}
+      {/* Results - Mobile Optimized - Child Friendly */}
       {isFinished && (
         <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-8">
           <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 w-full max-w-md px-3 xs:px-4">
-            {/* Trophy Icon with animation */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl xs:blur-3xl scale-125 sm:scale-150 animate-pulse" />
-              <div className="relative inline-flex items-center justify-center w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg">
-                <Trophy className="h-8 w-8 xs:h-10 xs:w-10 sm:h-12 sm:w-12 text-white" />
+            {/* Celebration Header */}
+            <div className="space-y-2">
+              <div className="text-5xl xs:text-6xl sm:text-7xl">
+                {accuracy >= 80 ? '🏆' : accuracy >= 60 ? '⭐' : accuracy >= 40 ? '💪' : '📚'}
               </div>
+              <h2 className="text-2xl xs:text-3xl sm:text-4xl font-bold text-foreground">
+                {accuracy >= 80 ? "Ajoyib natija! 🎉" : 
+                 accuracy >= 60 ? "Yaxshi ish! 👏" : 
+                 accuracy >= 40 ? "Yaxshi harakat! 💪" : 
+                 "Mashq qil, sen uddalaysan! 🚀"}
+              </h2>
             </div>
 
-            {/* Total Points */}
+            {/* Total Points with motivation */}
             <div className="space-y-1 xs:space-y-2">
               <div className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold font-display bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                {score.totalPoints}
+                +{score.totalPoints}
               </div>
-              <p className="text-xs xs:text-sm text-muted-foreground font-medium">Jami ball</p>
+              <p className="text-sm xs:text-base text-muted-foreground font-medium">ball to'plading! 🌟</p>
             </div>
             
             {/* Stats Grid - Mobile Optimized */}
             <div className="grid grid-cols-3 gap-2 xs:gap-3">
               <div className="bg-green-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-green-500/20">
                 <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-green-500">{score.correct}</div>
-                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">To'g'ri</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">To'g'ri ✓</div>
               </div>
               <div className="bg-red-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-red-500/20">
                 <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-red-500">{score.incorrect}</div>
-                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Noto'g'ri</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Xato</div>
               </div>
               <div className="bg-amber-500/10 rounded-xl xs:rounded-2xl p-2.5 xs:p-3 sm:p-4 border border-amber-500/20">
                 <div className="text-xl xs:text-2xl sm:text-3xl font-bold text-amber-500">{bestStreak}x</div>
-                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">Seriya</div>
+                <div className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1">🔥 Seriya</div>
               </div>
             </div>
             
-            {/* Accuracy Badge */}
-            <div className="inline-flex items-center gap-2 px-4 xs:px-5 py-2 xs:py-2.5 bg-blue-500/10 rounded-full border border-blue-500/20">
-              <span className="text-xs xs:text-sm text-muted-foreground">Aniqlik:</span>
-              <span className="text-base xs:text-lg font-bold text-blue-500">{accuracy}%</span>
+            {/* Progress and Motivation */}
+            <div className="space-y-3 bg-primary/5 rounded-2xl p-4 border border-primary/10">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Aniqlik</span>
+                <span className="font-bold text-primary">{accuracy}%</span>
+              </div>
+              <Progress value={accuracy} className="h-2" />
+              <p className="text-xs xs:text-sm text-muted-foreground">
+                {accuracy >= 80 ? "Sen ko'pchilikdan yaxshiroqsan! 🌟" :
+                 accuracy >= 60 ? "Yana bir oz va mukammal bo'lasan! 📈" :
+                 "Har kuni mashq qil va ustaga aylanasan! 💎"}
+              </p>
             </div>
             
             {/* Restart Button */}
@@ -956,7 +996,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-semibold gap-2 xs:gap-3 rounded-xl xs:rounded-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg"
             >
               <RotateCcw className="h-4 w-4 xs:h-5 xs:w-5" />
-              Qayta boshlash
+              Yana o'ynash 🎮
             </Button>
           </div>
         </div>

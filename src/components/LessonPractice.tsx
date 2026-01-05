@@ -215,7 +215,9 @@ export const LessonPractice = ({ lessonId, config, onComplete, isCompleted }: Le
       <Card className={score >= 70 ? 'bg-green-500/10 border-green-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}>
         <CardContent className="p-8 text-center">
           <Trophy className={`h-16 w-16 mx-auto mb-4 ${score >= 70 ? 'text-green-500' : 'text-yellow-500'}`} />
-          <h3 className="text-2xl font-bold mb-2">Mashq tugadi!</h3>
+          <h3 className="text-2xl font-bold mb-2">
+            {score >= 80 ? "Ajoyib natija! 🎉" : score >= 60 ? "Yaxshi ish! 👏" : "Yaxshi harakat! 💪"}
+          </h3>
           <p className="text-4xl font-bold mb-4">{score}%</p>
           <div className="flex items-center justify-center gap-6 mb-6">
             <div className="text-center">
