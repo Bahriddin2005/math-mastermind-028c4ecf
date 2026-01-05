@@ -5,14 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap, Eye, EyeOff } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { useAuth } from '@/hooks/useAuth';
 import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
+import { SorobanDisplay } from './SorobanDisplay';
 interface AbacusFlashCardProps {
   onComplete?: (correct: number, total: number) => void;
 }
@@ -193,6 +194,17 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     const saved = localStorage.getItem('flashCard_voiceEnabled');
     return saved !== null ? saved === 'true' : true;
   });
+  const [showSoroban, setShowSoroban] = useState(() => {
+    const saved = localStorage.getItem('flashCard_showSoroban');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [sorobanTheme, setSorobanTheme] = useState<'classic' | 'bamboo' | 'modern'>(() => {
+    const saved = localStorage.getItem('flashCard_sorobanTheme');
+    return (saved as 'classic' | 'bamboo' | 'modern') || 'bamboo';
+  });
+  
+  // Running result for Soroban display
+  const [runningTotal, setRunningTotal] = useState(0);
   
   // Game state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -415,12 +427,19 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setCurrentDisplayIndex(0);
     setIsDisplaying(true);
     
+    // Set initial running total for Soroban
+    if (numbers.length > 0) {
+      setRunningTotal(numbers[0]);
+    }
+    
     // Speak first number
     if (voiceEnabled && numbers.length > 0) {
       speakNumber(String(Math.abs(numbers[0])), true, true);
     }
     
     let index = 0;
+    let currentTotal = numbers[0];
+    
     displayIntervalRef.current = setInterval(() => {
       index++;
       if (index >= numbers.length) {
@@ -435,6 +454,11 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         }, showTime);
       } else {
         setCurrentDisplayIndex(index);
+        
+        // Update running total for Soroban display
+        currentTotal += numbers[index];
+        setRunningTotal(Math.max(0, currentTotal));
+        
         // Speak subsequent numbers
         if (voiceEnabled) {
           const num = numbers[index];
@@ -662,14 +686,36 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
         <Progress value={(currentProblem / problemCount) * 100} className="h-0.5 xs:h-1 rounded-none" />
 
         {/* Main Content - Conditional layout - Full height */}
-        <div className={`flex-1 min-h-[calc(100vh-80px)] overflow-y-auto flex flex-col items-center px-4 py-6 sm:py-10 justify-start pt-12 sm:pt-20 md:pt-24`}>
+        <div className={`flex-1 min-h-[calc(100vh-80px)] overflow-y-auto flex flex-col items-center px-4 py-6 sm:py-10 justify-start pt-8 sm:pt-12 md:pt-16`}>
           {isDisplaying && currentDisplayIndex >= 0 && currentDisplayIndex < displayNumbers.length && (
-            <div key={currentDisplayIndex} className="relative flex items-center justify-center w-full animate-zoom-pop">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[100px] xs:blur-[120px] sm:blur-[150px] scale-150 sm:scale-200 animate-pulse-slow" />
-              <div className="relative text-[160px] xs:text-[200px] sm:text-[300px] md:text-[380px] lg:text-[460px] font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 select-none drop-shadow-2xl text-center">
-                {displayNumbers[currentDisplayIndex] < 0 
-                  ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
-                  : `+${displayNumbers[currentDisplayIndex]}`}
+            <div key={currentDisplayIndex} className="relative flex flex-col items-center justify-center w-full gap-6 sm:gap-10">
+              {/* Soroban Display - Always visible during practice */}
+              {showSoroban && (
+                <div className="animate-scale-in">
+                  <SorobanDisplay
+                    number={runningTotal}
+                    size={window.innerWidth < 640 ? 'md' : 'lg'}
+                    columns={digitLevel === '3-digit' ? 3 : digitLevel === '2-digit' ? 2 : 1}
+                    showNumber={false}
+                    animated={true}
+                    theme={sorobanTheme}
+                    onBeadMove={() => playSound('bead')}
+                  />
+                </div>
+              )}
+              
+              {/* Number Display */}
+              <div className="relative animate-zoom-pop">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-amber-500/20 rounded-full blur-[80px] xs:blur-[100px] sm:blur-[120px] scale-150 animate-pulse-slow" />
+                <div className={`relative font-bold font-display leading-none tracking-tight text-emerald-700 dark:text-emerald-400 select-none drop-shadow-2xl text-center ${
+                  showSoroban 
+                    ? 'text-[100px] xs:text-[140px] sm:text-[180px] md:text-[220px] lg:text-[280px]' 
+                    : 'text-[160px] xs:text-[200px] sm:text-[300px] md:text-[380px] lg:text-[460px]'
+                }`}>
+                  {displayNumbers[currentDisplayIndex] < 0 
+                    ? `−${Math.abs(displayNumbers[currentDisplayIndex])}` 
+                    : `+${displayNumbers[currentDisplayIndex]}`}
+                </div>
               </div>
             </div>
           )}
@@ -856,8 +902,72 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                     <SelectItem value="20" className="text-xs xs:text-sm">20s</SelectItem>
                     <SelectItem value="30" className="text-xs xs:text-sm">30s</SelectItem>
                   </SelectContent>
-                </Select>
+              </Select>
               </div>
+            </div>
+
+            {/* Soroban Settings Row */}
+            <div className="bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="text-lg">🧮</div>
+                  <div>
+                    <Label className="text-xs xs:text-sm font-medium text-foreground">Soroban ko'rsatish</Label>
+                    <p className="text-[10px] xs:text-xs text-muted-foreground">Vizual abakus simulyatsiyasi</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={showSoroban}
+                  onCheckedChange={(checked) => {
+                    setShowSoroban(checked);
+                    localStorage.setItem('flashCard_showSoroban', String(checked));
+                  }}
+                />
+              </div>
+              
+              {showSoroban && (
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    variant={sorobanTheme === 'bamboo' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setSorobanTheme('bamboo');
+                      localStorage.setItem('flashCard_sorobanTheme', 'bamboo');
+                    }}
+                    className={`flex-1 h-8 text-xs rounded-lg ${
+                      sorobanTheme === 'bamboo' ? 'bg-emerald-600 hover:bg-emerald-700' : 'hover:border-emerald-500/50'
+                    }`}
+                  >
+                    🎋 Bambuq
+                  </Button>
+                  <Button
+                    variant={sorobanTheme === 'classic' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setSorobanTheme('classic');
+                      localStorage.setItem('flashCard_sorobanTheme', 'classic');
+                    }}
+                    className={`flex-1 h-8 text-xs rounded-lg ${
+                      sorobanTheme === 'classic' ? 'bg-amber-600 hover:bg-amber-700' : 'hover:border-amber-500/50'
+                    }`}
+                  >
+                    🏛️ Klassik
+                  </Button>
+                  <Button
+                    variant={sorobanTheme === 'modern' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setSorobanTheme('modern');
+                      localStorage.setItem('flashCard_sorobanTheme', 'modern');
+                    }}
+                    className={`flex-1 h-8 text-xs rounded-lg ${
+                      sorobanTheme === 'modern' ? 'bg-primary hover:bg-primary/90' : 'hover:border-primary/50'
+                    }`}
+                  >
+                    ✨ Zamonaviy
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Speed & Problems - Compact horizontal scroll */}
