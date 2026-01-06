@@ -73,7 +73,38 @@ const RULES_FORMULA_5: Record<number, { add: number[]; subtract: number[] }> = {
   9: { add: [], subtract: [] },
 };
 
-// Formula 10+ (katta do'stlar qo'shish)
+// Formula 10 (katta do'stlar) - Sizning bergan jadvallaringiz asosida
+// Katta do'st qo'shishda: +N → +10 - (10-N)
+// Katta do'st ayirishda: -N → -10 + (10-N)
+// MUHIM: Ayirish faqat o'nliklar > 0 bo'lganda ishlaydi (X>0)
+
+// Katta do'st qoidalari - har bir delta uchun qaysi birlik raqamida ishlashini ko'rsatadi
+const KATTA_DOST_ADD: Record<number, number[]> = {
+  1: [9],           // +1: faqat x9 da
+  2: [8, 9],        // +2: x8, x9 da
+  3: [7, 8, 9],     // +3: x7, x8, x9 da
+  4: [6, 7, 8, 9],  // +4: x6, x7, x8, x9 da
+  5: [5, 6, 7, 8, 9], // +5: x5-x9 da
+  6: [4, 9],        // +6: x4, x9 da
+  7: [3, 4, 8, 9],  // +7: x3, x4, x8, x9 da
+  8: [2, 3, 4, 7, 8, 9], // +8: x2-x4, x7-x9 da (x3,x4,x8,x9 faqat X>0)
+  9: [1, 2, 3, 4, 6, 7, 8, 9], // +9: x1-x4 (x4 X>0), x6-x9 (x9 X>0)
+};
+
+// Ayirish faqat o'nliklar mavjud bo'lganda ishlaydi
+const KATTA_DOST_SUB: Record<number, number[]> = {
+  1: [0],           // -1: x0 da (X>0)
+  2: [0, 1],        // -2: x0, x1 da (X>0)
+  3: [0, 1, 2],     // -3: x0, x1, x2 da (X>0)
+  4: [0, 1, 2, 3],  // -4: x0-x3 da (X>0)
+  5: [0, 1, 2, 3, 4], // -5: x0-x4 da (X>0)
+  6: [0, 5],        // -6: x0, x5 da (X>0)
+  7: [0, 1, 5, 6],  // -7: x0, x1, x5, x6 da (X>0)
+  8: [0, 1, 2, 5, 6, 7], // -8: x0-x2, x5-x7 da (X>0)
+  9: [0, 1, 2, 3, 5, 6, 7, 8], // -9: x0-x3, x5-x8 da (X>0)
+};
+
+// Formula 10+ (katta do'stlar qo'shish) - statik jadval
 const RULES_FORMULA_10_PLUS: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [] },
   1: { add: [9], subtract: [] },
@@ -87,7 +118,7 @@ const RULES_FORMULA_10_PLUS: Record<number, { add: number[]; subtract: number[] 
   9: { add: [1, 2, 3, 4, 5, 6, 7, 8, 9], subtract: [] },
 };
 
-// Formula 10- (katta do'stlar ayirish)
+// Formula 10- (katta do'stlar ayirish) - statik jadval
 const RULES_FORMULA_10_MINUS: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
   1: { add: [], subtract: [2, 3, 4, 5, 6, 7, 8, 9] },
@@ -573,6 +604,54 @@ export const NumberTrainer = () => {
     }
     
     const lastDigit = Math.abs(currentResult) % 10;
+    const tens = Math.floor(Math.abs(currentResult) / 10);
+    const hasHigherTens = tens > 0;
+    
+    // Katta do'st uchun maxsus tekshiruv
+    if (formulaType === 'formula10plus') {
+      const possibleOperations: { number: number; isAdd: boolean }[] = [];
+      
+      // Qo'shish - KATTA_DOST_ADD jadvaliga qarab
+      for (let delta = 1; delta <= 9; delta++) {
+        if (KATTA_DOST_ADD[delta]?.includes(lastDigit)) {
+          // X>0 sharti tekshirish (ba'zi holatlarda)
+          if (delta === 4 && lastDigit === 9 && !hasHigherTens) continue;
+          if (delta === 8 && [3, 4, 8, 9].includes(lastDigit) && !hasHigherTens) continue;
+          if (delta === 9 && lastDigit === 4 && !hasHigherTens) continue;
+          if (delta === 9 && lastDigit === 9 && !hasHigherTens) continue;
+          possibleOperations.push({ number: delta, isAdd: true });
+        }
+      }
+      
+      // Ayirish - KATTA_DOST_SUB jadvaliga qarab (faqat X>0 bo'lganda)
+      if (hasHigherTens) {
+        for (let delta = 1; delta <= 9; delta++) {
+          if (KATTA_DOST_SUB[delta]?.includes(lastDigit)) {
+            possibleOperations.push({ number: delta, isAdd: false });
+          }
+        }
+      }
+      
+      if (possibleOperations.length === 0) return null;
+      
+      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      let finalNumber = randomOp.number;
+      
+      if (digitCount > 1) {
+        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+        finalNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
+      }
+      
+      if (randomOp.isAdd) {
+        runningResultRef.current += finalNumber;
+      } else {
+        runningResultRef.current -= finalNumber;
+      }
+      
+      setIsAddition(randomOp.isAdd);
+      return { num: finalNumber, isAdd: randomOp.isAdd };
+    }
+    
     const rules = FORMULA_RULES[formulaType]?.[lastDigit];
 
     if (!rules) return null;
@@ -583,8 +662,11 @@ export const NumberTrainer = () => {
       possibleOperations.push({ number: num, isAdd: true });
     });
 
+    // Ayirish uchun natija manfiy bo'lmasligi kerak
     rules.subtract.forEach(num => {
-      possibleOperations.push({ number: num, isAdd: false });
+      if (currentResult >= num) {
+        possibleOperations.push({ number: num, isAdd: false });
+      }
     });
 
     if (possibleOperations.length === 0) return null;
