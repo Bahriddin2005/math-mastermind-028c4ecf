@@ -748,6 +748,56 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
+    // MANFIY SONLAR rejimi - manfiy natijalar bilan ishlash
+    if (formulaType === 'manfiy') {
+      const possibleOperations: { number: number; isAdd: boolean }[] = [];
+      
+      // Qo'shish va ayirish ikkalasini ham ruxsat berish
+      // Agar natija musbat bo'lsa - ayirish ustunlik oladi
+      // Agar natija manfiy bo'lsa - qo'shish ustunlik oladi
+      
+      if (currentResult >= 0) {
+        // Musbat holatda - ayirish mumkin (manfiy natija bo'lishi mumkin)
+        for (let num = 1; num <= 9; num++) {
+          possibleOperations.push({ number: num, isAdd: false });
+        }
+        // Ba'zi qo'shishlar ham bo'lsin
+        for (let num = 1; num <= Math.min(5, 9 - lastDigit); num++) {
+          possibleOperations.push({ number: num, isAdd: true });
+        }
+      } else {
+        // Manfiy holatda - qo'shish mumkin (musbat tomon harakat)
+        for (let num = 1; num <= 9; num++) {
+          possibleOperations.push({ number: num, isAdd: true });
+        }
+        // Ba'zi ayirishlar ham bo'lsin (yanada manfiy)
+        if (Math.random() > 0.7) {
+          for (let num = 1; num <= 5; num++) {
+            possibleOperations.push({ number: num, isAdd: false });
+          }
+        }
+      }
+      
+      if (possibleOperations.length === 0) return null;
+      
+      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      
+      let finalNumber = randomOp.number;
+      if (digitCount > 1) {
+        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+        finalNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
+      }
+      
+      if (randomOp.isAdd) {
+        runningResultRef.current += finalNumber;
+      } else {
+        runningResultRef.current -= finalNumber;
+      }
+      
+      setIsAddition(randomOp.isAdd);
+      return { num: finalNumber, isAdd: randomOp.isAdd };
+    }
+    
     const rules = FORMULA_RULES[formulaType]?.[lastDigit];
 
     if (!rules) return null;
@@ -758,7 +808,7 @@ export const NumberTrainer = () => {
       possibleOperations.push({ number: num, isAdd: true });
     });
 
-    // Ayirish uchun natija manfiy bo'lmasligi kerak
+    // Ayirish uchun natija manfiy bo'lmasligi kerak (manfiy rejimi uchun emas)
     rules.subtract.forEach(num => {
       if (currentResult >= num) {
         possibleOperations.push({ number: num, isAdd: false });
