@@ -435,6 +435,7 @@ export const NumberTrainer = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const answerStartTimeRef = useRef<number>(0);
+  const lastWasKattaDostRef = useRef(false); // Mix formula uchun - ketma-ket katta do'st cheklovi
 
   // Mount va admin tekshirish
   useEffect(() => {
@@ -652,6 +653,101 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
+    // MIX FORMULA (hammasi) - Yapon metodologiyasi
+    // Qoidalar: 1) Ketma-ket 2 ta katta do'st yo'q
+    //           2) Formulasiz, kichik do'st, katta do'st aralash
+    if (formulaType === 'hammasi') {
+      const possibleOperations: { number: number; isAdd: boolean; isKattaDost: boolean }[] = [];
+      
+      // 1. FORMULASIZ amallar
+      const basicRules = RULES_BASIC[lastDigit];
+      if (basicRules) {
+        basicRules.add.forEach(num => {
+          possibleOperations.push({ number: num, isAdd: true, isKattaDost: false });
+        });
+        basicRules.subtract.forEach(num => {
+          if (currentResult >= num) {
+            possibleOperations.push({ number: num, isAdd: false, isKattaDost: false });
+          }
+        });
+      }
+      
+      // 2. KICHIK DO'ST (Formula 5) amallar
+      const smallFriendRules = RULES_FORMULA_5[lastDigit];
+      if (smallFriendRules) {
+        smallFriendRules.add.forEach(num => {
+          if (!possibleOperations.some(op => op.number === num && op.isAdd)) {
+            possibleOperations.push({ number: num, isAdd: true, isKattaDost: false });
+          }
+        });
+        smallFriendRules.subtract.forEach(num => {
+          if (currentResult >= num && !possibleOperations.some(op => op.number === num && !op.isAdd)) {
+            possibleOperations.push({ number: num, isAdd: false, isKattaDost: false });
+          }
+        });
+      }
+      
+      // 3. KATTA DO'ST (Formula 10) - faqat oldingi amal katta do'st bo'lmasa
+      if (!lastWasKattaDostRef.current) {
+        // Qo'shish
+        for (let delta = 1; delta <= 9; delta++) {
+          if (KATTA_DOST_ADD[delta]?.includes(lastDigit)) {
+            // X>0 sharti tekshirish
+            if (delta === 4 && lastDigit === 9 && !hasHigherTens) continue;
+            if (delta === 8 && [3, 4, 8, 9].includes(lastDigit) && !hasHigherTens) continue;
+            if (delta === 9 && lastDigit === 4 && !hasHigherTens) continue;
+            if (delta === 9 && lastDigit === 9 && !hasHigherTens) continue;
+            if (!possibleOperations.some(op => op.number === delta && op.isAdd)) {
+              possibleOperations.push({ number: delta, isAdd: true, isKattaDost: true });
+            }
+          }
+        }
+        // Ayirish (faqat X>0)
+        if (hasHigherTens) {
+          for (let delta = 1; delta <= 9; delta++) {
+            if (KATTA_DOST_SUB[delta]?.includes(lastDigit)) {
+              if (!possibleOperations.some(op => op.number === delta && !op.isAdd)) {
+                possibleOperations.push({ number: delta, isAdd: false, isKattaDost: true });
+              }
+            }
+          }
+        }
+      }
+      
+      if (possibleOperations.length === 0) return null;
+      
+      // Weighted selection: katta do'stni kamroq tanlash (25% ehtimollik)
+      const nonKattaDostOps = possibleOperations.filter(op => !op.isKattaDost);
+      const kattaDostOps = possibleOperations.filter(op => op.isKattaDost);
+      
+      let randomOp: { number: number; isAdd: boolean; isKattaDost: boolean };
+      if (nonKattaDostOps.length > 0 && Math.random() > 0.25) {
+        randomOp = nonKattaDostOps[Math.floor(Math.random() * nonKattaDostOps.length)];
+      } else if (kattaDostOps.length > 0) {
+        randomOp = kattaDostOps[Math.floor(Math.random() * kattaDostOps.length)];
+      } else {
+        randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      }
+      
+      // Ketma-ket katta do'st cheklovini yangilash
+      lastWasKattaDostRef.current = randomOp.isKattaDost;
+      
+      let finalNumber = randomOp.number;
+      if (digitCount > 1) {
+        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+        finalNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
+      }
+      
+      if (randomOp.isAdd) {
+        runningResultRef.current += finalNumber;
+      } else {
+        runningResultRef.current -= finalNumber;
+      }
+      
+      setIsAddition(randomOp.isAdd);
+      return { num: finalNumber, isAdd: randomOp.isAdd };
+    }
+    
     const rules = FORMULA_RULES[formulaType]?.[lastDigit];
 
     if (!rules) return null;
@@ -739,6 +835,7 @@ export const NumberTrainer = () => {
     
     runningResultRef.current = initialResult;
     countRef.current = 1;
+    lastWasKattaDostRef.current = false; // Mix formula uchun reset
     startTimeRef.current = Date.now();
 
     setCurrentDisplay(String(initialResult));
