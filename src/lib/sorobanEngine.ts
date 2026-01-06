@@ -105,175 +105,202 @@ const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }>
 };
 
 // ============= KATTA DO'ST (FORMULA 10) QOIDALARI =============
-// Sizning bergan jadvallaringiz asosida - x=tens digit (o'nliklar), ones=birliklar
+/**
+ * Siz bergan jadvallar asosida:
+ * - xN = birliklar raqami (N)
+ * - X=0 degani o'nliklar 0 (masalan: 0, 1, 2, ... 9)
+ * - X>0 degani o'nliklar 0 dan katta (masalan: 10, 11, 12, ... 19, 20, ...)
+ * 
+ * Katta do'st qo'shishda: +N → +10 -komplement
+ * Katta do'st ayirishda: -N → -10 +komplement
+ */
 
 /**
  * KATTA DO'ST +9/-9 QOIDASI
- * Agar x0 bo'lsa (x=0): qo'shish ❌, ayirish ❌
- * Agar x0 bo'lsa (x>0): qo'shish ❌, ayirish 9 ✅
- * Agar x1 bo'lsa (x=0): qo'shish 9 ✅, ayirish ❌
- * ...
+ * Jadvalingizga to'liq mos:
  */
 const getBigFriendRules_9 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
-  // +9: Joriy natijaga 9 qo'shish mumkinmi?
-  // -9: Joriy natijadan 9 ayirish mumkinmi?
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: true, canSubtract: hasHigherTens };
-    case 2: return { canAdd: true, canSubtract: hasHigherTens };
-    case 3: return { canAdd: true, canSubtract: hasHigherTens };
-    case 4: return { canAdd: hasHigherTens, canSubtract: false }; // x4 (x>0) qo'shish 9, ayirish ❌
-    case 5: return { canAdd: false, canSubtract: hasHigherTens };
-    case 6: return { canAdd: true, canSubtract: hasHigherTens };
-    case 7: return { canAdd: true, canSubtract: hasHigherTens };
-    case 8: return { canAdd: true, canSubtract: hasHigherTens };
-    case 9: return { canAdd: hasHigherTens, canSubtract: false }; // x9 da qo'shish yo'q
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: true, canSubtract: hasHigherTens };           // x1: qo'sh ✅, ayir X>0
+    case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
+    case 3: return { canAdd: true, canSubtract: hasHigherTens };           // x3: qo'sh ✅, ayir X>0
+    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
+    case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
+    case 6: return { canAdd: true, canSubtract: hasHigherTens };           // x6: qo'sh ✅, ayir X>0
+    case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
+    case 8: return { canAdd: true, canSubtract: hasHigherTens };           // x8: qo'sh ✅, ayir X>0
+    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +8/-8 QOIDASI
+ */
 const getBigFriendRules_8 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: true, canSubtract: hasHigherTens };
-    case 3: return { canAdd: hasHigherTens, canSubtract: false };
-    case 4: return { canAdd: hasHigherTens, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: hasHigherTens };
-    case 6: return { canAdd: false, canSubtract: hasHigherTens };
-    case 7: return { canAdd: true, canSubtract: hasHigherTens };
-    case 8: return { canAdd: hasHigherTens, canSubtract: false };
-    case 9: return { canAdd: hasHigherTens, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
+    case 3: return { canAdd: hasHigherTens, canSubtract: false };          // x3: qo'sh X>0, ayir ❌
+    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
+    case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
+    case 6: return { canAdd: false, canSubtract: hasHigherTens };          // x6: qo'sh ❌, ayir X>0
+    case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
+    case 8: return { canAdd: hasHigherTens, canSubtract: false };          // x8: qo'sh X>0, ayir ❌
+    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +7/-7 QOIDASI
+ */
 const getBigFriendRules_7 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: false, canSubtract: false };
-    case 3: return { canAdd: true, canSubtract: false };
-    case 4: return { canAdd: true, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: hasHigherTens };
-    case 6: return { canAdd: false, canSubtract: hasHigherTens };
-    case 7: return { canAdd: false, canSubtract: false };
-    case 8: return { canAdd: true, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: false, canSubtract: false };                  // x2: qo'sh ❌, ayir ❌
+    case 3: return { canAdd: true, canSubtract: false };                   // x3: qo'sh ✅, ayir ❌
+    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅, ayir ❌
+    case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
+    case 6: return { canAdd: false, canSubtract: hasHigherTens };          // x6: qo'sh ❌, ayir X>0
+    case 7: return { canAdd: false, canSubtract: false };                  // x7: qo'sh ❌, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +6/-6 QOIDASI
+ */
 const getBigFriendRules_6 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: false };
-    case 2: return { canAdd: false, canSubtract: false };
-    case 3: return { canAdd: false, canSubtract: false };
-    case 4: return { canAdd: true, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: hasHigherTens };
-    case 6: return { canAdd: false, canSubtract: false };
-    case 7: return { canAdd: false, canSubtract: false };
-    case 8: return { canAdd: false, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: false };                  // x1: qo'sh ❌, ayir ❌
+    case 2: return { canAdd: false, canSubtract: false };                  // x2: qo'sh ❌, ayir ❌
+    case 3: return { canAdd: false, canSubtract: false };                  // x3: qo'sh ❌, ayir ❌
+    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅, ayir ❌
+    case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
+    case 6: return { canAdd: false, canSubtract: false };                  // x6: qo'sh ❌, ayir ❌
+    case 7: return { canAdd: false, canSubtract: false };                  // x7: qo'sh ❌, ayir ❌
+    case 8: return { canAdd: false, canSubtract: false };                  // x8: qo'sh ❌, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +5/-5 QOIDASI
+ */
 const getBigFriendRules_5 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: false, canSubtract: hasHigherTens };
-    case 3: return { canAdd: false, canSubtract: hasHigherTens };
-    case 4: return { canAdd: false, canSubtract: hasHigherTens };
-    case 5: return { canAdd: true, canSubtract: false };
-    case 6: return { canAdd: true, canSubtract: false };
-    case 7: return { canAdd: true, canSubtract: false };
-    case 8: return { canAdd: true, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: false, canSubtract: hasHigherTens };          // x2: qo'sh ❌, ayir X>0
+    case 3: return { canAdd: false, canSubtract: hasHigherTens };          // x3: qo'sh ❌, ayir X>0
+    case 4: return { canAdd: false, canSubtract: hasHigherTens };          // x4: qo'sh ❌, ayir X>0
+    case 5: return { canAdd: true, canSubtract: false };                   // x5: qo'sh ✅, ayir ❌
+    case 6: return { canAdd: true, canSubtract: false };                   // x6: qo'sh ✅, ayir ❌
+    case 7: return { canAdd: true, canSubtract: false };                   // x7: qo'sh ✅, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +4/-4 QOIDASI
+ */
 const getBigFriendRules_4 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: false, canSubtract: hasHigherTens };
-    case 3: return { canAdd: false, canSubtract: hasHigherTens };
-    case 4: return { canAdd: false, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: false };
-    case 6: return { canAdd: true, canSubtract: false };
-    case 7: return { canAdd: true, canSubtract: false };
-    case 8: return { canAdd: true, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: false, canSubtract: hasHigherTens };          // x2: qo'sh ❌, ayir X>0
+    case 3: return { canAdd: false, canSubtract: hasHigherTens };          // x3: qo'sh ❌, ayir X>0
+    case 4: return { canAdd: false, canSubtract: false };                  // x4: qo'sh ❌, ayir ❌
+    case 5: return { canAdd: false, canSubtract: false };                  // x5: qo'sh ❌, ayir ❌
+    case 6: return { canAdd: true, canSubtract: false };                   // x6: qo'sh ✅, ayir ❌
+    case 7: return { canAdd: true, canSubtract: false };                   // x7: qo'sh ✅, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +3/-3 QOIDASI
+ */
 const getBigFriendRules_3 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: false, canSubtract: hasHigherTens };
-    case 3: return { canAdd: false, canSubtract: false };
-    case 4: return { canAdd: false, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: false };
-    case 6: return { canAdd: false, canSubtract: false };
-    case 7: return { canAdd: true, canSubtract: false };
-    case 8: return { canAdd: true, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: false, canSubtract: hasHigherTens };          // x2: qo'sh ❌, ayir X>0
+    case 3: return { canAdd: false, canSubtract: false };                  // x3: qo'sh ❌, ayir ❌
+    case 4: return { canAdd: false, canSubtract: false };                  // x4: qo'sh ❌, ayir ❌
+    case 5: return { canAdd: false, canSubtract: false };                  // x5: qo'sh ❌, ayir ❌
+    case 6: return { canAdd: false, canSubtract: false };                  // x6: qo'sh ❌, ayir ❌
+    case 7: return { canAdd: true, canSubtract: false };                   // x7: qo'sh ✅, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +2/-2 QOIDASI
+ */
 const getBigFriendRules_2 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: hasHigherTens };
-    case 2: return { canAdd: false, canSubtract: false };
-    case 3: return { canAdd: false, canSubtract: false };
-    case 4: return { canAdd: false, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: false };
-    case 6: return { canAdd: false, canSubtract: false };
-    case 7: return { canAdd: false, canSubtract: false };
-    case 8: return { canAdd: true, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
+    case 2: return { canAdd: false, canSubtract: false };                  // x2: qo'sh ❌, ayir ❌
+    case 3: return { canAdd: false, canSubtract: false };                  // x3: qo'sh ❌, ayir ❌
+    case 4: return { canAdd: false, canSubtract: false };                  // x4: qo'sh ❌, ayir ❌
+    case 5: return { canAdd: false, canSubtract: false };                  // x5: qo'sh ❌, ayir ❌
+    case 6: return { canAdd: false, canSubtract: false };                  // x6: qo'sh ❌, ayir ❌
+    case 7: return { canAdd: false, canSubtract: false };                  // x7: qo'sh ❌, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
 
+/**
+ * KATTA DO'ST +1/-1 QOIDASI
+ */
 const getBigFriendRules_1 = (tens: number, ones: number): { canAdd: boolean; canSubtract: boolean } => {
   const hasHigherTens = tens > 0;
   
   switch (ones) {
-    case 0: return { canAdd: false, canSubtract: hasHigherTens };
-    case 1: return { canAdd: false, canSubtract: false };
-    case 2: return { canAdd: false, canSubtract: false };
-    case 3: return { canAdd: false, canSubtract: false };
-    case 4: return { canAdd: false, canSubtract: false };
-    case 5: return { canAdd: false, canSubtract: false };
-    case 6: return { canAdd: false, canSubtract: false };
-    case 7: return { canAdd: false, canSubtract: false };
-    case 8: return { canAdd: false, canSubtract: false };
-    case 9: return { canAdd: true, canSubtract: false };
+    case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
+    case 1: return { canAdd: false, canSubtract: false };                  // x1: qo'sh ❌, ayir ❌
+    case 2: return { canAdd: false, canSubtract: false };                  // x2: qo'sh ❌, ayir ❌
+    case 3: return { canAdd: false, canSubtract: false };                  // x3: qo'sh ❌, ayir ❌
+    case 4: return { canAdd: false, canSubtract: false };                  // x4: qo'sh ❌, ayir ❌
+    case 5: return { canAdd: false, canSubtract: false };                  // x5: qo'sh ❌, ayir ❌
+    case 6: return { canAdd: false, canSubtract: false };                  // x6: qo'sh ❌, ayir ❌
+    case 7: return { canAdd: false, canSubtract: false };                  // x7: qo'sh ❌, ayir ❌
+    case 8: return { canAdd: false, canSubtract: false };                  // x8: qo'sh ❌, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
