@@ -770,33 +770,22 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
-    // MANFIY SONLAR rejimi - manfiy natijalar bilan ishlash
+    // MANFIY SONLAR rejimi - barcha raqamlar (1-9) qo'shish va ayirish uchun ruxsat
+    // Natija oralig'i: -9 dan 9 gacha (1 xonali uchun), -99 dan 99 gacha (2 xonali uchun)
     if (formulaType === 'manfiy') {
       const possibleOperations: { number: number; isAdd: boolean }[] = [];
+      const maxValue = Math.pow(10, digitCount) - 1; // 9, 99, 999...
+      const minValue = -maxValue; // -9, -99, -999...
       
-      // Qo'shish va ayirish ikkalasini ham ruxsat berish
-      // Agar natija musbat bo'lsa - ayirish ustunlik oladi
-      // Agar natija manfiy bo'lsa - qo'shish ustunlik oladi
-      
-      if (currentResult >= 0) {
-        // Musbat holatda - ayirish mumkin (manfiy natija bo'lishi mumkin)
-        for (let num = 1; num <= 9; num++) {
+      // Barcha raqamlar (1-9) qo'shish va ayirish uchun ruxsat
+      for (let num = 1; num <= 9; num++) {
+        // Qo'shish - natija maxValue dan oshmasa
+        if (currentResult + num <= maxValue) {
+          possibleOperations.push({ number: num, isAdd: true });
+        }
+        // Ayirish - natija minValue dan tushmasa
+        if (currentResult - num >= minValue) {
           possibleOperations.push({ number: num, isAdd: false });
-        }
-        // Ba'zi qo'shishlar ham bo'lsin
-        for (let num = 1; num <= Math.min(5, 9 - lastDigit); num++) {
-          possibleOperations.push({ number: num, isAdd: true });
-        }
-      } else {
-        // Manfiy holatda - qo'shish mumkin (musbat tomon harakat)
-        for (let num = 1; num <= 9; num++) {
-          possibleOperations.push({ number: num, isAdd: true });
-        }
-        // Ba'zi ayirishlar ham bo'lsin (yanada manfiy)
-        if (Math.random() > 0.7) {
-          for (let num = 1; num <= 5; num++) {
-            possibleOperations.push({ number: num, isAdd: false });
-          }
         }
       }
       
@@ -807,7 +796,13 @@ export const NumberTrainer = () => {
       let finalNumber = randomOp.number;
       if (digitCount > 1) {
         const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
-        finalNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
+        const proposedNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
+        // Natija chegaradan chiqmasligini tekshirish
+        if (randomOp.isAdd && currentResult + proposedNumber <= maxValue) {
+          finalNumber = proposedNumber;
+        } else if (!randomOp.isAdd && currentResult - proposedNumber >= minValue) {
+          finalNumber = proposedNumber;
+        }
       }
       
       if (randomOp.isAdd) {
