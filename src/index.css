@@ -914,3 +914,17 @@
   background-size: 200% 100%;
   animation: shimmer-fast 1s linear infinite;
 }
+
+/* Subtle bounce animation for navbar */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 1.5s ease-in-out infinite;
+}
