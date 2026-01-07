@@ -125,20 +125,26 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/30 dark:border-border/20 bg-background/80 dark:bg-background/90 backdrop-blur-xl safe-top">
-        {/* Gradient line at top - Enhanced for dark mode */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/50 dark:via-primary/70 to-transparent" />
+      <header className="sticky top-0 z-50 w-full safe-top">
+        {/* Glass morphism background with gradient border */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl" />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         
-        <div className="container flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 md:px-8">
-          {/* Logo with hover effect */}
+        {/* Animated glow effect */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse" />
+        
+        <div className="container relative flex h-16 sm:h-18 items-center justify-between px-3 sm:px-4 md:px-8">
+          {/* Logo with animated hover */}
           <Link to="/" className="group relative flex-shrink-0">
-            <div className="absolute -inset-2 rounded-xl bg-primary/5 dark:bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Logo size="md" />
+            <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
+            <div className="relative">
+              <Logo size="md" />
+            </div>
           </Link>
           
-          {/* Center Navigation - Desktop only - Enhanced dark mode */}
-          <nav className="hidden lg:flex items-center gap-1 bg-secondary/50 dark:bg-secondary/30 rounded-full px-1.5 py-1 border border-border/30 dark:border-border/20 shadow-sm dark:shadow-lg dark:shadow-primary/5">
-            {navItems.slice(0, 4).map((item) => (
+          {/* Center Navigation - Desktop only - Premium glass design */}
+          <nav className="hidden lg:flex items-center gap-0.5 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-md rounded-2xl px-2 py-1.5 border border-border/40 shadow-lg shadow-primary/5">
+            {navItems.slice(0, 5).map((item, index) => (
               <NavButton 
                 key={item.path}
                 active={isActive(item.path)} 
@@ -150,33 +156,33 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
             ))}
           </nav>
           
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Desktop: Train button for non-logged users - Enhanced dark mode */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop: Start button for non-logged users */}
             {!user && (
               <Button 
                 variant="default" 
                 size="sm"
                 onClick={() => navigate('/auth')}
-                className="hidden sm:flex gap-2 h-10 px-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-glow dark:shadow-lg dark:shadow-primary/30 touch-target"
+                className="hidden sm:flex gap-2 h-11 px-5 rounded-xl bg-gradient-to-r from-primary via-primary to-kid-purple hover:opacity-90 shadow-lg shadow-primary/30 transition-all duration-300 hover:scale-[1.02] touch-target"
               >
-                <Sparkles className="h-4 w-4" />
-                <span className="text-sm font-semibold">Boshlash</span>
+                <Sparkles className="h-4 w-4 animate-pulse" />
+                <span className="text-sm font-bold">Boshlash</span>
               </Button>
             )}
 
-            {/* Theme toggle - Enhanced dark mode */}
+            {/* Theme toggle - Premium design */}
             {mounted && (
               <Button 
                 variant="ghost" 
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
-                className="h-10 w-10 rounded-full hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-colors touch-target"
+                className="h-11 w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 hover:scale-[1.05] touch-target"
               >
                 {theme === 'dark' ? (
-                  <Sun className="h-5 w-5 text-warning transition-transform hover:rotate-45" />
+                  <Sun className="h-5 w-5 text-warning transition-transform duration-500 hover:rotate-180" />
                 ) : (
-                  <Moon className="h-5 w-5 transition-transform hover:-rotate-12" />
+                  <Moon className="h-5 w-5 transition-transform duration-500 hover:-rotate-45" />
                 )}
               </Button>
             )}
@@ -187,49 +193,58 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               size="icon"
               onClick={onToggleSound}
               aria-label={soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
-              className="hidden sm:flex h-10 w-10 rounded-full hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-colors touch-target"
+              className="hidden sm:flex h-11 w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 hover:scale-[1.05] touch-target"
             >
               {soundEnabled ? (
-                <Volume2 className="h-5 w-5" />
+                <Volume2 className="h-5 w-5 text-kid-green" />
               ) : (
                 <VolumeX className="h-5 w-5 text-muted-foreground" />
               )}
             </Button>
 
-            {/* User menu - Desktop - Enhanced dark mode */}
+            {/* User menu - Desktop - Premium glass design */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
-                    className="hidden sm:flex gap-2 h-11 px-2 pr-3 rounded-full bg-secondary/50 dark:bg-secondary/30 hover:bg-secondary/80 dark:hover:bg-secondary/50 border border-border/30 dark:border-border/20 transition-all touch-target"
+                    className="hidden sm:flex gap-3 h-12 px-3 pr-4 rounded-2xl bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-md hover:from-primary/10 hover:to-accent/10 border border-border/40 hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] touch-target group"
                   >
-                    <Avatar className="h-8 w-8 border-2 border-primary/30 dark:border-primary/40">
-                      <AvatarImage src={profile?.avatar_url || undefined} />
-                      <AvatarFallback className="bg-primary/10 dark:bg-primary/20 text-primary text-sm font-bold">
-                        {profile?.username?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden md:inline text-sm font-medium max-w-[100px] truncate">
-                      {profile?.username || 'Profil'}
-                    </span>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <div className="relative">
+                      <Avatar className="h-9 w-9 border-2 border-primary/40 ring-2 ring-primary/20 ring-offset-2 ring-offset-background transition-all group-hover:ring-primary/40">
+                        <AvatarImage src={profile?.avatar_url || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-primary to-kid-purple text-primary-foreground text-sm font-bold">
+                          {profile?.username?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-kid-green rounded-full border-2 border-background" />
+                    </div>
+                    <div className="hidden md:flex flex-col items-start">
+                      <span className="text-sm font-bold max-w-[100px] truncate">
+                        {profile?.username || 'Profil'}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Trophy className="h-2.5 w-2.5 text-warning" />
+                        {profile?.total_score || 0} ball
+                      </span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-300 group-hover:rotate-180" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-60 p-2 bg-card dark:bg-card/95 border-border/40 dark:border-border/20 shadow-xl dark:shadow-2xl dark:shadow-primary/10">
-                  {/* User info header - Dark mode enhanced */}
-                  <div className="flex items-center gap-3 p-3 mb-2 rounded-xl bg-secondary/50 dark:bg-secondary/30 border border-border/20">
-                    <Avatar className="h-12 w-12 border-2 border-primary/30 dark:border-primary/40">
+                <DropdownMenuContent align="end" className="w-64 p-3 bg-card/95 backdrop-blur-xl border-border/30 shadow-2xl shadow-primary/10 rounded-2xl">
+                  {/* User info header - Premium design */}
+                  <div className="flex items-center gap-3 p-3 mb-3 rounded-xl bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 border border-primary/20">
+                    <Avatar className="h-12 w-12 border-2 border-primary/40 ring-2 ring-primary/20">
                       <AvatarImage src={profile?.avatar_url || undefined} />
-                      <AvatarFallback className="bg-primary/10 dark:bg-primary/20 text-primary text-lg font-bold">
+                      <AvatarFallback className="bg-gradient-to-br from-primary to-kid-purple text-primary-foreground text-lg font-bold">
                         {profile?.username?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-base truncate">{profile?.username || 'Foydalanuvchi'}</p>
+                      <p className="font-bold text-base truncate">{profile?.username || 'Foydalanuvchi'}</p>
                       <div className="flex items-center gap-1.5">
                         <Trophy className="h-3.5 w-3.5 text-warning" />
-                        <span className="text-sm text-muted-foreground">{profile?.total_score || 0} ball</span>
+                        <span className="text-sm text-muted-foreground font-medium">{profile?.total_score || 0} ball</span>
                       </div>
                     </div>
                   </div>
@@ -239,36 +254,46 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                       <DropdownMenuItem 
                         key={item.path}
                         onClick={() => navigate(item.path)} 
-                        className="gap-3 py-3 rounded-xl cursor-pointer touch-target hover:bg-secondary dark:hover:bg-secondary/60"
+                        className="gap-3 py-2.5 px-3 rounded-xl cursor-pointer touch-target hover:bg-secondary/80 transition-all duration-200"
                       >
-                        <item.icon className="h-5 w-5 text-muted-foreground" />
-                        <span className="text-base">{item.label}</span>
+                        <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                          item.highlight ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
+                        }`}>
+                          <item.icon className="h-4 w-4" />
+                        </div>
+                        <span className="text-sm font-medium">{item.label}</span>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuGroup>
                   
-                  <DropdownMenuSeparator className="my-2 bg-border/50 dark:bg-border/30" />
+                  <DropdownMenuSeparator className="my-2 bg-border/30" />
                   
-                  <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-3 py-3 rounded-xl cursor-pointer touch-target hover:bg-secondary dark:hover:bg-secondary/60">
-                    <Settings className="h-5 w-5 text-muted-foreground" />
-                    <span className="text-base">Sozlamalar</span>
+                  <DropdownMenuItem onClick={() => navigate('/settings')} className="gap-3 py-2.5 px-3 rounded-xl cursor-pointer touch-target hover:bg-secondary/80 transition-all duration-200">
+                    <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
+                      <Settings className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">Sozlamalar</span>
                   </DropdownMenuItem>
                   
                   {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-3 py-3 rounded-xl cursor-pointer touch-target hover:bg-primary/10 dark:hover:bg-primary/20">
-                      <ShieldCheck className="h-5 w-5 text-primary" />
-                      <span className="text-base text-primary font-medium">Admin panel</span>
-                      <Badge variant="secondary" className="ml-auto text-xs px-2 py-0.5 bg-primary/10 dark:bg-primary/20 text-primary">
+                    <DropdownMenuItem onClick={() => navigate('/admin')} className="gap-3 py-2.5 px-3 rounded-xl cursor-pointer touch-target hover:bg-primary/10 transition-all duration-200">
+                      <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
+                        <ShieldCheck className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium text-primary">Admin panel</span>
+                      <Badge variant="secondary" className="ml-auto text-[10px] px-2 py-0.5 bg-primary/15 text-primary font-bold">
                         Admin
                       </Badge>
                     </DropdownMenuItem>
                   )}
                   
-                  <DropdownMenuSeparator className="my-2 bg-border/50 dark:bg-border/30" />
+                  <DropdownMenuSeparator className="my-2 bg-border/30" />
                   
-                  <DropdownMenuItem onClick={handleSignOut} className="gap-3 py-3 rounded-xl cursor-pointer text-destructive focus:text-destructive touch-target hover:bg-destructive/10 dark:hover:bg-destructive/20">
-                    <LogOut className="h-5 w-5" />
-                    <span className="text-base">Chiqish</span>
+                  <DropdownMenuItem onClick={handleSignOut} className="gap-3 py-2.5 px-3 rounded-xl cursor-pointer text-destructive focus:text-destructive touch-target hover:bg-destructive/10 transition-all duration-200">
+                    <div className="h-8 w-8 rounded-lg bg-destructive/15 flex items-center justify-center">
+                      <LogOut className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-medium">Chiqish</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -277,10 +302,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                 variant="secondary" 
                 size="sm" 
                 onClick={() => navigate('/auth')} 
-                className="hidden sm:flex h-10 px-4 gap-2 rounded-full border border-border/30 dark:border-border/20 dark:bg-secondary/50 dark:hover:bg-secondary/70 touch-target"
+                className="hidden sm:flex h-11 px-5 gap-2 rounded-xl bg-card/80 backdrop-blur-sm border border-border/40 hover:bg-secondary/80 hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] touch-target"
               >
                 <User className="h-4 w-4" />
-                <span className="text-sm font-medium">Kirish</span>
+                <span className="text-sm font-semibold">Kirish</span>
               </Button>
             )}
 
@@ -290,7 +315,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               size="icon"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Menyuni ochish"
-              className="flex sm:hidden h-10 w-10 rounded-full hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-colors touch-target"
+              className="flex sm:hidden h-11 w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 touch-target"
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -448,7 +473,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   );
 };
 
-// Desktop navigation button component - Enhanced dark mode
+// Desktop navigation button component - Premium design
 const NavButton = ({ 
   active, 
   onClick, 
@@ -465,16 +490,19 @@ const NavButton = ({
   <button
     onClick={onClick}
     className={`
-      flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200
+      relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300
       ${active 
-        ? 'bg-primary text-primary-foreground shadow-md dark:shadow-lg dark:shadow-primary/30' 
+        ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]' 
         : highlight 
-          ? 'text-primary hover:bg-primary/10 dark:hover:bg-primary/20' 
-          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/80 dark:hover:bg-secondary/50'
+          ? 'text-primary hover:bg-primary/10 hover:scale-[1.02]' 
+          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 hover:scale-[1.02]'
       }
     `}
   >
-    <Icon className="h-4 w-4" />
-    <span>{label}</span>
+    {active && (
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary to-primary/90 animate-pulse opacity-20" />
+    )}
+    <Icon className={`h-4 w-4 ${active ? 'animate-bounce-subtle' : ''}`} />
+    <span className="relative">{label}</span>
   </button>
 );
