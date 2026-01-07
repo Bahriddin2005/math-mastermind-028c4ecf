@@ -323,151 +323,204 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay - Enhanced for dark mode */}
+      {/* Mobile Menu Overlay - Premium glass effect */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-background/80 dark:bg-background/90 backdrop-blur-md z-[60] animate-fade-in-overlay"
+          className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] animate-fade-in"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
-      {/* Mobile Menu Panel - Enhanced dark mode */}
+      {/* Mobile Menu Panel - Premium glass morphism design */}
       <div 
-        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-card dark:bg-card/95 border-l border-border dark:border-border/30 z-[70] shadow-2xl dark:shadow-primary/10 transform transition-transform duration-300 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-[88%] max-w-sm z-[70] transform transition-all duration-500 ease-out flex flex-col ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Mobile menu header */}
-        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border/50 dark:border-border/30">
-          <Logo size="sm" />
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setMobileMenuOpen(false)}
-            className="h-10 w-10 rounded-full touch-target hover:bg-secondary/80 dark:hover:bg-secondary/60"
-          >
-            <X className="h-6 w-6" />
-          </Button>
-        </div>
-
-        {/* User info in mobile menu - Enhanced dark mode */}
-        {user && profile && (
-          <div className="flex-shrink-0 p-3 border-b border-border/50 dark:border-border/30">
-            <button
-              onClick={() => handleNavigation('/settings')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 dark:from-primary/20 dark:to-accent/20 border border-primary/20 dark:border-primary/30 hover:from-primary/15 hover:to-accent/15 dark:hover:from-primary/25 dark:hover:to-accent/25 transition-all duration-200"
-            >
-              <Avatar className="h-12 w-12 border-2 border-primary/30 dark:border-primary/40 shadow-lg dark:shadow-primary/20">
-                <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary/20 dark:bg-primary/30 text-primary text-lg font-bold">
-                  {profile.username?.charAt(0).toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="font-bold text-base truncate">{profile.username}</p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <Trophy className="h-3.5 w-3.5 text-warning" />
-                  <span className="text-xs font-medium text-muted-foreground">{profile.total_score} ball</span>
+        {/* Glass background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-card/95 via-card/90 to-card/95 backdrop-blur-xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+        <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-primary/30 via-border/50 to-primary/30" />
+        
+        {/* Content wrapper */}
+        <div className="relative flex flex-col h-full">
+          {/* Mobile menu header - Premium design */}
+          <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border/30">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 rounded-xl blur-lg" />
+                <div className="relative">
+                  <Logo size="sm" />
                 </div>
               </div>
-            </button>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => setMobileMenuOpen(false)}
+              className="h-11 w-11 rounded-xl bg-secondary/50 hover:bg-destructive/10 hover:text-destructive transition-all duration-300 touch-target"
+            >
+              <X className="h-6 w-6" />
+            </Button>
           </div>
-        )}
 
-        {/* Logout/Login button at top - Enhanced dark mode */}
-        <div className="flex-shrink-0 px-2 py-1.5 border-b border-border/50 dark:border-border/30">
-          {user ? (
-            <Button 
-              variant="destructive" 
-              onClick={handleSignOut}
-              className="w-full h-9 text-sm font-medium rounded-md shadow-sm dark:shadow-destructive/20"
-            >
-              <LogOut className="h-4 w-4 mr-1.5" />
-              Chiqish
-            </Button>
-          ) : (
-            <Button 
-              onClick={() => handleNavigation('/auth')}
-              className="w-full h-9 text-sm font-medium rounded-md gradient-primary shadow-lg shadow-primary/20 dark:shadow-primary/40"
-            >
-              <Sparkles className="h-4 w-4 mr-1.5" />
-              Boshlash
-            </Button>
-          )}
-        </div>
-
-        {/* Mobile menu navigation - Enhanced dark mode */}
-        <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-3 space-y-1">
-          {navItems.map((item, index) => (
-            <button
-              key={item.path}
-              data-active={isActive(item.path)}
-              onClick={() => handleNavigation(item.path)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
-                isActive(item.path)
-                  ? 'bg-primary text-primary-foreground shadow-md dark:shadow-lg dark:shadow-primary/30'
-                  : item.highlight
-                    ? 'bg-primary/10 dark:bg-primary/20 text-primary hover:bg-primary/20 dark:hover:bg-primary/30'
-                    : 'hover:bg-secondary/80 dark:hover:bg-secondary/60'
-              }`}
-            >
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${
-                isActive(item.path)
-                  ? 'bg-primary-foreground/20'
-                  : item.highlight
-                    ? 'bg-primary/20 dark:bg-primary/30'
-                    : 'bg-secondary dark:bg-secondary/60'
-              }`}>
-                <item.icon className="h-5 w-5" />
-              </div>
-              <span className="text-base font-semibold">{item.label}</span>
-            </button>
-          ))}
-
-          <div className="h-px bg-border/50 dark:bg-border/30 my-3" />
-
-          <button
-            onClick={() => {
-              onToggleSound();
-              setMobileMenuOpen(false);
-            }}
-            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-all duration-200"
-          >
-            <div className="h-10 w-10 rounded-lg bg-secondary dark:bg-secondary/60 flex items-center justify-center">
-              {soundEnabled ? (
-                <Volume2 className="h-5 w-5" />
-              ) : (
-                <VolumeX className="h-5 w-5 text-muted-foreground" />
-              )}
+          {/* User info in mobile menu - Premium glass card */}
+          {user && profile && (
+            <div className="flex-shrink-0 p-4">
+              <button
+                onClick={() => handleNavigation('/settings')}
+                className="w-full relative overflow-hidden rounded-2xl group"
+              >
+                {/* Card background with gradient */}
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/15 via-accent/10 to-primary/15 group-hover:from-primary/20 group-hover:to-primary/20 transition-all duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-[1px] rounded-2xl border border-primary/20 group-hover:border-primary/40 transition-colors duration-300" />
+                
+                <div className="relative flex items-center gap-4 p-4">
+                  <div className="relative">
+                    <Avatar className="h-14 w-14 border-2 border-primary/40 ring-2 ring-primary/20 ring-offset-2 ring-offset-card shadow-xl">
+                      <AvatarImage src={profile.avatar_url || undefined} />
+                      <AvatarFallback className="bg-gradient-to-br from-primary to-kid-purple text-primary-foreground text-xl font-bold">
+                        {profile.username?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-kid-green rounded-full border-2 border-card shadow-lg" />
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="font-bold text-lg truncate">{profile.username}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-warning/20">
+                        <Trophy className="h-3.5 w-3.5 text-warning" />
+                        <span className="text-xs font-bold text-warning">{profile.total_score} ball</span>
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors -rotate-90" />
+                </div>
+              </button>
             </div>
-            <span className="text-base font-semibold">
-              {soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
-            </span>
-          </button>
-
-          <button
-            onClick={() => handleNavigation('/settings')}
-            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/80 dark:hover:bg-secondary/60 transition-all duration-200"
-          >
-            <div className="h-10 w-10 rounded-lg bg-secondary dark:bg-secondary/60 flex items-center justify-center">
-              <Settings className="h-5 w-5" />
-            </div>
-            <span className="text-base font-semibold">Sozlamalar</span>
-          </button>
-
-          {isAdmin && (
-            <button
-              onClick={() => handleNavigation('/admin')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 transition-all duration-200"
-            >
-              <div className="h-10 w-10 rounded-lg bg-primary/20 dark:bg-primary/30 flex items-center justify-center">
-                <ShieldCheck className="h-5 w-5 text-primary" />
-              </div>
-              <span className="text-base font-semibold text-primary">Admin panel</span>
-            </button>
           )}
-        </div>
 
+          {/* Login/Logout button - Premium design */}
+          <div className="flex-shrink-0 px-4 pb-4">
+            {user ? (
+              <Button 
+                variant="destructive" 
+                onClick={handleSignOut}
+                className="w-full h-12 text-sm font-bold rounded-xl shadow-lg shadow-destructive/20 hover:shadow-destructive/40 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Chiqish
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => handleNavigation('/auth')}
+                className="w-full h-12 text-sm font-bold rounded-xl bg-gradient-to-r from-primary via-kid-purple to-primary bg-[length:200%_100%] animate-shimmer shadow-xl shadow-primary/30 hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02]"
+              >
+                <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
+                Boshlash
+              </Button>
+            )}
+          </div>
+
+          {/* Divider with gradient */}
+          <div className="mx-4 h-[1px] bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+
+          {/* Mobile menu navigation - Premium cards */}
+          <div ref={navScrollRef} className="flex-1 min-h-0 overflow-y-auto hide-scrollbar p-4 space-y-2">
+            {navItems.map((item, index) => (
+              <button
+                key={item.path}
+                data-active={isActive(item.path)}
+                onClick={() => handleNavigation(item.path)}
+                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group ${
+                  isActive(item.path)
+                    ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg shadow-primary/30 scale-[1.02]'
+                    : item.highlight
+                      ? 'bg-primary/10 hover:bg-primary/20 text-primary'
+                      : 'hover:bg-secondary/80'
+                }`}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  isActive(item.path)
+                    ? 'bg-white/20 shadow-inner'
+                    : item.highlight
+                      ? 'bg-primary/20 group-hover:bg-primary/30 group-hover:scale-110'
+                      : 'bg-secondary group-hover:bg-secondary/80 group-hover:scale-110'
+                }`}>
+                  <item.icon className={`h-5 w-5 transition-transform duration-300 ${isActive(item.path) ? 'scale-110' : 'group-hover:scale-110'}`} />
+                </div>
+                <span className="text-base font-bold">{item.label}</span>
+                {isActive(item.path) && (
+                  <div className="ml-auto w-2 h-2 bg-white rounded-full animate-pulse" />
+                )}
+              </button>
+            ))}
+
+            {/* Gradient divider */}
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-border/50 to-transparent my-4" />
+
+            {/* Sound toggle - Premium design */}
+            <button
+              onClick={() => {
+                onToggleSound();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-300 group"
+            >
+              <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                soundEnabled ? 'bg-kid-green/20 group-hover:bg-kid-green/30' : 'bg-secondary group-hover:bg-secondary/80'
+              } group-hover:scale-110`}>
+                {soundEnabled ? (
+                  <Volume2 className="h-5 w-5 text-kid-green" />
+                ) : (
+                  <VolumeX className="h-5 w-5 text-muted-foreground" />
+                )}
+              </div>
+              <span className="text-base font-bold">
+                {soundEnabled ? "Ovozni o'chirish" : "Ovozni yoqish"}
+              </span>
+              <div className={`ml-auto w-10 h-6 rounded-full transition-all duration-300 ${
+                soundEnabled ? 'bg-kid-green' : 'bg-muted'
+              } flex items-center ${soundEnabled ? 'justify-end' : 'justify-start'} px-1`}>
+                <div className="w-4 h-4 bg-white rounded-full shadow-md" />
+              </div>
+            </button>
+
+            {/* Settings - Premium design */}
+            <button
+              onClick={() => handleNavigation('/settings')}
+              className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-secondary/80 transition-all duration-300 group"
+            >
+              <div className="h-12 w-12 rounded-xl bg-secondary group-hover:bg-secondary/80 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-90">
+                <Settings className="h-5 w-5" />
+              </div>
+              <span className="text-base font-bold">Sozlamalar</span>
+            </button>
+
+            {/* Admin panel - Premium design */}
+            {isAdmin && (
+              <button
+                onClick={() => handleNavigation('/admin')}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border border-primary/20 transition-all duration-300 group"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+                  <ShieldCheck className="h-5 w-5 text-primary" />
+                </div>
+                <span className="text-base font-bold text-primary">Admin panel</span>
+                <span className="ml-auto px-2 py-1 text-[10px] font-bold bg-primary/20 text-primary rounded-full">ADMIN</span>
+              </button>
+            )}
+          </div>
+          
+          {/* Bottom branding */}
+          <div className="flex-shrink-0 p-4 border-t border-border/30">
+            <p className="text-center text-xs text-muted-foreground">
+              © 2024 IqroMax. Barcha huquqlar himoyalangan.
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );
