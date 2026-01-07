@@ -98,9 +98,9 @@ const KATTA_DOST_ADD: Record<number, number[]> = {
   4: [6],           // +4: faqat x6 da
   5: [5],           // +5: faqat x5 da
   6: [4, 9],        // +6: x4, x9 da
-  7: [3, 8],        // +7: x3, x8 da
-  8: [2, 7],        // +8: x2, x7 da
-  9: [5],           // +9: faqat x5 da (sizning jadvalingiz bo'yicha)
+  7: [5, 6, 7],     // +7: x5, x6, x7 da
+  8: [5, 6],        // +8: x5, x6 da
+  9: [5],           // +9: faqat x5 da
 };
 
 // Ayirish faqat o'nliklar mavjud bo'lganda ishlaydi (X>0)
@@ -121,9 +121,9 @@ const KATTA_DOST_SUB: Record<number, number[]> = {
   4: [0, 1, 2, 3],  // -4: x0-x3 da (X>0)
   5: [0, 1, 2, 3, 4], // -5: x0-x4 da (X>0)
   6: [0, 5],        // -6: x0, x5 da (X>0)
-  7: [0, 1, 5, 6],  // -7: x0, x1, x5, x6 da (X>0)
-  8: [0, 1, 2, 5, 6, 7], // -8: x0-x2, x5-x7 da (X>0)
-  9: [4],           // -9: faqat x4 da (X>0) - sizning jadvalingiz bo'yicha
+  7: [2, 3, 4],     // -7: x2, x3, x4 da (X>0)
+  8: [3, 4],        // -8: x3, x4 da (X>0)
+  9: [4],           // -9: faqat x4 da (X>0)
 };
 
 // Formula 10+ (katta do'stlar qo'shish) - statik jadval
