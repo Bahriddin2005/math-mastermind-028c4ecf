@@ -921,6 +921,48 @@ export type Database = {
         }
         Relationships: []
       }
+      problem_sheets: {
+        Row: {
+          columns_per_row: number
+          created_at: string
+          digit_count: number
+          formula_type: string
+          id: string
+          operation_count: number
+          problem_count: number
+          problems: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          columns_per_row?: number
+          created_at?: string
+          digit_count?: number
+          formula_type?: string
+          id?: string
+          operation_count?: number
+          problem_count?: number
+          problems: Json
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          columns_per_row?: number
+          created_at?: string
+          digit_count?: number
+          formula_type?: string
+          id?: string
+          operation_count?: number
+          problem_count?: number
+          problems?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

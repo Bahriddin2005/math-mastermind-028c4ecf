@@ -1,16 +1,48 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Navbar } from '@/components/Navbar';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { useSound } from '@/hooks/useSound';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, RefreshCw, Printer, FileText } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Download, RefreshCw, Printer, FileText, Save, FolderOpen, Trash2, Loader2 } from 'lucide-react';
 import { generateProblem, getLegacyFormulas, FORMULA_LABELS } from '@/lib/sorobanEngine';
 import { ProblemSheetTable } from '@/components/ProblemSheetTable';
+import { toast } from 'sonner';
 import iqromaxLogo from '@/assets/iqromax-logo-full.png';
+
+interface Problem {
+  id: number;
+  sequence: number[];
+  answer: number;
+}
+
+interface GeneratedSheet {
+  problems: Problem[];
+  settings: {
+    digitCount: number;
+    operationCount: number;
+    formulaType: string;
+    problemCount: number;
+  };
+}
+
+interface SavedSheet {
+  id: string;
+  title: string;
+  digit_count: number;
+  operation_count: number;
+  formula_type: string;
+  problem_count: number;
+  columns_per_row: number;
+  problems: Problem[];
+  created_at: string;
+}
 
 interface GeneratedSheet {
   problems: {
@@ -28,6 +60,7 @@ interface GeneratedSheet {
 
 const ProblemSheetGenerator = () => {
   const { soundEnabled, toggleSound, playSound } = useSound();
+  const { user } = useAuth();
   
   // Settings
   const [digitCount, setDigitCount] = useState(1);
@@ -40,7 +73,115 @@ const ProblemSheetGenerator = () => {
   const [sheet, setSheet] = useState<GeneratedSheet | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   
+  // Saved sheets
+  const [savedSheets, setSavedSheets] = useState<SavedSheet[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+  const [savingSheet, setSavingSheet] = useState(false);
+  const [sheetTitle, setSheetTitle] = useState('');
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+  
   const playClick = () => playSound('tick');
+  
+  // Fetch saved sheets
+  const fetchSavedSheets = useCallback(async () => {
+    if (!user) return;
+    setLoadingSaved(true);
+    
+    const { data, error } = await supabase
+      .from('problem_sheets')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching sheets:', error);
+    } else {
+      setSavedSheets((data || []).map(d => ({
+        ...d,
+        problems: d.problems as unknown as Problem[],
+      })));
+    }
+    setLoadingSaved(false);
+  }, [user]);
+  
+  useEffect(() => {
+    if (showLoadDialog) {
+      fetchSavedSheets();
+    }
+  }, [showLoadDialog, fetchSavedSheets]);
+  
+  // Save sheet to database
+  const saveSheet = async () => {
+    if (!user || !sheet) return;
+    if (!sheetTitle.trim()) {
+      toast.error("Iltimos, varaq nomini kiriting");
+      return;
+    }
+    
+    setSavingSheet(true);
+    
+    const { error } = await supabase
+      .from('problem_sheets')
+      .insert([{
+        user_id: user.id,
+        title: sheetTitle.trim(),
+        digit_count: digitCount,
+        operation_count: operationCount,
+        formula_type: formulaType,
+        problem_count: problemCount,
+        columns_per_row: columnsPerRow,
+        problems: JSON.parse(JSON.stringify(sheet.problems)),
+      }]);
+    
+    if (error) {
+      console.error('Error saving sheet:', error);
+      toast.error("Saqlashda xatolik yuz berdi");
+    } else {
+      toast.success("Varaq muvaffaqiyatli saqlandi!");
+      setShowSaveDialog(false);
+      setSheetTitle('');
+    }
+    
+    setSavingSheet(false);
+  };
+  
+  // Load sheet from database
+  const loadSheet = (savedSheet: SavedSheet) => {
+    setDigitCount(savedSheet.digit_count);
+    setOperationCount(savedSheet.operation_count);
+    setFormulaType(savedSheet.formula_type);
+    setProblemCount(savedSheet.problem_count);
+    setColumnsPerRow(savedSheet.columns_per_row);
+    
+    setSheet({
+      problems: savedSheet.problems,
+      settings: {
+        digitCount: savedSheet.digit_count,
+        operationCount: savedSheet.operation_count,
+        formulaType: savedSheet.formula_type,
+        problemCount: savedSheet.problem_count,
+      },
+    });
+    
+    setShowLoadDialog(false);
+    toast.success(`"${savedSheet.title}" yuklandi`);
+  };
+  
+  // Delete saved sheet
+  const deleteSheet = async (id: string) => {
+    const { error } = await supabase
+      .from('problem_sheets')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      toast.error("O'chirishda xatolik");
+    } else {
+      setSavedSheets(prev => prev.filter(s => s.id !== id));
+      toast.success("Varaq o'chirildi");
+    }
+  };
   
   // Generate problems
   const generateSheet = useCallback(() => {
@@ -488,6 +629,66 @@ const ProblemSheetGenerator = () => {
                   {isGenerating ? 'Generatsiya...' : 'Generatsiya qilish'}
                 </Button>
                 
+                {/* Load Saved Sheets */}
+                <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="border-blue-500/50 hover:bg-blue-500/10">
+                      <FolderOpen className="w-4 h-4 mr-2" />
+                      Saqlangan varaqlar
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <FolderOpen className="w-5 h-5" />
+                        Saqlangan varaqlar
+                      </DialogTitle>
+                    </DialogHeader>
+                    {loadingSaved ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                      </div>
+                    ) : savedSheets.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Saqlangan varaqlar yo'q
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {savedSheets.map((s) => (
+                          <div 
+                            key={s.id}
+                            className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                          >
+                            <div 
+                              className="flex-1 cursor-pointer"
+                              onClick={() => loadSheet(s)}
+                            >
+                              <h4 className="font-semibold">{s.title}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {s.digit_count} xona • {s.operation_count} ustun • {s.problem_count} misol • {FORMULA_LABELS[s.formula_type]?.label || s.formula_type}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(s.created_at).toLocaleDateString('uz-UZ')}
+                              </p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteSheet(s.id);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+                
                 {sheet && (
                   <>
                     <Button 
@@ -498,6 +699,51 @@ const ProblemSheetGenerator = () => {
                       <Printer className="w-4 h-4 mr-2" />
                       PDF yuklab olish
                     </Button>
+                    
+                    {/* Save Dialog */}
+                    <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="border-green-500/50 hover:bg-green-500/10">
+                          <Save className="w-4 h-4 mr-2" />
+                          Saqlash
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2">
+                            <Save className="w-5 h-5" />
+                            Varaqni saqlash
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 pt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="sheetTitle">Varaq nomi</Label>
+                            <Input
+                              id="sheetTitle"
+                              placeholder="Masalan: 8 ustun oddiy 1-xona"
+                              value={sheetTitle}
+                              onChange={(e) => setSheetTitle(e.target.value)}
+                            />
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <p>{digitCount} xonali • {operationCount} ustun • {problemCount} misol</p>
+                            <p>{FORMULA_LABELS[formulaType]?.label || formulaType}</p>
+                          </div>
+                          <Button 
+                            onClick={saveSheet} 
+                            disabled={savingSheet || !sheetTitle.trim()}
+                            className="w-full"
+                          >
+                            {savingSheet ? (
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                              <Save className="w-4 h-4 mr-2" />
+                            )}
+                            {savingSheet ? 'Saqlanmoqda...' : 'Saqlash'}
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </>
                 )}
               </div>

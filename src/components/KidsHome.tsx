@@ -16,7 +16,8 @@ import {
   Sparkles,
   Gift,
   Medal,
-  Rocket
+  Rocket,
+  FileText
 } from 'lucide-react';
 
 interface Profile {
@@ -307,7 +308,7 @@ export const KidsHome = () => {
             O'yin rejimlari
           </span>
         </h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-4 gap-3">
           <GameModeCard 
             emoji="🎯"
             label="Oson"
@@ -325,6 +326,12 @@ export const KidsHome = () => {
             label="Aralash"
             gradient="from-violet-500 to-fuchsia-600"
             onClick={() => navigate('/mental-arithmetic')}
+          />
+          <GameModeCard 
+            emoji="📄"
+            label="Varaq"
+            gradient="from-blue-500 to-cyan-600"
+            onClick={() => navigate('/problem-sheet')}
           />
         </div>
       </div>
