@@ -35,6 +35,7 @@ import Achievements from "./pages/Achievements";
 import ChallengeStats from "./pages/ChallengeStats";
 import Statistics from "./pages/Statistics";
 import Records from "./pages/Records";
+import ProblemSheetGenerator from "./pages/ProblemSheetGenerator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +81,7 @@ const App = () => (
                     <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
                     <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
                     <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
+                    <Route path="/problem-sheet" element={<ProtectedRoute><ProblemSheetGenerator /></ProtectedRoute>} />
                     <Route path="/challenge-stats" element={<ChallengeStats />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
