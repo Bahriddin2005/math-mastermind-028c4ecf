@@ -12,13 +12,13 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { Download, RefreshCw, Printer, FileText, Save, FolderOpen, Trash2, Loader2, Share2, Link, Copy, Globe, Lock } from 'lucide-react';
+import { Download, RefreshCw, FileText, Save, FolderOpen, Trash2, Loader2, Share2, Link, Copy, Globe, Lock } from 'lucide-react';
 import { generateProblem, getLegacyFormulas, FORMULA_LABELS } from '@/lib/sorobanEngine';
 import { ProblemSheetTable } from '@/components/ProblemSheetTable';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 
-// Base64 encoded logo for PDF - will be set on mount
-let logoBase64 = '';
 
 interface Problem {
   id: number;
@@ -79,23 +79,6 @@ const ProblemSheetGenerator = () => {
   
   const playClick = () => playSound('tick');
   
-  // Load logo as base64 for PDF
-  useEffect(() => {
-    const loadLogoBase64 = async () => {
-      try {
-        const response = await fetch('/pwa-192x192.png');
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          logoBase64 = reader.result as string;
-        };
-        reader.readAsDataURL(blob);
-      } catch (error) {
-        console.error('Failed to load logo:', error);
-      }
-    };
-    loadLogoBase64();
-  }, []);
   
   // Load shared sheet from URL
   useEffect(() => {
@@ -337,311 +320,187 @@ const ProblemSheetGenerator = () => {
     }, 100);
   }, [digitCount, operationCount, formulaType, problemCount, playClick]);
   
-  // Download as PDF
+  // Download as PDF using jsPDF
   const downloadPDF = useCallback(() => {
     if (!sheet) return;
     playClick();
     
     const formulaLabel = FORMULA_LABELS[formulaType]?.label || formulaType;
-    const title = `${sheet.settings.operationCount} ustun ${formulaLabel} ${sheet.settings.digitCount}`;
-    const fileName = `IqroMax_${title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.html`;
+    const title = `${sheet.settings.operationCount} ustun ${formulaLabel} ${sheet.settings.digitCount} xona`;
+    const fileName = `IqroMax_${title.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.pdf`;
     
-    // Generate table HTML
-    const generateTableHTML = () => {
-      let html = '';
-      const totalRows = Math.ceil(sheet.problems.length / columnsPerRow);
+    // Create PDF
+    const doc = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 10;
+    let yPos = margin;
+    
+    // Header
+    doc.setFontSize(16);
+    doc.setTextColor(33, 150, 243);
+    doc.text('IqroMax', pageWidth / 2, yPos + 5, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text(title, pageWidth / 2, yPos + 12, { align: 'center' });
+    
+    doc.setFontSize(9);
+    doc.text(`${sheet.settings.problemCount} ta misol • ${new Date().toLocaleDateString('uz-UZ')}`, pageWidth / 2, yPos + 18, { align: 'center' });
+    
+    yPos += 25;
+    
+    // Draw line under header
+    doc.setDrawColor(33, 150, 243);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    yPos += 8;
+    
+    // Generate problem tables
+    const totalRows = Math.ceil(sheet.problems.length / columnsPerRow);
+    const cellWidth = (pageWidth - 2 * margin) / columnsPerRow;
+    const cellHeight = 6;
+    
+    for (let row = 0; row < totalRows; row++) {
+      const startIdx = row * columnsPerRow;
+      const rowProblems = sheet.problems.slice(startIdx, startIdx + columnsPerRow);
       
-      for (let row = 0; row < totalRows; row++) {
-        const startIdx = row * columnsPerRow;
-        const rowProblems = sheet.problems.slice(startIdx, startIdx + columnsPerRow);
-        
-        if (rowProblems.length === 0) continue;
-        
-        const maxOps = Math.max(...rowProblems.map(p => p.sequence.length));
-        
-        html += `
-          <table class="problem-table">
-            <thead>
-              <tr>
-                ${rowProblems.map(p => `<th>${p.id}</th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${Array.from({ length: maxOps }).map((_, opIdx) => `
-                <tr>
-                  ${rowProblems.map(p => `
-                    <td>${p.sequence[opIdx] !== undefined ? p.sequence[opIdx] : ''}</td>
-                  `).join('')}
-                </tr>
-              `).join('')}
-              <tr class="answer-row">
-                ${rowProblems.map(() => '<td></td>').join('')}
-              </tr>
-            </tbody>
-          </table>
-          <div style="height: 16px;"></div>
-        `;
+      if (rowProblems.length === 0) continue;
+      
+      const maxOps = Math.max(...rowProblems.map(p => p.sequence.length));
+      const tableHeight = (maxOps + 2) * cellHeight; // +2 for header and answer row
+      
+      // Check if we need a new page
+      if (yPos + tableHeight > pageHeight - margin) {
+        doc.addPage();
+        yPos = margin;
       }
       
-      return html;
-    };
-    
-    const generateAnswersHTML = () => {
-      let html = '';
-      const totalRows = Math.ceil(sheet.problems.length / 10);
+      // Draw header row
+      doc.setFillColor(99, 102, 241); // Primary color
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(9);
       
-      for (let row = 0; row < totalRows; row++) {
-        const startIdx = row * 10;
-        const rowProblems = sheet.problems.slice(startIdx, startIdx + 10);
+      rowProblems.forEach((p, idx) => {
+        const x = margin + idx * cellWidth;
+        doc.rect(x, yPos, cellWidth, cellHeight, 'F');
+        doc.text(String(p.id), x + cellWidth / 2, yPos + cellHeight - 1.5, { align: 'center' });
+      });
+      yPos += cellHeight;
+      
+      // Draw data rows
+      doc.setTextColor(33, 33, 33);
+      doc.setFontSize(10);
+      
+      for (let opIdx = 0; opIdx < maxOps; opIdx++) {
+        const isEven = opIdx % 2 === 0;
         
-        html += `
-          <table class="answers-table">
-            <tbody>
-              <tr class="answer-ids">
-                ${rowProblems.map(p => `<td>${p.id}</td>`).join('')}
-              </tr>
-              <tr class="answer-values">
-                ${rowProblems.map(p => `<td>${p.answer}</td>`).join('')}
-              </tr>
-            </tbody>
-          </table>
-        `;
+        rowProblems.forEach((p, idx) => {
+          const x = margin + idx * cellWidth;
+          
+          if (isEven) {
+            doc.setFillColor(248, 250, 252);
+            doc.rect(x, yPos, cellWidth, cellHeight, 'F');
+          }
+          
+          doc.setDrawColor(200, 200, 200);
+          doc.rect(x, yPos, cellWidth, cellHeight);
+          
+          const value = p.sequence[opIdx];
+          if (value !== undefined) {
+            doc.text(String(value), x + cellWidth / 2, yPos + cellHeight - 1.5, { align: 'center' });
+          }
+        });
+        yPos += cellHeight;
       }
       
-      return html;
-    };
-    
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>${title} - IqroMax</title>
-        <style>
-          @page {
-            size: A4;
-            margin: 12mm;
-          }
-          
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-          
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 11px;
-            line-height: 1.3;
-            color: #333;
-            padding: 10px;
-          }
-          
-          .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #2196F3;
-          }
-          
-          .logo {
-            height: 45px;
-            width: auto;
-          }
-          
-          .logo-placeholder {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1976D2;
-          }
-          
-          .title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1976D2;
-          }
-          
-          .subtitle {
-            font-size: 12px;
-            color: #666;
-            margin-top: 2px;
-          }
-          
-          .problem-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 6px;
-          }
-          
-          .problem-table th {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-            font-weight: bold;
-            padding: 6px 3px;
-            border: 1px solid #1565C0;
-            text-align: center;
-            min-width: 35px;
-            font-size: 11px;
-          }
-          
-          .problem-table td {
-            border: 1px solid #ddd;
-            padding: 5px 3px;
-            text-align: center;
-            min-width: 35px;
-            font-size: 12px;
-          }
-          
-          .problem-table tbody tr:nth-child(even) {
-            background-color: #f8f9fa;
-          }
-          
-          .problem-table .answer-row td {
-            height: 24px;
-            background-color: #fff9c4;
-            border: 1px solid #fbc02d;
-          }
-          
-          .answers-section {
-            page-break-before: always;
-            margin-top: 20px;
-          }
-          
-          .answers-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #4CAF50;
-          }
-          
-          .answers-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 6px;
-          }
-          
-          .answers-table td {
-            border: 1px solid #ddd;
-            padding: 5px 3px;
-            text-align: center;
-            min-width: 35px;
-          }
-          
-          .answers-table .answer-ids td {
-            background: linear-gradient(135deg, #4CAF50, #388E3C);
-            color: white;
-            font-weight: bold;
-            font-size: 11px;
-          }
-          
-          .answers-table .answer-values td {
-            font-weight: bold;
-            font-size: 12px;
-            background-color: #e8f5e9;
-          }
-          
-          .footer {
-            margin-top: 16px;
-            padding-top: 8px;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            font-size: 9px;
-            color: #999;
-          }
-          
-          .print-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-            z-index: 1000;
-          }
-          
-          .print-btn:hover {
-            background: linear-gradient(135deg, #1976D2, #1565C0);
-          }
-          
-          @media print {
-            body {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            .print-btn {
-              display: none !important;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <button class="print-btn" onclick="window.print()">🖨️ PDF sifatida saqlash</button>
-        
-        <div class="header">
-          ${logoBase64 ? `<img src="${logoBase64}" alt="IqroMax" class="logo" />` : '<div class="logo-placeholder">IqroMax</div>'}
-          <div>
-            <div class="title">${title}</div>
-            <div class="subtitle">${sheet.settings.problemCount} ta misol • ${new Date().toLocaleDateString('uz-UZ')}</div>
-          </div>
-        </div>
-        
-        ${generateTableHTML()}
-        
-        <div class="footer">
-          IqroMax - Mental Arifmetika O'quv Platformasi • www.iqromax.uz
-        </div>
-        
-        <div class="answers-section">
-          <div class="answers-header">
-            ${logoBase64 ? `<img src="${logoBase64}" alt="IqroMax" class="logo" />` : '<div class="logo-placeholder">IqroMax</div>'}
-            <div>
-              <div class="title">Javoblar</div>
-              <div class="subtitle">${title} • ${sheet.settings.problemCount} ta misol</div>
-            </div>
-          </div>
-          
-          ${generateAnswersHTML()}
-          
-          <div class="footer">
-            IqroMax - Mental Arifmetika O'quv Platformasi • www.iqromax.uz
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-    
-    // Create blob and download
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    
-    // Open in new tab
-    const newTab = window.open(url, '_blank');
-    if (newTab) {
-      toast.success("PDF yuklab olish oynasi ochildi. 'PDF sifatida saqlash' tugmasini bosing.");
-    } else {
-      // Fallback: download as HTML file
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      toast.success("HTML fayl yuklab olindi. Uni brauzerda ochib, PDF sifatida saqlang.");
+      // Draw answer row (yellow)
+      doc.setFillColor(255, 249, 196);
+      rowProblems.forEach((_, idx) => {
+        const x = margin + idx * cellWidth;
+        doc.rect(x, yPos, cellWidth, cellHeight, 'F');
+        doc.setDrawColor(251, 192, 45);
+        doc.rect(x, yPos, cellWidth, cellHeight);
+      });
+      yPos += cellHeight + 8;
     }
     
-    URL.revokeObjectURL(url);
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text('IqroMax - Mental Arifmetika O\'quv Platformasi', pageWidth / 2, pageHeight - 5, { align: 'center' });
+    
+    // === ANSWERS PAGE ===
+    doc.addPage();
+    yPos = margin;
+    
+    // Answers header
+    doc.setFontSize(16);
+    doc.setTextColor(76, 175, 80);
+    doc.text('Javoblar', pageWidth / 2, yPos + 5, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(title, pageWidth / 2, yPos + 12, { align: 'center' });
+    
+    yPos += 20;
+    
+    // Draw line under header
+    doc.setDrawColor(76, 175, 80);
+    doc.setLineWidth(0.5);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    yPos += 8;
+    
+    // Answers table (10 columns)
+    const answersPerRow = 10;
+    const answerCellWidth = (pageWidth - 2 * margin) / answersPerRow;
+    const answerRows = Math.ceil(sheet.problems.length / answersPerRow);
+    
+    for (let row = 0; row < answerRows; row++) {
+      const startIdx = row * answersPerRow;
+      const rowProblems = sheet.problems.slice(startIdx, startIdx + answersPerRow);
+      
+      // Check if we need a new page
+      if (yPos + 14 > pageHeight - margin) {
+        doc.addPage();
+        yPos = margin;
+      }
+      
+      // Problem IDs row
+      doc.setFillColor(76, 175, 80);
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      
+      rowProblems.forEach((p, idx) => {
+        const x = margin + idx * answerCellWidth;
+        doc.rect(x, yPos, answerCellWidth, cellHeight, 'F');
+        doc.text(String(p.id), x + answerCellWidth / 2, yPos + cellHeight - 1.5, { align: 'center' });
+      });
+      yPos += cellHeight;
+      
+      // Answers row
+      doc.setFillColor(232, 245, 233);
+      doc.setTextColor(33, 33, 33);
+      doc.setFontSize(10);
+      
+      rowProblems.forEach((p, idx) => {
+        const x = margin + idx * answerCellWidth;
+        doc.rect(x, yPos, answerCellWidth, cellHeight, 'F');
+        doc.setDrawColor(200, 200, 200);
+        doc.rect(x, yPos, answerCellWidth, cellHeight);
+        doc.text(String(p.answer), x + answerCellWidth / 2, yPos + cellHeight - 1.5, { align: 'center' });
+      });
+      yPos += cellHeight + 4;
+    }
+    
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text('IqroMax - Mental Arifmetika O\'quv Platformasi', pageWidth / 2, pageHeight - 5, { align: 'center' });
+    
+    // Save PDF
+    doc.save(fileName);
+    toast.success("PDF muvaffaqiyatli yuklab olindi!");
   }, [sheet, formulaType, columnsPerRow, playClick]);
   
   return (
@@ -856,7 +715,7 @@ const ProblemSheetGenerator = () => {
                       onClick={downloadPDF}
                       className="border-primary/50 hover:bg-primary/10"
                     >
-                      <Printer className="w-4 h-4 mr-2" />
+                      <Download className="w-4 h-4 mr-2" />
                       PDF yuklab olish
                     </Button>
                     

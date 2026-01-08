@@ -553,7 +553,12 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
   let lastFormulaType: FormulaCategory | null = null;
   
   // Amallarni generatsiya qilish
-  for (let i = 0; i < operationCount - 1; i++) {
+  let attempts = 0;
+  const maxAttempts = operationCount * 10; // Cheksiz loop oldini olish
+  
+  while (sequence.length < operationCount - 1 && attempts < maxAttempts) {
+    attempts++;
+    
     // Mumkin bo'lgan amallarni olish
     let availableOps = getAvailableOperations(currentValue, allowedFormulas, lastFormulaType);
     
@@ -565,20 +570,22 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
       });
     }
     
-    // Agar hech qanday amal mavjud bo'lmasa, qayta urinish
+    // Agar hech qanday amal mavjud bo'lmasa
     if (availableOps.length === 0) {
-      // Oxirgi amaldan oldinga qaytish yoki yangidan boshlash
+      // Oxirgi amaldan qaytish
       if (operations.length > 0) {
         const lastOp = operations.pop()!;
-        const lastNum = sequence.pop()!;
-        currentValue = applyOperation(currentValue, {
-          ...lastOp,
-          isAdd: !lastOp.isAdd, // Teskari amal
-          delta: lastNum > 0 ? lastNum : -lastNum,
-        });
-        i -= 2; // Qayta urinish
+        sequence.pop();
+        // Teskari amalni qo'llash
+        currentValue = lastOp.isAdd 
+          ? currentValue - lastOp.delta 
+          : currentValue + lastOp.delta;
+        lastFormulaType = operations.length > 0 
+          ? operations[operations.length - 1].formulaType 
+          : null;
         continue;
       }
+      // Boshidan boshlash
       break;
     }
     
@@ -605,6 +612,14 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
       // Formulasiz va kichik do'st uchun har bir ustunda alohida amal
       const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
       finalDelta = selectedOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
+      
+      // Yangi qiymatni tekshirish
+      const testValue = selectedOp.isAdd 
+        ? currentValue + finalDelta 
+        : currentValue - finalDelta;
+      if (ensurePositiveResult && (testValue < 0 || testValue >= Math.pow(10, digitCount + 1))) {
+        finalDelta = selectedOp.delta; // Oddiy delta ga qaytish
+      }
     }
     
     // Amalni qo'llash
