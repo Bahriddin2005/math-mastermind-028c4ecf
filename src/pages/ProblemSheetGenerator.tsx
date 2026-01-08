@@ -307,11 +307,20 @@ const ProblemSheetGenerator = () => {
           ensurePositiveResult: true,
         });
         
-        problems.push({
-          id: i + 1,
-          sequence: [problem.startValue, ...problem.sequence],
-          answer: problem.finalAnswer,
-        });
+        // sequence allaqachon startValue va amallarni o'z ichiga oladi
+        const fullSequence = [problem.startValue, ...problem.sequence];
+        
+        // Bo'sh qiymatlar bo'lmasligi kerak
+        if (fullSequence.length > 0 && !fullSequence.some(n => n === undefined || n === null)) {
+          problems.push({
+            id: i + 1,
+            sequence: fullSequence,
+            answer: problem.finalAnswer,
+          });
+        } else {
+          // Qayta urinish
+          i--;
+        }
       }
       
       setSheet({

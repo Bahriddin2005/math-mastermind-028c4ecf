@@ -546,7 +546,8 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
   const minStart = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
   let startValue = Math.floor(Math.random() * (maxStart - minStart + 1)) + minStart;
   
-  const sequence: number[] = [startValue];
+  // sequence faqat amallarni saqlaydi (startValue alohida)
+  const sequence: number[] = [];
   const operations: Operation[] = [];
   let currentValue = startValue;
   let lastFormulaType: FormulaCategory | null = null;
