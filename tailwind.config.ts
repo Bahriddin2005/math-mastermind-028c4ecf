@@ -92,6 +92,15 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // ===== KIDS GAME COLORS =====
+        'kids-purple': "hsl(var(--kids-purple))",
+        'kids-blue': "hsl(var(--kids-blue))",
+        'kids-green': "hsl(var(--kids-green))",
+        'kids-yellow': "hsl(var(--kids-yellow))",
+        'kids-pink': "hsl(var(--kids-pink))",
+        'kids-orange': "hsl(var(--kids-orange))",
+        'kids-cyan': "hsl(var(--kids-cyan))",
+        'kids-red': "hsl(var(--kids-red))",
       },
       borderRadius: {
         lg: "var(--radius)",
