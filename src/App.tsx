@@ -15,7 +15,8 @@ import { PageLoader } from "./components/PageLoader";
 import { PullToRefresh } from "./components/PullToRefresh";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import KidsHome from "./components/KidsHome";
+import KidsHome from "./pages/KidsHome";
+import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import ResetPassword from "./pages/ResetPassword";
 import Contact from "./pages/Contact";
@@ -61,6 +62,7 @@ const App = () => (
                 <PageTransition>
                   <Routes>
                     <Route path="/" element={<KidsHome />} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
