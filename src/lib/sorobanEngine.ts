@@ -540,109 +540,108 @@ export interface ProblemConfig {
  */
 export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
   const { digitCount, operationCount, allowedFormulas, ensurePositiveResult = true } = config;
-  
-  // Boshlang'ich qiymatni tanlash
+
   const maxStart = Math.pow(10, digitCount) - 1;
   const minStart = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
-  let startValue = Math.floor(Math.random() * (maxStart - minStart + 1)) + minStart;
-  
-  // sequence faqat amallarni saqlaydi (startValue alohida)
-  const sequence: number[] = [];
-  const operations: Operation[] = [];
-  let currentValue = startValue;
-  let lastFormulaType: FormulaCategory | null = null;
-  
-  // Amallarni generatsiya qilish
-  let attempts = 0;
-  const maxAttempts = operationCount * 10; // Cheksiz loop oldini olish
-  
-  while (sequence.length < operationCount - 1 && attempts < maxAttempts) {
-    attempts++;
-    
-    // Mumkin bo'lgan amallarni olish
-    let availableOps = getAvailableOperations(currentValue, allowedFormulas, lastFormulaType);
-    
-    // Agar musbat natija talab qilinsa, manfiy natija beradigan amallarni olib tashlash
-    if (ensurePositiveResult) {
-      availableOps = availableOps.filter(op => {
-        const newValue = applyOperation(currentValue, op);
-        return newValue >= 0 && newValue < Math.pow(10, digitCount + 1);
+
+  // Ba'zi formulalarda (katta do'st / mix) kombinatsiya topish qiyin bo'lishi mumkin.
+  // Shuning uchun bir nechta marta boshidan urinib, faqat to'liq uzunlikdagi misolni qaytaramiz.
+  const maxTries = 40;
+
+  let best: GeneratedProblem | null = null;
+
+  for (let tryIndex = 0; tryIndex < maxTries; tryIndex++) {
+    const startValue = Math.floor(Math.random() * (maxStart - minStart + 1)) + minStart;
+
+    const sequence: number[] = [];
+    const operations: Operation[] = [];
+    let currentValue = startValue;
+    let lastFormulaType: FormulaCategory | null = null;
+
+    let attempts = 0;
+    const maxAttempts = operationCount * 60; // qiyin holatlarda ham to'liq yig'ib olish uchun
+
+    while (sequence.length < operationCount - 1 && attempts < maxAttempts) {
+      attempts++;
+
+      let availableOps = getAvailableOperations(currentValue, allowedFormulas, lastFormulaType);
+
+      if (ensurePositiveResult) {
+        availableOps = availableOps.filter(op => {
+          const newValue = applyOperation(currentValue, op);
+          return newValue >= 0 && newValue < Math.pow(10, digitCount + 1);
+        });
+      }
+
+      if (availableOps.length === 0) {
+        if (operations.length > 0) {
+          const lastOp = operations.pop()!;
+          sequence.pop();
+          currentValue = lastOp.isAdd ? currentValue - lastOp.delta : currentValue + lastOp.delta;
+          lastFormulaType = operations.length > 0 ? operations[operations.length - 1].formulaType : null;
+          continue;
+        }
+        break;
+      }
+
+      // Weighted selection: katta do'st kamroq chiqsin
+      const nonCarryOps = availableOps.filter(op => !op.isCarry);
+      const carryOps = availableOps.filter(op => op.isCarry);
+
+      let selectedOp: AllowedOperation;
+      if (nonCarryOps.length > 0 && Math.random() > 0.25) {
+        selectedOp = nonCarryOps[Math.floor(Math.random() * nonCarryOps.length)];
+      } else if (carryOps.length > 0) {
+        selectedOp = carryOps[Math.floor(Math.random() * carryOps.length)];
+      } else {
+        selectedOp = availableOps[Math.floor(Math.random() * availableOps.length)];
+      }
+
+      // Ko'p xonali misollar uchun delta ni kengaytirish (faqat formulasiz/kichik do'st)
+      let finalDelta = selectedOp.delta;
+      if (digitCount > 1 && !selectedOp.isCarry) {
+        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+        finalDelta = selectedOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
+
+        const testValue = selectedOp.isAdd ? currentValue + finalDelta : currentValue - finalDelta;
+        if (ensurePositiveResult && (testValue < 0 || testValue >= Math.pow(10, digitCount + 1))) {
+          finalDelta = selectedOp.delta;
+        }
+      }
+
+      const signedDelta = selectedOp.isAdd ? finalDelta : -finalDelta;
+      currentValue = currentValue + signedDelta;
+
+      operations.push({
+        delta: finalDelta,
+        isAdd: selectedOp.isAdd,
+        formulaType: selectedOp.formulaType,
+        isCarry: selectedOp.isCarry,
       });
+
+      sequence.push(signedDelta);
+      lastFormulaType = selectedOp.formulaType;
     }
-    
-    // Agar hech qanday amal mavjud bo'lmasa
-    if (availableOps.length === 0) {
-      // Oxirgi amaldan qaytish
-      if (operations.length > 0) {
-        const lastOp = operations.pop()!;
-        sequence.pop();
-        // Teskari amalni qo'llash
-        currentValue = lastOp.isAdd 
-          ? currentValue - lastOp.delta 
-          : currentValue + lastOp.delta;
-        lastFormulaType = operations.length > 0 
-          ? operations[operations.length - 1].formulaType 
-          : null;
-        continue;
-      }
-      // Boshidan boshlash
-      break;
+
+    const candidate: GeneratedProblem = {
+      startValue,
+      operations,
+      finalAnswer: currentValue,
+      sequence,
+    };
+
+    // Ideal holat: hammasi to'liq yig'ildi
+    if (sequence.length === operationCount - 1) return candidate;
+
+    // Aks holda, eng yaxshisini eslab qolamiz (fallback)
+    if (!best || candidate.sequence.length > best.sequence.length) {
+      best = candidate;
     }
-    
-    // Random amal tanlash (katta do'st kamroq chiqishi uchun weighted)
-    let selectedOp: AllowedOperation;
-    
-    // Katta do'stni kamroq ishlatish uchun weighted selection
-    const nonCarryOps = availableOps.filter(op => !op.isCarry);
-    const carryOps = availableOps.filter(op => op.isCarry);
-    
-    if (nonCarryOps.length > 0 && Math.random() > 0.25) {
-      // 75% ehtimollik bilan oddiy amal
-      selectedOp = nonCarryOps[Math.floor(Math.random() * nonCarryOps.length)];
-    } else if (carryOps.length > 0) {
-      // 25% ehtimollik bilan katta do'st
-      selectedOp = carryOps[Math.floor(Math.random() * carryOps.length)];
-    } else {
-      selectedOp = availableOps[Math.floor(Math.random() * availableOps.length)];
-    }
-    
-    // Ko'p xonali misollar uchun delta ni kengaytirish
-    let finalDelta = selectedOp.delta;
-    if (digitCount > 1 && !selectedOp.isCarry) {
-      // Formulasiz va kichik do'st uchun har bir ustunda alohida amal
-      const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
-      finalDelta = selectedOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
-      
-      // Yangi qiymatni tekshirish
-      const testValue = selectedOp.isAdd 
-        ? currentValue + finalDelta 
-        : currentValue - finalDelta;
-      if (ensurePositiveResult && (testValue < 0 || testValue >= Math.pow(10, digitCount + 1))) {
-        finalDelta = selectedOp.delta; // Oddiy delta ga qaytish
-      }
-    }
-    
-    // Amalni qo'llash
-    const signedDelta = selectedOp.isAdd ? finalDelta : -finalDelta;
-    currentValue = currentValue + signedDelta;
-    
-    operations.push({
-      delta: finalDelta,
-      isAdd: selectedOp.isAdd,
-      formulaType: selectedOp.formulaType,
-      isCarry: selectedOp.isCarry,
-    });
-    
-    sequence.push(signedDelta);
-    lastFormulaType = selectedOp.formulaType;
   }
-  
-  return {
-    startValue,
-    operations,
-    finalAnswer: currentValue,
-    sequence,
-  };
+
+  // Juda kam ehtimol: hamma urinishda ham to'liq chiqmasa fallback qaytaramiz.
+  // (UI tomonda validate/regen bor, shuning uchun bo'sh katak baribir chiqmaydi.)
+  return best as GeneratedProblem;
 };
 
 // ============= LEGACY COMPATIBILITY =============

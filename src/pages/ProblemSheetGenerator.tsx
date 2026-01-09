@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Download, RefreshCw, FileText, Save, FolderOpen, Trash2, Loader2, Share2, Link, Copy, Globe, Lock } from 'lucide-react';
-import { generateProblem, getLegacyFormulas, FORMULA_LABELS } from '@/lib/sorobanEngine';
+import { generateProblem, getLegacyFormulas, FORMULA_LABELS, validateProblemSequence } from '@/lib/sorobanEngine';
 import { ProblemSheetTable } from '@/components/ProblemSheetTable';
 import { toast } from 'sonner';
 import { jsPDF } from 'jspdf';
@@ -277,11 +277,11 @@ const ProblemSheetGenerator = () => {
   const generateSheet = useCallback(() => {
     playClick();
     setIsGenerating(true);
-    
+
     setTimeout(() => {
       const problems: GeneratedSheet['problems'] = [];
       const allowedFormulas = getLegacyFormulas(formulaType);
-      
+
       for (let i = 0; i < problemCount; i++) {
         const problem = generateProblem({
           digitCount,
@@ -289,12 +289,20 @@ const ProblemSheetGenerator = () => {
           allowedFormulas,
           ensurePositiveResult: true,
         });
-        
-        // sequence allaqachon startValue va amallarni o'z ichiga oladi
+
+        // To'liq ketma-ketlik: [startValue, ...signed operations]
         const fullSequence = [problem.startValue, ...problem.sequence];
-        
-        // Bo'sh qiymatlar bo'lmasligi kerak
-        if (fullSequence.length > 0 && !fullSequence.some(n => n === undefined || n === null)) {
+
+        // 1) Har bir misolda kataklar soni bir xil bo'lishi kerak (bo'sh katak chiqmasin)
+        const isLengthOk = fullSequence.length === operationCount;
+
+        // 2) undefined/null bo'lmasin
+        const hasEmpty = fullSequence.some(n => n === undefined || n === null || Number.isNaN(n));
+
+        // 3) Formula tekshiruvi (kichik do'st / katta do'st / mix ham 100% mos bo'lsin)
+        const validation = validateProblemSequence(fullSequence, allowedFormulas);
+
+        if (isLengthOk && !hasEmpty && validation.isValid) {
           problems.push({
             id: i + 1,
             sequence: fullSequence,
@@ -305,7 +313,7 @@ const ProblemSheetGenerator = () => {
           i--;
         }
       }
-      
+
       setSheet({
         problems,
         settings: {
@@ -315,7 +323,7 @@ const ProblemSheetGenerator = () => {
           problemCount,
         },
       });
-      
+
       setIsGenerating(false);
     }, 100);
   }, [digitCount, operationCount, formulaType, problemCount, playClick]);
