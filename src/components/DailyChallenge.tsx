@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar, Clock, Trophy, Check, Play, Medal, Award, Flame, Timer, Zap, Target, TrendingUp } from 'lucide-react';
+import { Calendar, Clock, Trophy, Check, Play, Medal, Award, Flame, Timer, Zap, Target, TrendingUp, X, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import { useTTS } from '@/hooks/useTTS';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { GamificationDisplay } from './GamificationDisplay';
+import { Mascot } from './Mascot';
+import { useConfettiEffect } from './kids/Confetti';
 interface DailyChallenge {
   id: string;
   challenge_date: string;

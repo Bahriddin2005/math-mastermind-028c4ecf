@@ -28,6 +28,7 @@ import {
   Calendar,
   TrendingUp,
   Gift,
+  FileText,
 } from 'lucide-react';
 
 interface Profile {
@@ -282,7 +283,7 @@ const KidsHome = () => {
           Ko'proq imkoniyatlar
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           <GameCard
             title="Reyting"
             icon={Trophy}
@@ -312,6 +313,14 @@ const KidsHome = () => {
             icon={Crown}
             color="orange"
             onClick={() => navigate('/records')}
+            size="sm"
+          />
+          
+          <GameCard
+            title="Varaqalar"
+            icon={FileText}
+            color="blue"
+            onClick={() => navigate('/problem-sheet')}
             size="sm"
           />
         </div>

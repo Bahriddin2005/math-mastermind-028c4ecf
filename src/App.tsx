@@ -4,6 +4,18 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { HelpChatWidget } from "@/components/HelpChatWidget";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { lazy, Suspense } from "react";
+import { PageLoader } from "@/components/PageLoader";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./hooks/useAuth";
 import { HelpChatWidget } from "./components/HelpChatWidget";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -73,7 +85,9 @@ const App = () => (
                     <Route path="/blog/:id" element={<BlogPostPage />} />
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/courses" element={<ProtectedRoute><Courses /></ProtectedRoute>} />
+                    <Route path="/courses" element={<KidsCourses />} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/leaderboard" element={<KidsLeaderboard />} />
                     <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
                     <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
                     <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
