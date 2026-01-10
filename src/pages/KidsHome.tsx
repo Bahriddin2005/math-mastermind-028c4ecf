@@ -276,7 +276,7 @@ const KidsHome = () => {
             icon={Calendar}
             color="purple"
             badge="🔥 HOT"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/challenge-stats')}
             size="lg"
           />
           
