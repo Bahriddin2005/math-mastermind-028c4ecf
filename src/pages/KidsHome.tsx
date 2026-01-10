@@ -136,9 +136,35 @@ const KidsHome = () => {
   if (loading || authLoading) {
     return (
       <PageBackground className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Mascot mood="thinking" size="lg" animate />
-          <p className="text-lg font-bold text-kids-purple animate-pulse">Yuklanmoqda...</p>
+        <div className="flex flex-col items-center gap-6">
+          {/* IqroMax Logo with glow effect */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-kids-purple via-kids-pink to-kids-blue rounded-3xl blur-xl opacity-50 animate-pulse" />
+            <div className="relative bg-gradient-to-br from-kids-purple to-kids-pink p-6 rounded-3xl shadow-2xl">
+              <img 
+                src="/favicon.jpg" 
+                alt="IqroMax" 
+                className="w-20 h-20 object-contain rounded-xl"
+              />
+            </div>
+            {/* Sparkle decoration */}
+            <div className="absolute -top-2 -right-2 text-2xl animate-bounce-soft">✨</div>
+          </div>
+          
+          <div className="text-center">
+            <h1 className="text-2xl font-display font-black bg-gradient-to-r from-kids-purple via-kids-pink to-kids-orange bg-clip-text text-transparent mb-2">
+              Salom! 👋
+            </h1>
+            <p className="text-muted-foreground">Mental arifmetika o'yiniga xush kelibsiz!</p>
+          </div>
+          
+          <Button 
+            disabled
+            className="bg-gradient-to-r from-kids-purple via-kids-pink to-kids-orange text-white font-bold text-lg px-12 py-6 rounded-2xl shadow-xl opacity-80"
+          >
+            <Play className="w-5 h-5 mr-2 animate-pulse" />
+            Boshlash
+          </Button>
         </div>
       </PageBackground>
     );
