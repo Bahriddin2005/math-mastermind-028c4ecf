@@ -9,52 +9,43 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { HelpChatWidget } from "@/components/HelpChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { lazy, Suspense } from "react";
 import { PageLoader } from "@/components/PageLoader";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
-import { AuthProvider } from "./hooks/useAuth";
-import { HelpChatWidget } from "./components/HelpChatWidget";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { MobileBottomNav } from "./components/MobileBottomNav";
-import { PWAInstallBanner } from "./components/PWAInstallBanner";
-import { ScrollToTop } from "./components/ScrollToTop";
-import { PageTransition } from "./components/PageTransition";
-import { PageLoader } from "./components/PageLoader";
-import { PullToRefresh } from "./components/PullToRefresh";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import KidsHome from "./pages/KidsHome";
-import Dashboard from "./pages/Dashboard";
-import Settings from "./pages/Settings";
-import ResetPassword from "./pages/ResetPassword";
-import Contact from "./pages/Contact";
-import Pricing from "./pages/Pricing";
-import Blog from "./pages/Blog";
-import BlogPostPage from "./pages/BlogPost";
-import Admin from "./pages/Admin";
-import FAQ from "./pages/FAQ";
-import Courses from "./pages/Courses";
-import CourseDetail from "./pages/CourseDetail";
-import LessonDetail from "./pages/LessonDetail";
-import WeeklyGame from "./pages/WeeklyGame";
-import Badges from "./pages/Badges";
-import Install from "./pages/Install";
-import MentalArithmetic from "./pages/MentalArithmetic";
-import Achievements from "./pages/Achievements";
-import ChallengeStats from "./pages/ChallengeStats";
-import Statistics from "./pages/Statistics";
-import Records from "./pages/Records";
-import ProblemSheetGenerator from "./pages/ProblemSheetGenerator";
-import NotFound from "./pages/NotFound";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { PageTransition } from "@/components/PageTransition";
+import { PullToRefresh } from "@/components/PullToRefresh";
+
+import Index from "@/pages/Index";
+import Auth from "@/pages/Auth";
+import KidsHome from "@/pages/KidsHome";
+import Dashboard from "@/pages/Dashboard";
+import Settings from "@/pages/Settings";
+import ResetPassword from "@/pages/ResetPassword";
+import Contact from "@/pages/Contact";
+import Pricing from "@/pages/Pricing";
+import Blog from "@/pages/Blog";
+import BlogPostPage from "@/pages/BlogPost";
+import Admin from "@/pages/Admin";
+import FAQ from "@/pages/FAQ";
+import Courses from "@/pages/Courses";
+import CourseDetail from "@/pages/CourseDetail";
+import LessonDetail from "@/pages/LessonDetail";
+import WeeklyGame from "@/pages/WeeklyGame";
+import Badges from "@/pages/Badges";
+import Install from "@/pages/Install";
+import MentalArithmetic from "@/pages/MentalArithmetic";
+import Achievements from "@/pages/Achievements";
+import ChallengeStats from "@/pages/ChallengeStats";
+import Statistics from "@/pages/Statistics";
+import Records from "@/pages/Records";
+import ProblemSheetGenerator from "@/pages/ProblemSheetGenerator";
+import NotFound from "@/pages/NotFound";
+import Profile from "@/pages/Profile";
+import KidsCourses from "@/pages/KidsCourses";
+import KidsLeaderboard from "@/pages/KidsLeaderboard";
 
 const queryClient = new QueryClient();
 
 const handleRefresh = async () => {
-  // Simulate refresh - reload data
   await new Promise(resolve => setTimeout(resolve, 1000));
   window.location.reload();
 };
@@ -99,7 +90,6 @@ const App = () => (
                     <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
                     <Route path="/problem-sheet" element={<ProtectedRoute><ProblemSheetGenerator /></ProtectedRoute>} />
                     <Route path="/challenge-stats" element={<ChallengeStats />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </PageTransition>
