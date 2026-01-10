@@ -190,21 +190,6 @@ const KidsHome = () => {
         <div className="absolute bottom-20 right-16 text-3xl animate-bounce-soft" style={{ animationDelay: '0.6s' }}>🏆</div>
 
         <div className="container px-4 py-8 relative">
-          {/* IqroMax Logo - Top Center */}
-          <div className="flex justify-center mb-6">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-kids-purple via-kids-pink to-kids-orange rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity" />
-              <div className="relative bg-gradient-to-br from-kids-purple/90 to-kids-pink/90 p-3 sm:p-4 rounded-2xl shadow-xl hover:scale-105 transition-transform cursor-pointer border border-white/20">
-                <img 
-                  src="/favicon.jpg" 
-                  alt="IqroMax" 
-                  className="w-12 h-12 sm:w-16 sm:h-16 object-contain rounded-lg"
-                />
-              </div>
-              <div className="absolute -top-1 -right-1 text-lg animate-bounce-soft">✨</div>
-            </div>
-          </div>
-
           <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
             {/* Mascot */}
             <div className="flex-shrink-0">
