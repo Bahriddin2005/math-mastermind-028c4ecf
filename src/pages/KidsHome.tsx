@@ -136,35 +136,33 @@ const KidsHome = () => {
   if (loading || authLoading) {
     return (
       <PageBackground className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-6">
-          {/* IqroMax Logo with glow effect */}
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-kids-purple via-kids-pink to-kids-blue rounded-3xl blur-xl opacity-50 animate-pulse" />
-            <div className="relative bg-gradient-to-br from-kids-purple to-kids-pink p-6 rounded-3xl shadow-2xl">
-              <img 
-                src="/favicon.jpg" 
-                alt="IqroMax" 
-                className="w-20 h-20 object-contain rounded-xl"
-              />
+        <div className="flex flex-col items-center gap-8">
+          {/* IqroMax Logo - Clean & Elegant */}
+          <div className="relative animate-fade-in">
+            {/* Subtle glow behind logo */}
+            <div className="absolute inset-0 blur-3xl opacity-20 bg-primary rounded-full scale-150" />
+            
+            {/* Main logo */}
+            <img 
+              src="/favicon.jpg" 
+              alt="IqroMax" 
+              className="relative w-32 h-32 sm:w-40 sm:h-40 object-contain rounded-2xl shadow-2xl hover:scale-105 transition-transform duration-300"
+            />
+            
+            {/* Floating sparkles */}
+            <div className="absolute -top-3 -right-3 text-3xl animate-bounce-soft">✨</div>
+            <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce-soft" style={{ animationDelay: '0.5s' }}>⭐</div>
+          </div>
+          
+          {/* Loading text */}
+          <div className="text-center space-y-2">
+            <p className="text-muted-foreground text-lg">Yuklanmoqda...</p>
+            <div className="flex justify-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0s' }} />
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.1s' }} />
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0.2s' }} />
             </div>
-            {/* Sparkle decoration */}
-            <div className="absolute -top-2 -right-2 text-2xl animate-bounce-soft">✨</div>
           </div>
-          
-          <div className="text-center">
-            <h1 className="text-2xl font-display font-black bg-gradient-to-r from-kids-purple via-kids-pink to-kids-orange bg-clip-text text-transparent mb-2">
-              Salom! 👋
-            </h1>
-            <p className="text-muted-foreground">Mental arifmetika o'yiniga xush kelibsiz!</p>
-          </div>
-          
-          <Button 
-            disabled
-            className="bg-gradient-to-r from-kids-purple via-kids-pink to-kids-orange text-white font-bold text-lg px-12 py-6 rounded-2xl shadow-xl opacity-80"
-          >
-            <Play className="w-5 h-5 mr-2 animate-pulse" />
-            Boshlash
-          </Button>
         </div>
       </PageBackground>
     );
