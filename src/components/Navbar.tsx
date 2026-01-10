@@ -114,13 +114,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: '/', icon: Home, label: "Bosh sahifa" },
-    { path: '/train', icon: Play, label: "Mashq", highlight: true },
-    { path: '/courses', icon: GraduationCap, label: "Darslar" },
-    { path: '/weekly-game', icon: Trophy, label: "Musobaqa" },
-    { path: '/challenge-stats', icon: BarChart3, label: "Statistika" },
-    { path: '/blog', icon: BookOpen, label: "Blog" },
-    { path: '/contact', icon: MessageCircle, label: "Aloqa" },
+    { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
+    { path: '/mental-arithmetic', icon: Play, label: "Mashq", highlight: true, emoji: "🎮" },
+    { path: '/kids-courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
+    { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
   ];
 
   return (
