@@ -191,7 +191,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   const [formulaType, setFormulaType] = useState<FormulaType>('basic');
   const [voiceEnabled, setVoiceEnabled] = useState(() => {
     const saved = localStorage.getItem('flashCard_voiceEnabled');
-    return saved !== null ? saved === 'true' : true;
+    return saved !== null ? saved === 'true' : false;
   });
   
   // Game state

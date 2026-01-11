@@ -376,7 +376,7 @@ export const NumberTrainer = () => {
   });
   const [voiceEnabled, setVoiceEnabled] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_voiceEnabled');
-    return saved !== null ? saved === 'true' : true;
+    return saved !== null ? saved === 'true' : false;
   });
   const [showStats, setShowStats] = useState(false);
 
