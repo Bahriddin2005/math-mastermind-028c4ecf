@@ -1,14 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Play, Trophy, BarChart3, Medal } from 'lucide-react';
+import { Home, Play, Trophy, Medal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
 const navItems = [
   { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
-  { icon: Play, label: "O'yin", path: "/train", emoji: "🎮" },
-  { icon: Medal, label: "Yutuqlar", path: "/achievements", emoji: "🏅" },
-  { icon: BarChart3, label: "Statistika", path: "/statistics", emoji: "📊" },
-  { icon: Trophy, label: "Rekordlar", path: "/records", emoji: "🏆" },
+  { icon: Play, label: "Mashq", path: "/mental-arithmetic", emoji: "🎮" },
+  { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
+  { icon: Medal, label: "Darslar", path: "/kids-courses", emoji: "📚" },
 ];
 
 export const MobileBottomNav = () => {
