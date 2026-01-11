@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh' | 'countdown' | 'levelUp' | 'combo' | 'winner';
+type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh' | 'countdown' | 'levelUp' | 'combo' | 'winner' | 'pop' | 'whoosh' | 'sparkle' | 'bounce';
 
 // Web Audio API based sound generator
 const createAudioContext = () => {
@@ -162,6 +162,55 @@ export const useSound = () => {
           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
           oscillator.start(now);
           oscillator.stop(now + 0.9);
+          break;
+
+        case 'pop':
+          // Fun pop sound for kids - like bubble pop
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(800, now);
+          oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.1);
+          gainNode.gain.setValueAtTime(0.4, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          oscillator.start(now);
+          oscillator.stop(now + 0.15);
+          break;
+
+        case 'whoosh':
+          // Whoosh sound - like a swipe
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(300, now);
+          oscillator.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+          oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.25);
+          gainNode.gain.setValueAtTime(0.15, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          oscillator.start(now);
+          oscillator.stop(now + 0.25);
+          break;
+
+        case 'sparkle':
+          // Magical sparkle sound
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(1200, now);
+          oscillator.frequency.setValueAtTime(1800, now + 0.05);
+          oscillator.frequency.setValueAtTime(1400, now + 0.1);
+          oscillator.frequency.setValueAtTime(2000, now + 0.15);
+          gainNode.gain.setValueAtTime(0.2, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          oscillator.start(now);
+          oscillator.stop(now + 0.25);
+          break;
+
+        case 'bounce':
+          // Bouncy cartoon sound
+          oscillator.type = 'sine';
+          oscillator.frequency.setValueAtTime(400, now);
+          oscillator.frequency.setValueAtTime(600, now + 0.05);
+          oscillator.frequency.setValueAtTime(350, now + 0.1);
+          oscillator.frequency.setValueAtTime(500, now + 0.15);
+          gainNode.gain.setValueAtTime(0.3, now);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+          oscillator.start(now);
+          oscillator.stop(now + 0.2);
           break;
       }
     } catch (e) {
