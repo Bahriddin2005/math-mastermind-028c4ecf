@@ -276,6 +276,7 @@ const KidsHome = () => {
             icon={Calendar}
             color="purple"
             badge="🔥 HOT"
+            emoji="🎯"
             onClick={() => navigate('/weekly-game')}
             size="lg"
           />
@@ -285,6 +286,8 @@ const KidsHome = () => {
             description="Aqliy matematikada o'z kuchingizni sinab ko'ring!"
             icon={Zap}
             color="blue"
+            badge="⚡ TEZKOR"
+            emoji="🧮"
             onClick={() => navigate('/mental-arithmetic')}
             size="lg"
           />
@@ -294,6 +297,8 @@ const KidsHome = () => {
             description="Yangi usullarni o'rganing va mahoratni oshiring!"
             icon={BookOpen}
             color="green"
+            badge="📚 YANGI"
+            emoji="🎬"
             onClick={() => navigate('/courses')}
             size="lg"
           />
@@ -312,6 +317,7 @@ const KidsHome = () => {
             title="Reyting"
             icon={Trophy}
             color="yellow"
+            emoji="🏆"
             onClick={() => navigate('/dashboard')}
             size="sm"
           />
@@ -320,6 +326,7 @@ const KidsHome = () => {
             title="Yutuqlarim"
             icon={Award}
             color="pink"
+            emoji="🏅"
             onClick={() => navigate('/achievements')}
             size="sm"
           />
@@ -328,6 +335,7 @@ const KidsHome = () => {
             title="Statistika"
             icon={TrendingUp}
             color="green"
+            emoji="📊"
             onClick={() => navigate('/statistics')}
             size="sm"
           />
@@ -336,6 +344,7 @@ const KidsHome = () => {
             title="Rekordlar"
             icon={Crown}
             color="orange"
+            emoji="👑"
             onClick={() => navigate('/records')}
             size="sm"
           />
@@ -344,6 +353,7 @@ const KidsHome = () => {
             title="Varaqalar"
             icon={FileText}
             color="blue"
+            emoji="📄"
             onClick={() => navigate('/problem-sheet')}
             size="sm"
           />
