@@ -114,7 +114,7 @@ export const DailyChallenge = () => {
   } | null>(null);
   const [voiceEnabled] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_voiceEnabled');
-    return saved !== null ? saved === 'true' : true;
+    return saved !== null ? saved === 'true' : false;
   });
 
   // O'yin holati
