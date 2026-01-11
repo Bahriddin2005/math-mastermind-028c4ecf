@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useSound } from '@/hooks/useSound';
 
 interface GameCardProps {
   title: string;
@@ -83,6 +84,17 @@ export const GameCard = ({
   const colors = colorClasses[color];
   const [isPressed, setIsPressed] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
+  const { playSound, soundEnabled } = useSound();
+  
+  // Sound mapping for different colors
+  const colorSounds: Record<string, 'pop' | 'whoosh' | 'sparkle' | 'bounce'> = {
+    purple: 'sparkle',
+    blue: 'whoosh',
+    green: 'pop',
+    yellow: 'sparkle',
+    pink: 'bounce',
+    orange: 'pop',
+  };
   
   const sizeClasses = {
     sm: 'p-4',
@@ -104,14 +116,25 @@ export const GameCard = ({
 
   const handleClick = () => {
     if (locked) return;
+    
+    // Play fun sound
+    playSound(colorSounds[color]);
+    
     setShowParticles(true);
     setTimeout(() => setShowParticles(false), 600);
     onClick?.();
   };
 
+  const handleMouseEnter = () => {
+    if (!locked && soundEnabled) {
+      playSound('tick');
+    }
+  };
+
   return (
     <button
       onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
