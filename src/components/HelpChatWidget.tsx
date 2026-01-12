@@ -670,10 +670,12 @@ export const HelpChatWidget = () => {
 
   const saveMessageToDb = async (role: 'user' | 'assistant', content: string) => {
     try {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
       await supabase.from('chat_messages').insert({
         session_id: sessionIdRef.current,
         role,
-        content
+        content,
+        user_id: currentUser?.id
       });
     } catch (error) {
       console.error('Failed to save message:', error);
