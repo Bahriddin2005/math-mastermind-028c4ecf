@@ -308,7 +308,13 @@ export const KidsHome = () => {
             O'yin rejimlari
           </span>
         </h2>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-5 gap-3">
+          <GameModeCard 
+            emoji="🎮"
+            label="Mashq"
+            gradient="from-violet-500 to-purple-600"
+            onClick={() => navigate('/train')}
+          />
           <GameModeCard 
             emoji="🎯"
             label="Oson"
