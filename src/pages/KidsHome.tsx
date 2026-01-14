@@ -266,16 +266,39 @@ const KidsHome = () => {
       <div className="container px-4 py-6">
         <button
           onClick={() => navigate('/train')}
-          className="w-full h-32 rounded-[1.5rem] flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60 hover:scale-[1.02] active:scale-[0.97] transition-all duration-300 border-0 relative overflow-hidden group"
+          className="w-full h-32 rounded-3xl flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/80 hover:scale-[1.05] hover:-translate-y-2 active:scale-[0.95] transition-all duration-300 border-0 relative overflow-hidden group animate-pulse-subtle"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-          <div className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-500" />
-          <span className="text-5xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">🎮</span>
-          <div className="text-left">
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 pointer-events-none" />
+          
+          {/* Decorative circles with pulse animation */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/15 rounded-full blur-2xl animate-pulse" />
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+          
+          {/* Floating sparkles */}
+          <div className="absolute top-3 right-3 text-lg animate-bounce opacity-80" style={{ animationDuration: '1.5s' }}>✨</div>
+          <div className="absolute bottom-4 right-6 text-sm animate-bounce opacity-60" style={{ animationDelay: '0.3s', animationDuration: '2s' }}>⭐</div>
+          <div className="absolute top-1/2 left-3 text-xs animate-bounce opacity-50" style={{ animationDelay: '0.6s', animationDuration: '1.8s' }}>🎮</div>
+          
+          {/* Hover shine effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+          
+          {/* Content */}
+          <span className="relative z-10 text-5xl drop-shadow-lg group-hover:scale-125 group-hover:rotate-6 transition-transform duration-300">🎮</span>
+          <div className="relative z-10 text-left">
             <span className="text-2xl font-black text-white drop-shadow-lg block">Mashq qilish</span>
             <span className="text-sm font-medium text-white/80">Mental arifmetika mashqlari</span>
           </div>
-          <Play className="w-10 h-10 text-white/80 ml-auto mr-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 fill-white/30" />
+          <div className="relative z-10 ml-auto mr-4 flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 group-hover:bg-white/30 transition-all duration-300 border border-white/30">
+            <span className="text-sm font-bold text-white">O'ynash</span>
+            <Play className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform fill-white/50" />
+          </div>
+          
+          {/* Pulsating ring effect */}
+          <div className="absolute inset-0 rounded-3xl border-2 border-white/30 animate-ping opacity-20" style={{ animationDuration: '2s' }} />
+          
+          {/* Bottom glow */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-white/10 to-transparent pointer-events-none" />
         </button>
       </div>
 
