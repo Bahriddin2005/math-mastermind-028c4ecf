@@ -262,8 +262,25 @@ const KidsHome = () => {
         </div>
       </div>
 
+      {/* Main Train Card */}
+      <div className="container px-4 py-6">
+        <button
+          onClick={() => navigate('/train')}
+          className="w-full h-32 rounded-[1.5rem] flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60 hover:scale-[1.02] active:scale-[0.97] transition-all duration-300 border-0 relative overflow-hidden group"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+          <div className="absolute -top-4 -right-4 w-32 h-32 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-500" />
+          <span className="text-5xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">🎮</span>
+          <div className="text-left">
+            <span className="text-2xl font-black text-white drop-shadow-lg block">Mashq qilish</span>
+            <span className="text-sm font-medium text-white/80">Mental arifmetika mashqlari</span>
+          </div>
+          <Play className="w-10 h-10 text-white/80 ml-auto mr-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300 fill-white/30" />
+        </button>
+      </div>
+
       {/* Main Game Cards */}
-      <div className="container px-4 py-8">
+      <div className="container px-4 py-6">
         <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
           <span className="text-3xl">🎯</span>
           Bugun nima o'ynaymiz?
