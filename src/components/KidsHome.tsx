@@ -308,13 +308,23 @@ export const KidsHome = () => {
             O'yin rejimlari
           </span>
         </h2>
-        <div className="grid grid-cols-5 gap-3">
-          <GameModeCard 
-            emoji="🎮"
-            label="Mashq"
-            gradient="from-violet-500 to-purple-600"
-            onClick={() => navigate('/train')}
-          />
+        {/* Main Train Card */}
+        <button
+          onClick={() => navigate('/train')}
+          className="w-full h-28 mb-4 rounded-[1.5rem] flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/60 hover:scale-[1.02] active:scale-[0.97] transition-all duration-300 border-0 relative overflow-hidden group animate-fade-in"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+          <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full bg-white/10 blur-2xl group-hover:scale-150 transition-transform duration-500" />
+          <span className="text-5xl drop-shadow-lg group-hover:scale-110 transition-transform duration-300">🎮</span>
+          <div className="text-left">
+            <span className="text-2xl font-black text-white drop-shadow-lg block">Mashq qilish</span>
+            <span className="text-sm font-medium text-white/80">Mental arifmetika mashqlari</span>
+          </div>
+          <Rocket className="w-8 h-8 text-white/80 ml-auto mr-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+        </button>
+
+        {/* Other Game Modes */}
+        <div className="grid grid-cols-4 gap-3">
           <GameModeCard 
             emoji="🎯"
             label="Oson"
@@ -395,10 +405,11 @@ const GameModeCard = ({
 }) => (
   <button
     onClick={onClick}
-    className={`h-24 rounded-2xl flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${gradient} shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 border-0`}
+    className={`h-24 rounded-2xl flex flex-col items-center justify-center gap-2 bg-gradient-to-br ${gradient} shadow-xl hover:shadow-2xl hover:scale-110 active:scale-90 transition-all duration-300 border-0 group relative overflow-hidden`}
   >
-    <span className="text-3xl drop-shadow-lg">{emoji}</span>
-    <span className="text-sm font-bold text-white drop-shadow-lg">{label}</span>
+    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <span className="text-3xl drop-shadow-lg group-hover:scale-125 group-hover:-translate-y-1 transition-transform duration-300">{emoji}</span>
+    <span className="text-sm font-bold text-white drop-shadow-lg group-hover:font-extrabold transition-all duration-200">{label}</span>
   </button>
 );
 
