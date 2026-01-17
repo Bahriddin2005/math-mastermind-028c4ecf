@@ -15,21 +15,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Sparkles,
-  Trophy,
-  BookOpen,
-  Target,
   Flame,
   Star,
-  Zap,
-  Play,
   Crown,
+  Play,
+  Trophy,
+  BookOpen,
+  Zap,
   Award,
-  Users,
-  Calendar,
   TrendingUp,
-  Gift,
+  Calendar,
   FileText,
 } from 'lucide-react';
+import { HeroCarousel } from '@/components/HeroCarousel';
+import { SectionCarousel, kidsSection, parentsSection, teachersSection, personalSection, blogSection } from '@/components/SectionCarousel';
+import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 
 interface Profile {
   username: string;
@@ -172,134 +172,36 @@ const KidsHome = () => {
     <PageBackground className="min-h-screen pb-24">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-kids-purple/10 via-kids-pink/10 to-kids-blue/10" />
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-kids-yellow/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-kids-pink/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 right-1/4 w-40 h-40 bg-kids-blue/15 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }} />
-        </div>
-
-        {/* Floating decorations */}
-        <div className="absolute top-20 right-8 text-4xl animate-bounce-soft">⭐</div>
-        <div className="absolute top-32 left-12 text-3xl animate-bounce-soft" style={{ animationDelay: '0.3s' }}>🎮</div>
-        <div className="absolute bottom-20 right-16 text-3xl animate-bounce-soft" style={{ animationDelay: '0.6s' }}>🏆</div>
-
-        <div className="container px-4 py-8 relative">
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
-            {/* Mascot */}
-            <div className="flex-shrink-0">
-              <Mascot 
-                mood={mascotMood} 
-                size="xl" 
-                message={mascotMessage}
-                animate 
-              />
-            </div>
-
-            {/* Welcome content */}
-            <div className="flex-1 text-center lg:text-left">
-              <Badge className="mb-3 bg-gradient-to-r from-kids-purple to-kids-pink text-white border-0 px-4 py-1.5 text-sm font-bold shadow-lg animate-bounce-soft">
-                <Sparkles className="w-4 h-4 mr-1.5" />
-                {getGreeting()}!
-              </Badge>
-              
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black mb-3">
-                <span className="bg-gradient-to-r from-kids-purple via-kids-pink to-kids-blue bg-clip-text text-transparent">
-                  {user ? `Salom, ${profile?.username || 'Do\'stim'}!` : 'Xush kelibsiz!'}
-                </span>
-              </h1>
-              
-              <p className="text-lg text-muted-foreground mb-6 max-w-lg mx-auto lg:mx-0">
-                Bugun yangi yutuqlarga erishish uchun ajoyib kun! 
-                <span className="text-kids-yellow font-bold"> O'ynaymizmi? 🚀</span>
-              </p>
-
-              {/* Quick stats for logged in users */}
-              {user && profile && (
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-6">
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-kids-yellow/20 to-kids-orange/20 rounded-full px-4 py-2 border border-kids-yellow/30">
-                    <Crown className="w-5 h-5 text-kids-yellow" />
-                    <span className="font-bold">Level {level}</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-kids-purple/20 to-kids-pink/20 rounded-full px-4 py-2 border border-kids-purple/30">
-                    <Star className="w-5 h-5 text-kids-purple fill-kids-purple" />
-                    <span className="font-bold">{profile.total_score.toLocaleString()} ball</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-kids-orange/20 to-kids-red/20 rounded-full px-4 py-2 border border-kids-orange/30">
-                    <Flame className="w-5 h-5 text-kids-orange" />
-                    <span className="font-bold">{profile.current_streak} kun</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Progress ring */}
-            {user && profile && (
-              <div className="flex-shrink-0 text-center">
-                <div className="relative">
-                  <ProgressRing 
-                    progress={dailyGoalProgress} 
-                    size="lg" 
-                    color={dailyGoalProgress >= 100 ? 'green' : 'purple'}
-                    showLabel
-                    label="Kunlik maqsad"
-                  />
-                  {dailyGoalProgress >= 100 && (
-                    <div className="absolute -top-2 -right-2">
-                      <StarBadge type="star" color="gold" size="sm" animated />
-                    </div>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {todaySolved}/{profile.daily_goal} masala
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Hero Carousel */}
+      <div className="container px-4 py-6">
+        <HeroCarousel />
       </div>
 
-      {/* Main Train Card */}
-      <div className="container px-4 py-6">
+      {/* Main Action Button */}
+      <div className="container px-4">
         <button
           onClick={() => navigate('/train')}
-          className="w-full h-32 rounded-3xl flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-2xl shadow-violet-500/40 hover:shadow-violet-500/80 hover:scale-[1.05] hover:-translate-y-2 active:scale-[0.95] transition-all duration-300 border-0 relative overflow-hidden group animate-pulse-subtle"
+          className="w-full h-20 rounded-2xl flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-xl hover:shadow-violet-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
         >
-          {/* Animated gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 pointer-events-none" />
-          
-          {/* Decorative circles with pulse animation */}
-          <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/15 rounded-full blur-2xl animate-pulse" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '0.5s' }} />
-          
-          {/* Floating sparkles */}
-          <div className="absolute top-3 right-3 text-lg animate-bounce opacity-80" style={{ animationDuration: '1.5s' }}>✨</div>
-          <div className="absolute bottom-4 right-6 text-sm animate-bounce opacity-60" style={{ animationDelay: '0.3s', animationDuration: '2s' }}>⭐</div>
-          <div className="absolute top-1/2 left-3 text-xs animate-bounce opacity-50" style={{ animationDelay: '0.6s', animationDuration: '1.8s' }}>🎮</div>
-          
-          {/* Hover shine effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
-          
-          {/* Content */}
-          <span className="relative z-10 text-5xl drop-shadow-lg group-hover:scale-125 group-hover:rotate-6 transition-transform duration-300">🎮</span>
-          <div className="relative z-10 text-left">
-            <span className="text-2xl font-black text-white drop-shadow-lg block">Mashq qilish</span>
-            <span className="text-sm font-medium text-white/80">Mental arifmetika mashqlari</span>
-          </div>
-          <div className="relative z-10 ml-auto mr-4 flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 group-hover:bg-white/30 transition-all duration-300 border border-white/30">
-            <span className="text-sm font-bold text-white">O'ynash</span>
-            <Play className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform fill-white/50" />
-          </div>
-          
-          {/* Pulsating ring effect */}
-          <div className="absolute inset-0 rounded-3xl border-2 border-white/30 animate-ping opacity-20" style={{ animationDuration: '2s' }} />
-          
-          {/* Bottom glow */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-white/10 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+          <span className="text-4xl">🎮</span>
+          <span className="text-xl font-bold text-white">O'ynab o'rgan</span>
+          <Play className="w-6 h-6 text-white ml-2" />
         </button>
+      </div>
+
+      {/* Section Carousels */}
+      <div className="container px-4">
+        <SectionCarousel {...kidsSection} />
+        <SectionCarousel {...parentsSection} />
+        <SectionCarousel {...teachersSection} />
+        <SectionCarousel {...personalSection} />
+        <SectionCarousel {...blogSection} />
+      </div>
+
+      {/* Subscription Plans */}
+      <div className="container px-4">
+        <SubscriptionPlans />
       </div>
 
       {/* Main Game Cards */}
