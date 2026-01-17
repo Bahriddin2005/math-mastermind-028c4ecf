@@ -181,7 +181,7 @@ const KidsHome = () => {
       <div className="container px-4">
         <button
           onClick={() => navigate('/train')}
-          className="w-full h-20 rounded-2xl flex items-center justify-center gap-4 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-purple-600 shadow-xl hover:shadow-violet-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
+          className="w-full h-20 rounded-2xl flex items-center justify-center gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
           <span className="text-4xl">🎮</span>

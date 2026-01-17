@@ -24,8 +24,8 @@ const plans: SubscriptionPlan[] = [
     id: 'teacher-pro',
     name: "Ustoz PRO",
     emoji: "👩‍🏫",
-    gradient: "from-emerald-500 to-teal-600",
-    borderColor: "border-emerald-500/50",
+    gradient: "from-amber-500 to-yellow-500",
+    borderColor: "border-amber-500/50",
     features: [
       { text: "Kurs yaratish", icon: "📚" },
       { text: "O'quvchilar statistikasi", icon: "📊" },
@@ -38,8 +38,8 @@ const plans: SubscriptionPlan[] = [
     id: 'kids-pro',
     name: "Bolajon PRO",
     emoji: "👶",
-    gradient: "from-violet-500 to-purple-600",
-    borderColor: "border-violet-500/50",
+    gradient: "from-emerald-500 to-green-600",
+    borderColor: "border-emerald-500/50",
     features: [
       { text: "Barcha o'yinlar", icon: "🎮" },
       { text: "Olimpiadalar", icon: "🏆" },
