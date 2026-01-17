@@ -119,7 +119,7 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
 export const kidsSection = {
   title: "Bolalar uchun",
   emoji: "👶",
-  gradient: "from-violet-500 to-purple-600",
+  gradient: "from-emerald-500 to-green-600",
   buttonText: "O'yinni boshlash",
   mainHref: "/train",
   items: [
@@ -147,7 +147,7 @@ export const parentsSection = {
 export const teachersSection = {
   title: "O'qituvchilar uchun",
   emoji: "👩‍🏫",
-  gradient: "from-emerald-500 to-green-600",
+  gradient: "from-amber-500 to-yellow-500",
   buttonText: "O'rganishni boshlash",
   mainHref: "/courses",
   items: [

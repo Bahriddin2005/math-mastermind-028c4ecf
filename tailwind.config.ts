@@ -92,13 +92,16 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // ===== KIDS GAME COLORS =====
-        'kids-purple': "hsl(var(--kids-purple))",
-        'kids-blue': "hsl(var(--kids-blue))",
+        // ===== IQROMAX BRAND COLORS =====
         'kids-green': "hsl(var(--kids-green))",
+        'kids-green-light': "hsl(var(--kids-green-light))",
+        'kids-green-dark': "hsl(var(--kids-green-dark))",
+        'kids-blue': "hsl(var(--kids-blue))",
         'kids-yellow': "hsl(var(--kids-yellow))",
-        'kids-pink': "hsl(var(--kids-pink))",
+        'kids-gold': "hsl(var(--kids-gold))",
         'kids-orange': "hsl(var(--kids-orange))",
+        'kids-pink': "hsl(var(--kids-pink))",
+        'kids-purple': "hsl(var(--kids-purple))",
         'kids-cyan': "hsl(var(--kids-cyan))",
         'kids-red': "hsl(var(--kids-red))",
       },
@@ -183,8 +186,8 @@ export default {
           "100%": { opacity: "1", transform: "scale(1)" },
         },
         "pulse-subtle": {
-          "0%, 100%": { boxShadow: "0 0 0 0 hsl(270 95% 60% / 0.4)" },
-          "50%": { boxShadow: "0 0 0 12px hsl(270 95% 60% / 0)" },
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(145 80% 42% / 0.4)" },
+          "50%": { boxShadow: "0 0 0 12px hsl(145 80% 42% / 0)" },
         },
         "bounce-soft": {
           "0%, 100%": { transform: "translateY(0)" },
