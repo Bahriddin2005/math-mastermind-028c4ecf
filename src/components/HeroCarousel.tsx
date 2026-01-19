@@ -7,8 +7,13 @@ import {
   CarouselApi,
 } from './ui/carousel';
 import { Button } from './ui/button';
-import { Play, Users, BookOpen, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Autoplay from 'embla-carousel-autoplay';
+
+// Import hero images
+import heroKidsImg from '@/assets/hero-kids.jpg';
+import heroParentsImg from '@/assets/hero-parents.jpg';
+import heroTeachersImg from '@/assets/hero-teachers.jpg';
 
 interface HeroSlide {
   id: string;
@@ -19,6 +24,7 @@ interface HeroSlide {
   gradient: string;
   buttonText: string;
   href: string;
+  image: string;
 }
 
 const heroSlides: HeroSlide[] = [
@@ -31,6 +37,7 @@ const heroSlides: HeroSlide[] = [
     gradient: "from-emerald-500 via-green-500 to-teal-500",
     buttonText: "O'rganishni boshlash",
     href: "/train",
+    image: heroKidsImg,
   },
   {
     id: 'parents',
@@ -41,6 +48,7 @@ const heroSlides: HeroSlide[] = [
     gradient: "from-blue-500 via-cyan-500 to-sky-500",
     buttonText: "Kuzatishni boshlash",
     href: "/statistics",
+    image: heroParentsImg,
   },
   {
     id: 'teachers',
@@ -51,6 +59,7 @@ const heroSlides: HeroSlide[] = [
     gradient: "from-amber-500 via-yellow-500 to-orange-400",
     buttonText: "O'qitishni boshlash",
     href: "/courses",
+    image: heroTeachersImg,
   },
 ];
 
@@ -89,7 +98,7 @@ export const HeroCarousel = () => {
           {heroSlides.map((slide) => (
             <CarouselItem key={slide.id}>
               <div 
-                className={`relative w-full min-h-[40vh] sm:min-h-[45vh] rounded-3xl bg-gradient-to-r ${slide.gradient} p-6 sm:p-10 flex flex-col justify-center overflow-hidden`}
+                className={`relative w-full min-h-[50vh] sm:min-h-[55vh] rounded-3xl bg-gradient-to-r ${slide.gradient} p-6 sm:p-10 flex flex-col justify-center overflow-hidden`}
               >
                 {/* Animated background effects */}
                 <div className="absolute inset-0 overflow-hidden rounded-3xl">
@@ -99,14 +108,16 @@ export const HeroCarousel = () => {
 
                 {/* Content */}
                 <div className="relative z-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
-                  <div className="flex-shrink-0 text-7xl sm:text-8xl lg:text-9xl animate-bounce-soft">
-                    {slide.icon}
-                  </div>
-                  
-                  <div className="flex-1 text-center lg:text-left">
-                    <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 text-white text-sm font-bold mb-4">
-                      {slide.title}
-                    </span>
+                  {/* Left side - Text content */}
+                  <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
+                    <div className="flex items-center gap-3 justify-center lg:justify-start mb-4">
+                      <span className="text-4xl sm:text-5xl animate-bounce-soft">
+                        {slide.icon}
+                      </span>
+                      <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 text-white text-sm font-bold">
+                        {slide.title}
+                      </span>
+                    </div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-black text-white mb-3 leading-tight">
                       {slide.subtitle}
                     </h1>
@@ -121,6 +132,18 @@ export const HeroCarousel = () => {
                       {slide.buttonText}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
+                  </div>
+
+                  {/* Right side - Image */}
+                  <div className="flex-shrink-0 order-1 lg:order-2 w-full lg:w-2/5">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-white/20 rounded-2xl blur-xl transform rotate-3" />
+                      <img 
+                        src={slide.image} 
+                        alt={slide.title}
+                        className="relative w-full h-40 sm:h-52 lg:h-64 object-cover rounded-2xl shadow-2xl border-4 border-white/30"
+                      />
+                    </div>
                   </div>
                 </div>
 
