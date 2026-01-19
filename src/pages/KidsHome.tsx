@@ -5,28 +5,10 @@ import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
 import { useSound } from '@/hooks/useSound';
 import { supabase } from '@/integrations/supabase/client';
-import { Mascot } from '@/components/Mascot';
-import { GameCard } from '@/components/kids/GameCard';
-import { ProgressRing } from '@/components/kids/ProgressRing';
-import { StarBadge, GoldStar, TrophyBadge } from '@/components/kids/StarBadge';
+import { PandaMascot } from '@/components/PandaMascot';
 import { useConfettiEffect } from '@/components/kids/Confetti';
-import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Sparkles,
-  Flame,
-  Star,
-  Crown,
-  Play,
-  Trophy,
-  BookOpen,
-  Zap,
-  Award,
-  TrendingUp,
-  Calendar,
-  FileText,
-} from 'lucide-react';
+import { Play } from 'lucide-react';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { SectionCarousel, kidsSection, parentsSection, teachersSection, personalSection, blogSection } from '@/components/SectionCarousel';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
@@ -52,14 +34,6 @@ const KidsHome = () => {
   const [loading, setLoading] = useState(true);
   const [mascotMood, setMascotMood] = useState<'happy' | 'excited' | 'celebrating'>('happy');
   const [mascotMessage, setMascotMessage] = useState<string | undefined>();
-
-  // Get greeting based on time
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Xayrli tong";
-    if (hour < 18) return "Xayrli kun";
-    return "Xayrli kech";
-  };
 
   // Get mascot message based on progress
   const getMascotMessage = (solved: number, goal: number) => {
@@ -128,10 +102,6 @@ const KidsHome = () => {
 
     fetchData();
   }, [user, authLoading]);
-
-  const dailyGoalProgress = profile ? Math.min((todaySolved / profile.daily_goal) * 100, 100) : 0;
-  const level = Math.floor((profile?.total_score || 0) / 1000) + 1;
-  const xpProgress = ((profile?.total_score || 0) % 1000) / 10;
 
   if (loading || authLoading) {
     return (
@@ -204,139 +174,12 @@ const KidsHome = () => {
         <SubscriptionPlans />
       </div>
 
-      {/* Main Game Cards */}
-      <div className="container px-4 py-6">
-        <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-          <span className="text-3xl">🎯</span>
-          Bugun nima o'ynaymiz?
-        </h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          <GameCard
-            title="Kunlik musobaqa"
-            description="Bugungi chellenjni yechib, do'stlaringiz bilan poygalashing!"
-            icon={Calendar}
-            color="purple"
-            badge="🔥 HOT"
-            emoji="🎯"
-            onClick={() => navigate('/weekly-game')}
-            size="lg"
-          />
-          
-          <GameCard
-            title="Tez hisoblash"
-            description="Aqliy matematikada o'z kuchingizni sinab ko'ring!"
-            icon={Zap}
-            color="blue"
-            badge="⚡ TEZKOR"
-            emoji="🧮"
-            onClick={() => navigate('/mental-arithmetic')}
-            size="lg"
-          />
-          
-          <GameCard
-            title="Video darslar"
-            description="Yangi usullarni o'rganing va mahoratni oshiring!"
-            icon={BookOpen}
-            color="green"
-            badge="📚 YANGI"
-            emoji="🎬"
-            onClick={() => navigate('/courses')}
-            size="lg"
-          />
-        </div>
-      </div>
-
-      {/* More Features */}
-      <div className="container px-4 py-6">
-        <h2 className="text-2xl font-display font-bold mb-6 flex items-center gap-2">
-          <span className="text-3xl">🌟</span>
-          Ko'proq imkoniyatlar
-        </h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          <GameCard
-            title="Reyting"
-            icon={Trophy}
-            color="yellow"
-            emoji="🏆"
-            onClick={() => navigate('/dashboard')}
-            size="sm"
-          />
-          
-          <GameCard
-            title="Yutuqlarim"
-            icon={Award}
-            color="pink"
-            emoji="🏅"
-            onClick={() => navigate('/achievements')}
-            size="sm"
-          />
-          
-          <GameCard
-            title="Statistika"
-            icon={TrendingUp}
-            color="green"
-            emoji="📊"
-            onClick={() => navigate('/statistics')}
-            size="sm"
-          />
-          
-          <GameCard
-            title="Rekordlar"
-            icon={Crown}
-            color="orange"
-            emoji="👑"
-            onClick={() => navigate('/records')}
-            size="sm"
-          />
-          
-          <GameCard
-            title="Varaqalar"
-            icon={FileText}
-            color="blue"
-            emoji="📄"
-            onClick={() => navigate('/problem-sheet')}
-            size="sm"
-          />
-        </div>
-      </div>
-
-      {/* Achievements teaser */}
-      {user && profile && (
-        <div className="container px-4 py-6">
-          <div className="bg-gradient-to-r from-kids-purple/10 via-kids-pink/10 to-kids-blue/10 rounded-3xl p-6 border border-kids-purple/20">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-display font-bold flex items-center gap-2">
-                <span className="text-2xl">🏅</span>
-                So'nggi yutuqlar
-              </h2>
-              <Button 
-                variant="ghost" 
-                className="text-kids-purple font-bold"
-                onClick={() => navigate('/achievements')}
-              >
-                Barchasini ko'rish →
-              </Button>
-            </div>
-            
-            <div className="flex flex-wrap gap-3">
-              <StarBadge type="trophy" color="gold" size="lg" />
-              <StarBadge type="medal" color="silver" size="lg" />
-              <StarBadge type="star" color="purple" size="lg" count={profile.best_streak} />
-              <StarBadge type="flame" color="gold" size="lg" />
-              <StarBadge type="zap" color="blue" size="lg" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Not logged in CTA */}
+      {/* Not logged in CTA with Panda */}
       {!user && (
         <div className="container px-4 py-8">
-          <div className="bg-gradient-to-r from-kids-purple via-kids-pink to-kids-blue rounded-3xl p-8 text-center text-white shadow-2xl">
+          <div className="bg-gradient-to-r from-primary via-accent to-primary rounded-3xl p-8 text-center text-white shadow-2xl">
             <div className="flex justify-center mb-4">
-              <Mascot mood="excited" size="lg" />
+              <PandaMascot mood="excited" size="lg" showMessage={false} />
             </div>
             <h2 className="text-2xl sm:text-3xl font-display font-black mb-3">
               O'yin boshlash uchun ro'yxatdan o'ting!
@@ -347,7 +190,7 @@ const KidsHome = () => {
             <Button 
               size="lg"
               onClick={() => navigate('/auth')}
-              className="bg-white text-kids-purple hover:bg-white/90 font-bold text-lg px-8 py-6 rounded-2xl shadow-lg hover:scale-105 transition-transform"
+              className="bg-white text-primary hover:bg-white/90 font-bold text-lg px-8 py-6 rounded-2xl shadow-lg hover:scale-105 transition-transform"
             >
               <Play className="w-5 h-5 mr-2" />
               Boshlash!

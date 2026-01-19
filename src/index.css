@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Shimmer animation for XP bar */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* Wiggle animation for thinking mascot */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
+}
 @layer base {
   :root {
     /* ===== IQROMAX - DUOLINGO/KHAN ACADEMY KIDS STYLE ===== */

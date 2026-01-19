@@ -16,6 +16,7 @@ import {
 } from './ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
+import { XPLevelBar } from './XPLevelBar';
 
 interface NavbarProps {
   soundEnabled: boolean;
@@ -154,6 +155,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           </nav>
           
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* XP Level Bar - Duolingo style - Desktop */}
+            <div className="hidden md:block">
+              <XPLevelBar />
+            </div>
             {/* Desktop: Start button for non-logged users */}
             {!user && (
               <Button 
