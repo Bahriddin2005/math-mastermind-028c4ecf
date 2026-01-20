@@ -139,29 +139,29 @@ const KidsHome = () => {
   }
 
   return (
-    <PageBackground className="min-h-screen pb-24">
+    <PageBackground className="min-h-screen pb-20 sm:pb-24">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       {/* Hero Carousel */}
-      <div className="container px-4 py-6">
+      <div className="container px-3 xs:px-4 py-4 sm:py-6">
         <HeroCarousel />
       </div>
 
-      {/* Main Action Button */}
-      <div className="container px-4">
+      {/* Main Action Button - Touch optimized */}
+      <div className="container px-3 xs:px-4">
         <button
           onClick={() => navigate('/train')}
-          className="w-full h-20 rounded-2xl flex items-center justify-center gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
+          className="w-full h-16 xs:h-18 sm:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group touch-target"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-          <span className="text-4xl">🎮</span>
-          <span className="text-xl font-bold text-white">O'ynab o'rgan</span>
-          <Play className="w-6 h-6 text-white ml-2" />
+          <span className="text-3xl sm:text-4xl">🎮</span>
+          <span className="text-lg sm:text-xl font-bold text-white">O'ynab o'rgan</span>
+          <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white ml-1 sm:ml-2" />
         </button>
       </div>
 
       {/* Section Carousels */}
-      <div className="container px-4">
+      <div className="container px-3 xs:px-4">
         <SectionCarousel {...kidsSection} />
         <SectionCarousel {...parentsSection} />
         <SectionCarousel {...teachersSection} />
@@ -170,29 +170,29 @@ const KidsHome = () => {
       </div>
 
       {/* Subscription Plans */}
-      <div className="container px-4">
+      <div className="container px-3 xs:px-4">
         <SubscriptionPlans />
       </div>
 
       {/* Not logged in CTA with Panda */}
       {!user && (
-        <div className="container px-4 py-8">
-          <div className="bg-gradient-to-r from-primary via-accent to-primary rounded-3xl p-8 text-center text-white shadow-2xl">
-            <div className="flex justify-center mb-4">
-              <PandaMascot mood="excited" size="lg" showMessage={false} />
+        <div className="container px-3 xs:px-4 py-6 sm:py-8">
+          <div className="bg-gradient-to-r from-primary via-accent to-primary rounded-2xl sm:rounded-3xl p-5 sm:p-8 text-center text-white shadow-2xl">
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <PandaMascot mood="excited" size="md" showMessage={false} />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-black mb-3">
+            <h2 className="text-xl xs:text-2xl sm:text-3xl font-display font-black mb-2 sm:mb-3">
               O'yin boshlash uchun ro'yxatdan o'ting!
             </h2>
-            <p className="text-white/80 mb-6 max-w-md mx-auto">
+            <p className="text-white/80 mb-4 sm:mb-6 max-w-md mx-auto text-sm sm:text-base">
               Yutuqlaringizni saqlang, do'stlar bilan poygalashing va sovg'alar yutib oling! 🎁
             </p>
             <Button 
               size="lg"
               onClick={() => navigate('/auth')}
-              className="bg-white text-primary hover:bg-white/90 font-bold text-lg px-8 py-6 rounded-2xl shadow-lg hover:scale-105 transition-transform"
+              className="bg-white text-primary hover:bg-white/90 font-bold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 rounded-xl sm:rounded-2xl shadow-lg hover:scale-105 transition-transform touch-target"
             >
-              <Play className="w-5 h-5 mr-2" />
+              <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Boshlash!
             </Button>
           </div>
