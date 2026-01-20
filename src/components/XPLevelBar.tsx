@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Progress } from '@/components/ui/progress';
 import { Flame, Zap, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface XPLevelBarProps {
   className?: string;
   compact?: boolean;
+  mobile?: boolean;
 }
 
-export const XPLevelBar = ({ className, compact = false }: XPLevelBarProps) => {
+export const XPLevelBar = ({ className, compact = false, mobile = false }: XPLevelBarProps) => {
   const { user } = useAuth();
   const [gamificationData, setGamificationData] = useState<{
     level: number;
@@ -64,21 +64,62 @@ export const XPLevelBar = ({ className, compact = false }: XPLevelBarProps) => {
 
   const level = gamificationData.level || 1;
   const currentXP = gamificationData.current_xp || 0;
-  const requiredXP = level * 100; // Simple XP formula: level * 100
+  const requiredXP = level * 100;
   const xpProgress = Math.min((currentXP / requiredXP) * 100, 100);
   const energy = gamificationData.energy || 5;
   const combo = gamificationData.combo || 0;
 
+  // Mobile version - more compact, touch-friendly
+  if (mobile) {
+    return (
+      <div className={cn(
+        'flex items-center gap-2 bg-gradient-to-r from-card/90 to-card/80 backdrop-blur-md rounded-xl px-3 py-2 border border-border/40 shadow-md',
+        className
+      )}>
+        {/* Level badge */}
+        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent shadow-lg">
+          <span className="text-white font-black text-sm">{level}</span>
+        </div>
+
+        {/* XP Progress - Compact */}
+        <div className="flex-1 min-w-[60px] max-w-[80px]">
+          <div className="h-2 bg-secondary/80 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500"
+              style={{ width: `${xpProgress}%` }}
+            />
+          </div>
+          <span className="text-[9px] font-bold text-muted-foreground mt-0.5 block text-center">
+            {currentXP}/{requiredXP}
+          </span>
+        </div>
+
+        {/* Energy */}
+        <div className="flex items-center gap-0.5 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg px-2 py-1 border border-yellow-500/30">
+          <Zap className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+          <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">{energy}</span>
+        </div>
+
+        {/* Combo - Only show if > 0 */}
+        {combo > 0 && (
+          <div className="flex items-center gap-0.5 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-lg px-2 py-1 border border-orange-500/30">
+            <Flame className="w-3.5 h-3.5 text-orange-500" />
+            <span className="text-xs font-bold text-orange-600 dark:text-orange-400">x{combo}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Compact version
   if (compact) {
     return (
       <div className={cn('flex items-center gap-2', className)}>
-        {/* Level badge */}
         <div className="flex items-center gap-1 bg-gradient-to-r from-primary/20 to-accent/20 rounded-full px-2.5 py-1 border border-primary/30">
           <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
           <span className="text-xs font-bold">{level}</span>
         </div>
         
-        {/* XP Progress mini */}
         <div className="w-16 h-2 bg-secondary rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
@@ -89,6 +130,7 @@ export const XPLevelBar = ({ className, compact = false }: XPLevelBarProps) => {
     );
   }
 
+  // Desktop version - full
   return (
     <div className={cn(
       'flex items-center gap-3 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-md rounded-2xl px-4 py-2 border border-border/40 shadow-lg',
@@ -115,7 +157,6 @@ export const XPLevelBar = ({ className, compact = false }: XPLevelBarProps) => {
             className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full transition-all duration-500 relative"
             style={{ width: `${xpProgress}%` }}
           >
-            {/* Shimmer effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
           </div>
         </div>
@@ -127,7 +168,7 @@ export const XPLevelBar = ({ className, compact = false }: XPLevelBarProps) => {
         <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">{energy}</span>
       </div>
 
-      {/* Combo (only show if > 0) */}
+      {/* Combo */}
       {combo > 0 && (
         <div className="flex items-center gap-1 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl px-2.5 py-1.5 border border-orange-500/30 animate-pulse">
           <Flame className="w-4 h-4 text-orange-500" />

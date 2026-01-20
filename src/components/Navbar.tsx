@@ -128,10 +128,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl" />
         <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         
-        {/* Animated glow effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse" />
+        {/* Animated glow effect - hidden on very small screens */}
+        <div className="hidden xs:block absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent animate-pulse" />
         
-        <div className="container relative flex h-16 sm:h-18 items-center justify-between px-3 sm:px-4 md:px-8">
+        <div className="container relative flex h-14 xs:h-16 sm:h-18 items-center justify-between px-2 xs:px-3 sm:px-4 md:px-8">
           {/* Logo with animated hover */}
           <Link to="/" className="group relative flex-shrink-0">
             <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
@@ -139,6 +139,11 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               <Logo size="md" />
             </div>
           </Link>
+          
+          {/* Mobile XP Bar - between logo and buttons */}
+          <div className="flex md:hidden flex-1 justify-center px-2">
+            <XPLevelBar mobile />
+          </div>
           
           {/* Center Navigation - Desktop only - Premium glass design */}
           <nav className="hidden lg:flex items-center gap-0.5 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-md rounded-2xl px-2 py-1.5 border border-border/40 shadow-lg shadow-primary/5">
@@ -172,19 +177,19 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               </Button>
             )}
 
-            {/* Theme toggle - Premium design */}
+            {/* Theme toggle - Premium design - Hidden on small mobile */}
             {mounted && (
               <Button 
                 variant="ghost" 
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
-                className="h-11 w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 hover:scale-[1.05] touch-target"
+                className="hidden xs:flex h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 hover:scale-[1.05] touch-target"
               >
                 {theme === 'dark' ? (
-                  <Sun className="h-5 w-5 text-warning transition-transform duration-500 hover:rotate-180" />
+                  <Sun className="h-4 w-4 sm:h-5 sm:w-5 text-warning transition-transform duration-500 hover:rotate-180" />
                 ) : (
-                  <Moon className="h-5 w-5 transition-transform duration-500 hover:-rotate-45" />
+                  <Moon className="h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-500 hover:-rotate-45" />
                 )}
               </Button>
             )}
@@ -317,9 +322,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               size="icon"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Menyuni ochish"
-              className="flex sm:hidden h-11 w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 touch-target"
+              className="flex md:hidden h-10 w-10 xs:h-11 xs:w-11 rounded-xl bg-card/50 backdrop-blur-sm border border-border/30 hover:bg-secondary/80 hover:border-primary/30 transition-all duration-300 touch-target"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5 xs:h-6 xs:w-6" />
             </Button>
           </div>
         </div>

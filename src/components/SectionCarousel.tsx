@@ -40,21 +40,21 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
   }, [api]);
 
   return (
-    <div className="w-full py-6">
+    <div className="w-full py-4 sm:py-6">
       {/* Section Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl sm:text-2xl font-display font-bold flex items-center gap-2">
-          <span className="text-2xl">{emoji}</span>
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h2 className="text-lg xs:text-xl sm:text-2xl font-display font-bold flex items-center gap-1.5 sm:gap-2">
+          <span className="text-xl xs:text-2xl">{emoji}</span>
           {title}
         </h2>
         <Button 
           variant="ghost" 
           size="sm"
-          className="text-primary font-semibold"
+          className="text-primary font-semibold text-xs sm:text-sm px-2 sm:px-3"
           onClick={() => navigate(mainHref)}
         >
           Barchasi
-          <ArrowRight className="ml-1 h-4 w-4" />
+          <ArrowRight className="ml-0.5 sm:ml-1 h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       </div>
 
@@ -67,18 +67,18 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
         }}
         className="w-full"
       >
-        <CarouselContent className="-ml-3">
+        <CarouselContent className="-ml-2 sm:-ml-3">
           {items.map((item, index) => (
-            <CarouselItem key={index} className="pl-3 basis-[80%] sm:basis-1/2 lg:basis-1/3">
+            <CarouselItem key={index} className="pl-2 sm:pl-3 basis-[75%] xs:basis-[70%] sm:basis-1/2 lg:basis-1/3">
               <Card 
-                className={`border-0 shadow-lg overflow-hidden bg-gradient-to-br ${gradient} cursor-pointer hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] transition-all duration-300`}
+                className={`border-0 shadow-lg overflow-hidden bg-gradient-to-br ${gradient} cursor-pointer hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 touch-target`}
                 onClick={() => navigate(item.href)}
               >
-                <CardContent className="p-5 space-y-3">
-                  <div className="text-4xl">{item.icon}</div>
+                <CardContent className="p-4 xs:p-5 space-y-2 sm:space-y-3">
+                  <div className="text-3xl xs:text-4xl">{item.icon}</div>
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-1">{item.title}</h3>
-                    <p className="text-white/80 text-sm leading-relaxed line-clamp-2">{item.description}</p>
+                    <h3 className="text-base xs:text-lg font-bold text-white mb-0.5 sm:mb-1">{item.title}</h3>
+                    <p className="text-white/80 text-xs xs:text-sm leading-relaxed line-clamp-2">{item.description}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -88,15 +88,15 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
       </Carousel>
 
       {/* Dots indicator */}
-      <div className="flex justify-center gap-1.5 mt-4">
+      <div className="flex justify-center gap-1 sm:gap-1.5 mt-3 sm:mt-4">
         {items.map((_, index) => (
           <button
             key={index}
             onClick={() => api?.scrollTo(index)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
+            className={`h-1 sm:h-1.5 rounded-full transition-all duration-300 ${
               current === index 
-                ? 'w-6 bg-primary' 
-                : 'w-1.5 bg-muted-foreground/20 hover:bg-muted-foreground/40'
+                ? 'w-5 sm:w-6 bg-primary' 
+                : 'w-1 sm:w-1.5 bg-muted-foreground/20 hover:bg-muted-foreground/40'
             }`}
             aria-label={`Go to item ${index + 1}`}
           />
@@ -105,11 +105,11 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
 
       {/* Main Action Button */}
       <Button 
-        className={`w-full mt-4 bg-gradient-to-r ${gradient} text-white font-bold hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg`}
+        className={`w-full mt-3 sm:mt-4 h-11 sm:h-12 bg-gradient-to-r ${gradient} text-white font-bold text-sm sm:text-base hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg touch-target`}
         onClick={() => navigate(mainHref)}
       >
         {buttonText}
-        <ArrowRight className="ml-2 h-4 w-4" />
+        <ArrowRight className="ml-1.5 sm:ml-2 h-4 w-4" />
       </Button>
     </div>
   );
