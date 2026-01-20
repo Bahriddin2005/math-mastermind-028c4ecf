@@ -125,16 +125,16 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
     <>
       <header className="sticky top-0 z-50 w-full safe-top">
         {/* Clean glass background */}
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-lg" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-border/50" />
+        <div className="absolute inset-0 bg-background/85 backdrop-blur-xl" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
         
-        <div className="container relative flex h-14 items-center justify-between px-3 sm:px-4 lg:px-6">
-          {/* Logo - Compact */}
-          <Link to="/" className="flex-shrink-0 hover:opacity-80 transition-opacity">
+        <div className="container relative flex h-12 xs:h-13 sm:h-14 items-center justify-between px-2 xs:px-3 sm:px-4 lg:px-6">
+          {/* Logo - Responsive sizing */}
+          <Link to="/" className="flex-shrink-0 hover:opacity-80 active:scale-95 transition-all">
             <Logo size="sm" />
           </Link>
           
-          {/* Center Navigation - Desktop - Clean pill design */}
+          {/* Center Navigation - Desktop only */}
           <nav className="hidden lg:flex items-center gap-1 bg-secondary/60 backdrop-blur-sm rounded-full px-1.5 py-1 border border-border/30">
             {navItems.map((item) => (
               <button
@@ -154,23 +154,23 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
             ))}
           </nav>
 
-          {/* Right side controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Compact XP Bar - Desktop only */}
+          {/* Right side controls - Ultra compact for mobile */}
+          <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2">
+            {/* Compact XP Bar - Tablet+ */}
             {user && (
               <div className="hidden md:flex items-center gap-2 bg-secondary/60 rounded-full px-3 py-1.5 border border-border/30">
                 <XPLevelBar compact />
               </div>
             )}
 
-            {/* Theme toggle - Compact */}
+            {/* Theme toggle - Small on mobile */}
             {mounted && (
               <Button 
                 variant="ghost" 
                 size="icon"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 aria-label={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
-                className="h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
+                className="h-8 w-8 xs:h-9 xs:w-9 rounded-full hover:bg-secondary/80 active:scale-95 transition-all"
               >
                 {theme === 'dark' ? (
                   <Sun className="h-4 w-4 text-warning" />
@@ -180,7 +180,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               </Button>
             )}
 
-            {/* Sound toggle - Desktop only */}
+            {/* Sound toggle - Tablet+ */}
             <Button 
               variant="ghost" 
               size="icon"
@@ -195,7 +195,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               )}
             </Button>
 
-            {/* User menu - Compact design */}
+            {/* User menu - Desktop */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -279,16 +279,29 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               </Button>
             )}
 
-            {/* Mobile menu button */}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setMobileMenuOpen(true)}
-              aria-label="Menyuni ochish"
-              className="flex md:hidden h-9 w-9 rounded-full hover:bg-secondary/80 transition-colors"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            {/* Mobile: User avatar or Login button */}
+            {user ? (
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="flex sm:hidden items-center gap-1.5 h-8 pl-1 pr-2 rounded-full bg-secondary/60 border border-border/40 active:scale-95 transition-all"
+              >
+                <Avatar className="h-6 w-6 border border-primary/30">
+                  <AvatarImage src={profile?.avatar_url || undefined} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-[10px] font-bold">
+                    {profile?.username?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <Menu className="h-4 w-4 text-muted-foreground" />
+              </button>
+            ) : (
+              <Button 
+                size="sm" 
+                onClick={() => navigate('/auth')} 
+                className="flex sm:hidden h-8 px-3 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-xs"
+              >
+                Kirish
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -296,141 +309,138 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] animate-fade-in"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-fade-in"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
-      {/* Mobile Menu Panel - Clean slide design */}
+      {/* Mobile Menu Panel - Modern compact design */}
       <div 
-        className={`fixed top-0 right-0 h-full w-[85%] max-w-xs z-[70] bg-card shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-[80%] max-w-[280px] z-[70] bg-card/98 backdrop-blur-xl shadow-2xl transform transition-transform duration-250 ease-out flex flex-col ${
           mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border/50">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between p-3 border-b border-border/40">
           <Logo size="sm" />
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setMobileMenuOpen(false)}
-            className="h-9 w-9 rounded-full hover:bg-secondary"
+            className="h-8 w-8 rounded-full hover:bg-secondary active:scale-95"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* User info */}
+        {/* Compact User Card */}
         {user && profile && (
-          <div className="p-4 border-b border-border/50">
+          <div className="p-3 border-b border-border/40">
             <button
               onClick={() => handleNavigation('/settings')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+              className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 active:scale-[0.98] transition-all"
             >
-              <Avatar className="h-11 w-11 border-2 border-primary/30">
+              <Avatar className="h-10 w-10 border-2 border-primary/40 shadow-sm">
                 <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                <AvatarFallback className="bg-primary text-primary-foreground font-bold text-sm">
                   {profile.username?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 text-left">
-                <p className="font-semibold truncate">{profile.username}</p>
-                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Trophy className="h-3 w-3 text-warning" />
-                  {profile.total_score} ball
-                </p>
+              <div className="flex-1 text-left min-w-0">
+                <p className="font-semibold text-sm truncate">{profile.username}</p>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Trophy className="h-3 w-3 text-warning" />
+                    {profile.total_score}
+                  </span>
+                </div>
               </div>
-              <ChevronDown className="h-4 w-4 text-muted-foreground -rotate-90" />
+              <ChevronDown className="h-4 w-4 text-muted-foreground -rotate-90 flex-shrink-0" />
             </button>
           </div>
         )}
 
-        {/* Navigation */}
-        <div ref={navScrollRef} className="flex-1 overflow-y-auto p-3 space-y-1">
-          {navItems.map((item) => (
+        {/* Navigation Grid */}
+        <div ref={navScrollRef} className="flex-1 overflow-y-auto p-3">
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {navItems.map((item) => (
+              <button
+                key={item.path}
+                data-active={isActive(item.path)}
+                onClick={() => handleNavigation(item.path)}
+                className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all duration-200 active:scale-95 ${
+                  isActive(item.path)
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-secondary/60 hover:bg-secondary border border-border/30'
+                }`}
+              >
+                <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${
+                  isActive(item.path) ? 'bg-white/20' : 'bg-background/60'
+                }`}>
+                  <span className="text-lg">{item.emoji}</span>
+                </div>
+                <span className="text-xs font-medium">{item.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="h-px bg-border/40 my-3" />
+
+          {/* Quick Actions */}
+          <div className="space-y-1.5">
+            {/* Sound toggle */}
             <button
-              key={item.path}
-              data-active={isActive(item.path)}
-              onClick={() => handleNavigation(item.path)}
-              className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
-                isActive(item.path)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-secondary'
-              }`}
+              onClick={() => {
+                onToggleSound();
+              }}
+              className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-secondary/60 active:scale-[0.98] transition-all"
             >
-              <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${
-                isActive(item.path) ? 'bg-white/20' : 'bg-secondary'
+              <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${
+                soundEnabled ? 'bg-primary/15 text-primary' : 'bg-secondary text-muted-foreground'
               }`}>
-                <item.icon className="h-4 w-4" />
+                {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
               </div>
-              <span className="font-medium">{item.label}</span>
-              {isActive(item.path) && (
-                <div className="ml-auto w-1.5 h-1.5 bg-white rounded-full" />
-              )}
+              <span className="text-sm font-medium flex-1 text-left">Ovoz</span>
+              <div className={`w-8 h-5 rounded-full transition-colors ${
+                soundEnabled ? 'bg-primary' : 'bg-muted'
+              } flex items-center ${soundEnabled ? 'justify-end' : 'justify-start'} px-0.5`}>
+                <div className="w-4 h-4 bg-white rounded-full shadow-sm" />
+              </div>
             </button>
-          ))}
 
-          <div className="h-px bg-border/50 my-3" />
-
-          {/* Sound toggle */}
-          <button
-            onClick={() => {
-              onToggleSound();
-              setMobileMenuOpen(false);
-            }}
-            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors"
-          >
-            <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${
-              soundEnabled ? 'bg-primary/15' : 'bg-secondary'
-            }`}>
-              {soundEnabled ? (
-                <Volume2 className="h-4 w-4 text-primary" />
-              ) : (
-                <VolumeX className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-            <span className="font-medium flex-1 text-left">
-              {soundEnabled ? "Ovoz yoqilgan" : "Ovoz o'chirilgan"}
-            </span>
-            <div className={`w-9 h-5 rounded-full transition-colors ${
-              soundEnabled ? 'bg-primary' : 'bg-muted'
-            } flex items-center ${soundEnabled ? 'justify-end' : 'justify-start'} px-0.5`}>
-              <div className="w-4 h-4 bg-white rounded-full shadow-sm" />
-            </div>
-          </button>
-
-          {/* Settings */}
-          <button
-            onClick={() => handleNavigation('/settings')}
-            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-secondary transition-colors"
-          >
-            <div className="h-9 w-9 rounded-lg bg-secondary flex items-center justify-center">
-              <Settings className="h-4 w-4" />
-            </div>
-            <span className="font-medium">Sozlamalar</span>
-          </button>
-
-          {/* Admin panel */}
-          {isAdmin && (
+            {/* Settings */}
             <button
-              onClick={() => handleNavigation('/admin')}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/15 text-primary transition-colors"
+              onClick={() => handleNavigation('/settings')}
+              className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-secondary/60 active:scale-[0.98] transition-all"
             >
-              <div className="h-9 w-9 rounded-lg bg-primary/20 flex items-center justify-center">
-                <ShieldCheck className="h-4 w-4" />
+              <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
+                <Settings className="h-4 w-4 text-muted-foreground" />
               </div>
-              <span className="font-medium">Admin panel</span>
+              <span className="text-sm font-medium">Sozlamalar</span>
             </button>
-          )}
+
+            {/* Admin panel */}
+            {isAdmin && (
+              <button
+                onClick={() => handleNavigation('/admin')}
+                className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-primary/10 hover:bg-primary/15 active:scale-[0.98] transition-all"
+              >
+                <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                </div>
+                <span className="text-sm font-medium text-primary">Admin panel</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Bottom action */}
-        <div className="p-4 border-t border-border/50">
+        {/* Bottom Action - Compact */}
+        <div className="p-3 border-t border-border/40 safe-bottom">
           {user ? (
             <Button 
               variant="outline" 
               onClick={handleSignOut}
-              className="w-full h-11 rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="w-full h-10 rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 active:scale-[0.98]"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Chiqish
@@ -438,10 +448,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           ) : (
             <Button 
               onClick={() => handleNavigation('/auth')}
-              className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90"
+              className="w-full h-10 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98]"
             >
               <Sparkles className="h-4 w-4 mr-2" />
-              Boshlash
+              Ro'yxatdan o'tish
             </Button>
           )}
         </div>
