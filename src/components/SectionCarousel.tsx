@@ -134,13 +134,13 @@ export const parentsSection = {
   title: "Ota-onalar uchun",
   emoji: "👨‍👩‍👧‍👦",
   gradient: "from-blue-500 to-cyan-600",
-  buttonText: "Kuzatishni boshlash",
-  mainHref: "/statistics",
+  buttonText: "Kuzatish paneli",
+  mainHref: "/parent-dashboard",
   items: [
-    { icon: "📊", title: "Statistika", description: "Farzandingiz rivojini kuzating", href: "/statistics" },
-    { icon: "📈", title: "Rekordlar", description: "Eng yaxshi natijalarni ko'ring", href: "/records" },
-    { icon: "🎯", title: "Maqsadlar", description: "Kunlik va haftalik maqsadlar", href: "/dashboard" },
-    { icon: "🏅", title: "Yutuqlar", description: "Erishilgan yutuqlar ro'yxati", href: "/achievements" },
+    { icon: "📊", title: "Kuzatuv paneli", description: "Farzandingiz rivojini kuzating", href: "/parent-dashboard" },
+    { icon: "📈", title: "Statistika", description: "Batafsil statistika ko'ring", href: "/statistics" },
+    { icon: "🎯", title: "Kunlik maqsad", description: "Bugungi natijalar", href: "/parent-dashboard" },
+    { icon: "💡", title: "Tavsiyalar", description: "Shaxsiy tavsiyalar", href: "/parent-dashboard" },
   ],
 };
 
