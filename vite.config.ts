@@ -15,17 +15,18 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.jpg", "robots.txt"],
+      includeAssets: ["favicon.jpg", "robots.txt", "pwa-192x192.png", "pwa-512x512.png"],
       manifest: {
-        name: "IQROMAX - Mental Matematika",
+        name: "IQROMAX - Mental Arifmetika",
         short_name: "IQROMAX",
-        description: "Bolalar uchun mental matematika mashqlari",
-        theme_color: "#6366f1",
-        background_color: "#0f172a",
+        description: "5-14 yoshli bolalar uchun mental arifmetika platformasi",
+        theme_color: "#22c55e",
+        background_color: "#f8fdf8",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
         start_url: "/",
+        categories: ["education", "kids", "games"],
         icons: [
           {
             src: "/pwa-192x192.png",
@@ -44,10 +45,19 @@ export default defineConfig(({ mode }) => ({
             purpose: "maskable",
           },
         ],
+        screenshots: [
+          {
+            src: "/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            form_factor: "narrow",
+          },
+        ],
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2,webp}"],
+        // Cache strategies for offline support
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -71,6 +81,37 @@ export default defineConfig(({ mode }) => ({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Cache API calls with network-first strategy
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 5, // 5 minutes
+              },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Cache images
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "images-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200],
