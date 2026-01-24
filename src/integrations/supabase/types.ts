@@ -924,6 +924,42 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_email_preferences: {
+        Row: {
+          child_user_id: string | null
+          created_at: string
+          email: string
+          id: string
+          last_report_sent_at: string | null
+          streak_alerts_enabled: boolean
+          updated_at: string
+          user_id: string
+          weekly_report_enabled: boolean
+        }
+        Insert: {
+          child_user_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          last_report_sent_at?: string | null
+          streak_alerts_enabled?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_report_enabled?: boolean
+        }
+        Update: {
+          child_user_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          last_report_sent_at?: string | null
+          streak_alerts_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_report_enabled?: boolean
+        }
+        Relationships: []
+      }
       problem_sheets: {
         Row: {
           columns_per_row: number
