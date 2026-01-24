@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { PullToRefresh } from '@/components/PullToRefresh';
+import { ParentEmailSettings } from '@/components/ParentEmailSettings';
 import { PageSkeleton } from '@/components/PageSkeleton';
 import { 
   TrendingUp, 
@@ -556,6 +557,14 @@ const ParentDashboard = () => {
                 {gamification?.total_xp || 0}
               </div>
             </Card>
+          </div>
+
+          {/* Email Settings */}
+          <div className="mt-6">
+            <h3 className="font-display font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
+              📧 Email sozlamalari
+            </h3>
+            <ParentEmailSettings />
           </div>
 
           {/* Quick Actions */}
