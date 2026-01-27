@@ -244,39 +244,44 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     )}
                   </div>
 
-                  {/* Title - Premium typography with glow effect and slide-up animation */}
+                  {/* Title - Premium typography with gradient and glow effect */}
                   <h1 
-                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.1] mb-2 xs:mb-3 sm:mb-4 md:mb-5 transition-all duration-500 ${
+                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 transition-all duration-600 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
                     }`}
                     style={{ transitionDelay: current === index ? '200ms' : '0ms' }}
                   >
                     <span 
-                      className="text-white drop-shadow-2xl bg-clip-text" 
+                      className="bg-gradient-to-r from-white via-white to-white/90 bg-clip-text text-transparent drop-shadow-2xl" 
                       style={{ 
-                        textShadow: '0 4px 20px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4), 0 0 40px rgba(255,255,255,0.1)'
+                        textShadow: '0 4px 30px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5), 0 0 60px rgba(255,255,255,0.15)',
+                        WebkitTextStroke: '0.5px rgba(255,255,255,0.1)'
                       }}
                     >
                       {slide.title}
                     </span>
                   </h1>
 
-                  {/* Description - Elegant styling with glass effect and fade animation */}
-                  <p 
-                    className={`text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-4 xs:mb-5 sm:mb-6 md:mb-8 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide transition-all duration-500 ${
+                  {/* Description - Glass card with elegant styling */}
+                  <div 
+                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-500 ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
-                    style={{ 
-                      textShadow: '0 2px 10px rgba(0,0,0,0.5)',
-                      transitionDelay: current === index ? '300ms' : '0ms'
-                    }}
+                    style={{ transitionDelay: current === index ? '300ms' : '0ms' }}
                   >
-                    {slide.description}
-                  </p>
+                    <p 
+                      className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide px-3 py-2 sm:px-0 sm:py-0"
+                      style={{ 
+                        textShadow: '0 2px 15px rgba(0,0,0,0.6)'
+                      }}
+                    >
+                      {slide.description}
+                    </p>
+                  </div>
 
-                  {/* CTA Buttons - scale animation */}
+                  {/* CTA Buttons - Premium glassmorphism design */}
                   <div 
-                    className={`flex flex-row justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-4 transition-all duration-500 ${
+                    className={`flex flex-row justify-center gap-3 xs:gap-3.5 sm:gap-4 md:gap-5 transition-all duration-500 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-90'
                     }`}
                     style={{ transitionDelay: current === index ? '400ms' : '0ms' }}
@@ -284,21 +289,23 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     <Button 
                       size="default"
                       onClick={() => navigate('/auth')}
-                      className={`gap-1.5 xs:gap-2 sm:gap-2.5 ${slide.cta.className} font-bold shadow-xl active:scale-95 transition-all duration-200 h-9 xs:h-10 sm:h-12 md:h-14 text-xs xs:text-sm sm:text-base px-3 xs:px-4 sm:px-6 md:px-8 rounded-lg sm:rounded-xl flex-1 sm:flex-none`}
+                      className={`group relative overflow-hidden gap-2 xs:gap-2.5 sm:gap-3 ${slide.cta.className} font-bold shadow-2xl active:scale-95 transition-all duration-300 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 rounded-xl sm:rounded-2xl flex-1 sm:flex-none border-2 border-white/20 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]`}
                     >
-                      <slide.cta.icon className="h-4 w-4 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
-                      <span className="truncate">{slide.cta.text}</span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                      <slide.cta.icon className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6 drop-shadow-lg" />
+                      <span className="truncate font-extrabold tracking-wide">{slide.cta.text}</span>
                     </Button>
                     {slide.showLogo && (
                       <Button 
                         size="default"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="gap-1.5 xs:gap-2 bg-white/20 border border-white/40 text-white hover:bg-white/30 active:scale-95 h-9 xs:h-10 sm:h-12 md:h-14 text-xs xs:text-sm sm:text-base px-3 xs:px-4 sm:px-6 md:px-8 backdrop-blur-sm rounded-lg sm:rounded-xl transition-all duration-200 font-semibold flex-1 sm:flex-none"
+                        className="group relative overflow-hidden gap-2 xs:gap-2.5 bg-white/15 border-2 border-white/30 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 backdrop-blur-md rounded-xl sm:rounded-2xl transition-all duration-300 font-bold flex-1 sm:flex-none shadow-xl hover:shadow-2xl"
                       >
-                        <Gamepad2 className="h-4 w-4 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
-                        <span className="hidden xs:inline">Demo</span>
-                        <span className="xs:hidden">🎮</span>
+                        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <Gamepad2 className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6" />
+                        <span className="hidden xs:inline font-extrabold">Demo sinash</span>
+                        <span className="xs:hidden text-lg">🎮</span>
                       </Button>
                     )}
                   </div>
@@ -308,9 +315,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           ))}
         </CarouselContent>
         
-        {/* Navigation Arrows - Hidden on mobile */}
-        <CarouselPrevious className="hidden md:flex left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm h-10 w-10" />
-        <CarouselNext className="hidden md:flex right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm h-10 w-10" />
+        {/* Navigation Arrows - Visible on all devices */}
+        <CarouselPrevious className="flex left-1 sm:left-2 md:left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 transition-all backdrop-blur-md h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
+        <CarouselNext className="flex right-1 sm:right-2 md:right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 transition-all backdrop-blur-md h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
       </Carousel>
 
       {/* Dot Indicators - Compact on mobile */}
