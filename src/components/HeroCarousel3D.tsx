@@ -219,6 +219,11 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   }}
                 />
 
+                {/* Animated gradient overlay */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-kid-yellow/20 bg-[length:400%_400%] animate-[gradient-shift_8s_ease-in-out_infinite] opacity-60"
+                />
+                
                 {/* Blur overlay for better text readability */}
                 <div className="absolute inset-0 backdrop-blur-[2px] sm:backdrop-blur-[1px]" />
                 
@@ -228,6 +233,10 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                 
                 {/* Vignette effect */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
+                
+                {/* Animated glow spots */}
+                <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-64 sm:h-64 bg-kid-yellow/20 rounded-full blur-3xl animate-pulse opacity-50" />
+                <div className="absolute bottom-1/3 right-1/4 w-24 h-24 sm:w-48 sm:h-48 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
 
                 {/* Content - optimized padding for mobile */}
                 <div 
@@ -294,12 +303,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                       {/* Glow effect behind text */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl rounded-2xl" />
                       <p 
-                        className="relative text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl text-white max-w-sm xs:max-w-md sm:max-w-xl md:max-w-2xl leading-snug xs:leading-relaxed sm:leading-loose font-semibold tracking-wide px-3 py-2 xs:px-4 xs:py-3 sm:px-6 sm:py-4 bg-black/20 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/10"
+                        className="relative text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl text-white max-w-sm xs:max-w-md sm:max-w-xl md:max-w-2xl leading-snug xs:leading-relaxed sm:leading-loose font-semibold tracking-wide px-3 py-2 xs:px-4 xs:py-3 sm:px-6 sm:py-4 bg-black/30 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/20"
                         style={{ 
-                          textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(255,255,255,0.1)'
+                          textShadow: '0 2px 4px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9), 0 8px 40px rgba(0,0,0,0.6), 0 0 60px rgba(255,255,255,0.15)'
                         }}
                       >
-                        <span className="bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text">
+                        <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                           {slide.description}
                         </span>
                       </p>
