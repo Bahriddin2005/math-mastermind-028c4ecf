@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { 
@@ -17,23 +17,16 @@ import {
   Gamepad2,
   Rocket,
   Eye,
-  FileText,
-  Volume2,
-  VolumeX,
-  Trophy,
-  Users,
-  Sparkles
+  FileText
 } from 'lucide-react';
 import iqromaxLogo from '@/assets/iqromax-logo-full.png';
-import heroKidsLearning from '@/assets/hero-kids-learning.jpg';
-import heroParentsChild from '@/assets/hero-parents-child.jpg';
-import heroTeacherClass from '@/assets/hero-teacher-class.jpg';
-import heroVideo from '@/assets/hero-video-kids.mp4';
+import heroSlideKids from '@/assets/hero-slide-kids.jpg';
+import heroSlideParents from '@/assets/hero-slide-parents.jpg';
+import heroSlideTeachers from '@/assets/hero-slide-teachers.jpg';
 
 interface HeroSlide {
   id: string;
   image: string;
-  video?: string;
   gradientOverlay: string;
   badge: {
     icon: React.ElementType;
@@ -63,15 +56,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Memoized slides to prevent re-renders
+  // Memoized slides - only 3 slides for performance
   const slides: HeroSlide[] = useMemo(() => [
     {
       id: 'kids',
-      image: heroKidsLearning,
-      video: heroVideo,
+      image: heroSlideKids,
       gradientOverlay: 'from-black/60 via-black/20 to-transparent',
       badge: {
         icon: Rocket,
@@ -96,51 +86,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
     },
     {
-      id: 'gamification',
-      image: heroKidsLearning,
-      gradientOverlay: 'from-purple-900/70 via-purple-900/30 to-transparent',
-      badge: {
-        icon: Trophy,
-        text: "O'yin tizimi",
-        bgColor: 'bg-purple-500 text-white',
-      },
-      title: (
-        <>
-          <span className="text-kid-yellow">XP, Level</span> va mukofotlar
-        </>
-      ),
-      description: "Har bir to'g'ri javob uchun XP oling, yangi darajaga chiqing va do'stlaringiz bilan musobaqalashing!",
-      cta: {
-        icon: Trophy,
-        text: "O'ynashni boshlash",
-        className: 'bg-purple-500 text-white hover:bg-purple-600',
-      },
-    },
-    {
-      id: 'competition',
-      image: heroTeacherClass,
-      gradientOverlay: 'from-green-900/70 via-green-900/30 to-transparent',
-      badge: {
-        icon: Users,
-        text: 'Jonli musobaqa',
-        bgColor: 'bg-green-500 text-white',
-        extraBadge: 'Yangi',
-      },
-      title: (
-        <>
-          <span className="text-kid-yellow">Haftalik turnirlar</span> va reyting
-        </>
-      ),
-      description: "Boshqa o'quvchilar bilan real vaqtda musobaqalashing va TOP-10 ga kiring!",
-      cta: {
-        icon: Users,
-        text: 'Musobaqaga qo\'shilish',
-        className: 'bg-green-500 text-white hover:bg-green-600',
-      },
-    },
-    {
       id: 'parents',
-      image: heroParentsChild,
+      image: heroSlideParents,
       gradientOverlay: 'from-blue-900/60 via-blue-900/20 to-transparent',
       badge: {
         icon: Eye,
@@ -160,29 +107,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
     },
     {
-      id: 'features',
-      image: heroKidsLearning,
-      gradientOverlay: 'from-pink-900/70 via-pink-900/30 to-transparent',
-      badge: {
-        icon: Sparkles,
-        text: 'Premium xususiyatlar',
-        bgColor: 'bg-pink-500 text-white',
-      },
-      title: (
-        <>
-          <span className="text-kid-yellow">Cheksiz</span> imkoniyatlar
-        </>
-      ),
-      description: "Sun'iy intellekt yordamchisi, shaxsiy o'quv rejasi va oflayn rejim!",
-      cta: {
-        icon: Sparkles,
-        text: 'Premium olish',
-        className: 'bg-pink-500 text-white hover:bg-pink-600',
-      },
-    },
-    {
       id: 'teachers',
-      image: heroTeacherClass,
+      image: heroSlideTeachers,
       gradientOverlay: 'from-amber-900/60 via-amber-900/20 to-transparent',
       badge: {
         icon: GraduationCap,
@@ -219,38 +145,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
     };
   }, [api]);
 
-  // Play video when slide is active - iOS Safari compatible
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (current === 0) {
-      // iOS Safari requires muted for autoplay
-      video.muted = true;
-      video.playsInline = true;
-      video.play().catch(() => {
-        // Autoplay failed, likely due to browser policy
-        console.log('Video autoplay prevented by browser');
-      });
-    } else {
-      video.pause();
-    }
-  }, [current]);
-
-  // Sync mute state with video
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = isMuted;
-    }
-  }, [isMuted]);
-
   const scrollTo = useCallback((index: number) => {
     api?.scrollTo(index);
   }, [api]);
-
-  const toggleMute = useCallback(() => {
-    setIsMuted(prev => !prev);
-  }, []);
 
   // Autoplay plugin with touch-friendly settings
   const autoplayPlugin = useMemo(() => 
@@ -278,33 +175,17 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="touch-manipulation">
               <div className="relative h-[380px] sm:h-[420px] md:h-[480px] overflow-hidden">
-                {/* Video or Image Background */}
-                {slide.video && index === 0 ? (
-                  <video
-                    ref={videoRef}
-                    src={slide.video}
-                    poster={slide.image}
-                    muted={isMuted}
-                    loop
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ 
-                      transform: current === index ? 'scale(1.02)' : 'scale(1.1)',
-                      transition: 'transform 0.5s ease-out',
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={slide.image}
-                    alt={slide.id}
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ 
-                      transform: current === index ? 'scale(1.02)' : 'scale(1.1)',
-                      transition: 'transform 0.5s ease-out',
-                    }}
-                  />
-                )}
+                {/* Image Background */}
+                <img 
+                  src={slide.image}
+                  alt={slide.id}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ 
+                    transform: current === index ? 'scale(1.02)' : 'scale(1.1)',
+                    transition: 'transform 0.5s ease-out',
+                  }}
+                />
 
                 {/* Gradient Overlay */}
                 <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradientOverlay}`} />
@@ -366,17 +247,6 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     )}
                   </div>
                 </div>
-
-                {/* Video Sound Toggle - Only for video slide */}
-                {slide.video && index === 0 && current === 0 && (
-                  <button
-                    onClick={toggleMute}
-                    className="absolute bottom-20 right-4 sm:bottom-24 sm:right-6 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/60 transition-all touch-target"
-                    aria-label={isMuted ? 'Ovozni yoqish' : "Ovozni o'chirish"}
-                  >
-                    {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
-                  </button>
-                )}
               </div>
             </CarouselItem>
           ))}
