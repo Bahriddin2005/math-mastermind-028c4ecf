@@ -35,6 +35,7 @@ import {
   Settings,
   Edit3,
   Check,
+  LogOut,
 } from 'lucide-react';
 
 // Predefined avatar options for kids
@@ -44,7 +45,7 @@ const AVATAR_OPTIONS = [
 ];
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { triggerConfetti } = useConfettiEffect();
@@ -289,15 +290,30 @@ const Profile = () => {
             <ArrowLeft className="h-4 w-4" />
             Orqaga
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate('/settings')}
-            className="gap-1.5"
-          >
-            <Settings className="h-4 w-4" />
-            Sozlamalar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/settings')}
+              className="gap-1.5"
+            >
+              <Settings className="h-4 w-4" />
+              Sozlamalar
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await signOut();
+                navigate('/');
+                toast.success('Tizimdan chiqdingiz');
+              }}
+              className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <LogOut className="h-4 w-4" />
+              Chiqish
+            </Button>
+          </div>
         </div>
 
         {/* Profile Hero */}
