@@ -26,6 +26,8 @@ interface VideoPlayerProps {
   onNext?: () => void;
   hasPrevious?: boolean;
   hasNext?: boolean;
+  initialTime?: number;
+  onTimeUpdate?: (currentTime: number) => void;
 }
 
 const PLAYBACK_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -36,7 +38,9 @@ export const VideoPlayer = ({
   onPrevious, 
   onNext, 
   hasPrevious = false, 
-  hasNext = false 
+  hasNext = false,
+  initialTime = 0,
+  onTimeUpdate
 }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,18 +53,42 @@ export const VideoPlayer = ({
   const [showControls, setShowControls] = useState(true);
   const hideControlsTimeout = useRef<NodeJS.Timeout>();
 
+  const [hasSetInitialTime, setHasSetInitialTime] = useState(false);
+  const lastSavedTimeRef = useRef(0);
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handleLoadedMetadata = () => setDuration(video.duration);
+    const handleTimeUpdate = () => {
+      setCurrentTime(video.currentTime);
+      
+      // Call onTimeUpdate every 5 seconds to save progress
+      if (onTimeUpdate && Math.abs(video.currentTime - lastSavedTimeRef.current) >= 5) {
+        lastSavedTimeRef.current = video.currentTime;
+        onTimeUpdate(video.currentTime);
+      }
+    };
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      // Set initial time when video loads
+      if (!hasSetInitialTime && initialTime > 0 && initialTime < video.duration - 5) {
+        video.currentTime = initialTime;
+        setCurrentTime(initialTime);
+        setHasSetInitialTime(true);
+      }
+    };
     const handleEnded = () => {
       setIsPlaying(false);
+      onTimeUpdate?.(video.duration);
       onEnded?.();
     };
     const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
+    const handlePause = () => {
+      setIsPlaying(false);
+      // Save progress when paused
+      onTimeUpdate?.(video.currentTime);
+    };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
@@ -75,7 +103,7 @@ export const VideoPlayer = ({
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
     };
-  }, [onEnded]);
+  }, [onEnded, onTimeUpdate, initialTime, hasSetInitialTime]);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
