@@ -192,46 +192,48 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content */}
                 <div 
-                  className={`absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white transition-opacity duration-300 ${
-                    current === index ? 'opacity-100' : 'opacity-0'
+                  className={`absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white transition-all duration-500 ${
+                    current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
                   {/* Badge Row */}
-                  <div className="flex items-center gap-2 sm:gap-3 mb-3">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
                     {slide.showLogo && (
-                      <div className="bg-white rounded-xl p-2 shadow-lg">
-                        <img src={iqromaxLogo} alt="IQROMAX" className="h-7 sm:h-9 w-auto" />
+                      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-2.5 shadow-2xl ring-2 ring-white/20">
+                        <img src={iqromaxLogo} alt="IQROMAX" className="h-8 sm:h-10 w-auto" />
                       </div>
                     )}
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 ${slide.badge.bgColor} rounded-full text-xs font-bold shadow-lg`}>
-                      <slide.badge.icon className="h-3 w-3" />
+                    <span className={`inline-flex items-center gap-2 px-3.5 py-1.5 ${slide.badge.bgColor} rounded-full text-xs sm:text-sm font-bold shadow-xl backdrop-blur-sm ring-1 ring-white/20`}>
+                      <slide.badge.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       {slide.badge.text}
                     </span>
                     {slide.badge.extraBadge && (
-                      <span className="px-2 py-0.5 bg-amber-200 text-amber-800 rounded-full text-[10px] font-bold">
-                        {slide.badge.extraBadge}
+                      <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 to-yellow-400 text-amber-900 rounded-full text-[10px] sm:text-xs font-bold shadow-lg animate-pulse">
+                        ✨ {slide.badge.extraBadge}
                       </span>
                     )}
                   </div>
 
-                  {/* Title */}
-                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-display font-black leading-tight mb-2 drop-shadow-lg">
-                    {slide.title}
+                  {/* Title with animated gradient text */}
+                  <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-display font-black leading-[1.1] mb-3 sm:mb-4">
+                    <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                      {slide.title}
+                    </span>
                   </h1>
 
-                  {/* Description */}
-                  <p className="text-base sm:text-lg md:text-xl text-white/90 mb-4 max-w-xl drop-shadow-md">
+                  {/* Description with better readability */}
+                  <p className="text-base sm:text-lg md:text-xl text-white/95 mb-5 sm:mb-6 max-w-2xl leading-relaxed font-medium" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
                     {slide.description}
                   </p>
 
-                  {/* CTA Buttons */}
-                  <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
+                  {/* Enhanced CTA Buttons */}
+                  <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
                     <Button 
                       size="lg"
                       onClick={() => navigate('/auth')}
-                      className={`gap-2 ${slide.cta.className} font-bold shadow-xl hover:shadow-2xl active:scale-95 transition-all h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6 touch-target`}
+                      className={`gap-2.5 ${slide.cta.className} font-bold shadow-2xl hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] active:scale-95 transition-all duration-300 h-12 sm:h-14 text-sm sm:text-base px-6 sm:px-8 rounded-xl ring-2 ring-white/20`}
                     >
-                      <slide.cta.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <slide.cta.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       {slide.cta.text}
                     </Button>
                     {slide.showLogo && (
@@ -239,9 +241,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                         size="lg"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 active:scale-95 h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6 backdrop-blur-sm touch-target"
+                        className="gap-2.5 bg-white/15 border-2 border-white/40 text-white hover:bg-white/25 hover:border-white/60 active:scale-95 h-12 sm:h-14 text-sm sm:text-base px-6 sm:px-8 backdrop-blur-md rounded-xl transition-all duration-300 font-semibold"
                       >
-                        <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6" />
                         Demo sinab ko'ring
                       </Button>
                     )}
