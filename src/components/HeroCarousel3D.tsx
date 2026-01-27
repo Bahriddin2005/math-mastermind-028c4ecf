@@ -238,6 +238,38 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                 <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-64 sm:h-64 bg-kid-yellow/20 rounded-full blur-3xl animate-pulse opacity-50" />
                 <div className="absolute bottom-1/3 right-1/4 w-24 h-24 sm:w-48 sm:h-48 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
 
+                {/* Floating particles */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  {[...Array(12)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="absolute w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full opacity-60"
+                      style={{
+                        left: `${10 + (i * 7) % 80}%`,
+                        top: `${20 + (i * 11) % 60}%`,
+                        animation: `float ${3 + (i % 3)}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.3}s`,
+                        boxShadow: '0 0 6px 2px rgba(255,255,255,0.6)',
+                      }}
+                    />
+                  ))}
+                  {[...Array(6)].map((_, i) => (
+                    <div
+                      key={`star-${i}`}
+                      className="absolute text-white/70 animate-pulse"
+                      style={{
+                        left: `${15 + (i * 15) % 70}%`,
+                        top: `${10 + (i * 13) % 50}%`,
+                        fontSize: `${8 + (i % 3) * 4}px`,
+                        animationDelay: `${i * 0.5}s`,
+                        filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.8))',
+                      }}
+                    >
+                      ✦
+                    </div>
+                  ))}
+                </div>
+
                 {/* Content - optimized padding for mobile */}
                 <div 
                   className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-700 ${
@@ -325,28 +357,38 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     <Button 
                       size="lg"
                       onClick={() => navigate('/auth')}
-                      className={`group relative overflow-hidden gap-2.5 xs:gap-3 sm:gap-4 ${slide.cta.className} font-black shadow-2xl active:scale-95 transition-all duration-300 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 rounded-2xl sm:rounded-3xl border-2 border-white/30 hover:border-white/60 hover:shadow-[0_0_50px_rgba(255,255,255,0.4)] hover:scale-105`}
+                      className={`group relative overflow-hidden gap-2.5 xs:gap-3 sm:gap-4 ${slide.cta.className} font-black active:scale-95 transition-all duration-300 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 rounded-2xl sm:rounded-3xl border-2 border-white/40 hover:border-white/80 hover:scale-105`}
+                      style={{
+                        boxShadow: '0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(34,197,94,0.4), 0 0 60px rgba(34,197,94,0.2), inset 0 0 20px rgba(255,255,255,0.1)',
+                      }}
                     >
+                      {/* Neon glow border */}
+                      <span className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ boxShadow: '0 0 30px rgba(255,255,255,0.5), 0 0 60px rgba(34,197,94,0.6), 0 0 90px rgba(34,197,94,0.4)' }} />
                       {/* Shimmer effect */}
-                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/40 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                       {/* Glow pulse */}
-                      <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/10 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
-                      <slide.cta.icon className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
-                      <span className="truncate font-black tracking-wide drop-shadow-md">{slide.cta.text}</span>
+                      <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/15 animate-pulse" />
+                      <slide.cta.icon className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform duration-300" />
+                      <span className="truncate font-black tracking-wide drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{slide.cta.text}</span>
                     </Button>
                     {slide.showLogo && (
                       <Button 
                         size="lg"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="group relative overflow-hidden gap-2.5 xs:gap-3 bg-white/20 border-2 border-white/40 text-white hover:bg-white/35 hover:border-white/70 active:scale-95 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 backdrop-blur-lg rounded-2xl sm:rounded-3xl transition-all duration-300 font-black shadow-2xl hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105"
+                        className="group relative overflow-hidden gap-2.5 xs:gap-3 bg-white/25 border-2 border-white/50 text-white hover:bg-white/40 hover:border-white/80 active:scale-95 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 backdrop-blur-lg rounded-2xl sm:rounded-3xl transition-all duration-300 font-black hover:scale-105"
+                        style={{
+                          boxShadow: '0 0 15px rgba(255,255,255,0.2), 0 0 30px rgba(59,130,246,0.3), 0 0 45px rgba(59,130,246,0.15), inset 0 0 15px rgba(255,255,255,0.05)',
+                        }}
                       >
+                        {/* Neon glow border */}
+                        <span className="absolute inset-0 rounded-2xl sm:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ boxShadow: '0 0 25px rgba(255,255,255,0.4), 0 0 50px rgba(59,130,246,0.5), 0 0 75px rgba(59,130,246,0.3)' }} />
                         {/* Shimmer effect */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                         {/* Glow pulse */}
-                        <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/5 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
-                        <Gamepad2 className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
-                        <span className="hidden xs:inline font-black drop-shadow-md">Demo sinash</span>
+                        <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/10 animate-pulse" />
+                        <Gamepad2 className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
+                        <span className="hidden xs:inline font-black drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">Demo sinash</span>
                         <span className="xs:hidden text-xl">🎮</span>
                       </Button>
                     )}
