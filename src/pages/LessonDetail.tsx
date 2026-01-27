@@ -68,6 +68,7 @@ const LessonDetail = () => {
   const [activeTab, setActiveTab] = useState('practice');
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [totalLessons, setTotalLessons] = useState(0);
+  const [watchedSeconds, setWatchedSeconds] = useState(0);
 
   useEffect(() => {
     if (lessonId) {
@@ -122,12 +123,27 @@ const LessonDetail = () => {
           .maybeSingle();
 
         if (progressData) {
-          setIsCompleted(progressData.completed);
-          setPracticeCompleted(progressData.practice_completed);
+          setIsCompleted(progressData.completed || false);
+          setPracticeCompleted(progressData.practice_completed || false);
+          setWatchedSeconds(progressData.watched_seconds || 0);
         }
       }
     }
     setLoading(false);
+  };
+
+  const saveVideoProgress = async (currentTime: number) => {
+    if (!user || !lesson) return;
+
+    await supabase
+      .from('user_lesson_progress')
+      .upsert({
+        user_id: user.id,
+        lesson_id: lesson.id,
+        watched_seconds: Math.floor(currentTime)
+      }, {
+        onConflict: 'user_id,lesson_id'
+      });
   };
 
   const markAsCompleted = async () => {
@@ -139,7 +155,8 @@ const LessonDetail = () => {
         user_id: user.id,
         lesson_id: lesson.id,
         completed: true,
-        completed_at: new Date().toISOString()
+        completed_at: new Date().toISOString(),
+        watched_seconds: Math.floor(watchedSeconds)
       }, {
         onConflict: 'user_id,lesson_id'
       });
@@ -297,6 +314,8 @@ const LessonDetail = () => {
                     onNext={nextLesson ? () => navigate(`/lessons/${nextLesson.id}`) : undefined}
                     hasPrevious={!!prevLesson}
                     hasNext={!!nextLesson}
+                    initialTime={watchedSeconds}
+                    onTimeUpdate={saveVideoProgress}
                   />
                 </div>
               </div>
