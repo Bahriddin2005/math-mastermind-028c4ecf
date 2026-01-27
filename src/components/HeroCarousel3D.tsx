@@ -402,12 +402,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* Description - Premium glass card with elegant styling */}
                   <div 
-                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-500 ${
+                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-500 flex justify-center ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
                     style={{ transitionDelay: current === index ? '300ms' : '0ms' }}
                   >
-                    <div className="relative inline-block">
+                    <div className="relative">
                       {/* Glow effect behind text */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl rounded-2xl" />
                       <p 
