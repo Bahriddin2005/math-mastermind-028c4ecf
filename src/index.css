@@ -1020,3 +1020,132 @@
 .animate-shimmer {
   animation: shimmer 3s ease-in-out infinite;
 }
+
+/* ===== 3D CAROUSEL ANIMATIONS ===== */
+
+/* Perspective container */
+.perspective-1000 {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Progress bar animation for carousel dots */
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-progress {
+  animation: progress 5s linear forwards;
+}
+
+/* Floating particles */
+@keyframes float-0 {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-30px) translateX(10px) scale(1.2);
+    opacity: 0.6;
+  }
+}
+
+@keyframes float-1 {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-15px) scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+@keyframes float-2 {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-25px) translateX(20px) scale(1.1);
+    opacity: 0.5;
+  }
+}
+
+.animate-float-0 {
+  animation: float-0 4s ease-in-out infinite;
+}
+
+.animate-float-1 {
+  animation: float-1 5s ease-in-out infinite;
+}
+
+.animate-float-2 {
+  animation: float-2 6s ease-in-out infinite;
+}
+
+/* Slow bounce for avatars */
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* 3D Ken Burns effect */
+@keyframes ken-burns-3d {
+  0% {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(2deg) rotateX(1deg) scale(1.05);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(-2deg) rotateX(-1deg) scale(1);
+  }
+}
+
+.animate-ken-burns-3d {
+  animation: ken-burns-3d 10s ease-in-out infinite;
+}
+
+/* Slide in with 3D rotation */
+@keyframes slide-in-3d {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(15deg) translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg) translateX(0);
+  }
+}
+
+.animate-slide-in-3d {
+  animation: slide-in-3d 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Glow pulse for active elements */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px hsl(var(--primary) / 0.5);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
