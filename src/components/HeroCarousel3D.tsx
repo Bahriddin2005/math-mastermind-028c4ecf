@@ -177,7 +177,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   return (
     <div 
       ref={containerRef}
-      className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in mx-0 sm:mx-0"
+      className="relative overflow-hidden rounded-none sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in -mx-4 sm:mx-0"
       style={{ perspective: '1200px' }}
     >
       <Carousel
@@ -196,7 +196,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
             <CarouselItem key={slide.id} className="touch-manipulation">
               {/* Mobile-optimized height with 3D depth */}
               <div 
-                className="relative h-[320px] xs:h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden transition-all duration-700 ease-out"
+                className="relative h-[350px] xs:h-[400px] sm:h-[450px] md:h-[520px] lg:h-[580px] overflow-hidden transition-all duration-700 ease-out"
                 style={{ 
                   transform: current === index 
                     ? 'rotateY(0deg) scale(1)' 
