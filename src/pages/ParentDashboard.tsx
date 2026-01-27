@@ -28,7 +28,10 @@ import {
   BarChart3,
   Lightbulb,
   AlertCircle,
-  Medal
+  Medal,
+  BookOpen,
+  Video,
+  PlayCircle
 } from 'lucide-react';
 import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
 
@@ -67,6 +70,19 @@ interface WeeklyComparison {
   improvement: number;
 }
 
+interface LessonMonitoring {
+  totalLessons: number;
+  completedLessons: number;
+  totalWatchedMinutes: number;
+  recentLessons: {
+    id: string;
+    title: string;
+    course_title: string;
+    watched_seconds: number;
+    completed: boolean;
+  }[];
+}
+
 const ParentDashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -77,6 +93,7 @@ const ParentDashboard = () => {
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([]);
   const [weeklyComparison, setWeeklyComparison] = useState<WeeklyComparison | null>(null);
   const [todaySolved, setTodaySolved] = useState(0);
+  const [lessonMonitoring, setLessonMonitoring] = useState<LessonMonitoring | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -214,6 +231,47 @@ const ParentDashboard = () => {
       thisWeek: thisWeekStats,
       lastWeek: lastWeekStats,
       improvement,
+    });
+
+    // Fetch lesson monitoring data
+    const { data: lessons } = await supabase
+      .from('lessons')
+      .select('id, title, course_id, courses!inner(title)')
+      .eq('is_published', true);
+
+    const { data: progressData } = await supabase
+      .from('user_lesson_progress')
+      .select('lesson_id, completed, watched_seconds')
+      .eq('user_id', user.id);
+
+    const progressMap = new Map(
+      progressData?.map(p => [p.lesson_id, p]) || []
+    );
+
+    const totalLessons = lessons?.length || 0;
+    const completedLessons = progressData?.filter(p => p.completed).length || 0;
+    const totalWatchedSeconds = progressData?.reduce((sum, p) => sum + (p.watched_seconds || 0), 0) || 0;
+
+    const recentLessons = (lessons || [])
+      .map(l => {
+        const progress = progressMap.get(l.id);
+        return {
+          id: l.id,
+          title: l.title,
+          course_title: (l.courses as any)?.title || '',
+          watched_seconds: progress?.watched_seconds || 0,
+          completed: progress?.completed || false
+        };
+      })
+      .filter(l => l.watched_seconds > 0 || l.completed)
+      .sort((a, b) => b.watched_seconds - a.watched_seconds)
+      .slice(0, 5);
+
+    setLessonMonitoring({
+      totalLessons,
+      completedLessons,
+      totalWatchedMinutes: Math.floor(totalWatchedSeconds / 60),
+      recentLessons
     });
 
     setLoading(false);
@@ -558,6 +616,98 @@ const ParentDashboard = () => {
               </div>
             </Card>
           </div>
+
+          {/* Lesson Monitoring */}
+          {lessonMonitoring && (
+            <Card className="border-border/40">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                  Dars ko'rish monitoringi
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Lesson Stats */}
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="text-center p-2 sm:p-3 rounded-lg bg-primary/10">
+                    <div className="flex items-center justify-center gap-1 text-primary">
+                      <Video className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-sm sm:text-base font-bold">{lessonMonitoring.completedLessons}</span>
+                    </div>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">Tugatilgan</p>
+                  </div>
+                  <div className="text-center p-2 sm:p-3 rounded-lg bg-kid-purple/10">
+                    <div className="flex items-center justify-center gap-1 text-kid-purple">
+                      <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-sm sm:text-base font-bold">{lessonMonitoring.totalWatchedMinutes}</span>
+                    </div>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">daqiqa</p>
+                  </div>
+                  <div className="text-center p-2 sm:p-3 rounded-lg bg-emerald-500/10">
+                    <div className="flex items-center justify-center gap-1 text-emerald-500">
+                      <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span className="text-sm sm:text-base font-bold">
+                        {lessonMonitoring.totalLessons > 0 
+                          ? Math.round((lessonMonitoring.completedLessons / lessonMonitoring.totalLessons) * 100) 
+                          : 0}%
+                      </span>
+                    </div>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5">Progress</p>
+                  </div>
+                </div>
+
+                {/* Recent Lessons */}
+                {lessonMonitoring.recentLessons.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs sm:text-sm font-medium text-muted-foreground">Oxirgi ko'rilgan darslar:</p>
+                    {lessonMonitoring.recentLessons.map(lesson => (
+                      <div 
+                        key={lesson.id}
+                        className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg bg-secondary/30 cursor-pointer hover:bg-secondary/50 transition-colors"
+                        onClick={() => navigate(`/lessons/${lesson.id}`)}
+                      >
+                        <div className={`h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          lesson.completed ? 'bg-emerald-500' : 'bg-primary/20'
+                        }`}>
+                          {lesson.completed ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                          ) : (
+                            <PlayCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-xs sm:text-sm truncate">{lesson.title}</p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{lesson.course_title}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                            {Math.floor(lesson.watched_seconds / 60)} daqiqa
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {lessonMonitoring.recentLessons.length === 0 && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <Video className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs sm:text-sm">Hali darslar ko'rilmagan</p>
+                  </div>
+                )}
+
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => navigate('/lesson-stats')}
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Batafsil statistika
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Email Settings */}
           <div className="mt-6">

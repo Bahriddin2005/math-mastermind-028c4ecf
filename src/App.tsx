@@ -43,6 +43,7 @@ import Profile from "@/pages/Profile";
 import KidsCourses from "@/pages/KidsCourses";
 import KidsLeaderboard from "@/pages/KidsLeaderboard";
 import ParentDashboard from "@/pages/ParentDashboard";
+import LessonStats from "@/pages/LessonStats";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const App = () => (
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/leaderboard" element={<KidsLeaderboard />} />
                     <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
+                    <Route path="/lesson-stats" element={<ProtectedRoute><LessonStats /></ProtectedRoute>} />
                     <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
                     <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
                     <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
