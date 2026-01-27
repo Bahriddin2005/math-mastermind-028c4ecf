@@ -147,91 +147,152 @@ export const GuestDashboard = () => {
 
   return (
     <div className="space-y-6 sm:space-y-10 pb-8 sm:pb-0">
-      {/* ✨ HERO SECTION - Clear Value Proposition */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary via-primary/95 to-emerald-600 p-4 sm:p-8 md:p-10 text-primary-foreground shadow-2xl animate-fade-in">
-        {/* Background effects */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-40 sm:w-64 h-40 sm:h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-48 sm:w-72 h-48 sm:h-72 bg-white/5 rounded-full blur-3xl" />
-        </div>
+      {/* ✨ HERO SECTION - Carousel with Images */}
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl animate-fade-in">
+        <Carousel
+          opts={{ loop: true }}
+          plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
+          className="w-full"
+        >
+          <CarouselContent>
+            {/* Slide 1: Bolalar */}
+            <CarouselItem>
+              <div className="relative h-[400px] sm:h-[450px] md:h-[500px]">
+                <img 
+                  src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&auto=format" 
+                  alt="Bolalar o'rganishda"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="bg-white rounded-xl p-2 shadow-lg">
+                      <img src={iqromaxLogo} alt="IQROMAX" className="h-7 sm:h-9 w-auto" />
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-kid-yellow/90 text-gray-900 rounded-full text-xs font-bold">
+                      <Rocket className="h-3 w-3" />
+                      #1 Mental Arifmetika
+                    </span>
+                  </div>
+                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-display font-black leading-tight mb-2">
+                    <span className="text-kid-yellow drop-shadow-lg">5–14</span> yoshli bolalar uchun
+                  </h1>
+                  <p className="text-base sm:text-lg md:text-xl text-white/90 mb-4 max-w-xl">
+                    O'yin orqali tez hisoblashni o'rganing. XP, Level va Badges to'plang!
+                  </p>
+                  <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
+                    <Button 
+                      size="lg"
+                      onClick={() => navigate('/auth')}
+                      className="gap-2 bg-white text-primary hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
+                    >
+                      <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Bepul boshlash
+                    </Button>
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      onClick={() => navigate('/train')}
+                      className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
+                    >
+                      <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Demo sinab ko'ring
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CarouselItem>
+
+            {/* Slide 2: Ota-onalar */}
+            <CarouselItem>
+              <div className="relative h-[400px] sm:h-[450px] md:h-[500px]">
+                <img 
+                  src="https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b?w=1200&auto=format" 
+                  alt="Ota-ona va bola"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/40 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500 text-white rounded-full text-xs font-bold">
+                      <Eye className="h-3 w-3" />
+                      Ota-onalar uchun
+                    </span>
+                  </div>
+                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-display font-black leading-tight mb-2">
+                    Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating
+                  </h1>
+                  <p className="text-base sm:text-lg md:text-xl text-white/90 mb-4 max-w-xl">
+                    Real vaqtda statistika, kunlik hisobot va shaxsiy tavsiyalar oling.
+                  </p>
+                  <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
+                    <Button 
+                      size="lg"
+                      onClick={() => navigate('/auth')}
+                      className="gap-2 bg-blue-500 text-white hover:bg-blue-600 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
+                    >
+                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Kuzatuv paneli
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CarouselItem>
+
+            {/* Slide 3: O'qituvchilar */}
+            <CarouselItem>
+              <div className="relative h-[400px] sm:h-[450px] md:h-[500px]">
+                <img 
+                  src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&auto=format" 
+                  alt="O'qituvchi va sinf"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-amber-900/80 via-amber-900/40 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white rounded-full text-xs font-bold">
+                      <GraduationCap className="h-3 w-3" />
+                      O'qituvchilar uchun
+                    </span>
+                    <span className="px-2 py-0.5 bg-amber-200 text-amber-800 rounded-full text-[10px] font-bold">
+                      Beta
+                    </span>
+                  </div>
+                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-display font-black leading-tight mb-2">
+                    <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring
+                  </h1>
+                  <p className="text-base sm:text-lg md:text-xl text-white/90 mb-4 max-w-xl">
+                    Guruh statistikasi, PDF/Excel eksport va sertifikatlar tizimi.
+                  </p>
+                  <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
+                    <Button 
+                      size="lg"
+                      onClick={() => navigate('/auth')}
+                      className="gap-2 bg-amber-500 text-white hover:bg-amber-600 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
+                    >
+                      <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Boshlash
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CarouselItem>
+          </CarouselContent>
+          
+          {/* Navigation arrows */}
+          <CarouselPrevious className="left-2 sm:left-4 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+          <CarouselNext className="right-2 sm:right-4 bg-white/20 border-white/30 text-white hover:bg-white/30" />
+        </Carousel>
         
-        <div className="relative z-10">
-          {/* Top: Logo + Social Proof */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-white rounded-xl p-2 shadow-lg">
-                <img src={iqromaxLogo} alt="IQROMAX" className="h-7 sm:h-9 w-auto" />
-              </div>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-kid-yellow/90 text-gray-900 rounded-full text-xs font-bold">
-                <Rocket className="h-3 w-3" />
-                #1 Mental Arifmetika
-              </span>
+        {/* Social proof overlay */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white border border-white/20">
+            <div className="flex -space-x-1.5">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-green to-emerald-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👦</div>
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-pink to-pink-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👧</div>
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-yellow to-amber-600 border-2 border-white/50 flex items-center justify-center text-[8px]">🧒</div>
             </div>
-            
-            {/* Social proof */}
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/15 backdrop-blur-sm rounded-full text-xs border border-white/20">
-              <div className="flex -space-x-1.5">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-green to-emerald-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👦</div>
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-pink to-pink-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👧</div>
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-yellow to-amber-600 border-2 border-white/50 flex items-center justify-center text-[8px]">🧒</div>
-              </div>
-              <span className="font-semibold">{stats.total_users > 0 ? stats.total_users.toLocaleString() : '500'}+ ishonadi</span>
-            </div>
-          </div>
-
-          {/* Main Headline - Investor-focused clarity */}
-          <div className="max-w-2xl mb-6">
-            <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-black leading-tight mb-3">
-              <span className="text-kid-yellow drop-shadow-lg">5–14</span> yoshli bolalar uchun 
-              <span className="block">mental arifmetika platformasi</span>
-            </h1>
-            <p className="text-sm sm:text-base md:text-lg text-white/90 leading-relaxed">
-              O'yinlar orqali tez hisoblash, diqqat va xotirani rivojlantiring.
-            </p>
-          </div>
-
-          {/* Stats Row - Social proof */}
-          <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-5 sm:mb-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20 text-center">
-              <div className="text-lg sm:text-xl font-display font-bold">{stats.total_users > 0 ? stats.total_users : '500'}+</div>
-              <span className="text-[10px] sm:text-xs text-white/70">Bolalar</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20 text-center">
-              <div className="text-lg sm:text-xl font-display font-bold">{stats.total_problems_solved > 0 ? (stats.total_problems_solved / 1000).toFixed(0) : '10'}K</div>
-              <span className="text-[10px] sm:text-xs text-white/70">Masala</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20 text-center">
-              <div className="text-lg sm:text-xl font-display font-bold">{stats.total_lessons > 0 ? stats.total_lessons : '20'}+</div>
-              <span className="text-[10px] sm:text-xs text-white/70">Darslar</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-2 sm:p-3 border border-white/20 text-center">
-              <div className="flex items-center justify-center gap-0.5">
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-kid-yellow fill-kid-yellow" />
-                <span className="text-lg sm:text-xl font-display font-bold">4.9</span>
-              </div>
-              <span className="text-[10px] sm:text-xs text-white/70">Reyting</span>
-            </div>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col xs:flex-row gap-2 sm:gap-3">
-            <Button 
-              size="lg"
-              onClick={() => navigate('/auth')}
-              className="gap-2 bg-white text-primary hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
-            >
-              <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-              Bepul boshlash
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              onClick={() => navigate('/train')}
-              className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 h-11 sm:h-12 text-sm sm:text-base px-5 sm:px-6"
-            >
-              <Gamepad2 className="h-4 w-4 sm:h-5 sm:w-5" />
-              Demo sinab ko'ring
-            </Button>
+            <span className="font-semibold">{stats.total_users > 0 ? stats.total_users.toLocaleString() : '500'}+ ishonadi</span>
           </div>
         </div>
       </div>
