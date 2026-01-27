@@ -107,7 +107,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           clearInterval(typeInterval);
           setIsTyping(prev => ({ ...prev, [current]: false }));
         }
-      }, 60);
+      }, 35);
       
       return () => clearInterval(typeInterval);
     }, 400);
@@ -210,7 +210,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   // Autoplay plugin with touch-friendly settings
   const autoplayPlugin = useMemo(() => 
     Autoplay({ 
-      delay: 6000, 
+      delay: 4000, 
       stopOnInteraction: false,
       stopOnMouseEnter: true,
     }), 
@@ -238,7 +238,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
             <CarouselItem key={slide.id} className="touch-manipulation">
               {/* Mobile-optimized height with 3D depth */}
               <div 
-                className="relative h-[350px] xs:h-[400px] sm:h-[450px] md:h-[520px] lg:h-[580px] overflow-hidden transition-all duration-700 ease-out"
+                className="relative h-[350px] xs:h-[400px] sm:h-[450px] md:h-[520px] lg:h-[580px] overflow-hidden transition-all duration-300 ease-out"
                 style={{ 
                   transform: current === index 
                     ? 'rotateY(0deg) scale(1)' 
@@ -314,16 +314,16 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-700 ${
+                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-300 ${
                     current === index ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
                   {/* Badge Row - Beautiful glassmorphism design with staggered animation */}
                   <div 
-                    className={`flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 transition-all duration-500 ${
+                    className={`flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 transition-all duration-200 ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
-                    style={{ transitionDelay: current === index ? '100ms' : '0ms' }}
+                    style={{ transitionDelay: current === index ? '50ms' : '0ms' }}
                   >
                     {slide.showLogo && (
                       <div className="bg-white/95 backdrop-blur-md rounded-xl xs:rounded-2xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 shadow-2xl ring-2 ring-white/30 hover:scale-105 transition-transform duration-300">
@@ -346,11 +346,11 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* Title - Premium typography with typing animation */}
                   <h1 
-                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 transition-all duration-600 ${
+                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 transition-all duration-250 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
                     }`}
                     style={{ 
-                      transitionDelay: current === index ? '200ms' : '0ms',
+                      transitionDelay: current === index ? '100ms' : '0ms',
                       transform: current === index ? 'translateZ(50px)' : 'translateZ(0px)',
                     }}
                   >
@@ -402,10 +402,10 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* Description - Premium glass card with elegant styling */}
                   <div 
-                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-500 flex justify-center ${
+                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-200 flex justify-center ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
-                    style={{ transitionDelay: current === index ? '300ms' : '0ms' }}
+                    style={{ transitionDelay: current === index ? '150ms' : '0ms' }}
                   >
                     <div className="relative">
                       {/* Glow effect behind text */}
@@ -425,10 +425,10 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* CTA Buttons - Premium glassmorphism design */}
                   <div 
-                    className={`flex flex-row items-center justify-center gap-3 xs:gap-3.5 sm:gap-4 md:gap-5 transition-all duration-500 ${
+                    className={`flex flex-row items-center justify-center gap-3 xs:gap-3.5 sm:gap-4 md:gap-5 transition-all duration-200 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-90'
                     }`}
-                    style={{ transitionDelay: current === index ? '400ms' : '0ms' }}
+                    style={{ transitionDelay: current === index ? '200ms' : '0ms' }}
                   >
                     <Button 
                       size="lg"
@@ -501,7 +501,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
             {current === index && (
               <span 
                 className="absolute inset-0 bg-kid-yellow rounded-full origin-left"
-                style={{ animation: 'progress 6s linear forwards' }}
+                style={{ animation: 'progress 4s linear forwards' }}
               />
             )}
           </button>
