@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { 
@@ -23,6 +23,7 @@ import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 import heroSlideKids from '@/assets/hero-slide-kids.jpg';
 import heroSlideParents from '@/assets/hero-slide-parents.jpg';
 import heroSlideTeachers from '@/assets/hero-slide-teachers.jpg';
+import { useCursorTrail } from '@/hooks/useCursorTrail';
 
 interface HeroSlide {
   id: string;
@@ -57,8 +58,16 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [typedText, setTypedText] = useState<{ [key: number]: string }>({});
+  const [isTyping, setIsTyping] = useState<{ [key: number]: boolean }>({});
+  const containerDivRef = useRef<HTMLDivElement>(null);
+  
+  // Enable cursor trail effect
+  useCursorTrail(containerDivRef, true);
+  
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
+      (containerDivRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
       const handleMouseMove = (e: MouseEvent) => {
         const rect = node.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -72,6 +81,39 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       node.addEventListener('mouseleave', handleMouseLeave);
     }
   }, []);
+
+  // Slide titles for typing animation
+  const slideTitles = useMemo(() => [
+    "5–14 yoshli bolalar uchun",
+    "Farzandingiz rivojini kuzating",
+    "Sinf natijalarini oson boshqaring"
+  ], []);
+
+  // Typing animation effect
+  useEffect(() => {
+    if (current === undefined) return;
+    
+    const fullText = slideTitles[current];
+    setTypedText(prev => ({ ...prev, [current]: '' }));
+    setIsTyping(prev => ({ ...prev, [current]: true }));
+    
+    let charIndex = 0;
+    const typeDelay = setTimeout(() => {
+      const typeInterval = setInterval(() => {
+        if (charIndex <= fullText.length) {
+          setTypedText(prev => ({ ...prev, [current]: fullText.slice(0, charIndex) }));
+          charIndex++;
+        } else {
+          clearInterval(typeInterval);
+          setIsTyping(prev => ({ ...prev, [current]: false }));
+        }
+      }, 60);
+      
+      return () => clearInterval(typeInterval);
+    }, 400);
+    
+    return () => clearTimeout(typeDelay);
+  }, [current, slideTitles]);
 
   // Memoized slides - only 3 slides for performance
   const slides: HeroSlide[] = useMemo(() => [
@@ -302,7 +344,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     )}
                   </div>
 
-                  {/* Title - Premium typography with animated gradient */}
+                  {/* Title - Premium typography with typing animation */}
                   <h1 
                     className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 transition-all duration-600 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
@@ -320,7 +362,41 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                         filter: 'drop-shadow(0 0 20px rgba(255,200,0,0.3))',
                       }}
                     >
-                      {slide.title}
+                      {current === index ? (
+                        <>
+                          {index === 0 && (
+                            <>
+                              <span className="text-kid-yellow drop-shadow-lg">
+                                {typedText[index]?.slice(0, 4) || ''}
+                              </span>
+                              {typedText[index]?.slice(4) || ''}
+                            </>
+                          )}
+                          {index === 1 && (
+                            <>
+                              {typedText[index]?.slice(0, 13) || ''}
+                              <span className="text-kid-yellow">
+                                {typedText[index]?.slice(13, 21) || ''}
+                              </span>
+                              {typedText[index]?.slice(21) || ''}
+                            </>
+                          )}
+                          {index === 2 && (
+                            <>
+                              <span className="text-kid-yellow">
+                                {typedText[index]?.slice(0, 18) || ''}
+                              </span>
+                              {typedText[index]?.slice(18) || ''}
+                            </>
+                          )}
+                          {isTyping[index] && (
+                            <span 
+                              className="inline-block w-[4px] h-[0.85em] bg-kid-yellow ml-1 animate-[blink_0.8s_ease-in-out_infinite]"
+                              style={{ verticalAlign: 'text-bottom' }}
+                            />
+                          )}
+                        </>
+                      ) : slide.title}
                     </span>
                   </h1>
 
