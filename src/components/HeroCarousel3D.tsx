@@ -402,11 +402,18 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                           )}
                           {index === 1 && (
                             <>
-                              {typedText[index]?.slice(0, 13) || ''}
-                              <span className="text-cyan-300 drop-shadow-[0_0_15px_rgba(34,211,238,0.7)]">
-                                {typedText[index]?.slice(13, 21) || ''}
+                              <span className="text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]">
+                                {typedText[index]?.slice(0, 8) || ''}
                               </span>
-                              {typedText[index]?.slice(21) || ''}
+                              <span className="text-rose-300 drop-shadow-[0_0_12px_rgba(253,164,175,0.7)]">
+                                {typedText[index]?.slice(8, 19) || ''}
+                              </span>
+                              <span className="text-violet-300 drop-shadow-[0_0_15px_rgba(196,181,253,0.7)]">
+                                {typedText[index]?.slice(19, 28) || ''}
+                              </span>
+                              <span className="text-amber-300 drop-shadow-[0_0_12px_rgba(252,211,77,0.7)]">
+                                {typedText[index]?.slice(28) || ''}
+                              </span>
                             </>
                           )}
                           {index === 2 && (
