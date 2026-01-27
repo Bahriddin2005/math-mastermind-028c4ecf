@@ -84,7 +84,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
   // Slide titles for typing animation
   const slideTitles = useMemo(() => [
-    "5–14 yoshli bolalar uchun",
+    "5–14 yosh uchun",
     "Farzandingiz rivojini kuzating",
     "Sinf natijalarini oson boshqaring"
   ], []);
@@ -128,7 +128,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="text-kid-yellow drop-shadow-lg">5–14</span> yoshli bolalar uchun
+          <span className="text-kid-yellow drop-shadow-lg">5–14</span> yosh uchun
         </>
       ),
       description: "O'yin orqali tez hisoblashni o'rganing. XP, Level va Badges to'plang!",
