@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSound } from '@/hooks/useSound';
 import { toast } from 'sonner';
+import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 import {
   ArrowLeft,
   Camera,
@@ -36,6 +37,7 @@ import {
   Edit3,
   Check,
   LogOut,
+  Phone,
 } from 'lucide-react';
 
 // Predefined avatar options for kids
@@ -52,12 +54,15 @@ const Profile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [username, setUsername] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingPhone, setSavingPhone] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editingName, setEditingName] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
   
   // Crop dialog state
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -98,6 +103,10 @@ const Profile = () => {
     if (profileData) {
       setUsername(profileData.username || '');
       setAvatarUrl(profileData.avatar_url);
+      // Format phone number for display
+      if (profileData.phone_number) {
+        setPhoneNumber(formatPhoneNumber(profileData.phone_number));
+      }
       setStats(prev => ({
         ...prev,
         totalProblems: profileData.total_problems_solved || 0,
@@ -260,6 +269,27 @@ const Profile = () => {
     }
   };
 
+  const handleSavePhone = async () => {
+    if (!user) return;
+    
+    setSavingPhone(true);
+    try {
+      const cleanPhone = phoneNumber ? unformatPhoneNumber(phoneNumber) : null;
+      const { error } = await supabase
+        .from('profiles')
+        .update({ phone_number: cleanPhone })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setEditingPhone(false);
+      toast.success('Telefon raqami yangilandi!');
+    } catch (error: any) {
+      toast.error('Xatolik: ' + error.message);
+    } finally {
+      setSavingPhone(false);
+    }
+  };
+
   const xpProgress = (stats.xp % 1000) / 10;
   const xpToNextLevel = 1000 - (stats.xp % 1000);
 
@@ -376,6 +406,40 @@ const Profile = () => {
                     className="p-1.5 rounded-full hover:bg-white/20 transition-colors"
                   >
                     <Edit3 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+
+              {/* Phone Number */}
+              {editingPhone ? (
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="relative flex-1">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
+                    <Input
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                      className="bg-white/20 border-white/30 text-white placeholder:text-white/50 pl-10"
+                      placeholder="+998 90 123 45 67"
+                    />
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSavePhone}
+                    disabled={savingPhone}
+                    className="bg-white text-kids-purple hover:bg-white/90"
+                  >
+                    {savingPhone ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-3">
+                  <Phone className="h-4 w-4 text-white/70" />
+                  <span className="text-white/80 text-sm">{phoneNumber || "Telefon qo'shilmagan"}</span>
+                  <button 
+                    onClick={() => setEditingPhone(true)}
+                    className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                  >
+                    <Edit3 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               )}
