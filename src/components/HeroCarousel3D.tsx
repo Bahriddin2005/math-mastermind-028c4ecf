@@ -159,7 +159,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   []);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl animate-fade-in">
+    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in mx-0 sm:mx-0">
       <Carousel
         setApi={setApi}
         opts={{ 
@@ -174,7 +174,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         <CarouselContent className="will-change-transform">
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="touch-manipulation">
-              <div className="relative h-[380px] sm:h-[420px] md:h-[480px] overflow-hidden">
+              {/* Mobile-optimized height */}
+              <div className="relative h-[320px] xs:h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden">
                 {/* Image Background */}
                 <img 
                   src={slide.image}
@@ -187,64 +188,66 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   }}
                 />
 
-                {/* Gradient Overlay */}
+                {/* Stronger gradient for mobile readability */}
                 <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradientOverlay}`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent sm:from-black/30" />
 
-                {/* Content */}
+                {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-10 text-white transition-all duration-500 ${
+                  className={`absolute inset-0 flex flex-col justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white transition-all duration-500 ${
                     current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
-                  {/* Badge Row */}
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+                  {/* Badge Row - compact on mobile */}
+                  <div className="flex flex-wrap items-center gap-1.5 xs:gap-2 sm:gap-3 mb-2 xs:mb-3 sm:mb-4">
                     {slide.showLogo && (
-                      <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-2.5 shadow-2xl ring-2 ring-white/20">
-                        <img src={iqromaxLogo} alt="IQROMAX" className="h-8 sm:h-10 w-auto" />
+                      <div className="bg-white/95 backdrop-blur-sm rounded-lg xs:rounded-xl sm:rounded-2xl p-1.5 xs:p-2 sm:p-2.5 shadow-xl ring-1 ring-white/20">
+                        <img src={iqromaxLogo} alt="IQROMAX" className="h-6 xs:h-7 sm:h-9 md:h-10 w-auto" />
                       </div>
                     )}
-                    <span className={`inline-flex items-center gap-2 px-3.5 py-1.5 ${slide.badge.bgColor} rounded-full text-xs sm:text-sm font-bold shadow-xl backdrop-blur-sm ring-1 ring-white/20`}>
-                      <slide.badge.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      {slide.badge.text}
+                    <span className={`inline-flex items-center gap-1 xs:gap-1.5 sm:gap-2 px-2 xs:px-2.5 sm:px-3.5 py-1 xs:py-1.5 ${slide.badge.bgColor} rounded-full text-[10px] xs:text-xs sm:text-sm font-bold shadow-lg backdrop-blur-sm`}>
+                      <slide.badge.icon className="h-3 w-3 xs:h-3.5 xs:w-3.5 sm:h-4 sm:w-4" />
+                      <span className="truncate max-w-[120px] xs:max-w-none">{slide.badge.text}</span>
                     </span>
                     {slide.badge.extraBadge && (
-                      <span className="px-2.5 py-1 bg-gradient-to-r from-amber-300 to-yellow-400 text-amber-900 rounded-full text-[10px] sm:text-xs font-bold shadow-lg animate-pulse">
+                      <span className="px-2 py-0.5 xs:py-1 bg-gradient-to-r from-amber-300 to-yellow-400 text-amber-900 rounded-full text-[9px] xs:text-[10px] sm:text-xs font-bold shadow-md">
                         ✨ {slide.badge.extraBadge}
                       </span>
                     )}
                   </div>
 
-                  {/* Title with animated gradient text */}
-                  <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-display font-black leading-[1.1] mb-3 sm:mb-4">
-                    <span className="bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                  {/* Title - responsive sizing */}
+                  <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.15] mb-1.5 xs:mb-2 sm:mb-3 md:mb-4">
+                    <span className="text-white drop-shadow-lg" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
                       {slide.title}
                     </span>
                   </h1>
 
-                  {/* Description with better readability */}
-                  <p className="text-base sm:text-lg md:text-xl text-white/95 mb-5 sm:mb-6 max-w-2xl leading-relaxed font-medium" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                  {/* Description - hide on very small screens or truncate */}
+                  <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-white/90 mb-3 xs:mb-4 sm:mb-5 md:mb-6 max-w-lg sm:max-w-xl md:max-w-2xl leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
                     {slide.description}
                   </p>
 
-                  {/* Enhanced CTA Buttons */}
-                  <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
+                  {/* CTA Buttons - stack on mobile, row on larger */}
+                  <div className="flex flex-row gap-2 xs:gap-2.5 sm:gap-3 md:gap-4">
                     <Button 
-                      size="lg"
+                      size="default"
                       onClick={() => navigate('/auth')}
-                      className={`gap-2.5 ${slide.cta.className} font-bold shadow-2xl hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] active:scale-95 transition-all duration-300 h-12 sm:h-14 text-sm sm:text-base px-6 sm:px-8 rounded-xl ring-2 ring-white/20`}
+                      className={`gap-1.5 xs:gap-2 sm:gap-2.5 ${slide.cta.className} font-bold shadow-xl active:scale-95 transition-all duration-200 h-9 xs:h-10 sm:h-12 md:h-14 text-xs xs:text-sm sm:text-base px-3 xs:px-4 sm:px-6 md:px-8 rounded-lg sm:rounded-xl flex-1 sm:flex-none`}
                     >
-                      <slide.cta.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                      {slide.cta.text}
+                      <slide.cta.icon className="h-4 w-4 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
+                      <span className="truncate">{slide.cta.text}</span>
                     </Button>
                     {slide.showLogo && (
                       <Button 
-                        size="lg"
+                        size="default"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="gap-2.5 bg-white/15 border-2 border-white/40 text-white hover:bg-white/25 hover:border-white/60 active:scale-95 h-12 sm:h-14 text-sm sm:text-base px-6 sm:px-8 backdrop-blur-md rounded-xl transition-all duration-300 font-semibold"
+                        className="gap-1.5 xs:gap-2 bg-white/20 border border-white/40 text-white hover:bg-white/30 active:scale-95 h-9 xs:h-10 sm:h-12 md:h-14 text-xs xs:text-sm sm:text-base px-3 xs:px-4 sm:px-6 md:px-8 backdrop-blur-sm rounded-lg sm:rounded-xl transition-all duration-200 font-semibold flex-1 sm:flex-none"
                       >
-                        <Gamepad2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                        Demo sinab ko'ring
+                        <Gamepad2 className="h-4 w-4 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
+                        <span className="hidden xs:inline">Demo</span>
+                        <span className="xs:hidden">🎮</span>
                       </Button>
                     )}
                   </div>
@@ -254,22 +257,22 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           ))}
         </CarouselContent>
         
-        {/* Navigation Arrows - Hidden on mobile, visible on tablet+ */}
-        <CarouselPrevious className="hidden sm:flex left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm" />
-        <CarouselNext className="hidden sm:flex right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm" />
+        {/* Navigation Arrows - Hidden on mobile */}
+        <CarouselPrevious className="hidden md:flex left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm h-10 w-10" />
+        <CarouselNext className="hidden md:flex right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm h-10 w-10" />
       </Carousel>
 
-      {/* Dot Indicators - Touch friendly */}
-      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5 sm:gap-2 px-4 py-2.5 sm:py-2 bg-black/30 backdrop-blur-sm rounded-full">
+      {/* Dot Indicators - Touch friendly, larger on mobile */}
+      <div className="absolute bottom-2 xs:bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 xs:gap-2.5 sm:gap-2 px-3 xs:px-4 py-2 xs:py-2.5 sm:py-2 bg-black/40 backdrop-blur-sm rounded-full">
         {slides.map((slide, index) => (
           <button
             key={slide.id}
             onClick={() => scrollTo(index)}
-            className={`relative transition-all duration-300 touch-target ${
+            className={`relative transition-all duration-300 ${
               current === index 
-                ? 'w-8 sm:w-8 h-2.5 sm:h-2' 
-                : 'w-2.5 sm:w-2 h-2.5 sm:h-2 hover:bg-white/60 active:scale-110'
-            } rounded-full overflow-hidden`}
+                ? 'w-6 xs:w-7 sm:w-8 h-2 xs:h-2.5 sm:h-2' 
+                : 'w-2 xs:w-2.5 sm:w-2 h-2 xs:h-2.5 sm:h-2 hover:bg-white/60 active:scale-110'
+            } rounded-full overflow-hidden min-w-[8px] min-h-[8px]`}
             aria-label={`Slayd ${index + 1}`}
           >
             <span 
@@ -287,22 +290,22 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         ))}
       </div>
 
-      {/* Social Proof Overlay */}
-      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10">
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full text-xs text-white border border-white/20">
-          <div className="flex -space-x-1.5">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-green to-emerald-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👦</div>
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-pink to-pink-600 border-2 border-white/50 flex items-center justify-center text-[8px]">👧</div>
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-kid-yellow to-amber-600 border-2 border-white/50 flex items-center justify-center text-[8px]">🧒</div>
+      {/* Social Proof Overlay - Compact on mobile */}
+      <div className="absolute top-2 right-2 xs:top-3 xs:right-3 sm:top-4 sm:right-4 z-10">
+        <div className="flex items-center gap-1.5 xs:gap-2 px-2 xs:px-3 py-1 xs:py-1.5 bg-black/50 backdrop-blur-sm rounded-full text-[10px] xs:text-xs text-white border border-white/20">
+          <div className="flex -space-x-1 xs:-space-x-1.5">
+            <div className="w-4 h-4 xs:w-5 xs:h-5 rounded-full bg-gradient-to-br from-kid-green to-emerald-600 border border-white/50 flex items-center justify-center text-[7px] xs:text-[8px]">👦</div>
+            <div className="w-4 h-4 xs:w-5 xs:h-5 rounded-full bg-gradient-to-br from-kid-pink to-pink-600 border border-white/50 flex items-center justify-center text-[7px] xs:text-[8px]">👧</div>
+            <div className="w-4 h-4 xs:w-5 xs:h-5 rounded-full bg-gradient-to-br from-kid-yellow to-amber-600 border border-white/50 flex items-center justify-center text-[7px] xs:text-[8px]">🧒</div>
           </div>
-          <span className="font-semibold">{totalUsers > 0 ? totalUsers.toLocaleString() : '500'}+ ishonadi</span>
+          <span className="font-semibold whitespace-nowrap">{totalUsers > 0 ? totalUsers.toLocaleString() : '500'}+</span>
         </div>
       </div>
 
-      {/* Swipe Hint - Mobile only, first time */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10 sm:hidden animate-bounce-subtle opacity-60 pointer-events-none">
-        <div className="flex items-center gap-1 text-white/70 text-xs">
-          <span>← Suring →</span>
+      {/* Swipe Hint - Mobile only */}
+      <div className="absolute bottom-12 xs:bottom-14 left-1/2 -translate-x-1/2 z-10 sm:hidden animate-pulse opacity-70 pointer-events-none">
+        <div className="flex items-center gap-1 text-white text-[10px] xs:text-xs bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
+          <span>👆 Suring</span>
         </div>
       </div>
     </div>
