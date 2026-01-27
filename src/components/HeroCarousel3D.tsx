@@ -219,9 +219,15 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   }}
                 />
 
+                {/* Blur overlay for better text readability */}
+                <div className="absolute inset-0 backdrop-blur-[2px] sm:backdrop-blur-[1px]" />
+                
                 {/* Stronger gradient for mobile readability */}
                 <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradientOverlay}`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent sm:from-black/30" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10 sm:from-black/50 sm:via-transparent sm:to-transparent" />
+                
+                {/* Vignette effect */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
 
                 {/* Content - optimized padding for mobile */}
                 <div 
