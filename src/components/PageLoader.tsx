@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
+import loadingLogo from '@/assets/iqromax-loading-logo.png';
 
 export const PageLoader = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,8 +35,12 @@ export const PageLoader = () => {
       <div className="flex flex-col items-center gap-4">
         {/* Logo animation */}
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center animate-pulse">
-            <span className="text-3xl font-bold text-primary-foreground">iQ</span>
+          <div className="w-20 h-20 flex items-center justify-center animate-pulse">
+            <img 
+              src={loadingLogo} 
+              alt="IQROMAX" 
+              className="w-full h-full object-contain"
+            />
           </div>
           {/* Spinning ring */}
           <div className="absolute -inset-2 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
