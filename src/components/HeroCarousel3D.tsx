@@ -56,6 +56,22 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const rect = node.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setMousePosition({ x, y });
+      };
+      const handleMouseLeave = () => {
+        setMousePosition({ x: 0, y: 0 });
+      };
+      node.addEventListener('mousemove', handleMouseMove);
+      node.addEventListener('mouseleave', handleMouseLeave);
+    }
+  }, []);
 
   // Memoized slides - only 3 slides for performance
   const slides: HeroSlide[] = useMemo(() => [
@@ -159,7 +175,10 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   []);
 
   return (
-    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in mx-0 sm:mx-0">
+    <div 
+      ref={containerRef}
+      className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in mx-0 sm:mx-0"
+    >
       <Carousel
         setApi={setApi}
         opts={{ 
@@ -176,15 +195,16 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
             <CarouselItem key={slide.id} className="touch-manipulation">
               {/* Mobile-optimized height */}
               <div className="relative h-[320px] xs:h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden">
-                {/* Image Background */}
+                {/* Image Background with Parallax */}
                 <img 
                   src={slide.image}
                   alt={slide.id}
                   loading={index === 0 ? 'eager' : 'lazy'}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
                   style={{ 
-                    transform: current === index ? 'scale(1.02)' : 'scale(1.1)',
-                    transition: 'transform 0.5s ease-out',
+                    transform: current === index 
+                      ? `scale(1.08) translate(${mousePosition.x * -20}px, ${mousePosition.y * -15}px)` 
+                      : 'scale(1.15)',
                   }}
                 />
 
@@ -194,12 +214,17 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-500 ${
-                    current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-700 ${
+                    current === index ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
-                  {/* Badge Row - Beautiful glassmorphism design */}
-                  <div className="flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5">
+                  {/* Badge Row - Beautiful glassmorphism design with staggered animation */}
+                  <div 
+                    className={`flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 transition-all duration-500 ${
+                      current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                    style={{ transitionDelay: current === index ? '100ms' : '0ms' }}
+                  >
                     {slide.showLogo && (
                       <div className="bg-white/95 backdrop-blur-md rounded-xl xs:rounded-2xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 shadow-2xl ring-2 ring-white/30 hover:scale-105 transition-transform duration-300">
                         <img src={iqromaxLogo} alt="IQROMAX" className="h-7 xs:h-8 sm:h-10 md:h-12 w-auto" />
@@ -219,8 +244,13 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     )}
                   </div>
 
-                  {/* Title - Premium typography with glow effect */}
-                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.1] mb-2 xs:mb-3 sm:mb-4 md:mb-5">
+                  {/* Title - Premium typography with glow effect and slide-up animation */}
+                  <h1 
+                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.1] mb-2 xs:mb-3 sm:mb-4 md:mb-5 transition-all duration-500 ${
+                      current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
+                    }`}
+                    style={{ transitionDelay: current === index ? '200ms' : '0ms' }}
+                  >
                     <span 
                       className="text-white drop-shadow-2xl bg-clip-text" 
                       style={{ 
@@ -231,16 +261,26 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     </span>
                   </h1>
 
-                  {/* Description - Elegant styling with glass effect */}
+                  {/* Description - Elegant styling with glass effect and fade animation */}
                   <p 
-                    className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-4 xs:mb-5 sm:mb-6 md:mb-8 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide"
-                    style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+                    className={`text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-4 xs:mb-5 sm:mb-6 md:mb-8 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide transition-all duration-500 ${
+                      current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                    }`}
+                    style={{ 
+                      textShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                      transitionDelay: current === index ? '300ms' : '0ms'
+                    }}
                   >
                     {slide.description}
                   </p>
 
-                  {/* CTA Buttons - stack on mobile, row on larger */}
-                  <div className="flex flex-row justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-4">
+                  {/* CTA Buttons - scale animation */}
+                  <div 
+                    className={`flex flex-row justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-4 transition-all duration-500 ${
+                      current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-90'
+                    }`}
+                    style={{ transitionDelay: current === index ? '400ms' : '0ms' }}
+                  >
                     <Button 
                       size="default"
                       onClick={() => navigate('/auth')}
