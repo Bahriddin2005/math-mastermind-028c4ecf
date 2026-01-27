@@ -394,10 +394,21 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                         <>
                           {index === 0 && (
                             <>
-                              <span className="text-emerald-300 drop-shadow-[0_0_20px_rgba(52,211,153,0.8)]">
-                                {typedText[index]?.slice(0, 4) || ''}
+                              <span className="text-emerald-300 drop-shadow-[0_0_20px_rgba(52,211,153,0.9)]">
+                                {typedText[index]?.slice(0, 2) || ''}
                               </span>
-                              {typedText[index]?.slice(4) || ''}
+                              <span className="text-cyan-300 drop-shadow-[0_0_15px_rgba(103,232,249,0.8)]">
+                                {typedText[index]?.slice(2, 6) || ''}
+                              </span>
+                              <span className="text-amber-300 drop-shadow-[0_0_15px_rgba(252,211,77,0.8)]">
+                                {typedText[index]?.slice(6, 13) || ''}
+                              </span>
+                              <span className="text-rose-300 drop-shadow-[0_0_15px_rgba(253,164,175,0.8)]">
+                                {typedText[index]?.slice(13, 18) || ''}
+                              </span>
+                              <span className="text-violet-300 drop-shadow-[0_0_15px_rgba(196,181,253,0.8)]">
+                                {typedText[index]?.slice(18) || ''}
+                              </span>
                             </>
                           )}
                           {index === 1 && (
