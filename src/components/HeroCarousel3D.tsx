@@ -84,9 +84,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
   // Slide titles for typing animation
   const slideTitles = useMemo(() => [
-    "5–14 yosh uchun",
-    "Farzandingiz rivojini kuzating",
-    "Sinf natijalarini oson boshqaring"
+    "🚀 5–14 yosh uchun 🎮",
+    "👨‍👩‍👧 Farzandingiz rivojini kuzating 📊",
+    "🎓 Sinf natijalarini oson boshqaring ✨"
   ], []);
 
   // Typing animation effect
@@ -128,10 +128,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="text-kid-yellow drop-shadow-lg">5–14</span> yosh uchun
+          <span className="text-kid-yellow drop-shadow-lg animate-bounce">🚀</span>{' '}
+          <span className="text-kid-yellow drop-shadow-lg">5–14</span> yosh uchun{' '}
+          <span className="text-kid-yellow drop-shadow-lg animate-bounce" style={{ animationDelay: '0.2s' }}>🎮</span>
         </>
       ),
-      description: "O'yin orqali tez hisoblashni o'rganing. XP, Level va Badges to'plang!",
+      description: "🎯 O'yin orqali tez hisoblashni o'rganing! ⭐ XP, Level va Badges to'plang! 🏆",
       cta: {
         icon: Play,
         text: 'Bepul boshlash',
@@ -154,10 +156,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating
+          <span className="animate-pulse">👨‍👩‍👧</span>{' '}
+          Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating{' '}
+          <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>📊</span>
         </>
       ),
-      description: 'Real vaqtda statistika, kunlik hisobot va shaxsiy tavsiyalar oling.',
+      description: '📈 Real vaqtda statistika, 📋 kunlik hisobot va 💡 shaxsiy tavsiyalar oling!',
       cta: {
         icon: BarChart3,
         text: 'Kuzatuv paneli',
@@ -176,10 +180,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring
+          <span className="animate-pulse">🎓</span>{' '}
+          <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring{' '}
+          <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>✨</span>
         </>
       ),
-      description: 'Guruh statistikasi, PDF/Excel eksport va sertifikatlar tizimi.',
+      description: '📊 Guruh statistikasi, 📄 PDF/Excel eksport va 🏅 sertifikatlar tizimi!',
       cta: {
         icon: FileText,
         text: 'Boshlash',
