@@ -13,6 +13,7 @@ import { PageLoader } from "@/components/PageLoader";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PageTransition } from "@/components/PageTransition";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { SessionTimeoutProvider } from "@/components/SessionTimeoutProvider";
 
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -58,7 +59,8 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <TooltipProvider>
         <AuthProvider>
-          <PageLoader />
+          <SessionTimeoutProvider>
+            <PageLoader />
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -105,6 +107,7 @@ const App = () => (
             <PWAInstallBanner />
             <HelpChatWidget />
           </BrowserRouter>
+          </SessionTimeoutProvider>
         </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
