@@ -13,7 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarCropDialog } from '@/components/AvatarCropDialog';
 import { UserChatHistory } from '@/components/UserChatHistory';
+import { TwoFactorSetup } from '@/components/TwoFactorSetup';
 import { useSound } from '@/hooks/useSound';
+import { useMFA } from '@/hooks/useMFA';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import {
@@ -38,7 +40,11 @@ import {
   Volume2,
   VolumeX,
   Clock,
-  Timer
+  Timer,
+  Key,
+  ShieldCheck,
+  ShieldOff,
+  Trash2
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -52,6 +58,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { theme, setTheme } = useTheme();
+  const mfa = useMFA();
   const [mounted, setMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,6 +70,10 @@ const Settings = () => {
   const [savingGoal, setSavingGoal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
+  
+  // 2FA setup dialog
+  const [showTwoFactorSetup, setShowTwoFactorSetup] = useState(false);
+  const [disablingMFA, setDisablingMFA] = useState(false);
   
   // Profile stats for achievements
   const [profileStats, setProfileStats] = useState({
@@ -320,6 +331,22 @@ const Settings = () => {
       toast.error('Xatolik yuz berdi: ' + error.message);
     } finally {
       setSavingGoal(false);
+    }
+  };
+
+  const handleDisableMFA = async () => {
+    if (!mfa.factors.length) return;
+    
+    setDisablingMFA(true);
+    try {
+      const result = await mfa.unenrollFactor(mfa.factors[0].id);
+      if (result.success) {
+        toast.success("2FA o'chirildi");
+      } else {
+        toast.error(result.error || "2FA o'chirishda xatolik");
+      }
+    } finally {
+      setDisablingMFA(false);
     }
   };
 
@@ -941,6 +968,90 @@ const Settings = () => {
             </CardContent>
           </Card>
 
+          {/* Two-Factor Authentication Section */}
+          <Card className="opacity-0 animate-slide-up overflow-hidden bg-card dark:bg-card/90 border-border/40 dark:border-border/20 backdrop-blur-sm" style={{ animationDelay: '220ms', animationFillMode: 'forwards' }}>
+            <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-emerald-500/10 to-transparent dark:from-emerald-500/20 dark:to-transparent px-4 sm:px-6">
+              <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 text-foreground dark:text-foreground/95">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-500/20 dark:bg-emerald-500/35 flex items-center justify-center">
+                  <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
+                </div>
+                Ikki bosqichli autentifikatsiya (2FA)
+              </CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs md:text-sm text-muted-foreground dark:text-muted-foreground/80">
+                Hisobingizni qo'shimcha xavfsizlik bilan himoyalang
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-3 sm:pt-4 px-4 sm:px-6">
+              <div className="space-y-4">
+                {mfa.loading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : mfa.isEnabled ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                        <div>
+                          <p className="font-medium text-xs sm:text-sm text-foreground dark:text-foreground/95">
+                            2FA yoqilgan
+                          </p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">
+                            Authenticator ilovasi orqali
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDisableMFA}
+                        disabled={disablingMFA}
+                        className="text-destructive border-destructive/30 hover:bg-destructive/10 gap-1.5"
+                      >
+                        {disablingMFA ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <ShieldOff className="h-3.5 w-3.5" />
+                        )}
+                        <span className="hidden sm:inline">O'chirish</span>
+                      </Button>
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">
+                      Har safar kirishda authenticator ilovasidan kod so'raladi
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-secondary/50 dark:bg-secondary/20 border border-border/50 dark:border-border/20">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <ShieldOff className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                          <p className="font-medium text-xs sm:text-sm text-foreground dark:text-foreground/95">
+                            2FA o'chirilgan
+                          </p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">
+                            Qo'shimcha xavfsizlik yo'q
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => setShowTwoFactorSetup(true)}
+                        className="gap-1.5"
+                      >
+                        <Key className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Yoqish</span>
+                      </Button>
+                    </div>
+                    <p className="text-[10px] sm:text-xs text-amber-500 dark:text-amber-400">
+                      ⚠️ 2FA yoqish tavsiya etiladi - hisobingiz xavfsizroq bo'ladi
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Notification Settings Section */}
           <div className="opacity-0 animate-slide-up" style={{ animationDelay: '225ms', animationFillMode: 'forwards' }}>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -972,6 +1083,13 @@ const Settings = () => {
         onOpenChange={setCropDialogOpen}
         imageFile={selectedFile}
         onCropComplete={handleCropComplete}
+      />
+
+      {/* Two Factor Setup Dialog */}
+      <TwoFactorSetup
+        open={showTwoFactorSetup}
+        onOpenChange={setShowTwoFactorSetup}
+        onSuccess={() => mfa.checkMFAStatus()}
       />
     </PageBackground>
   );

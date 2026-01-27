@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useMFA } from '@/hooks/useMFA';
 import { Logo } from '@/components/Logo';
+import { TwoFactorVerify } from '@/components/TwoFactorVerify';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -67,8 +69,10 @@ const Auth = () => {
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showMFAVerify, setShowMFAVerify] = useState(false);
   
-  const { signIn, signUp, signInWithGoogle, resetPassword, user } = useAuth();
+  const { signIn, signUp, signInWithGoogle, resetPassword, signOut, user } = useAuth();
+  const mfa = useMFA();
   const navigate = useNavigate();
   const { toast: toastHook } = useToast();
 
@@ -81,11 +85,17 @@ const Auth = () => {
     }
   }, []);
 
+  // Check MFA status after user is available
   useEffect(() => {
-    if (user) {
-      navigate('/');
+    if (user && !mfa.loading) {
+      // If MFA is enabled but not verified (aal1 but needs aal2), show verify screen
+      if (mfa.isEnabled && !mfa.isVerified && mfa.currentLevel === 'aal1') {
+        setShowMFAVerify(true);
+      } else if (!showMFAVerify) {
+        navigate('/');
+      }
     }
-  }, [user, navigate]);
+  }, [user, mfa.loading, mfa.isEnabled, mfa.isVerified, mfa.currentLevel, navigate, showMFAVerify]);
 
   const validateForm = () => {
     try {
@@ -190,6 +200,24 @@ const Auth = () => {
     setErrors({});
     setResetEmailSent(false);
   };
+
+  const handleMFACancel = async () => {
+    await signOut();
+    setShowMFAVerify(false);
+  };
+
+  // Show MFA verification screen
+  if (showMFAVerify && user) {
+    return (
+      <TwoFactorVerify
+        onSuccess={() => {
+          setShowMFAVerify(false);
+          navigate('/');
+        }}
+        onCancel={handleMFACancel}
+      />
+    );
+  }
 
   // Reset email sent success state - Dark Mode & Mobile optimized
   if (resetEmailSent) {
