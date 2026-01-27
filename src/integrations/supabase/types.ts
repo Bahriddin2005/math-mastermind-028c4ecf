@@ -1017,6 +1017,7 @@ export type Database = {
           daily_goal: number | null
           id: string
           last_active_date: string | null
+          phone_number: string | null
           selected_frame: string | null
           total_problems_solved: number | null
           total_score: number | null
@@ -1033,6 +1034,7 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          phone_number?: string | null
           selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
@@ -1049,6 +1051,7 @@ export type Database = {
           daily_goal?: number | null
           id?: string
           last_active_date?: string | null
+          phone_number?: string | null
           selected_frame?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
