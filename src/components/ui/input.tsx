@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Eye, EyeOff } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -24,13 +25,36 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant, ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+    const isPassword = type === "password";
+
     return (
-      <input
-        type={type}
-        className={cn(inputVariants({ variant, className }))}
-        ref={ref}
-        {...props}
-      />
+      <div className="relative w-full">
+        <input
+          type={isPassword && showPassword ? "text" : type}
+          className={cn(
+            inputVariants({ variant, className }),
+            isPassword && "pr-12"
+          )}
+          ref={ref}
+          {...props}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+            tabIndex={-1}
+            aria-label={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        )}
+      </div>
     );
   }
 );
