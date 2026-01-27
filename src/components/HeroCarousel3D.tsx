@@ -273,7 +273,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                       {/* Glow effect behind text */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl rounded-2xl" />
                       <p 
-                        className="relative text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl text-white max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-loose line-clamp-2 sm:line-clamp-none font-semibold tracking-wide px-4 py-3 sm:px-6 sm:py-4 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10"
+                        className="relative text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl text-white max-w-sm xs:max-w-md sm:max-w-xl md:max-w-2xl leading-snug xs:leading-relaxed sm:leading-loose font-semibold tracking-wide px-3 py-2 xs:px-4 xs:py-3 sm:px-6 sm:py-4 bg-black/20 backdrop-blur-sm rounded-xl sm:rounded-2xl border border-white/10"
                         style={{ 
                           textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(255,255,255,0.1)'
                         }}
