@@ -366,12 +366,6 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         </div>
       </div>
 
-      {/* Swipe Hint - Mobile only */}
-      <div className="absolute bottom-12 xs:bottom-14 left-1/2 -translate-x-1/2 z-10 sm:hidden animate-pulse opacity-70 pointer-events-none">
-        <div className="flex items-center gap-1 text-white text-[10px] xs:text-xs bg-black/30 px-2.5 py-1 rounded-full backdrop-blur-sm">
-          <span>👆 Suring</span>
-        </div>
-      </div>
     </div>
   );
 };
