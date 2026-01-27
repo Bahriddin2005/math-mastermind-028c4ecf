@@ -7,7 +7,7 @@ const navItems = [
   { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
   { icon: Play, label: "Mashq", path: "/mental-arithmetic", emoji: "🎮" },
   { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
-  { icon: BookOpen, label: "Darslar", path: "/kids-courses", emoji: "📚" },
+  { icon: BookOpen, label: "Darslar", path: "/courses", emoji: "📚" },
 ];
 
 export const MobileBottomNav = () => {
