@@ -287,7 +287,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* CTA Buttons - Premium glassmorphism design */}
                   <div 
-                    className={`flex flex-row justify-center gap-3 xs:gap-3.5 sm:gap-4 md:gap-5 transition-all duration-500 ${
+                    className={`flex flex-row items-center justify-center gap-3 xs:gap-3.5 sm:gap-4 md:gap-5 transition-all duration-500 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-6 scale-90'
                     }`}
                     style={{ transitionDelay: current === index ? '400ms' : '0ms' }}
@@ -295,7 +295,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     <Button 
                       size="default"
                       onClick={() => navigate('/auth')}
-                      className={`group relative overflow-hidden gap-2 xs:gap-2.5 sm:gap-3 ${slide.cta.className} font-bold shadow-2xl active:scale-95 transition-all duration-300 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 rounded-xl sm:rounded-2xl flex-1 sm:flex-none border-2 border-white/20 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]`}
+                      className={`group relative overflow-hidden gap-2 xs:gap-2.5 sm:gap-3 ${slide.cta.className} font-bold shadow-2xl active:scale-95 transition-all duration-300 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 rounded-xl sm:rounded-2xl border-2 border-white/20 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]`}
                     >
                       <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                       <slide.cta.icon className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6 drop-shadow-lg" />
@@ -306,7 +306,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                         size="default"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="group relative overflow-hidden gap-2 xs:gap-2.5 bg-white/15 border-2 border-white/30 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 backdrop-blur-md rounded-xl sm:rounded-2xl transition-all duration-300 font-bold flex-1 sm:flex-none shadow-xl hover:shadow-2xl"
+                        className="group relative overflow-hidden gap-2 xs:gap-2.5 bg-white/15 border-2 border-white/30 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 backdrop-blur-md rounded-xl sm:rounded-2xl transition-all duration-300 font-bold shadow-xl hover:shadow-2xl"
                       >
                         <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                         <Gamepad2 className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6" />
