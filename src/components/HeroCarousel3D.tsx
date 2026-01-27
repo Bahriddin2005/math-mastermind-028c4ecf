@@ -178,6 +178,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
     <div 
       ref={containerRef}
       className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in mx-0 sm:mx-0"
+      style={{ perspective: '1200px' }}
     >
       <Carousel
         setApi={setApi}
@@ -193,8 +194,18 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         <CarouselContent className="will-change-transform">
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="touch-manipulation">
-              {/* Mobile-optimized height */}
-              <div className="relative h-[320px] xs:h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden">
+              {/* Mobile-optimized height with 3D depth */}
+              <div 
+                className="relative h-[320px] xs:h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] overflow-hidden transition-all duration-700 ease-out"
+                style={{ 
+                  transform: current === index 
+                    ? 'rotateY(0deg) scale(1)' 
+                    : current > index 
+                      ? 'rotateY(-15deg) scale(0.9) translateX(-10%)' 
+                      : 'rotateY(15deg) scale(0.9) translateX(10%)',
+                  transformStyle: 'preserve-3d',
+                }}
+              >
                 {/* Image Background with Parallax */}
                 <img 
                   src={slide.image}
@@ -244,18 +255,22 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     )}
                   </div>
 
-                  {/* Title - Premium typography with gradient and glow effect */}
+                  {/* Title - Premium typography with animated gradient */}
                   <h1 
                     className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 transition-all duration-600 ${
                       current === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
                     }`}
-                    style={{ transitionDelay: current === index ? '200ms' : '0ms' }}
+                    style={{ 
+                      transitionDelay: current === index ? '200ms' : '0ms',
+                      transform: current === index ? 'translateZ(50px)' : 'translateZ(0px)',
+                    }}
                   >
                     <span 
-                      className="bg-gradient-to-r from-white via-white to-white/90 bg-clip-text text-transparent drop-shadow-2xl" 
+                      className="bg-gradient-to-r from-white via-kid-yellow to-white bg-[length:200%_100%] bg-clip-text text-transparent drop-shadow-2xl animate-[gradient-shift_3s_ease-in-out_infinite]" 
                       style={{ 
                         textShadow: '0 4px 30px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.5), 0 0 60px rgba(255,255,255,0.15)',
-                        WebkitTextStroke: '0.5px rgba(255,255,255,0.1)'
+                        WebkitTextStroke: '0.5px rgba(255,255,255,0.2)',
+                        filter: 'drop-shadow(0 0 20px rgba(255,200,0,0.3))',
                       }}
                     >
                       {slide.title}
