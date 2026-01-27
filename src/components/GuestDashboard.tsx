@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
@@ -55,7 +55,7 @@ interface PlatformStats {
   total_courses: number;
 }
 
-export const GuestDashboard = () => {
+export const GuestDashboard = forwardRef<HTMLDivElement, object>((_, ref) => {
   const navigate = useNavigate();
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [stats, setStats] = useState<PlatformStats>({
@@ -375,4 +375,6 @@ export const GuestDashboard = () => {
       </Card>
     </div>
   );
-};
+});
+
+GuestDashboard.displayName = 'GuestDashboard';
