@@ -36,7 +36,7 @@ interface HeroSlide {
     extraBadge?: string;
   };
   title: React.ReactNode;
-  description: string;
+  description: React.ReactNode;
   cta: {
     icon: React.ElementType;
     text: string;
@@ -133,7 +133,14 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           <span className="text-kid-yellow drop-shadow-lg animate-bounce" style={{ animationDelay: '0.2s' }}>🎮</span>
         </>
       ),
-      description: "🎯 O'yin orqali tez hisoblashni o'rganing! ⭐ XP, Level va Badges to'plang! 🏆",
+      description: (
+        <>
+          <span className="text-emerald-300 drop-shadow-[0_0_10px_rgba(52,211,153,0.6)]">🎯 O'yin orqali</span>{' '}
+          <span className="text-yellow-300 drop-shadow-[0_0_10px_rgba(253,224,71,0.6)]">tez hisoblashni</span> o'rganing!{' '}
+          <span className="text-pink-300 drop-shadow-[0_0_10px_rgba(249,168,212,0.6)]">⭐ XP, Level</span> va{' '}
+          <span className="text-orange-300 drop-shadow-[0_0_10px_rgba(253,186,116,0.6)]">Badges to'plang! 🏆</span>
+        </>
+      ),
       cta: {
         icon: Play,
         text: 'Bepul boshlash',
@@ -161,7 +168,14 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>📊</span>
         </>
       ),
-      description: '📈 Real vaqtda statistika, 📋 kunlik hisobot va 💡 shaxsiy tavsiyalar oling!',
+      description: (
+        <>
+          <span className="text-cyan-300 drop-shadow-[0_0_10px_rgba(103,232,249,0.6)]">📈 Real vaqtda</span>{' '}
+          <span className="text-blue-300 drop-shadow-[0_0_10px_rgba(147,197,253,0.6)]">statistika,</span>{' '}
+          <span className="text-violet-300 drop-shadow-[0_0_10px_rgba(196,181,253,0.6)]">📋 kunlik hisobot</span> va{' '}
+          <span className="text-rose-300 drop-shadow-[0_0_10px_rgba(253,164,175,0.6)]">💡 shaxsiy tavsiyalar oling!</span>
+        </>
+      ),
       cta: {
         icon: BarChart3,
         text: 'Kuzatuv paneli',
@@ -185,7 +199,13 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>✨</span>
         </>
       ),
-      description: '📊 Guruh statistikasi, 📄 PDF/Excel eksport va 🏅 sertifikatlar tizimi!',
+      description: (
+        <>
+          <span className="text-amber-300 drop-shadow-[0_0_10px_rgba(252,211,77,0.6)]">📊 Guruh statistikasi,</span>{' '}
+          <span className="text-fuchsia-300 drop-shadow-[0_0_10px_rgba(240,171,252,0.6)]">📄 PDF/Excel eksport</span> va{' '}
+          <span className="text-lime-300 drop-shadow-[0_0_10px_rgba(190,242,100,0.6)]">🏅 sertifikatlar tizimi!</span>
+        </>
+      ),
       cta: {
         icon: FileText,
         text: 'Boshlash',
