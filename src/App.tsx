@@ -78,7 +78,7 @@ const App = () => (
                     <Route path="/blog/:id" element={<BlogPostPage />} />
                     <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/courses" element={<KidsCourses />} />
+                    <Route path="/courses" element={<ProtectedRoute><KidsCourses /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/leaderboard" element={<KidsLeaderboard />} />
                     <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
