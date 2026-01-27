@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo, forwardRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { 
@@ -59,8 +59,7 @@ interface HeroCarousel3DProps {
   totalUsers: number;
 }
 
-export const HeroCarousel3D = forwardRef<HTMLDivElement, HeroCarousel3DProps>(
-  ({ totalUsers }, ref) => {
+export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -436,6 +435,4 @@ export const HeroCarousel3D = forwardRef<HTMLDivElement, HeroCarousel3DProps>(
       </div>
     </div>
   );
-});
-
-HeroCarousel3D.displayName = 'HeroCarousel3D';
+};
