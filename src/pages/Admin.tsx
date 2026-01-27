@@ -70,8 +70,11 @@ import {
   RefreshCw,
   Download,
   Settings,
-  Bell
+  Bell,
+  Phone,
+  Search
 } from 'lucide-react';
+import { formatPhoneNumber } from '@/lib/phoneFormatter';
 
 interface ContactMessage {
   id: string;
@@ -106,6 +109,7 @@ interface UserProfile {
   best_streak: number;
   created_at: string;
   avatar_url: string | null;
+  phone_number: string | null;
 }
 
 interface GameSession {
@@ -163,6 +167,7 @@ const Admin = () => {
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
@@ -729,8 +734,31 @@ const Admin = () => {
 
               <Card className="overflow-hidden">
                 <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-                  <CardTitle className="text-base sm:text-lg">Foydalanuvchilar</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Ro'yxatdan o'tganlar</CardDescription>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base sm:text-lg">Foydalanuvchilar</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Ro'yxatdan o'tganlar</CardDescription>
+                    </div>
+                    <div className="relative w-full sm:w-72">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Ism yoki telefon raqami..."
+                        value={userSearchQuery}
+                        onChange={(e) => setUserSearchQuery(e.target.value)}
+                        className="pl-9 h-9 text-sm"
+                      />
+                      {userSearchQuery && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                          onClick={() => setUserSearchQuery('')}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
                   {loadingUsers ? (
@@ -739,7 +767,15 @@ const Admin = () => {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {users.map((profile, index) => (
+                      {users
+                        .filter((profile) => {
+                          if (!userSearchQuery.trim()) return true;
+                          const query = userSearchQuery.toLowerCase().replace(/\s/g, '');
+                          const username = profile.username.toLowerCase();
+                          const phone = (profile.phone_number || '').replace(/\s/g, '').toLowerCase();
+                          return username.includes(query) || phone.includes(query);
+                        })
+                        .map((profile, index) => (
                         <div key={profile.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 rounded-xl border bg-secondary/30 gap-2 sm:gap-4">
                           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                             <span className="text-sm sm:text-lg font-bold text-muted-foreground w-6 sm:w-8 shrink-0">#{index + 1}</span>
@@ -750,9 +786,17 @@ const Admin = () => {
                                   <Badge variant="default" className="text-[10px] sm:text-xs h-4 sm:h-5">Admin</Badge>
                                 )}
                               </div>
-                              <p className="text-[10px] sm:text-sm text-muted-foreground truncate">
-                                {profile.total_problems_solved} masala · {profile.best_streak} seriya
-                              </p>
+                              <div className="flex items-center gap-2 text-[10px] sm:text-sm text-muted-foreground">
+                                <span className="truncate">
+                                  {profile.total_problems_solved} masala · {profile.best_streak} seriya
+                                </span>
+                                {profile.phone_number && (
+                                  <span className="flex items-center gap-1 text-primary/80">
+                                    <Phone className="h-3 w-3" />
+                                    {formatPhoneNumber(profile.phone_number)}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4 pl-8 sm:pl-0">
@@ -777,6 +821,18 @@ const Admin = () => {
                           </div>
                         </div>
                       ))}
+                      {users.filter((profile) => {
+                        if (!userSearchQuery.trim()) return true;
+                        const query = userSearchQuery.toLowerCase().replace(/\s/g, '');
+                        const username = profile.username.toLowerCase();
+                        const phone = (profile.phone_number || '').replace(/\s/g, '').toLowerCase();
+                        return username.includes(query) || phone.includes(query);
+                      }).length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Search className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>"{userSearchQuery}" bo'yicha foydalanuvchi topilmadi</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>
