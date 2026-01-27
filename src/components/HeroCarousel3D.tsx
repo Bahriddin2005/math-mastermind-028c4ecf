@@ -293,25 +293,31 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     style={{ transitionDelay: current === index ? '400ms' : '0ms' }}
                   >
                     <Button 
-                      size="default"
+                      size="lg"
                       onClick={() => navigate('/auth')}
-                      className={`group relative overflow-hidden gap-2 xs:gap-2.5 sm:gap-3 ${slide.cta.className} font-bold shadow-2xl active:scale-95 transition-all duration-300 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 rounded-xl sm:rounded-2xl border-2 border-white/20 hover:border-white/40 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]`}
+                      className={`group relative overflow-hidden gap-2.5 xs:gap-3 sm:gap-4 ${slide.cta.className} font-black shadow-2xl active:scale-95 transition-all duration-300 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 rounded-2xl sm:rounded-3xl border-2 border-white/30 hover:border-white/60 hover:shadow-[0_0_50px_rgba(255,255,255,0.4)] hover:scale-105`}
                     >
-                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                      <slide.cta.icon className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6 drop-shadow-lg" />
-                      <span className="truncate font-extrabold tracking-wide">{slide.cta.text}</span>
+                      {/* Shimmer effect */}
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                      {/* Glow pulse */}
+                      <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/10 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+                      <slide.cta.icon className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+                      <span className="truncate font-black tracking-wide drop-shadow-md">{slide.cta.text}</span>
                     </Button>
                     {slide.showLogo && (
                       <Button 
-                        size="default"
+                        size="lg"
                         variant="outline"
                         onClick={() => navigate('/train')}
-                        className="group relative overflow-hidden gap-2 xs:gap-2.5 bg-white/15 border-2 border-white/30 text-white hover:bg-white/25 hover:border-white/50 active:scale-95 h-11 xs:h-12 sm:h-14 md:h-16 text-sm xs:text-base sm:text-lg px-5 xs:px-6 sm:px-8 md:px-10 backdrop-blur-md rounded-xl sm:rounded-2xl transition-all duration-300 font-bold shadow-xl hover:shadow-2xl"
+                        className="group relative overflow-hidden gap-2.5 xs:gap-3 bg-white/20 border-2 border-white/40 text-white hover:bg-white/35 hover:border-white/70 active:scale-95 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 backdrop-blur-lg rounded-2xl sm:rounded-3xl transition-all duration-300 font-black shadow-2xl hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105"
                       >
-                        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        <Gamepad2 className="h-5 w-5 xs:h-5 xs:w-5 sm:h-6 sm:w-6" />
-                        <span className="hidden xs:inline font-extrabold">Demo sinash</span>
-                        <span className="xs:hidden text-lg">🎮</span>
+                        {/* Shimmer effect */}
+                        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                        {/* Glow pulse */}
+                        <span className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-white/5 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300" />
+                        <Gamepad2 className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
+                        <span className="hidden xs:inline font-black drop-shadow-md">Demo sinash</span>
+                        <span className="xs:hidden text-xl">🎮</span>
                       </Button>
                     )}
                   </div>
