@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { 
@@ -19,7 +19,10 @@ import {
   Eye,
   FileText,
   Volume2,
-  VolumeX
+  VolumeX,
+  Trophy,
+  Users,
+  Sparkles
 } from 'lucide-react';
 import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 import heroKidsLearning from '@/assets/hero-kids-learning.jpg';
@@ -46,13 +49,18 @@ interface HeroSlide {
     className: string;
   };
   showLogo?: boolean;
+  secondaryCta?: {
+    icon: React.ElementType;
+    text: string;
+  };
 }
 
 interface HeroCarousel3DProps {
   totalUsers: number;
 }
 
-export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
+export const HeroCarousel3D = forwardRef<HTMLDivElement, HeroCarousel3DProps>(
+  ({ totalUsers }, ref) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
@@ -83,6 +91,53 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         className: 'bg-white text-primary hover:bg-white/90',
       },
       showLogo: true,
+      secondaryCta: {
+        icon: Gamepad2,
+        text: 'Demo sinab ko\'ring',
+      },
+    },
+    {
+      id: 'gamification',
+      image: heroKidsLearning,
+      gradientOverlay: 'from-purple-900/70 via-purple-900/30 to-transparent',
+      badge: {
+        icon: Trophy,
+        text: "O'yin tizimi",
+        bgColor: 'bg-purple-500 text-white',
+      },
+      title: (
+        <>
+          <span className="text-kid-yellow">XP, Level</span> va mukofotlar
+        </>
+      ),
+      description: "Har bir to'g'ri javob uchun XP oling, yangi darajaga chiqing va do'stlaringiz bilan musobaqalashing!",
+      cta: {
+        icon: Trophy,
+        text: "O'ynashni boshlash",
+        className: 'bg-purple-500 text-white hover:bg-purple-600',
+      },
+    },
+    {
+      id: 'competition',
+      image: heroTeacherClass,
+      gradientOverlay: 'from-green-900/70 via-green-900/30 to-transparent',
+      badge: {
+        icon: Users,
+        text: 'Jonli musobaqa',
+        bgColor: 'bg-green-500 text-white',
+        extraBadge: 'Yangi',
+      },
+      title: (
+        <>
+          <span className="text-kid-yellow">Haftalik turnirlar</span> va reyting
+        </>
+      ),
+      description: "Boshqa o'quvchilar bilan real vaqtda musobaqalashing va TOP-10 ga kiring!",
+      cta: {
+        icon: Users,
+        text: 'Musobaqaga qo\'shilish',
+        className: 'bg-green-500 text-white hover:bg-green-600',
+      },
     },
     {
       id: 'parents',
@@ -103,6 +158,27 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         icon: BarChart3,
         text: 'Kuzatuv paneli',
         className: 'bg-blue-500 text-white hover:bg-blue-600',
+      },
+    },
+    {
+      id: 'features',
+      image: heroKidsLearning,
+      gradientOverlay: 'from-pink-900/70 via-pink-900/30 to-transparent',
+      badge: {
+        icon: Sparkles,
+        text: 'Premium xususiyatlar',
+        bgColor: 'bg-pink-500 text-white',
+      },
+      title: (
+        <>
+          <span className="text-kid-yellow">Cheksiz</span> imkoniyatlar
+        </>
+      ),
+      description: "Sun'iy intellekt yordamchisi, shaxsiy o'quv rejasi va oflayn rejim!",
+      cta: {
+        icon: Sparkles,
+        text: 'Premium olish',
+        className: 'bg-pink-500 text-white hover:bg-pink-600',
       },
     },
     {
@@ -144,14 +220,30 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
     };
   }, [api]);
 
-  // Play video when slide is active
+  // Play video when slide is active - iOS Safari compatible
   useEffect(() => {
-    if (current === 0 && videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    } else if (videoRef.current) {
-      videoRef.current.pause();
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (current === 0) {
+      // iOS Safari requires muted for autoplay
+      video.muted = true;
+      video.playsInline = true;
+      video.play().catch(() => {
+        // Autoplay failed, likely due to browser policy
+        console.log('Video autoplay prevented by browser');
+      });
+    } else {
+      video.pause();
     }
   }, [current]);
+
+  // Sync mute state with video
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   const scrollTo = useCallback((index: number) => {
     api?.scrollTo(index);
@@ -159,9 +251,6 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
   const toggleMute = useCallback(() => {
     setIsMuted(prev => !prev);
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-    }
   }, []);
 
   // Autoplay plugin with touch-friendly settings
@@ -347,4 +436,6 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       </div>
     </div>
   );
-};
+});
+
+HeroCarousel3D.displayName = 'HeroCarousel3D';
