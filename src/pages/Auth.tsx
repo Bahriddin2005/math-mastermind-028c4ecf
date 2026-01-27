@@ -28,7 +28,8 @@ import {
   Zap,
   Star,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Phone
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -39,6 +40,10 @@ const loginSchema = z.object({
 
 const signupSchema = loginSchema.extend({
   username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
+  phoneNumber: z.string().optional().refine(
+    (val) => !val || /^\+?[0-9]{9,15}$/.test(val.replace(/\s/g, '')),
+    { message: "Noto'g'ri telefon raqami formati" }
+  ),
 });
 
 const emailSchema = z.object({
@@ -65,6 +70,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -102,7 +108,7 @@ const Auth = () => {
       if (mode === 'login') {
         loginSchema.parse({ email, password });
       } else if (mode === 'signup') {
-        signupSchema.parse({ email, password, username });
+        signupSchema.parse({ email, password, username, phoneNumber });
       } else {
         emailSchema.parse({ email });
       }
@@ -154,7 +160,7 @@ const Auth = () => {
           });
         }
       } else if (mode === 'signup') {
-        const { error } = await signUp(email, password, username);
+        const { error } = await signUp(email, password, username, phoneNumber || undefined);
         if (error) {
           if (error.message.includes('already registered')) {
             toastHook({
@@ -414,7 +420,31 @@ const Auth = () => {
                     {errors.username && (
                       <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
                         <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                        {errors.username}
+                    {errors.username}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="phoneNumber" className="text-xs sm:text-sm font-medium">Telefon raqami (ixtiyoriy)</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input
+                        id="phoneNumber"
+                        type="tel"
+                        placeholder="+998 90 123 45 67"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        disabled={loading}
+                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      />
+                    </div>
+                    {errors.phoneNumber && (
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                        {errors.phoneNumber}
                       </p>
                     )}
                   </div>
