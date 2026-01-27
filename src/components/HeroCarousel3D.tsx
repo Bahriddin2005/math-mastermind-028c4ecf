@@ -374,7 +374,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                         <>
                           {index === 0 && (
                             <>
-                              <span className="text-kid-yellow drop-shadow-lg">
+                              <span className="text-emerald-300 drop-shadow-[0_0_20px_rgba(52,211,153,0.8)]">
                                 {typedText[index]?.slice(0, 4) || ''}
                               </span>
                               {typedText[index]?.slice(4) || ''}
@@ -391,7 +391,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                           )}
                           {index === 2 && (
                             <>
-                              <span className="text-kid-yellow">
+                              <span className="text-fuchsia-300 drop-shadow-[0_0_20px_rgba(232,121,249,0.8)]">
                                 {typedText[index]?.slice(0, 18) || ''}
                               </span>
                               {typedText[index]?.slice(18) || ''}

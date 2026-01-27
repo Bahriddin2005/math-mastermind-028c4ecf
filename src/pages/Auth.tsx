@@ -32,6 +32,7 @@ import {
   Phone
 } from 'lucide-react';
 import { z } from 'zod';
+import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 
 const loginSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
@@ -160,7 +161,7 @@ const Auth = () => {
           });
         }
       } else if (mode === 'signup') {
-        const { error } = await signUp(email, password, username, phoneNumber || undefined);
+        const { error } = await signUp(email, password, username, phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined);
         if (error) {
           if (error.message.includes('already registered')) {
             toastHook({
@@ -436,7 +437,7 @@ const Auth = () => {
                         type="tel"
                         placeholder="+998 90 123 45 67"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
                         disabled={loading}
                         className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
