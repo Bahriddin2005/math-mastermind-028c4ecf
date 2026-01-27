@@ -262,21 +262,27 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     </span>
                   </h1>
 
-                  {/* Description - Glass card with elegant styling */}
+                  {/* Description - Premium glass card with elegant styling */}
                   <div 
                     className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 transition-all duration-500 ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
                     style={{ transitionDelay: current === index ? '300ms' : '0ms' }}
                   >
-                    <p 
-                      className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide px-3 py-2 sm:px-0 sm:py-0"
-                      style={{ 
-                        textShadow: '0 2px 15px rgba(0,0,0,0.6)'
-                      }}
-                    >
-                      {slide.description}
-                    </p>
+                    <div className="relative inline-block">
+                      {/* Glow effect behind text */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl rounded-2xl" />
+                      <p 
+                        className="relative text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl text-white max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-loose line-clamp-2 sm:line-clamp-none font-semibold tracking-wide px-4 py-3 sm:px-6 sm:py-4 bg-black/20 backdrop-blur-sm rounded-2xl border border-white/10"
+                        style={{ 
+                          textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(255,255,255,0.1)'
+                        }}
+                      >
+                        <span className="bg-gradient-to-r from-white via-white/95 to-white/90 bg-clip-text">
+                          {slide.description}
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   {/* CTA Buttons - Premium glassmorphism design */}
