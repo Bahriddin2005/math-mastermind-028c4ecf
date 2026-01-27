@@ -194,12 +194,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white transition-all duration-500 ${
+                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-500 ${
                     current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
                   {/* Badge Row - Beautiful glassmorphism design */}
-                  <div className="flex flex-wrap items-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5">
+                  <div className="flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5">
                     {slide.showLogo && (
                       <div className="bg-white/95 backdrop-blur-md rounded-xl xs:rounded-2xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 shadow-2xl ring-2 ring-white/30 hover:scale-105 transition-transform duration-300">
                         <img src={iqromaxLogo} alt="IQROMAX" className="h-7 xs:h-8 sm:h-10 md:h-12 w-auto" />
@@ -240,7 +240,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   </p>
 
                   {/* CTA Buttons - stack on mobile, row on larger */}
-                  <div className="flex flex-row gap-2 xs:gap-2.5 sm:gap-3 md:gap-4">
+                  <div className="flex flex-row justify-center gap-2 xs:gap-2.5 sm:gap-3 md:gap-4">
                     <Button 
                       size="default"
                       onClick={() => navigate('/auth')}
