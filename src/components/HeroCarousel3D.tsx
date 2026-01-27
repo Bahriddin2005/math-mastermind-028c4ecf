@@ -383,7 +383,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                           {index === 1 && (
                             <>
                               {typedText[index]?.slice(0, 13) || ''}
-                              <span className="text-kid-yellow">
+                              <span className="text-cyan-300 drop-shadow-[0_0_15px_rgba(34,211,238,0.7)]">
                                 {typedText[index]?.slice(13, 21) || ''}
                               </span>
                               {typedText[index]?.slice(21) || ''}
