@@ -198,33 +198,44 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                   }`}
                 >
-                  {/* Badge Row - compact on mobile */}
-                  <div className="flex flex-wrap items-center gap-1.5 xs:gap-2 sm:gap-3 mb-2 xs:mb-3 sm:mb-4">
+                  {/* Badge Row - Beautiful glassmorphism design */}
+                  <div className="flex flex-wrap items-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5">
                     {slide.showLogo && (
-                      <div className="bg-white/95 backdrop-blur-sm rounded-lg xs:rounded-xl sm:rounded-2xl p-1.5 xs:p-2 sm:p-2.5 shadow-xl ring-1 ring-white/20">
-                        <img src={iqromaxLogo} alt="IQROMAX" className="h-6 xs:h-7 sm:h-9 md:h-10 w-auto" />
+                      <div className="bg-white/95 backdrop-blur-md rounded-xl xs:rounded-2xl sm:rounded-2xl p-2 xs:p-2.5 sm:p-3 shadow-2xl ring-2 ring-white/30 hover:scale-105 transition-transform duration-300">
+                        <img src={iqromaxLogo} alt="IQROMAX" className="h-7 xs:h-8 sm:h-10 md:h-12 w-auto" />
                       </div>
                     )}
-                    <span className={`inline-flex items-center gap-1 xs:gap-1.5 sm:gap-2 px-2 xs:px-2.5 sm:px-3.5 py-1 xs:py-1.5 ${slide.badge.bgColor} rounded-full text-[10px] xs:text-xs sm:text-sm font-bold shadow-lg backdrop-blur-sm`}>
-                      <slide.badge.icon className="h-3 w-3 xs:h-3.5 xs:w-3.5 sm:h-4 sm:w-4" />
-                      <span className="truncate max-w-[120px] xs:max-w-none">{slide.badge.text}</span>
-                    </span>
+                    <div className="relative group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-kid-yellow via-amber-400 to-kid-orange rounded-full blur-md opacity-60 group-hover:opacity-80 transition-opacity" />
+                      <span className={`relative inline-flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 px-3 xs:px-4 sm:px-5 py-1.5 xs:py-2 sm:py-2.5 ${slide.badge.bgColor} rounded-full text-[11px] xs:text-xs sm:text-sm font-black shadow-2xl backdrop-blur-md border border-white/20`}>
+                        <slide.badge.icon className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 drop-shadow-md" />
+                        <span className="tracking-wide">{slide.badge.text}</span>
+                      </span>
+                    </div>
                     {slide.badge.extraBadge && (
-                      <span className="px-2 py-0.5 xs:py-1 bg-gradient-to-r from-amber-300 to-yellow-400 text-amber-900 rounded-full text-[9px] xs:text-[10px] sm:text-xs font-bold shadow-md">
+                      <span className="px-2.5 xs:px-3 py-1 xs:py-1.5 bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-400 text-amber-900 rounded-full text-[10px] xs:text-xs sm:text-sm font-black shadow-xl border border-amber-200/50 animate-pulse">
                         ✨ {slide.badge.extraBadge}
                       </span>
                     )}
                   </div>
 
-                  {/* Title - responsive sizing */}
-                  <h1 className="text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.15] mb-1.5 xs:mb-2 sm:mb-3 md:mb-4">
-                    <span className="text-white drop-shadow-lg" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>
+                  {/* Title - Premium typography with glow effect */}
+                  <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.1] mb-2 xs:mb-3 sm:mb-4 md:mb-5">
+                    <span 
+                      className="text-white drop-shadow-2xl bg-clip-text" 
+                      style={{ 
+                        textShadow: '0 4px 20px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4), 0 0 40px rgba(255,255,255,0.1)'
+                      }}
+                    >
                       {slide.title}
                     </span>
                   </h1>
 
-                  {/* Description - hide on very small screens or truncate */}
-                  <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl text-white/90 mb-3 xs:mb-4 sm:mb-5 md:mb-6 max-w-lg sm:max-w-xl md:max-w-2xl leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-none" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>
+                  {/* Description - Elegant styling with glass effect */}
+                  <p 
+                    className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 mb-4 xs:mb-5 sm:mb-6 md:mb-8 max-w-lg sm:max-w-xl md:max-w-2xl leading-relaxed sm:leading-relaxed line-clamp-2 sm:line-clamp-none font-medium tracking-wide"
+                    style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+                  >
                     {slide.description}
                   </p>
 
