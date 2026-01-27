@@ -327,7 +327,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       </Carousel>
 
       {/* Dot Indicators - Compact on mobile */}
-      <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-black/50 backdrop-blur-sm rounded-full">
+      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
         {slides.map((slide, index) => (
           <button
             key={slide.id}
