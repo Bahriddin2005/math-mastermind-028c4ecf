@@ -262,22 +262,22 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         <CarouselNext className="hidden md:flex right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 transition-all backdrop-blur-sm h-10 w-10" />
       </Carousel>
 
-      {/* Dot Indicators - Touch friendly, larger on mobile */}
-      <div className="absolute bottom-2 xs:bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 xs:gap-2.5 sm:gap-2 px-3 xs:px-4 py-2 xs:py-2.5 sm:py-2 bg-black/40 backdrop-blur-sm rounded-full">
+      {/* Dot Indicators - Compact on mobile */}
+      <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-black/50 backdrop-blur-sm rounded-full">
         {slides.map((slide, index) => (
           <button
             key={slide.id}
             onClick={() => scrollTo(index)}
             className={`relative transition-all duration-300 ${
               current === index 
-                ? 'w-6 xs:w-7 sm:w-8 h-2 xs:h-2.5 sm:h-2' 
-                : 'w-2 xs:w-2.5 sm:w-2 h-2 xs:h-2.5 sm:h-2 hover:bg-white/60 active:scale-110'
-            } rounded-full overflow-hidden min-w-[8px] min-h-[8px]`}
+                ? 'w-5 sm:w-7 h-1.5 sm:h-2' 
+                : 'w-1.5 sm:w-2 h-1.5 sm:h-2 hover:bg-white/60 active:scale-110'
+            } rounded-full overflow-hidden`}
             aria-label={`Slayd ${index + 1}`}
           >
             <span 
               className={`absolute inset-0 rounded-full transition-all duration-300 ${
-                current === index ? 'bg-white' : 'bg-white/40'
+                current === index ? 'bg-white' : 'bg-white/50'
               }`}
             />
             {current === index && (
