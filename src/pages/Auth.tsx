@@ -162,8 +162,10 @@ const Auth = () => {
         } else {
           toastHook({
             title: 'Muvaffaqiyat!',
-            description: 'Akkaunt yaratildi. Tizimga kiring.',
+            description: 'Akkaunt yaratildi!',
           });
+          // Redirect to onboarding for new users
+          navigate('/onboarding');
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
