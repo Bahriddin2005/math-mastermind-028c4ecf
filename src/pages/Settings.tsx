@@ -36,7 +36,9 @@ import {
   Moon,
   Palette,
   Volume2,
-  VolumeX
+  VolumeX,
+  Clock,
+  Timer
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -86,6 +88,29 @@ const Settings = () => {
     const saved = localStorage.getItem('ttsProvider');
     return saved === 'elevenlabs' ? 'elevenlabs' : 'browser';
   });
+
+  // Session timeout settings
+  const [sessionTimeoutEnabled, setSessionTimeoutEnabled] = useState(() => {
+    const saved = localStorage.getItem('sessionTimeoutEnabled');
+    return saved !== null ? saved === 'true' : true;
+  });
+  
+  const [sessionTimeoutMinutes, setSessionTimeoutMinutes] = useState(() => {
+    const saved = localStorage.getItem('sessionTimeoutMinutes');
+    return saved ? parseInt(saved, 10) : 30;
+  });
+
+  const handleSessionTimeoutToggle = () => {
+    const newValue = !sessionTimeoutEnabled;
+    setSessionTimeoutEnabled(newValue);
+    localStorage.setItem('sessionTimeoutEnabled', String(newValue));
+    toast.success(newValue ? "Sessiya timeout yoqildi" : "Sessiya timeout o'chirildi");
+  };
+
+  const handleSessionTimeoutChange = (value: number) => {
+    setSessionTimeoutMinutes(value);
+    localStorage.setItem('sessionTimeoutMinutes', String(value));
+  };
 
   const toggleVoice = () => {
     const newValue = !voiceEnabled;
@@ -816,8 +841,108 @@ const Settings = () => {
             </Card>
           </div>
 
+          {/* Session Timeout Section */}
+          <Card className="opacity-0 animate-slide-up overflow-hidden bg-card dark:bg-card/90 border-border/40 dark:border-border/20 backdrop-blur-sm" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+            <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-red-500/10 to-transparent dark:from-red-500/20 dark:to-transparent px-4 sm:px-6">
+              <CardTitle className="text-sm sm:text-base md:text-lg flex items-center gap-2 text-foreground dark:text-foreground/95">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-500/20 dark:bg-red-500/35 flex items-center justify-center">
+                  <Timer className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                </div>
+                Sessiya sozlamalari
+              </CardTitle>
+              <CardDescription className="text-[10px] sm:text-xs md:text-sm text-muted-foreground dark:text-muted-foreground/80">
+                Xavfsizlik uchun avtomatik chiqish vaqtini sozlang
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-3 sm:pt-4 px-4 sm:px-6">
+              <div className="space-y-4">
+                {/* Session timeout toggle */}
+                <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-secondary/50 dark:bg-secondary/20 border border-border/50 dark:border-border/20">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Clock className={`h-4 w-4 sm:h-5 sm:w-5 ${sessionTimeoutEnabled ? 'text-red-500' : 'text-muted-foreground'}`} />
+                    <div>
+                      <p className="font-medium text-xs sm:text-sm text-foreground dark:text-foreground/95">
+                        Avtomatik chiqish
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-muted-foreground/80">
+                        {sessionTimeoutEnabled ? `${sessionTimeoutMinutes} daqiqa harakatsizlikdan so'ng` : "O'chirilgan"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSessionTimeoutToggle}
+                    className={`relative w-11 h-6 sm:w-12 sm:h-7 rounded-full transition-all duration-300 ${
+                      sessionTimeoutEnabled 
+                        ? 'bg-red-500 shadow-md shadow-red-500/30' 
+                        : 'bg-muted dark:bg-secondary/50'
+                    }`}
+                    aria-label={sessionTimeoutEnabled ? "Timeout o'chirish" : "Timeout yoqish"}
+                  >
+                    <span 
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 sm:w-6 sm:h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                        sessionTimeoutEnabled ? 'translate-x-5 sm:translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Timeout duration slider */}
+                {sessionTimeoutEnabled && (
+                  <div className="space-y-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-secondary/50 dark:bg-secondary/20 border border-border/50 dark:border-border/20">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs sm:text-sm text-foreground dark:text-foreground/90">
+                        Timeout vaqti
+                      </Label>
+                      <span className="text-lg sm:text-xl font-bold text-red-500">{sessionTimeoutMinutes} daq</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSessionTimeoutChange(Math.max(5, sessionTimeoutMinutes - 5))}
+                        disabled={sessionTimeoutMinutes <= 5}
+                        className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                      >
+                        -5
+                      </Button>
+                      <input
+                        type="range"
+                        min={5}
+                        max={120}
+                        step={5}
+                        value={sessionTimeoutMinutes}
+                        onChange={(e) => handleSessionTimeoutChange(Number(e.target.value))}
+                        className="flex-1 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-red-500"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSessionTimeoutChange(Math.min(120, sessionTimeoutMinutes + 5))}
+                        disabled={sessionTimeoutMinutes >= 120}
+                        className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                      >
+                        +5
+                      </Button>
+                    </div>
+                    
+                    <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground">
+                      <span>5 daqiqa</span>
+                      <span>Tavsiya: 30 daq</span>
+                      <span>2 soat</span>
+                    </div>
+                    
+                    <p className="text-[10px] sm:text-xs text-amber-500 dark:text-amber-400 mt-1">
+                      ⚠️ 5 daqiqa oldin ogohlantirish ko'rsatiladi
+                    </p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Notification Settings Section */}
-          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
+          <div className="opacity-0 animate-slide-up" style={{ animationDelay: '225ms', animationFillMode: 'forwards' }}>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <span className="text-2xl">🔔</span> Bildirishnomalar
             </h2>
