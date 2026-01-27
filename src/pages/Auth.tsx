@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
+import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { 
   Loader2, 
   LogIn, 
@@ -63,6 +65,7 @@ const Auth = () => {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { signIn, signUp, resetPassword, user } = useAuth();
@@ -425,6 +428,27 @@ const Auth = () => {
                         {errors.password}
                       </p>
                     )}
+                    {/* Password strength indicator for signup */}
+                    {mode === 'signup' && password && (
+                      <PasswordStrengthIndicator password={password} />
+                    )}
+                  </div>
+                )}
+
+                {/* Remember me checkbox for login */}
+                {mode === 'login' && (
+                  <div className="flex items-center space-x-2 pt-1">
+                    <Checkbox
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <Label
+                      htmlFor="rememberMe"
+                      className="text-xs sm:text-sm font-normal text-muted-foreground cursor-pointer select-none"
+                    >
+                      Meni eslab qol
+                    </Label>
                   </div>
                 )}
 
