@@ -277,9 +277,9 @@ const KidsCourses = () => {
             <CardContent className="p-5 sm:p-8 relative">
               <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
                 {/* Mascot with Glow */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-white/20 rounded-full blur-xl scale-110 animate-pulse" />
-                  <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-white/20">
+                <div className="relative overflow-visible pt-14">
+                  <div className="absolute inset-0 top-14 bg-white/20 rounded-full blur-xl scale-110 animate-pulse" />
+                  <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-white/20 overflow-visible">
                     <Mascot mood="excited" size="lg" message="O'rganamiz!" />
                   </div>
                 </div>
