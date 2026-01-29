@@ -260,33 +260,56 @@ const KidsCourses = () => {
           </div>
 
           {/* Hero Card */}
-          <Card className="mb-6 overflow-hidden border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+          <Card className="mb-6 overflow-hidden border-0 shadow-xl relative">
+            {/* Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-emerald-500 to-teal-500" />
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse" />
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-white/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+            </div>
+            
+            {/* Floating Decorations */}
+            <div className="absolute top-3 right-4 text-2xl sm:text-3xl animate-bounce" style={{ animationDuration: '2s' }}>⭐</div>
+            <div className="absolute bottom-4 right-8 text-xl sm:text-2xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}>🎯</div>
+            <div className="absolute top-1/2 right-1/4 text-lg animate-bounce hidden sm:block" style={{ animationDuration: '3s', animationDelay: '1s' }}>✨</div>
+            
+            <CardContent className="p-5 sm:p-8 relative">
+              <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
+                {/* Mascot with Glow */}
                 <div className="relative">
-                  <Mascot mood="excited" size="lg" message="O'rganamiz!" />
+                  <div className="absolute inset-0 bg-white/20 rounded-full blur-xl scale-110 animate-pulse" />
+                  <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-3 shadow-lg border border-white/20">
+                    <Mascot mood="excited" size="lg" message="O'rganamiz!" />
+                  </div>
                 </div>
+                
+                {/* Content */}
                 <div className="text-center sm:text-left flex-1">
-                  <h1 className="text-xl sm:text-2xl font-display font-black text-foreground mb-2 flex items-center justify-center sm:justify-start gap-2">
-                    <span className="text-2xl">📚</span>
-                    O'rganish sarguzashti
-                  </h1>
-                  <p className="text-muted-foreground text-sm sm:text-base mb-4 max-w-md">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 mb-3">
+                    <span className="text-3xl sm:text-4xl drop-shadow-lg">📚</span>
+                    <h1 className="text-2xl sm:text-3xl font-display font-black text-white drop-shadow-md">
+                      O'rganish sarguzashti
+                    </h1>
+                  </div>
+                  <p className="text-white/90 text-sm sm:text-base mb-5 max-w-md leading-relaxed">
                     Har bir kursni tugatib, yangi darajalarni oching va yulduzlar to'plang! ✨
                   </p>
-                  <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                    <Badge className="bg-primary/10 text-primary border-primary/20 gap-1.5 px-3 py-1.5">
-                      <BookOpen className="h-3.5 w-3.5" />
-                      {courses.length} ta kurs
-                    </Badge>
-                    <Badge className="bg-kids-yellow/20 text-kids-yellow border-kids-yellow/30 gap-1.5 px-3 py-1.5">
-                      <Star className="h-3.5 w-3.5 fill-current" />
-                      {Object.values(userProgress).reduce((sum, p) => sum + p.completed, 0)} tugatilgan
-                    </Badge>
-                    <Badge className="bg-kids-orange/20 text-kids-orange border-kids-orange/30 gap-1.5 px-3 py-1.5">
-                      <Trophy className="h-3.5 w-3.5" />
-                      Davom eting!
-                    </Badge>
+                  
+                  {/* Stats Badges */}
+                  <div className="flex flex-wrap gap-2 sm:gap-3 justify-center sm:justify-start">
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30 shadow-lg">
+                      <BookOpen className="h-4 w-4 text-white" />
+                      <span className="text-white font-semibold text-sm">{courses.length} ta kurs</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-amber-400/30 backdrop-blur-sm px-4 py-2 rounded-full border border-amber-300/40 shadow-lg">
+                      <Star className="h-4 w-4 text-amber-200 fill-amber-200" />
+                      <span className="text-amber-100 font-semibold text-sm">{Object.values(userProgress).reduce((sum, p) => sum + p.completed, 0)} tugatilgan</span>
+                    </div>
+                    <div className="flex items-center gap-2 bg-cyan-400/30 backdrop-blur-sm px-4 py-2 rounded-full border border-cyan-300/40 shadow-lg">
+                      <Trophy className="h-4 w-4 text-cyan-200" />
+                      <span className="text-cyan-100 font-semibold text-sm">Davom eting!</span>
+                    </div>
                   </div>
                 </div>
               </div>
