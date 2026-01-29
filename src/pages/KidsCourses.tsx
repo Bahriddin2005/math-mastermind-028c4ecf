@@ -25,6 +25,9 @@ import {
   Play,
   Clock,
   X,
+  Sparkles,
+  Trophy,
+  Zap,
 } from 'lucide-react';
 
 interface Course {
@@ -60,10 +63,22 @@ const difficultyEmoji: Record<string, string> = {
   advanced: '🌳',
 };
 
-const difficultyColor: Record<string, string> = {
-  beginner: 'from-emerald-500 to-emerald-400',
-  intermediate: 'from-amber-500 to-amber-400',
-  advanced: 'from-rose-500 to-rose-400',
+const difficultyConfig: Record<string, { gradient: string; glow: string; text: string }> = {
+  beginner: { 
+    gradient: 'from-emerald-500 via-green-500 to-teal-500', 
+    glow: 'shadow-[0_0_30px_rgba(16,185,129,0.5)]',
+    text: 'Boshlang\'ich'
+  },
+  intermediate: { 
+    gradient: 'from-amber-500 via-orange-500 to-yellow-500', 
+    glow: 'shadow-[0_0_30px_rgba(245,158,11,0.5)]',
+    text: 'O\'rta'
+  },
+  advanced: { 
+    gradient: 'from-rose-500 via-pink-500 to-red-500', 
+    glow: 'shadow-[0_0_30px_rgba(244,63,94,0.5)]',
+    text: 'Murakkab'
+  },
 };
 
 const KidsCourses = () => {
@@ -221,50 +236,65 @@ const KidsCourses = () => {
   }
 
   return (
-    <PageBackground className="min-h-screen pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-950 to-slate-900 pb-24">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <PullToRefresh onRefresh={handleRefresh}>
         <div className="container px-3 xs:px-4 py-4 sm:py-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-6">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/')}
-              className="gap-1.5 h-9 px-3"
+              className="gap-1.5 h-9 px-3 text-white/80 hover:text-white hover:bg-white/10"
             >
               <ArrowLeft className="h-4 w-4" />
               <span className="hidden xs:inline">Orqaga</span>
             </Button>
-            <Badge className="bg-primary text-primary-foreground border-0 px-3 py-1.5">
+            <Badge className="bg-gradient-to-r from-violet-500 to-purple-600 text-white border-0 px-4 py-2 shadow-[0_0_20px_rgba(139,92,246,0.5)]">
               <GraduationCap className="h-4 w-4 mr-1.5" />
               Kurslar
             </Badge>
           </div>
 
-          {/* Hero Section - Compact */}
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-accent to-primary p-4 sm:p-6 mb-6">
-            <div className="absolute top-2 right-4 text-3xl animate-bounce-soft">📚</div>
-            <div className="absolute bottom-2 left-4 text-2xl animate-bounce-soft" style={{ animationDelay: '0.3s' }}>🎓</div>
+          {/* Hero Section - Neon Glow Style */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-6 sm:p-8 mb-8 shadow-[0_0_60px_rgba(139,92,246,0.4)]">
+            {/* Animated background elements */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-0 left-1/4 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            </div>
             
-            <div className="relative flex flex-col sm:flex-row items-center gap-4">
-              <Mascot mood="excited" size="md" message="O'rganamiz!" />
-              <div className="text-center sm:text-left text-primary-foreground">
-                <h1 className="text-xl sm:text-2xl font-display font-black mb-1">
+            {/* Floating emojis */}
+            <div className="absolute top-4 right-6 text-4xl animate-bounce" style={{ animationDuration: '2s' }}>📚</div>
+            <div className="absolute bottom-4 left-6 text-3xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}>🎓</div>
+            <div className="absolute top-1/2 right-1/4 text-2xl animate-bounce" style={{ animationDuration: '3s', animationDelay: '1s' }}>⭐</div>
+            
+            <div className="relative flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-cyan-400/30 rounded-full blur-xl animate-pulse" />
+                <Mascot mood="excited" size="lg" message="O'rganamiz!" />
+              </div>
+              <div className="text-center sm:text-left">
+                <h1 className="text-2xl sm:text-4xl font-display font-black text-white mb-2 drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                   O'rganish sarguzashti
                 </h1>
-                <p className="text-primary-foreground/80 text-sm mb-3">
-                  Har bir kursni tugatib, yangi darajalarni oching!
+                <p className="text-cyan-100 text-sm sm:text-base mb-4 max-w-md">
+                  Har bir kursni tugatib, yangi darajalarni oching va yulduzlar to'plang! ✨
                 </p>
-                <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                  <Badge className="bg-background/20 text-primary-foreground border-0 gap-1">
-                    <BookOpen className="h-3 w-3" />
+                <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+                  <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/30 gap-1.5 px-3 py-1.5 shadow-lg">
+                    <BookOpen className="h-4 w-4" />
                     {courses.length} ta kurs
                   </Badge>
-                  <Badge className="bg-background/20 text-primary-foreground border-0 gap-1">
-                    <Star className="h-3 w-3 fill-warning text-warning" />
+                  <Badge className="bg-amber-500/30 backdrop-blur-sm text-amber-100 border-amber-400/30 gap-1.5 px-3 py-1.5 shadow-lg">
+                    <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                     {Object.values(userProgress).reduce((sum, p) => sum + p.completed, 0)} tugatilgan
+                  </Badge>
+                  <Badge className="bg-emerald-500/30 backdrop-blur-sm text-emerald-100 border-emerald-400/30 gap-1.5 px-3 py-1.5 shadow-lg">
+                    <Trophy className="h-4 w-4" />
+                    Davom eting!
                   </Badge>
                 </div>
               </div>
@@ -278,117 +308,136 @@ const KidsCourses = () => {
           ) : (
             <>
               {/* Level Map */}
-              <div className="mb-6">
-                <h2 className="text-lg font-display font-bold mb-3 flex items-center gap-2">
-                  <span className="text-xl">🗺️</span>
+              <div className="mb-8">
+                <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-white">
+                  <span className="text-2xl">🗺️</span>
                   Ta'lim xaritasi
+                  <Sparkles className="h-5 w-5 text-cyan-400" />
                 </h2>
-                <LevelMap 
-                  levels={courseLevels} 
-                  onLevelClick={handleLevelClick}
-                />
+                <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+                  <LevelMap 
+                    levels={courseLevels} 
+                    onLevelClick={handleLevelClick}
+                  />
+                </div>
               </div>
 
               {/* Course Cards */}
-              <h2 className="text-lg font-display font-bold mb-3 flex items-center gap-2">
-                <span className="text-xl">🏝️</span>
+              <h2 className="text-xl font-display font-bold mb-4 flex items-center gap-2 text-white">
+                <span className="text-2xl">🏝️</span>
                 Barcha orollar
+                <Zap className="h-5 w-5 text-amber-400" />
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                 {courses.map((course, index) => {
                   const progress = userProgress[course.id];
                   const progressPercent = getProgressPercent(course.id);
                   const completed = isCompleted(course.id);
                   const isLocked = index > 0 && !isCompleted(courses[index - 1].id) && progressPercent === 0;
                   const emoji = difficultyEmoji[course.difficulty] || '🌱';
-                  const gradient = difficultyColor[course.difficulty] || 'from-emerald-500 to-emerald-400';
+                  const config = difficultyConfig[course.difficulty] || difficultyConfig.beginner;
 
                   return (
                     <Card 
                       key={course.id}
-                      className={`relative overflow-hidden border-2 transition-all active:scale-[0.98] cursor-pointer ${
+                      className={`relative overflow-hidden border-0 bg-white/10 backdrop-blur-sm transition-all duration-300 cursor-pointer group ${
                         isLocked 
-                          ? 'border-muted opacity-60 cursor-not-allowed' 
+                          ? 'opacity-50 cursor-not-allowed grayscale' 
                           : completed 
-                            ? 'border-primary shadow-md' 
-                            : 'border-border hover:border-primary/40'
+                            ? `${config.glow} hover:scale-[1.02]` 
+                            : 'hover:bg-white/15 hover:scale-[1.02]'
                       }`}
                       onClick={() => !isLocked && handleCourseClick(course)}
                     >
                       {/* Thumbnail */}
-                      <div className={`relative h-28 sm:h-32 bg-gradient-to-br ${gradient} overflow-hidden`}>
+                      <div className={`relative h-36 sm:h-40 bg-gradient-to-br ${config.gradient} overflow-hidden`}>
                         {course.thumbnail_url ? (
                           <img 
                             src={course.thumbnail_url} 
                             alt={course.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-5xl">{emoji}</span>
+                            <span className="text-6xl drop-shadow-[0_0_20px_rgba(255,255,255,0.5)] group-hover:scale-110 transition-transform">{emoji}</span>
                           </div>
                         )}
                         
+                        {/* Overlay gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                        
                         {isLocked && (
-                          <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-                            <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
-                              <Lock className="h-6 w-6 text-muted-foreground" />
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-slate-800/80 flex items-center justify-center border-2 border-slate-600">
+                              <Lock className="h-7 w-7 text-slate-400" />
                             </div>
                           </div>
                         )}
                         
                         {completed && (
-                          <div className="absolute top-2 right-2 flex gap-0.5">
+                          <div className="absolute top-3 right-3 flex gap-1">
                             {[1, 2, 3].map((star) => (
-                              <Star key={star} className="h-5 w-5 text-warning fill-warning drop-shadow-lg" />
+                              <Star key={star} className="h-6 w-6 text-amber-400 fill-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]" />
                             ))}
                           </div>
                         )}
 
+                        {/* Difficulty badge */}
+                        <Badge className={`absolute top-3 left-3 bg-black/40 backdrop-blur-sm text-white border-0 text-xs`}>
+                          {config.text}
+                        </Badge>
+
                         {!isLocked && !completed && progressPercent > 0 && (
-                          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-background/30">
+                          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/30">
                             <div 
-                              className="h-full bg-warning transition-all duration-500"
+                              className="h-full bg-gradient-to-r from-amber-400 to-yellow-300 transition-all duration-500"
                               style={{ width: `${progressPercent}%` }}
                             />
                           </div>
                         )}
                       </div>
 
-                      <CardContent className="p-3 sm:p-4">
-                        <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <h3 className="font-display font-bold text-base sm:text-lg line-clamp-1">{course.title}</h3>
-                          {completed && <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />}
+                      <CardContent className="p-4 sm:p-5">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-display font-bold text-lg text-white line-clamp-1 group-hover:text-cyan-300 transition-colors">
+                            {course.title}
+                          </h3>
+                          {completed && <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0" />}
                         </div>
                         
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3">
+                        <p className="text-sm text-white/60 line-clamp-2 mb-4">
                           {course.description}
                         </p>
 
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
-                            <BookOpen className="h-3.5 w-3.5" />
+                          <div className="flex items-center gap-2 text-sm text-white/70">
+                            <BookOpen className="h-4 w-4" />
                             <span>{course.lessons_count} ta dars</span>
                           </div>
                           
                           {!isLocked && (
                             <Button 
                               size="sm" 
-                              className="h-8 rounded-full gap-1 text-xs px-3"
+                              className={`h-9 rounded-full gap-1.5 text-sm px-4 bg-gradient-to-r ${config.gradient} text-white border-0 shadow-lg hover:opacity-90`}
                             >
                               {completed ? 'Takrorlash' : progressPercent > 0 ? 'Davom' : 'Boshlash'}
-                              <ChevronRight className="h-3.5 w-3.5" />
+                              <ChevronRight className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
 
                         {progress && !completed && (
-                          <div className="mt-2.5 pt-2.5 border-t border-border/50">
-                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                          <div className="mt-4 pt-4 border-t border-white/10">
+                            <div className="flex justify-between text-xs text-white/60 mb-2">
                               <span>Jarayon</span>
-                              <span>{progress.completed}/{progress.total}</span>
+                              <span className="text-cyan-400">{progress.completed}/{progress.total}</span>
                             </div>
-                            <Progress value={progressPercent} className="h-1.5" />
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full bg-gradient-to-r ${config.gradient} rounded-full transition-all duration-500`}
+                                style={{ width: `${progressPercent}%` }}
+                              />
+                            </div>
                           </div>
                         )}
                       </CardContent>
@@ -406,49 +455,49 @@ const KidsCourses = () => {
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setSelectedCourse(null)}
           />
           
           {/* Panel */}
-          <div className="relative w-full sm:max-w-lg max-h-[85vh] bg-background rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-fade-in">
+          <div className="relative w-full sm:max-w-lg max-h-[85vh] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-fade-in border border-white/10">
             {/* Header */}
-            <div className={`relative p-4 sm:p-5 bg-gradient-to-br ${difficultyColor[selectedCourse.difficulty] || 'from-primary to-primary/80'}`}>
+            <div className={`relative p-5 sm:p-6 bg-gradient-to-br ${difficultyConfig[selectedCourse.difficulty]?.gradient || 'from-violet-600 to-purple-600'}`}>
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-3 right-3 h-8 w-8 rounded-full bg-white/20 text-white hover:bg-white/30"
+                className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/20 text-white hover:bg-white/30"
                 onClick={() => setSelectedCourse(null)}
               >
                 <X className="h-4 w-4" />
               </Button>
               
-              <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center text-2xl">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl shadow-lg">
                   {difficultyEmoji[selectedCourse.difficulty] || '🌱'}
                 </div>
                 <div className="text-white">
-                  <h2 className="font-display font-bold text-lg sm:text-xl line-clamp-1">{selectedCourse.title}</h2>
-                  <p className="text-white/80 text-xs sm:text-sm">{selectedCourse.lessons_count} ta dars</p>
+                  <h2 className="font-display font-bold text-xl sm:text-2xl line-clamp-1 drop-shadow-lg">{selectedCourse.title}</h2>
+                  <p className="text-white/80 text-sm">{selectedCourse.lessons_count} ta dars</p>
                 </div>
               </div>
             </div>
 
             {/* Lessons List */}
-            <div className="p-4 sm:p-5 overflow-y-auto max-h-[60vh]">
-              <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-primary" />
+            <div className="p-5 overflow-y-auto max-h-[55vh]">
+              <h3 className="font-display font-bold text-sm mb-4 flex items-center gap-2 text-white">
+                <BookOpen className="h-4 w-4 text-cyan-400" />
                 Darslar ro'yxati
               </h3>
 
               {lessonsLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-16 bg-muted/50 rounded-xl animate-pulse" />
+                    <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />
                   ))}
                 </div>
               ) : courseLessons.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="text-center py-8 text-white/50">
                   <BookOpen className="h-10 w-10 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Darslar hali qo'shilmagan</p>
                 </div>
@@ -458,21 +507,21 @@ const KidsCourses = () => {
                     const isLessonCompleted = completedLessons.has(lesson.id);
                     
                     return (
-                      <Card
+                      <div
                         key={lesson.id}
-                        className={`overflow-hidden border transition-all active:scale-[0.98] cursor-pointer ${
+                        className={`overflow-hidden rounded-xl border transition-all active:scale-[0.98] cursor-pointer ${
                           isLessonCompleted 
-                            ? 'border-primary/30 bg-primary/5' 
-                            : 'border-border hover:border-primary/40'
+                            ? 'border-emerald-500/30 bg-emerald-500/10' 
+                            : 'border-white/10 bg-white/5 hover:bg-white/10 hover:border-cyan-500/30'
                         }`}
                         onClick={() => navigate(`/lessons/${lesson.id}`)}
                       >
-                        <CardContent className="p-3 flex items-center gap-3">
+                        <div className="p-3 flex items-center gap-3">
                           {/* Number/Status */}
                           <div className={`h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                             isLessonCompleted 
-                              ? 'bg-primary text-primary-foreground' 
-                              : 'bg-muted text-muted-foreground'
+                              ? 'bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]' 
+                              : 'bg-white/10 text-white/60'
                           }`}>
                             {isLessonCompleted ? (
                               <CheckCircle className="h-5 w-5" />
@@ -483,8 +532,8 @@ const KidsCourses = () => {
 
                           {/* Content */}
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-1">{lesson.title}</h4>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                            <h4 className="font-medium text-sm text-white line-clamp-1">{lesson.title}</h4>
+                            <div className="flex items-center gap-2 text-xs text-white/50 mt-0.5">
                               {lesson.duration_minutes && (
                                 <span className="flex items-center gap-1">
                                   <Clock className="h-3 w-3" />
@@ -495,11 +544,15 @@ const KidsCourses = () => {
                           </div>
 
                           {/* Play button */}
-                          <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full">
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="h-8 w-8 rounded-full text-white/60 hover:text-white hover:bg-white/10"
+                          >
                             <Play className="h-4 w-4" />
                           </Button>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -507,24 +560,23 @@ const KidsCourses = () => {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-border bg-muted/30">
+            <div className="p-5 border-t border-white/10 bg-black/20">
               <Button 
-                className="w-full gap-2" 
-                size="lg"
+                className={`w-full gap-2 h-12 rounded-xl bg-gradient-to-r ${difficultyConfig[selectedCourse.difficulty]?.gradient || 'from-violet-600 to-purple-600'} text-white border-0 shadow-lg font-bold text-base`}
                 onClick={() => {
                   const firstIncomplete = courseLessons.find(l => !completedLessons.has(l.id));
                   navigate(`/lessons/${firstIncomplete?.id || courseLessons[0]?.id}`);
                 }}
                 disabled={courseLessons.length === 0}
               >
-                <Play className="h-4 w-4" />
+                <Play className="h-5 w-5" />
                 {completedLessons.size > 0 ? 'Davom ettirish' : 'Boshlash'}
               </Button>
             </div>
           </div>
         </div>
       )}
-    </PageBackground>
+    </div>
   );
 };
 
