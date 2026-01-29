@@ -845,12 +845,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
                     {(showTime / 1000).toFixed(1)}s
                   </span>
                 </div>
-                <div className="flex gap-2 xs:gap-2.5 overflow-x-auto scrollbar-none -mx-2 px-2 pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="flex flex-wrap gap-2 xs:gap-2.5">
                   {[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000].map((speed) => (
                     <button
                       key={speed}
                       onClick={() => setShowTime(speed)}
-                      className={`relative text-xs xs:text-sm h-10 xs:h-11 min-w-[44px] xs:min-w-[50px] px-3 flex-shrink-0 rounded-xl font-bold transition-all duration-200 ${
+                      className={`relative text-xs xs:text-sm h-10 xs:h-11 min-w-[44px] xs:min-w-[50px] px-3 rounded-xl font-bold transition-all duration-200 ${
                         showTime === speed 
                           ? 'bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/30 scale-105 ring-2 ring-primary/20' 
                           : 'bg-secondary/60 text-muted-foreground hover:bg-primary/15 hover:text-primary hover:scale-105 active:scale-95'
