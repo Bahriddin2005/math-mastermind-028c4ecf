@@ -168,19 +168,21 @@ const KidsHome = () => {
 
               {/* Stats Grid */}
               <div className="flex-1 grid grid-cols-3 gap-2 sm:gap-3">
-                {/* XP */}
+                {/* XP with Level Progress */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-kid-yellow">
+                  <div className="flex items-center justify-center gap-1 text-kids-yellow">
                     <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" />
-                    <span className="text-sm sm:text-base font-bold">{currentXP}</span>
+                    <span className="text-sm sm:text-base font-bold">{currentXP}/{requiredXP}</span>
                   </div>
                   <div className="h-1.5 bg-secondary/80 rounded-full overflow-hidden mt-1">
                     <div 
-                      className="h-full bg-gradient-to-r from-kid-yellow to-kid-orange rounded-full transition-all"
+                      className="h-full bg-gradient-to-r from-kids-yellow to-kids-orange rounded-full transition-all"
                       style={{ width: `${xpProgress}%` }}
                     />
                   </div>
-                  <span className="text-[9px] sm:text-[10px] text-muted-foreground">XP</span>
+                  <span className="text-[9px] sm:text-[10px] text-muted-foreground">
+                    {requiredXP - currentXP} XP qoldi
+                  </span>
                 </div>
 
                 {/* Daily Goal */}
