@@ -144,7 +144,7 @@ const KidsHome = () => {
   const dailyProgress = Math.min((todaySolved / dailyGoal) * 100, 100);
   const level = gamification?.level || 1;
   const currentXP = gamification?.current_xp || 0;
-  const requiredXP = level * 100;
+  const requiredXP = level * 120;
   const xpProgress = Math.min((currentXP / requiredXP) * 100, 100);
 
   return (
