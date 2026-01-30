@@ -84,7 +84,7 @@ const pricingPlans: PricingPlan[] = [
     name: 'Bolajon PRO',
     description: "Bolalar uchun to'liq imkoniyatlar",
     monthlyPrice: 29900,
-    yearlyPrice: 249000,
+    yearlyPrice: 251160, // 29900 * 12 * 0.7 = 30% chegirma
     originalMonthly: 49900,
     icon: Zap,
     gradient: 'from-emerald-500 to-green-600',
@@ -106,7 +106,7 @@ const pricingPlans: PricingPlan[] = [
     name: 'Ustoz PRO',
     description: "O'qituvchilar va markazlar uchun",
     monthlyPrice: 99900,
-    yearlyPrice: 799000,
+    yearlyPrice: 839160, // 99900 * 12 * 0.7 = 30% chegirma
     originalMonthly: 149900,
     icon: Crown,
     gradient: 'from-amber-500 to-orange-600',
