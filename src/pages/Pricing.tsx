@@ -35,14 +35,22 @@ import { cn } from '@/lib/utils';
 
 // Stripe price and product IDs
 const STRIPE_TIERS = {
-  pro: {
-    price_id: "price_1Sia73HENpONntho0Y4abUeU",
-    product_id: "prod_TfvzOLBhYojy4e",
+  bolajon_monthly: {
+    price_id: "price_1SvL3tHENpONntho4DeqNDrP",
+    product_id: "prod_Tt7IfbuvpX61Sz",
   },
-  premium: {
-    price_id: "price_1Sia7HHENpONnthoe10Kiiht",
-    product_id: "prod_Tfvz8P0qtLknhc",
-  }
+  bolajon_yearly: {
+    price_id: "price_1SvL4GHENpONnthoQHj3buGT",
+    product_id: "prod_Tt7ICzwsfnWMzo",
+  },
+  ustoz_monthly: {
+    price_id: "price_1SvL58HENpONntho0ARLwGdq",
+    product_id: "prod_Tt7J6SGQ9jy0Lh",
+  },
+  ustoz_yearly: {
+    price_id: "price_1SvL5PHENpONntho9EYsDjr3",
+    product_id: "prod_Tt7KCd7JtEyO2n",
+  },
 };
 
 interface PricingPlan {
@@ -58,7 +66,8 @@ interface PricingPlan {
   emoji: string;
   popular?: boolean;
   features: string[];
-  stripeTier?: keyof typeof STRIPE_TIERS;
+  monthlyTier?: keyof typeof STRIPE_TIERS;
+  yearlyTier?: keyof typeof STRIPE_TIERS;
 }
 
 const pricingPlans: PricingPlan[] = [
@@ -80,7 +89,7 @@ const pricingPlans: PricingPlan[] = [
     ],
   },
   {
-    id: 'pro',
+    id: 'bolajon',
     name: 'Bolajon PRO',
     description: "Bolalar uchun to'liq imkoniyatlar",
     monthlyPrice: 29900,
@@ -99,10 +108,11 @@ const pricingPlans: PricingPlan[] = [
       "Reklama yo'q",
       '7 kun bepul sinov',
     ],
-    stripeTier: 'pro',
+    monthlyTier: 'bolajon_monthly',
+    yearlyTier: 'bolajon_yearly',
   },
   {
-    id: 'premium',
+    id: 'ustoz',
     name: 'Ustoz PRO',
     description: "O'qituvchilar va markazlar uchun",
     monthlyPrice: 99900,
@@ -120,7 +130,8 @@ const pricingPlans: PricingPlan[] = [
       'Sertifikat generatori',
       'Maxsus yordam',
     ],
-    stripeTier: 'premium',
+    monthlyTier: 'ustoz_monthly',
+    yearlyTier: 'ustoz_yearly',
   },
 ];
 
@@ -180,8 +191,12 @@ const Pricing = () => {
 
   const getCurrentTier = () => {
     if (!subscription?.subscribed || !subscription.product_id) return 'free';
-    if (subscription.product_id === STRIPE_TIERS.premium.product_id) return 'premium';
-    if (subscription.product_id === STRIPE_TIERS.pro.product_id) return 'pro';
+    // Check if user has any bolajon subscription
+    if (subscription.product_id === STRIPE_TIERS.bolajon_monthly.product_id || 
+        subscription.product_id === STRIPE_TIERS.bolajon_yearly.product_id) return 'bolajon';
+    // Check if user has any ustoz subscription
+    if (subscription.product_id === STRIPE_TIERS.ustoz_monthly.product_id || 
+        subscription.product_id === STRIPE_TIERS.ustoz_yearly.product_id) return 'ustoz';
     return 'free';
   };
 
@@ -202,12 +217,14 @@ const Pricing = () => {
       return;
     }
 
-    if (!plan.stripeTier) return;
+    // Determine which price to use based on billing period
+    const tierKey = isYearly ? plan.yearlyTier : plan.monthlyTier;
+    if (!tierKey) return;
 
     setLoadingPlan(plan.id);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: STRIPE_TIERS[plan.stripeTier].price_id }
+        body: { priceId: STRIPE_TIERS[tierKey].price_id }
       });
 
       if (error) throw error;
@@ -329,7 +346,7 @@ const Pricing = () => {
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                   <p className="text-emerald-600 dark:text-emerald-400 font-bold">
-                    Siz hozirda {currentTier === 'premium' ? 'Ustoz PRO' : 'Bolajon PRO'} rejada obuna bo'lgansiz
+                    Siz hozirda {currentTier === 'ustoz' ? 'Ustoz PRO' : 'Bolajon PRO'} rejada obuna bo'lgansiz
                   </p>
                 </div>
                 {subscription.subscription_end && (
@@ -484,7 +501,7 @@ const Pricing = () => {
                         {isCurrentPlan ? 'Joriy reja' : plan.id === 'free' ? 'Hozirgi reja' : "Obuna bo'lish"}
                       </Button>
                       
-                      {plan.stripeTier && (
+                      {(plan.monthlyTier || plan.yearlyTier) && (
                         <p className="text-[11px] text-center text-muted-foreground mt-3 w-full">
                           ✓ 7 kun bepul sinov • Istalgan vaqt bekor qilish
                         </p>
