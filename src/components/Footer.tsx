@@ -23,7 +23,7 @@ const footerLinks = {
   support: [
     { label: "Bog'lanish", href: '/contact' },
     { label: "Ko'p beriladigan savollar", href: '/faq' },
-    { label: 'Yordam markazi', href: '/help' },
+    { label: 'Biz haqimizda', href: '/about' },
   ],
   legal: [
     { label: 'Maxfiylik siyosati', href: '/privacy' },
