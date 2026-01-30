@@ -91,19 +91,19 @@ const App = () => (
                         <Route path="/blog/:id" element={<BlogPostPage />} />
                         <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                         <Route path="/faq" element={<FAQ />} />
-                        <Route path="/courses" element={<ProtectedRoute><KidsCourses /></ProtectedRoute>} />
+                        <Route path="/courses" element={<PremiumRoute><KidsCourses /></PremiumRoute>} />
                         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                         <Route path="/leaderboard" element={<KidsLeaderboard />} />
                         <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
                         <Route path="/lesson-stats" element={<ProtectedRoute><LessonStats /></ProtectedRoute>} />
-                        <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
-                        <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
+                        <Route path="/courses/:courseId" element={<PremiumRoute><CourseDetail /></PremiumRoute>} />
+                        <Route path="/lessons/:lessonId" element={<PremiumRoute><LessonDetail /></PremiumRoute>} />
                         <Route path="/weekly-game" element={<PremiumRoute><WeeklyGame /></PremiumRoute>} />
                         <Route path="/badges" element={<Badges />} />
                         <Route path="/install" element={<Install />} />
                         <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
                         <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-                        <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+                        <Route path="/statistics" element={<PremiumRoute><Statistics /></PremiumRoute>} />
                         <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
                         <Route path="/problem-sheet" element={<PremiumRoute requiredTier="ustoz"><ProblemSheetGenerator /></PremiumRoute>} />
                         <Route path="/challenge-stats" element={<ChallengeStats />} />
