@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { CardPaymentModal } from '@/components/CardPaymentModal';
 import { 
   Check, 
   Zap, 
@@ -29,7 +30,8 @@ import {
   Trophy,
   TrendingUp,
   Play,
-  CheckCircle2
+  CheckCircle2,
+  CreditCard
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -166,8 +168,27 @@ const Pricing = () => {
   useEffect(() => {
     if (user) {
       checkSubscription();
+      checkPendingPayments();
     }
   }, [user]);
+
+  // Card payment modal state
+  const [cardPaymentOpen, setCardPaymentOpen] = useState(false);
+  const [selectedPlanForCard, setSelectedPlanForCard] = useState<PricingPlan | null>(null);
+  const [pendingPayment, setPendingPayment] = useState<any>(null);
+
+  const checkPendingPayments = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('payment_requests')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setPendingPayment(data);
+  };
 
   const checkSubscription = async () => {
     if (!user) return;
@@ -217,29 +238,28 @@ const Pricing = () => {
       return;
     }
 
-    // Determine which price to use based on billing period
-    const tierKey = isYearly ? plan.yearlyTier : plan.monthlyTier;
-    if (!tierKey) return;
-
-    setLoadingPlan(plan.id);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: STRIPE_TIERS[tierKey].price_id }
+    // Check if there's a pending payment
+    if (pendingPayment) {
+      toast.info("Kutilayotgan to'lov mavjud", {
+        description: "Avvalgi to'lov so'rovingiz hali tekshirilmoqda.",
       });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Error creating checkout:', error);
-      toast.error("Xatolik yuz berdi", {
-        description: "Iltimos, qaytadan urinib ko'ring.",
-      });
-    } finally {
-      setLoadingPlan(null);
+      return;
     }
+
+    // Open card payment modal
+    setSelectedPlanForCard(plan);
+    setCardPaymentOpen(true);
+  };
+
+  const getCardPaymentAmount = () => {
+    if (!selectedPlanForCard) return 0;
+    return isYearly ? selectedPlanForCard.yearlyPrice : selectedPlanForCard.monthlyPrice;
+  };
+
+  const getCardPaymentPlanType = () => {
+    if (!selectedPlanForCard) return '';
+    const suffix = isYearly ? '_yearly' : '_monthly';
+    return selectedPlanForCard.id + suffix;
   };
 
   const handleManageSubscription = async () => {
@@ -363,6 +383,21 @@ const Pricing = () => {
                   <Settings className="h-4 w-4" />
                   Obunani boshqarish
                 </Button>
+              </div>
+            )}
+
+            {/* Pending Payment Notice */}
+            {pendingPayment && !subscription?.subscribed && (
+              <div className="mb-8 p-5 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Clock className="w-5 h-5 text-amber-500 animate-pulse" />
+                  <p className="text-amber-600 dark:text-amber-400 font-bold">
+                    To'lov so'rovingiz tekshirilmoqda
+                  </p>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Admin to'lovingizni tasdiqlangandan so'ng obunangiz faollashtiriladi. Bu odatda 1-2 soat ichida amalga oshiriladi.
+                </p>
               </div>
             )}
 
@@ -572,6 +607,20 @@ const Pricing = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Card Payment Modal */}
+      <CardPaymentModal
+        open={cardPaymentOpen}
+        onOpenChange={(open) => {
+          setCardPaymentOpen(open);
+          if (!open) {
+            checkPendingPayments();
+          }
+        }}
+        planType={getCardPaymentPlanType()}
+        planName={selectedPlanForCard?.name || ''}
+        amount={getCardPaymentAmount()}
+      />
     </PageBackground>
   );
 };

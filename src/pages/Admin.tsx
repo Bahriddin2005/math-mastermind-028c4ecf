@@ -30,7 +30,6 @@ import {
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { CourseManager } from '@/components/CourseManager';
-
 import { FAQManager } from '@/components/FAQManager';
 import { ChatHistoryManager } from '@/components/ChatHistoryManager';
 import { AdminUserCharts } from '@/components/AdminUserCharts';
@@ -39,6 +38,7 @@ import { TestimonialsManager } from '@/components/TestimonialsManager';
 import { AdminReports } from '@/components/AdminReports';
 import { CompetitionsManager } from '@/components/CompetitionsManager';
 import { TeamMembersManager } from '@/components/TeamMembersManager';
+import { PaymentRequestsManager } from '@/components/PaymentRequestsManager';
 import { 
   Mail, 
   FileText, 
@@ -58,7 +58,6 @@ import {
   TrendingUp,
   Flame,
   GraduationCap,
-  
   HelpCircle,
   MessageCircle,
   FolderOpen,
@@ -72,7 +71,8 @@ import {
   Settings,
   Bell,
   Phone,
-  Search
+  Search,
+  CreditCard
 } from 'lucide-react';
 import { formatPhoneNumber } from '@/lib/phoneFormatter';
 
@@ -677,10 +677,14 @@ const Admin = () => {
             <div className="hidden md:block">
               <Card className="bg-card/70 dark:bg-card/50 backdrop-blur-md border-border/50 dark:border-border/30 shadow-lg dark:shadow-xl overflow-hidden relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 dark:from-primary/10 via-transparent to-accent/5 dark:to-accent/10" />
-                <TabsList className="relative grid w-full grid-cols-11 h-14 gap-0.5 bg-transparent p-1.5">
+                <TabsList className="relative grid w-full grid-cols-12 h-14 gap-0.5 bg-transparent p-1.5">
                   <TabsTrigger value="users" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-blue-500/15 dark:hover:bg-blue-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-blue-500/40">
                     <Users className="h-4 w-4 text-blue-500 dark:text-blue-400 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Users</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="payments" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 dark:hover:bg-emerald-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-emerald-500/40">
+                    <CreditCard className="h-4 w-4 text-emerald-500 dark:text-emerald-400 group-data-[state=active]:text-white" />
+                    <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">To'lov</span>
                   </TabsTrigger>
                   <TabsTrigger value="reports" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-purple-500/15 dark:hover:bg-purple-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-purple-500/40">
                     <BarChart2 className="h-4 w-4 text-purple-500 dark:text-purple-400 group-data-[state=active]:text-white" />
@@ -690,8 +694,8 @@ const Admin = () => {
                     <Trophy className="h-4 w-4 text-yellow-500 dark:text-yellow-400 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Musobaqa</span>
                   </TabsTrigger>
-                  <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-emerald-500/15 dark:hover:bg-emerald-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-emerald-500/40">
-                    <GraduationCap className="h-4 w-4 text-emerald-500 dark:text-emerald-400 group-data-[state=active]:text-white" />
+                  <TabsTrigger value="courses" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-cyan-500/15 dark:hover:bg-cyan-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-500 data-[state=active]:to-cyan-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-cyan-500/40">
+                    <GraduationCap className="h-4 w-4 text-cyan-500 dark:text-cyan-400 group-data-[state=active]:text-white" />
                     <span className="text-[10px] font-medium truncate dark:text-foreground/80 group-data-[state=active]:text-white">Kurslar</span>
                   </TabsTrigger>
                   <TabsTrigger value="files" className="relative group flex flex-col items-center justify-center gap-0.5 py-1.5 px-1 rounded-lg transition-all duration-300 hover:bg-amber-500/15 dark:hover:bg-amber-500/25 hover:-translate-y-0.5 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-amber-500/40">
@@ -726,6 +730,11 @@ const Admin = () => {
                 </TabsList>
               </Card>
             </div>
+
+            {/* Payments Tab */}
+            <TabsContent value="payments" className="space-y-4 sm:space-y-6">
+              <PaymentRequestsManager />
+            </TabsContent>
 
             {/* Users Tab */}
             <TabsContent value="users" className="space-y-4 sm:space-y-6">
