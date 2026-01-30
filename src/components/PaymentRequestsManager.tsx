@@ -112,6 +112,23 @@ export const PaymentRequestsManager = () => {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Send Telegram notification
+      if (selectedRequest) {
+        try {
+          await supabase.functions.invoke('send-telegram-notification', {
+            body: {
+              type: action === 'approve' ? 'payment_approved' : 'payment_rejected',
+              planType: selectedRequest.plan_type,
+              amount: selectedRequest.amount,
+              adminNote: note,
+            },
+          });
+        } catch (telegramError) {
+          console.error('Telegram notification failed:', telegramError);
+          // Don't throw - payment was processed, just notification failed
+        }
+      }
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['payment-requests'] });
