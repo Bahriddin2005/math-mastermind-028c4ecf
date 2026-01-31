@@ -68,6 +68,25 @@ export const PaymentRequestsManager = () => {
   const [reviewAction, setReviewAction] = useState<'approve' | 'reject'>('approve');
   const [receiptDialogOpen, setReceiptDialogOpen] = useState(false);
 
+  // Fetch user profiles for username display
+  const { data: profiles } = useQuery({
+    queryKey: ['user-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, username');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const getUserInfo = (userId: string) => {
+    const profile = profiles?.find(p => p.user_id === userId);
+    return {
+      username: profile?.username || 'Noma\'lum',
+    };
+  };
+
   const { data: requests, isLoading, refetch } = useQuery({
     queryKey: ['payment-requests', filter],
     queryFn: async () => {
@@ -115,13 +134,17 @@ export const PaymentRequestsManager = () => {
 
       // Send Telegram notification
       if (selectedRequest) {
+        const userInfo = getUserInfo(selectedRequest.user_id);
         try {
           await supabase.functions.invoke('send-telegram-notification', {
             body: {
               type: action === 'approve' ? 'payment_approved' : 'payment_rejected',
+              username: userInfo.username,
               planType: selectedRequest.plan_type,
               amount: selectedRequest.amount,
               adminNote: note,
+              receiptUrl: selectedRequest.receipt_url,
+              requestDate: selectedRequest.created_at,
             },
           });
         } catch (telegramError) {
