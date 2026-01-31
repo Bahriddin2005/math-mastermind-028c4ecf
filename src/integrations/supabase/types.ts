@@ -1182,6 +1182,42 @@ export type Database = {
         }
         Relationships: []
       }
+      telegram_users: {
+        Row: {
+          chat_id: string
+          created_at: string
+          first_name: string | null
+          id: string
+          is_active: boolean
+          last_name: string | null
+          phone_number: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_name?: string | null
+          phone_number: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_name?: string | null
+          phone_number?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           avatar_url: string | null
