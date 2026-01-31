@@ -18,12 +18,11 @@ serve(async (req) => {
 
   try {
     const TELEGRAM_BOT_TOKEN = Deno.env.get('TELEGRAM_BOT_TOKEN');
-    const TELEGRAM_CHAT_ID = Deno.env.get('TELEGRAM_CHAT_ID');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      throw new Error('Telegram configuration is missing');
+    if (!TELEGRAM_BOT_TOKEN) {
+      throw new Error('Telegram bot token is not configured');
     }
 
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
@@ -37,6 +36,37 @@ serve(async (req) => {
     if (!email || !phoneNumber) {
       throw new Error('Email and phone number are required');
     }
+
+    // Normalize phone number for lookup
+    let normalizedPhone = phoneNumber.replace(/\s+/g, '');
+    if (!normalizedPhone.startsWith('+')) {
+      normalizedPhone = '+' + normalizedPhone;
+    }
+
+    console.log('Looking up Telegram user for phone:', normalizedPhone);
+
+    // Find user's Telegram chat_id by phone number
+    const { data: telegramUser, error: lookupError } = await supabase
+      .from('telegram_users')
+      .select('chat_id, first_name')
+      .eq('phone_number', normalizedPhone)
+      .eq('is_active', true)
+      .single();
+
+    if (lookupError || !telegramUser) {
+      console.error('User not found in Telegram:', lookupError);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'telegram_not_registered',
+          message: 'Bu telefon raqam Telegram botga ulanmagan. Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing.'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const chatId = telegramUser.chat_id;
+    const firstName = telegramUser.first_name || 'Foydalanuvchi';
 
     // Generate 6-digit verification code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -56,7 +86,7 @@ serve(async (req) => {
       .from('verification_codes')
       .insert({
         email,
-        phone_number: phoneNumber,
+        phone_number: normalizedPhone,
         code,
         expires_at: expiresAt,
         is_used: false
@@ -67,24 +97,16 @@ serve(async (req) => {
       throw new Error('Failed to store verification code');
     }
 
-    // Escape special Markdown characters for MarkdownV2
-    const escapeMarkdown = (text: string) => {
-      return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
-    };
+    // Format message for Telegram (using HTML for safety)
+    const message = 
+      `🔐 <b>IQROMAX - Tasdiqlash kodi</b>\n\n` +
+      `Assalomu alaykum, ${firstName}!\n\n` +
+      `Sizning tasdiqlash kodingiz:\n\n` +
+      `<code>${code}</code>\n\n` +
+      `⏰ Kod 10 daqiqa ichida amal qiladi.\n\n` +
+      `⚠️ Bu kodni hech kimga bermang!`;
 
-    const safeEmail = escapeMarkdown(email);
-    const safePhone = escapeMarkdown(phoneNumber);
-    const safeCode = escapeMarkdown(code);
-
-    // Format message for Telegram
-    const message = `🔐 *RO'YXATDAN O'TISH KODI*\n\n` +
-      `📧 *Email:* ${safeEmail}\n` +
-      `📱 *Telefon:* ${safePhone}\n` +
-      `\n🔢 *Tasdiqlash kodi:*\n\n` +
-      `\`${safeCode}\`\n\n` +
-      `⏰ _10 daqiqa ichida amal qiladi_`;
-
-    console.log('Sending verification code to Telegram:', { email, phoneNumber });
+    console.log('Sending verification code to user Telegram:', { chatId, email });
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
@@ -94,9 +116,9 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
+        chat_id: chatId,
         text: message,
-        parse_mode: 'MarkdownV2',
+        parse_mode: 'HTML',
       }),
     });
 
@@ -107,10 +129,10 @@ serve(async (req) => {
       throw new Error(`Telegram API error: ${JSON.stringify(result)}`);
     }
 
-    console.log('Verification code sent successfully');
+    console.log('Verification code sent successfully to user');
 
     return new Response(
-      JSON.stringify({ success: true, message: 'Verification code sent' }),
+      JSON.stringify({ success: true, message: 'Verification code sent to your Telegram' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: unknown) {

@@ -168,11 +168,19 @@ const Auth = () => {
         setCodeResendTimer(60); // 60 second cooldown
         toastHook({
           title: 'Kod yuborildi!',
-          description: 'Telegram botdan tasdiqlash kodini oling',
+          description: 'Telegram orqali tasdiqlash kodini oling',
         });
         return true;
+      } else if (data?.error === 'telegram_not_registered') {
+        // User hasn't registered their phone with Telegram bot
+        toastHook({
+          variant: 'destructive',
+          title: 'Telegram bot bilan bog\'lanish kerak',
+          description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing',
+        });
+        return false;
       } else {
-        throw new Error(data?.error || 'Kod yuborishda xatolik');
+        throw new Error(data?.message || data?.error || 'Kod yuborishda xatolik');
       }
     } catch (error: any) {
       console.error('Error sending verification code:', error);
