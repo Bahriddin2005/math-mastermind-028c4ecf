@@ -8,9 +8,12 @@ const corsHeaders = {
 interface NotificationPayload {
   type: 'payment_approved' | 'payment_rejected' | 'payment_new';
   username?: string;
+  userEmail?: string;
   planType: string;
   amount: number;
   adminNote?: string;
+  receiptUrl?: string;
+  requestDate?: string;
 }
 
 const PLAN_LABELS: Record<string, string> = {
@@ -38,42 +41,69 @@ serve(async (req) => {
     }
 
     const payload: NotificationPayload = await req.json();
-    const { type, username, planType, amount, adminNote } = payload;
+    const { type, username, userEmail, planType, amount, adminNote, receiptUrl, requestDate } = payload;
 
     const formatAmount = (amt: number) => {
       return new Intl.NumberFormat('uz-UZ').format(amt) + " so'm";
     };
 
-    let message = '';
-
-    // Escape special Markdown characters
+    // Escape special Markdown characters for MarkdownV2
     const escapeMarkdown = (text: string) => {
       return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
     };
 
     const safeUsername = escapeMarkdown(username || 'Noma\'lum');
+    const safeEmail = userEmail ? escapeMarkdown(userEmail) : '';
     const safePlanLabel = escapeMarkdown(PLAN_LABELS[planType] || planType);
     const safeAdminNote = adminNote ? escapeMarkdown(adminNote) : '';
+    const safeAmount = escapeMarkdown(formatAmount(amount));
+    
+    // Format date
+    let formattedDate = '';
+    if (requestDate) {
+      const date = new Date(requestDate);
+      formattedDate = escapeMarkdown(
+        date.toLocaleDateString('uz-UZ', { 
+          day: '2-digit', 
+          month: 'short', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      );
+    }
+
+    let message = '';
 
     if (type === 'payment_new') {
-      message = `🆕 *Yangi to'lov so'rovi\\!*\n\n` +
-        `👤 Foydalanuvchi: ${safeUsername}\n` +
-        `📦 Reja: ${safePlanLabel}\n` +
-        `💰 Summa: ${formatAmount(amount)}\n` +
-        `⏳ Tekshirishni kutmoqda`;
+      message = `🆕 *YANGI TO'LOV SO'ROVI\\!*\n\n` +
+        `👤 *Foydalanuvchi:* ${safeUsername}\n` +
+        (safeEmail ? `📧 *Email:* ${safeEmail}\n` : '') +
+        `📦 *Reja:* ${safePlanLabel}\n` +
+        `💰 *Summa:* ${safeAmount}\n` +
+        (formattedDate ? `📅 *Sana:* ${formattedDate}\n` : '') +
+        (receiptUrl ? `🧾 *Chek:* Yuklangan\n` : '⚠️ *Chek:* Yuklanmagan\n') +
+        `\n⏳ _Tekshirishni kutmoqda\\.\\.\\._`;
     } else if (type === 'payment_approved') {
-      message = `✅ *To'lov tasdiqlandi\\!*\n\n` +
-        `👤 Foydalanuvchi: ${safeUsername}\n` +
-        `📦 Reja: ${safePlanLabel}\n` +
-        `💰 Summa: ${formatAmount(amount)}\n` +
-        (safeAdminNote ? `📝 Izoh: ${safeAdminNote}` : '');
+      message = `✅ *TO'LOV TASDIQLANDI\\!*\n\n` +
+        `👤 *Foydalanuvchi:* ${safeUsername}\n` +
+        (safeEmail ? `📧 *Email:* ${safeEmail}\n` : '') +
+        `📦 *Reja:* ${safePlanLabel}\n` +
+        `💰 *Summa:* ${safeAmount}\n` +
+        (formattedDate ? `📅 *So'rov sanasi:* ${formattedDate}\n` : '') +
+        (safeAdminNote ? `\n📝 *Izoh:* ${safeAdminNote}` : '') +
+        `\n\n🎉 _Obuna faollashtirildi\\!_`;
     } else if (type === 'payment_rejected') {
-      message = `❌ *To'lov rad etildi*\n\n` +
-        `👤 Foydalanuvchi: ${safeUsername}\n` +
-        `📦 Reja: ${safePlanLabel}\n` +
-        `💰 Summa: ${formatAmount(amount)}\n` +
-        (safeAdminNote ? `📝 Sabab: ${safeAdminNote}` : '');
+      message = `❌ *TO'LOV RAD ETILDI*\n\n` +
+        `👤 *Foydalanuvchi:* ${safeUsername}\n` +
+        (safeEmail ? `📧 *Email:* ${safeEmail}\n` : '') +
+        `📦 *Reja:* ${safePlanLabel}\n` +
+        `💰 *Summa:* ${safeAmount}\n` +
+        (formattedDate ? `📅 *So'rov sanasi:* ${formattedDate}\n` : '') +
+        (safeAdminNote ? `\n📝 *Sabab:* ${safeAdminNote}` : '');
     }
+
+    console.log('Sending Telegram message:', { type, username, planType, amount });
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
