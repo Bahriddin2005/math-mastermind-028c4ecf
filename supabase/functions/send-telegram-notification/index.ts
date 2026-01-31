@@ -46,24 +46,33 @@ serve(async (req) => {
 
     let message = '';
 
+    // Escape special Markdown characters
+    const escapeMarkdown = (text: string) => {
+      return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
+    };
+
+    const safeUsername = escapeMarkdown(username || 'Noma\'lum');
+    const safePlanLabel = escapeMarkdown(PLAN_LABELS[planType] || planType);
+    const safeAdminNote = adminNote ? escapeMarkdown(adminNote) : '';
+
     if (type === 'payment_new') {
-      message = `🆕 *Yangi to'lov so'rovi!*\n\n` +
-        `👤 Foydalanuvchi: ${username || 'Noma\'lum'}\n` +
-        `📦 Reja: ${PLAN_LABELS[planType] || planType}\n` +
+      message = `🆕 *Yangi to'lov so'rovi\\!*\n\n` +
+        `👤 Foydalanuvchi: ${safeUsername}\n` +
+        `📦 Reja: ${safePlanLabel}\n` +
         `💰 Summa: ${formatAmount(amount)}\n` +
         `⏳ Tekshirishni kutmoqda`;
     } else if (type === 'payment_approved') {
-      message = `✅ *To'lov tasdiqlandi!*\n\n` +
-        `👤 Foydalanuvchi: ${username || 'Noma\'lum'}\n` +
-        `📦 Reja: ${PLAN_LABELS[planType] || planType}\n` +
+      message = `✅ *To'lov tasdiqlandi\\!*\n\n` +
+        `👤 Foydalanuvchi: ${safeUsername}\n` +
+        `📦 Reja: ${safePlanLabel}\n` +
         `💰 Summa: ${formatAmount(amount)}\n` +
-        (adminNote ? `📝 Izoh: ${adminNote}` : '');
+        (safeAdminNote ? `📝 Izoh: ${safeAdminNote}` : '');
     } else if (type === 'payment_rejected') {
       message = `❌ *To'lov rad etildi*\n\n` +
-        `👤 Foydalanuvchi: ${username || 'Noma\'lum'}\n` +
-        `📦 Reja: ${PLAN_LABELS[planType] || planType}\n` +
+        `👤 Foydalanuvchi: ${safeUsername}\n` +
+        `📦 Reja: ${safePlanLabel}\n` +
         `💰 Summa: ${formatAmount(amount)}\n` +
-        (adminNote ? `📝 Sabab: ${adminNote}` : '');
+        (safeAdminNote ? `📝 Sabab: ${safeAdminNote}` : '');
     }
 
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -76,7 +85,7 @@ serve(async (req) => {
       body: JSON.stringify({
         chat_id: TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: 'Markdown',
+        parse_mode: 'MarkdownV2',
       }),
     });
 
