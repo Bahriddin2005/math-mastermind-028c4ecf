@@ -115,6 +115,21 @@ export const CardPaymentModal = ({
 
       if (insertError) throw insertError;
 
+      // Send Telegram notification for new payment request
+      try {
+        await supabase.functions.invoke('send-telegram-notification', {
+          body: {
+            type: 'payment_new',
+            username: user.email || user.id,
+            planType: planType,
+            amount: amount,
+          },
+        });
+      } catch (telegramError) {
+        console.error('Telegram notification failed:', telegramError);
+        // Don't throw - payment request was created, just notification failed
+      }
+
       setStep('success');
       toast({ 
         title: "So'rov yuborildi!", 

@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 interface NotificationPayload {
-  type: 'payment_approved' | 'payment_rejected';
+  type: 'payment_approved' | 'payment_rejected' | 'payment_new';
   username?: string;
   planType: string;
   amount: number;
@@ -46,7 +46,13 @@ serve(async (req) => {
 
     let message = '';
 
-    if (type === 'payment_approved') {
+    if (type === 'payment_new') {
+      message = `🆕 *Yangi to'lov so'rovi!*\n\n` +
+        `👤 Foydalanuvchi: ${username || 'Noma\'lum'}\n` +
+        `📦 Reja: ${PLAN_LABELS[planType] || planType}\n` +
+        `💰 Summa: ${formatAmount(amount)}\n` +
+        `⏳ Tekshirishni kutmoqda`;
+    } else if (type === 'payment_approved') {
       message = `✅ *To'lov tasdiqlandi!*\n\n` +
         `👤 Foydalanuvchi: ${username || 'Noma\'lum'}\n` +
         `📦 Reja: ${PLAN_LABELS[planType] || planType}\n` +
