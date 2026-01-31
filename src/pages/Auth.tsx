@@ -377,34 +377,36 @@ const Auth = () => {
   // Reset email sent success state
   if (resetEmailSent) {
     return (
-      <div className="min-h-screen min-h-[100dvh] overflow-y-auto overflow-x-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="flex items-center justify-center min-h-screen min-h-[100dvh] p-3 xs:p-4 sm:p-6 py-8 xs:py-10 sm:py-12">
-          <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
-            <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90">
-              <CardContent className="pt-6 xs:pt-8 sm:pt-10 pb-6 xs:pb-8 sm:pb-10 text-center px-3 xs:px-4 sm:px-6">
-                <div className="h-14 w-14 xs:h-16 xs:w-16 sm:h-20 sm:w-20 rounded-xl xs:rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-4 xs:mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
-                  <Check className="h-7 w-7 xs:h-8 xs:w-8 sm:h-10 sm:w-10 text-white" />
-                </div>
-                <h2 className="text-lg xs:text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
-                <p className="text-muted-foreground mb-5 xs:mb-6 sm:mb-8 leading-relaxed text-xs xs:text-sm sm:text-base px-1 xs:px-2">
-                  Parolni tiklash havolasi <strong className="text-foreground break-all">{email}</strong> emailiga yuborildi. 
-                  Spam papkasini ham tekshiring.
-                </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => switchMode('login')}
-                  className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-10 xs:h-11 sm:h-10 px-4 xs:px-5 text-sm xs:text-base touch-target dark:border-border/30 dark:hover:bg-primary w-full xs:w-auto"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Kirish sahifasiga qaytish
-                </Button>
-              </CardContent>
-            </Card>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
+          <div className="min-h-full flex items-center justify-center p-3 xs:p-4 sm:p-6 py-8 xs:py-10 sm:py-12">
+            <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
+              <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90">
+                <CardContent className="pt-6 xs:pt-8 sm:pt-10 pb-6 xs:pb-8 sm:pb-10 text-center px-3 xs:px-4 sm:px-6">
+                  <div className="h-14 w-14 xs:h-16 xs:w-16 sm:h-20 sm:w-20 rounded-xl xs:rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-4 xs:mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
+                    <Check className="h-7 w-7 xs:h-8 xs:w-8 sm:h-10 sm:w-10 text-white" />
+                  </div>
+                  <h2 className="text-lg xs:text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
+                  <p className="text-muted-foreground mb-5 xs:mb-6 sm:mb-8 leading-relaxed text-xs xs:text-sm sm:text-base px-1 xs:px-2">
+                    Parolni tiklash havolasi <strong className="text-foreground break-all">{email}</strong> emailiga yuborildi. 
+                    Spam papkasini ham tekshiring.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => switchMode('login')}
+                    className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-10 xs:h-11 sm:h-10 px-4 xs:px-5 text-sm xs:text-base touch-target dark:border-border/30 dark:hover:bg-primary w-full xs:w-auto"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Kirish sahifasiga qaytish
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
@@ -414,129 +416,131 @@ const Auth = () => {
   // Verification step UI
   if (mode === 'signup' && signupStep === 'verification') {
     return (
-      <div className="min-h-screen min-h-[100dvh] overflow-y-auto overflow-x-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="flex flex-col items-center justify-center min-h-screen min-h-[100dvh] p-3 xs:p-4 sm:p-6 py-6 xs:py-8 sm:py-10">
-          <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
-            <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
-              <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
-            </div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
+          <div className="min-h-full flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 py-6 xs:py-8 sm:py-10">
+            <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
+              <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
+                <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
+              </div>
 
-            <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
-              <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
-              
-              <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
-                <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
-                  <MessageSquare className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
-                </div>
-                <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Tasdiqlash kodi</CardTitle>
-                <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
-                  Telegram botdan yuborilgan 6 xonali kodni kiriting
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
-                <div className="space-y-4 xs:space-y-5 sm:space-y-6">
-                  {/* Info badge */}
-                  <div className="p-2.5 xs:p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs xs:text-sm text-center">
-                    <p className="text-muted-foreground leading-relaxed">
-                      <span className="font-medium text-foreground break-all">{email}</span>
-                      <br className="xs:hidden" />
-                      <span className="hidden xs:inline"> va </span>
-                      <span className="xs:hidden"> </span>
-                      <span className="font-medium text-foreground">{phoneNumber}</span> uchun kod yuborildi
-                    </p>
+              <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
+                <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+                
+                <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
+                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
+                    <MessageSquare className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
                   </div>
-
-                  {/* OTP Input */}
-                  <div className="flex justify-center overflow-x-auto py-1">
-                    <InputOTP
-                      maxLength={6}
-                      value={verificationCode}
-                      onChange={setVerificationCode}
-                      disabled={loading}
-                      className="gap-1 xs:gap-1.5 sm:gap-2"
-                    >
-                      <InputOTPGroup className="gap-1 xs:gap-1.5 sm:gap-2">
-                        <InputOTPSlot index={0} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        <InputOTPSlot index={1} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        <InputOTPSlot index={2} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        <InputOTPSlot index={3} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        <InputOTPSlot index={4} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        <InputOTPSlot index={5} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-
-                  {/* Resend button */}
-                  <div className="text-center">
-                    {codeResendTimer > 0 ? (
-                      <p className="text-xs xs:text-sm text-muted-foreground">
-                        Qayta yuborish: <span className="font-medium">{codeResendTimer}s</span>
+                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Tasdiqlash kodi</CardTitle>
+                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
+                    Telegram botdan yuborilgan 6 xonali kodni kiriting
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
+                  <div className="space-y-4 xs:space-y-5 sm:space-y-6">
+                    {/* Info badge */}
+                    <div className="p-2.5 xs:p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs xs:text-sm text-center">
+                      <p className="text-muted-foreground leading-relaxed">
+                        <span className="font-medium text-foreground break-all">{email}</span>
+                        <br className="xs:hidden" />
+                        <span className="hidden xs:inline"> va </span>
+                        <span className="xs:hidden"> </span>
+                        <span className="font-medium text-foreground">{phoneNumber}</span> uchun kod yuborildi
                       </p>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={sendVerificationCode}
-                        disabled={sendingCode}
-                        className="text-xs xs:text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1.5 xs:gap-2 transition-colors py-2"
+                    </div>
+
+                    {/* OTP Input */}
+                    <div className="flex justify-center overflow-x-auto py-1">
+                      <InputOTP
+                        maxLength={6}
+                        value={verificationCode}
+                        onChange={setVerificationCode}
+                        disabled={loading}
+                        className="gap-1 xs:gap-1.5 sm:gap-2"
                       >
-                        {sendingCode ? (
-                          <Loader2 className="h-3.5 w-3.5 xs:h-4 xs:w-4 animate-spin" />
-                        ) : (
-                          <RefreshCw className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
-                        )}
-                        Kodni qayta yuborish
-                      </button>
-                    )}
+                        <InputOTPGroup className="gap-1 xs:gap-1.5 sm:gap-2">
+                          <InputOTPSlot index={0} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                          <InputOTPSlot index={1} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                          <InputOTPSlot index={2} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                          <InputOTPSlot index={3} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                          <InputOTPSlot index={4} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                          <InputOTPSlot index={5} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+
+                    {/* Resend button */}
+                    <div className="text-center">
+                      {codeResendTimer > 0 ? (
+                        <p className="text-xs xs:text-sm text-muted-foreground">
+                          Qayta yuborish: <span className="font-medium">{codeResendTimer}s</span>
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={sendVerificationCode}
+                          disabled={sendingCode}
+                          className="text-xs xs:text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1.5 xs:gap-2 transition-colors py-2"
+                        >
+                          {sendingCode ? (
+                            <Loader2 className="h-3.5 w-3.5 xs:h-4 xs:w-4 animate-spin" />
+                          ) : (
+                            <RefreshCw className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+                          )}
+                          Kodni qayta yuborish
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Submit button */}
+                    <Button 
+                      onClick={verifyCodeAndSignup}
+                      size="lg" 
+                      className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl transition-all"
+                      disabled={loading || verificationCode.length !== 6}
+                    >
+                      {loading ? (
+                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                      ) : (
+                        <>
+                          <span className="hidden xs:inline">Tasdiqlash va ro'yxatdan o'tish</span>
+                          <span className="xs:hidden">Tasdiqlash</span>
+                          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Back button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSignupStep('info');
+                        setVerificationCode('');
+                      }}
+                      className="w-full text-primary hover:text-primary/80 text-xs xs:text-sm font-medium inline-flex items-center justify-center gap-1.5 xs:gap-2 transition-colors py-2"
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
+                      Ma'lumotlarni o'zgartirish
+                    </button>
                   </div>
+                </CardContent>
+              </Card>
 
-                  {/* Submit button */}
-                  <Button 
-                    onClick={verifyCodeAndSignup}
-                    size="lg" 
-                    className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl transition-all"
-                    disabled={loading || verificationCode.length !== 6}
-                  >
-                    {loading ? (
-                      <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
-                    ) : (
-                      <>
-                        <span className="hidden xs:inline">Tasdiqlash va ro'yxatdan o'tish</span>
-                        <span className="xs:hidden">Tasdiqlash</span>
-                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </>
-                    )}
-                  </Button>
-
-                  {/* Back button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSignupStep('info');
-                      setVerificationCode('');
-                    }}
-                    className="w-full text-primary hover:text-primary/80 text-xs xs:text-sm font-medium inline-flex items-center justify-center gap-1.5 xs:gap-2 transition-colors py-2"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
-                    Ma'lumotlarni o'zgartirish
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="mt-4 xs:mt-5 sm:mt-6 text-center pb-4 xs:pb-6">
-              <button
-                onClick={() => navigate('/')}
-                className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
-              >
-                <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
-                Bosh sahifaga qaytish
-              </button>
+              <div className="mt-4 xs:mt-5 sm:mt-6 text-center pb-4 xs:pb-6">
+                <button
+                  onClick={() => navigate('/')}
+                  className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
+                  Bosh sahifaga qaytish
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -545,7 +549,7 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col lg:flex-row overflow-x-hidden">
+    <div className="fixed inset-0 flex flex-col lg:flex-row">
       {/* Left side - Branding (Hidden on mobile/tablet) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0 lg:h-screen">
         {/* Animated gradient background */}
@@ -627,9 +631,9 @@ const Auth = () => {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 min-h-screen min-h-[100dvh] overflow-y-auto overflow-x-hidden bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative">
+      <div className="w-full lg:w-1/2 flex flex-col bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden">
         {/* Mobile/Tablet background decorations */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none lg:hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
           <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
@@ -637,7 +641,8 @@ const Auth = () => {
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
 
-        <div className="flex flex-col items-center justify-center min-h-screen min-h-[100dvh] p-3 xs:p-4 sm:p-6 lg:p-8 xl:p-12 py-6 xs:py-8 sm:py-10">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
+          <div className="min-h-full flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 lg:p-8 xl:p-12 py-6 xs:py-8 sm:py-10">
           <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
             {/* Mobile logo */}
             <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
@@ -895,6 +900,7 @@ const Auth = () => {
               ))}
             </div>
           </div>
+        </div>
         </div>
         </div>
       </div>
