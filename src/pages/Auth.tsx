@@ -161,7 +161,28 @@ const Auth = () => {
         }
       });
 
-      if (error) throw error;
+      // Handle edge function error - parse the response body for telegram_not_registered
+      if (error) {
+        // Try to get error details from the context
+        const errorContext = (error as any).context;
+        if (errorContext) {
+          try {
+            const errorBody = await errorContext.json();
+            if (errorBody?.error === 'telegram_not_registered') {
+              toastHook({
+                variant: 'destructive',
+                title: 'Telegram bot bilan bog\'lanish kerak',
+                description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing, keyin qaytadan urinib ko\'ring.',
+                duration: 10000,
+              });
+              return false;
+            }
+          } catch (parseError) {
+            // Couldn't parse error body, continue with generic error handling
+          }
+        }
+        throw error;
+      }
       
       if (data?.success) {
         setSignupStep('verification');
@@ -176,7 +197,8 @@ const Auth = () => {
         toastHook({
           variant: 'destructive',
           title: 'Telegram bot bilan bog\'lanish kerak',
-          description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing',
+          description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing, keyin qaytadan urinib ko\'ring.',
+          duration: 10000,
         });
         return false;
       } else {
