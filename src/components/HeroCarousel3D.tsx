@@ -264,9 +264,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         <CarouselContent className="will-change-transform" style={{ touchAction: 'pan-y pinch-zoom' }}>
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="touch-manipulation cursor-grab active:cursor-grabbing">
-              {/* Mobile-optimized height with 3D depth */}
+              {/* Mobile-optimized height with 3D depth - LARGER */}
               <div 
-                className="relative h-[420px] xs:h-[480px] sm:h-[520px] md:h-[600px] lg:h-[680px] overflow-hidden transition-all duration-300 ease-out"
+                className="relative h-[520px] xs:h-[580px] sm:h-[640px] md:h-[720px] lg:h-[800px] overflow-hidden transition-all duration-300 ease-out"
                 style={{ 
                   transform: current === index 
                     ? 'rotateY(0deg) scale(1)' 
