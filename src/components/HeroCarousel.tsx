@@ -83,7 +83,7 @@ export const HeroCarousel = () => {
       <Carousel
         setApi={setApi}
         opts={{
-          align: "start",
+          align: "center",
           loop: true,
         }}
         plugins={[
@@ -94,9 +94,9 @@ export const HeroCarousel = () => {
         ]}
         className="w-full"
       >
-        <CarouselContent className="-ml-2 md:-ml-4">
+        <CarouselContent className="ml-0">
           {heroSlides.map((slide) => (
-            <CarouselItem key={slide.id} className="pl-2 md:pl-4">
+            <CarouselItem key={slide.id} className="pl-0">
               <div 
                 className={`relative w-full min-h-[280px] xs:min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] rounded-2xl sm:rounded-3xl bg-gradient-to-br ${slide.gradient} p-4 xs:p-5 sm:p-8 lg:p-10 flex flex-col justify-center overflow-hidden`}
               >
