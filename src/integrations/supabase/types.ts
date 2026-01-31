@@ -1782,6 +1782,36 @@ export type Database = {
           },
         ]
       }
+      verification_codes: {
+        Row: {
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          phone_number: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          phone_number: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          phone_number?: string
+        }
+        Relationships: []
+      }
       weekly_challenge_results: {
         Row: {
           avatar_url: string | null
