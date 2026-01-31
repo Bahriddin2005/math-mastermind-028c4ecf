@@ -102,8 +102,17 @@ export const CardPaymentModal = ({
         .from('payment-receipts')
         .getPublicUrl(fileName);
 
+      // Get username from profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('user_id', user.id)
+        .single();
+
+      const username = profileData?.username || user.email || 'Noma\'lum';
+
       // Payment request yaratish
-      const { error: insertError } = await supabase
+      const { data: requestData, error: insertError } = await supabase
         .from('payment_requests')
         .insert({
           user_id: user.id,
@@ -111,7 +120,9 @@ export const CardPaymentModal = ({
           amount: amount,
           receipt_url: urlData.publicUrl,
           status: 'pending'
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) throw insertError;
 
@@ -120,9 +131,12 @@ export const CardPaymentModal = ({
         await supabase.functions.invoke('send-telegram-notification', {
           body: {
             type: 'payment_new',
-            username: user.email || user.id,
+            username: username,
+            userEmail: user.email,
             planType: planType,
             amount: amount,
+            receiptUrl: urlData.publicUrl,
+            requestDate: requestData?.created_at || new Date().toISOString(),
           },
         });
       } catch (telegramError) {
