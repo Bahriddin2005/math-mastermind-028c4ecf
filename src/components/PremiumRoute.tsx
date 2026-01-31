@@ -21,7 +21,7 @@ export const PremiumRoute = ({
   showUpgradePrompt = true
 }: PremiumRouteProps) => {
   const { user, loading: authLoading } = useAuth();
-  const { isSubscribed, productId, loading: subLoading } = useSubscription();
+  const { isSubscribed, productId, loading: subLoading, isDemoMode } = useSubscription();
   const location = useLocation();
 
   // Show loading while checking auth and subscription
@@ -39,6 +39,11 @@ export const PremiumRoute = ({
   // Redirect to auth if not logged in
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // Demo mode - har doim ruxsat berish
+  if (isDemoMode) {
+    return <>{children}</>;
   }
 
   // Check if user has required subscription

@@ -8,11 +8,16 @@ interface SubscriptionContextType {
   subscriptionEnd: string | null;
   loading: boolean;
   checkSubscription: () => Promise<void>;
+  isDemoMode: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
-// Stripe product and price IDs
+// Demo mode - barcha premium funksiyalar bepul
+// Keyinchalik Payme/Click/Visa/Mastercard integratsiyasi uchun false qiling
+export const DEMO_MODE = true;
+
+// Stripe product and price IDs (keyinchalik Payme/Click bilan almashtiriladi)
 export const STRIPE_TIERS = {
   bolajon_monthly: {
     price_id: 'price_1SvL3tHENpONntho4DeqNDrP',
@@ -42,12 +47,20 @@ export const STRIPE_TIERS = {
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const { user, session } = useAuth();
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [productId, setProductId] = useState<string | null>(null);
+  const [isSubscribed, setIsSubscribed] = useState(DEMO_MODE);
+  const [productId, setProductId] = useState<string | null>(DEMO_MODE ? 'demo_mode' : null);
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const checkSubscription = useCallback(async () => {
+    // Demo rejimida har doim subscribed
+    if (DEMO_MODE) {
+      setIsSubscribed(true);
+      setProductId('demo_mode');
+      setSubscriptionEnd(null);
+      return;
+    }
+
     if (!session?.access_token) {
       setIsSubscribed(false);
       setProductId(null);
@@ -79,6 +92,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, [session?.access_token]);
 
   useEffect(() => {
+    if (DEMO_MODE) {
+      setIsSubscribed(true);
+      setProductId('demo_mode');
+      return;
+    }
+
     if (user) {
       checkSubscription();
     } else {
@@ -88,9 +107,9 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, checkSubscription]);
 
-  // Auto-refresh subscription status every 60 seconds
+  // Auto-refresh subscription status every 60 seconds (only if not demo mode)
   useEffect(() => {
-    if (!user) return;
+    if (DEMO_MODE || !user) return;
 
     const interval = setInterval(() => {
       checkSubscription();
@@ -101,7 +120,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <SubscriptionContext.Provider
-      value={{ isSubscribed, productId, subscriptionEnd, loading, checkSubscription }}
+      value={{ isSubscribed, productId, subscriptionEnd, loading, checkSubscription, isDemoMode: DEMO_MODE }}
     >
       {children}
     </SubscriptionContext.Provider>
