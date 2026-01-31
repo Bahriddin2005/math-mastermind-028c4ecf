@@ -39,24 +39,24 @@ import { z } from 'zod';
 import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 
 const loginSchema = z.object({
-  email: z.string().email("Noto'g'ri email format"),
+  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
   password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
 });
 
 const signupSchema = z.object({
-  email: z.string().email("Noto'g'ri email format"),
-  password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
-  username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
+  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
+  password: z.string().min(6, "Xavfsiz parol uchun kamida 6 ta belgi kiriting"),
+  username: z.string().min(2, "Iltimos, to'liq ismingizni kiriting (kamida 2 ta belgi)"),
   phoneNumber: z.string()
-    .min(9, "Telefon raqami majburiy")
+    .min(9, "Telefon raqamingizni kiriting")
     .refine(
       (val) => /^\+?[0-9]{9,15}$/.test(val.replace(/\s/g, '')),
-      { message: "Noto'g'ri telefon raqami formati" }
+      { message: "Telefon raqami formati: +998 XX XXX XX XX" }
     ),
 });
 
 const emailSchema = z.object({
-  email: z.string().email("Noto'g'ri email format"),
+  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
 });
 
 type AuthMode = 'login' | 'signup' | 'forgot-password';
@@ -171,9 +171,9 @@ const Auth = () => {
             if (errorBody?.error === 'telegram_not_registered') {
               toastHook({
                 variant: 'destructive',
-                title: 'Telegram bot bilan bog\'lanish kerak',
-                description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing, keyin qaytadan urinib ko\'ring.',
-                duration: 10000,
+                title: '📱 Telegram botga ulanish kerak',
+                description: 'Avval Telegram\'da @iqromaxuz_bot ga o\'ting, /start bosing va telefon raqamingizni ulashing. So\'ng qayta urinib ko\'ring.',
+                duration: 12000,
               });
               return false;
             }
@@ -188,28 +188,28 @@ const Auth = () => {
         setSignupStep('verification');
         setCodeResendTimer(60); // 60 second cooldown
         toastHook({
-          title: 'Kod yuborildi!',
-          description: 'Telegram orqali tasdiqlash kodini oling',
+          title: '✅ Kod yuborildi!',
+          description: 'Telegram chatda 6 xonali tasdiqlash kodini olasiz',
         });
         return true;
       } else if (data?.error === 'telegram_not_registered') {
         // User hasn't registered their phone with Telegram bot
         toastHook({
           variant: 'destructive',
-          title: 'Telegram bot bilan bog\'lanish kerak',
-          description: 'Avval @iqromax_bot ga /start bosing va telefon raqamingizni ulashing, keyin qaytadan urinib ko\'ring.',
-          duration: 10000,
+          title: '📱 Telegram botga ulanish kerak',
+          description: 'Avval Telegram\'da @iqromaxuz_bot ga o\'ting, /start bosing va telefon raqamingizni ulashing. So\'ng qayta urinib ko\'ring.',
+          duration: 12000,
         });
         return false;
       } else {
-        throw new Error(data?.message || data?.error || 'Kod yuborishda xatolik');
+        throw new Error(data?.message || data?.error || 'Tasdiqlash kodini yuborib bo\'lmadi');
       }
     } catch (error: any) {
       console.error('Error sending verification code:', error);
       toastHook({
         variant: 'destructive',
-        title: 'Xatolik',
-        description: error.message || 'Kod yuborishda xatolik yuz berdi',
+        title: '❌ Xatolik yuz berdi',
+        description: error.message || 'Tasdiqlash kodini yuborishda muammo. Internet aloqangizni tekshiring.',
       });
       return false;
     } finally {
@@ -221,8 +221,8 @@ const Auth = () => {
     if (verificationCode.length !== 6) {
       toastHook({
         variant: 'destructive',
-        title: 'Xatolik',
-        description: '6 xonali kodni to\'liq kiriting',
+        title: '⚠️ Kod to\'liq emas',
+        description: 'Iltimos, Telegram orqali yuborilgan 6 xonali kodni to\'liq kiriting',
       });
       return;
     }
@@ -242,8 +242,8 @@ const Auth = () => {
       if (!verifyData?.valid) {
         toastHook({
           variant: 'destructive',
-          title: 'Xatolik',
-          description: verifyData?.error || "Kod noto'g'ri yoki muddati o'tgan",
+          title: '❌ Kod tasdiqlanmadi',
+          description: verifyData?.error || "Kiritilgan kod noto'g'ri yoki muddati o'tgan. Yangi kod so'rang.",
         });
         return;
       }
@@ -255,20 +255,20 @@ const Auth = () => {
         if (error.message.includes('already registered')) {
           toastHook({
             variant: 'destructive',
-            title: 'Xatolik',
-            description: "Bu email allaqachon ro'yxatdan o'tgan",
+            title: '⚠️ Email band',
+            description: "Bu email manzili allaqachon ro'yxatdan o'tgan. Kirish sahifasidan foydalaning yoki boshqa email kiriting.",
           });
         } else {
           toastHook({
             variant: 'destructive',
-            title: 'Xatolik',
+            title: '❌ Ro\'yxatdan o\'tib bo\'lmadi',
             description: error.message,
           });
         }
       } else {
         toastHook({
-          title: 'Muvaffaqiyat!',
-          description: 'Akkaunt yaratildi!',
+          title: '🎉 Tabriklaymiz!',
+          description: 'Akkauntingiz muvaffaqiyatli yaratildi!',
         });
         navigate('/onboarding');
       }
@@ -276,8 +276,8 @@ const Auth = () => {
       console.error('Error during signup:', error);
       toastHook({
         variant: 'destructive',
-        title: 'Xatolik',
-        description: error.message || "Ro'yxatdan o'tishda xatolik",
+        title: '❌ Xatolik yuz berdi',
+        description: error.message || "Ro'yxatdan o'tishda muammo. Qaytadan urinib ko'ring.",
       });
     } finally {
       setLoading(false);
@@ -301,17 +301,28 @@ const Auth = () => {
         
         const { error } = await signIn(email, password);
         if (error) {
+          let errorTitle = '❌ Kirib bo\'lmadi';
+          let errorMessage = error.message;
+          
+          if (error.message === 'Invalid login credentials') {
+            errorMessage = "Email yoki parol noto'g'ri. Tekshirib qayta urinib ko'ring.";
+          } else if (error.message.includes('Email not confirmed')) {
+            errorTitle = '📧 Email tasdiqlanmagan';
+            errorMessage = "Emailingizga yuborilgan tasdiqlash havolasini bosing.";
+          } else if (error.message.includes('Too many requests')) {
+            errorTitle = '⏳ Biroz kuting';
+            errorMessage = "Juda ko'p urinish. 1 daqiqadan so'ng qayta urinib ko'ring.";
+          }
+          
           toastHook({
             variant: 'destructive',
-            title: 'Xatolik',
-            description: error.message === 'Invalid login credentials' 
-              ? "Email yoki parol noto'g'ri" 
-              : error.message,
+            title: errorTitle,
+            description: errorMessage,
           });
         } else {
           toastHook({
-            title: 'Muvaffaqiyat!',
-            description: 'Tizimga kirdingiz',
+            title: '👋 Xush kelibsiz!',
+            description: 'Tizimga muvaffaqiyatli kirdingiz',
           });
         }
       } else if (mode === 'signup') {
@@ -324,12 +335,12 @@ const Auth = () => {
         if (error) {
           toastHook({
             variant: 'destructive',
-            title: 'Xatolik',
-            description: error.message,
+            title: '❌ Xatolik yuz berdi',
+            description: error.message || "Parolni tiklash havolasini yuborib bo'lmadi",
           });
         } else {
           setResetEmailSent(true);
-          toast.success('Parolni tiklash havolasi emailingizga yuborildi');
+          toast.success('✅ Parolni tiklash havolasi emailingizga yuborildi!');
         }
       }
     } finally {
