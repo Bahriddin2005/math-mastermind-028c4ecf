@@ -377,27 +377,27 @@ const Auth = () => {
   // Reset email sent success state
   if (resetEmailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-3 xs:p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
+        <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90">
-            <CardContent className="pt-8 sm:pt-10 pb-8 sm:pb-10 text-center px-4 sm:px-6">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
-                <Check className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+            <CardContent className="pt-6 xs:pt-8 sm:pt-10 pb-6 xs:pb-8 sm:pb-10 text-center px-3 xs:px-4 sm:px-6">
+              <div className="h-14 w-14 xs:h-16 xs:w-16 sm:h-20 sm:w-20 rounded-xl xs:rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-4 xs:mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
+                <Check className="h-7 w-7 xs:h-8 xs:w-8 sm:h-10 sm:w-10 text-white" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
-              <p className="text-muted-foreground mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base px-2">
-                Parolni tiklash havolasi <strong className="text-foreground">{email}</strong> emailiga yuborildi. 
+              <h2 className="text-lg xs:text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
+              <p className="text-muted-foreground mb-5 xs:mb-6 sm:mb-8 leading-relaxed text-xs xs:text-sm sm:text-base px-1 xs:px-2">
+                Parolni tiklash havolasi <strong className="text-foreground break-all">{email}</strong> emailiga yuborildi. 
                 Spam papkasini ham tekshiring.
               </p>
               <Button 
                 variant="outline" 
                 onClick={() => switchMode('login')}
-                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-11 sm:h-10 px-5 touch-target dark:border-border/30 dark:hover:bg-primary"
+                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-10 xs:h-11 sm:h-10 px-4 xs:px-5 text-sm xs:text-base touch-target dark:border-border/30 dark:hover:bg-primary w-full xs:w-auto"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Kirish sahifasiga qaytish
@@ -412,55 +412,59 @@ const Auth = () => {
   // Verification step UI
   if (mode === 'signup' && signupStep === 'verification') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+      <div className="min-h-screen min-h-[100dvh] flex items-center justify-center p-3 xs:p-4 sm:p-6 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
-          <div className="text-center mb-6 sm:mb-8 lg:hidden">
-            <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
+        <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
+          <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
+            <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
           </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
             
-            <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
-                <MessageSquare className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
+            <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
+              <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
+                <MessageSquare className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
               </div>
-              <CardTitle className="text-xl sm:text-2xl font-display">Tasdiqlash kodi</CardTitle>
-              <CardDescription className="mt-1.5 sm:mt-2 text-sm">
+              <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Tasdiqlash kodi</CardTitle>
+              <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
                 Telegram botdan yuborilgan 6 xonali kodni kiriting
               </CardDescription>
             </CardHeader>
             
-            <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
-              <div className="space-y-6">
+            <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
+              <div className="space-y-4 xs:space-y-5 sm:space-y-6">
                 {/* Info badge */}
-                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-sm text-center">
-                  <p className="text-muted-foreground">
-                    <span className="font-medium text-foreground">{email}</span> va{' '}
+                <div className="p-2.5 xs:p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs xs:text-sm text-center">
+                  <p className="text-muted-foreground leading-relaxed">
+                    <span className="font-medium text-foreground break-all">{email}</span>
+                    <br className="xs:hidden" />
+                    <span className="hidden xs:inline"> va </span>
+                    <span className="xs:hidden"> </span>
                     <span className="font-medium text-foreground">{phoneNumber}</span> uchun kod yuborildi
                   </p>
                 </div>
 
                 {/* OTP Input */}
-                <div className="flex justify-center">
+                <div className="flex justify-center overflow-x-auto py-1">
                   <InputOTP
                     maxLength={6}
                     value={verificationCode}
                     onChange={setVerificationCode}
                     disabled={loading}
+                    className="gap-1 xs:gap-1.5 sm:gap-2"
                   >
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
+                    <InputOTPGroup className="gap-1 xs:gap-1.5 sm:gap-2">
+                      <InputOTPSlot index={0} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                      <InputOTPSlot index={1} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                      <InputOTPSlot index={2} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                      <InputOTPSlot index={3} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                      <InputOTPSlot index={4} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
+                      <InputOTPSlot index={5} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
                     </InputOTPGroup>
                   </InputOTP>
                 </div>
@@ -492,14 +496,15 @@ const Auth = () => {
                 <Button 
                   onClick={verifyCodeAndSignup}
                   size="lg" 
-                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl transition-all"
+                  className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl transition-all"
                   disabled={loading || verificationCode.length !== 6}
                 >
                   {loading ? (
                     <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   ) : (
                     <>
-                      Tasdiqlash va ro'yxatdan o'tish
+                      <span className="hidden xs:inline">Tasdiqlash va ro'yxatdan o'tish</span>
+                      <span className="xs:hidden">Tasdiqlash</span>
                       <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                     </>
                   )}
@@ -512,21 +517,21 @@ const Auth = () => {
                     setSignupStep('info');
                     setVerificationCode('');
                   }}
-                  className="w-full text-primary hover:text-primary/80 text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors"
+                  className="w-full text-primary hover:text-primary/80 text-xs xs:text-sm font-medium inline-flex items-center justify-center gap-1.5 xs:gap-2 transition-colors py-2"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
                   Ma'lumotlarni o'zgartirish
                 </button>
               </div>
             </CardContent>
           </Card>
 
-          <div className="mt-5 sm:mt-6 text-center">
+          <div className="mt-4 xs:mt-5 sm:mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group touch-target"
+              className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
             >
-              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
               Bosh sahifaga qaytish
             </button>
           </div>
@@ -618,54 +623,54 @@ const Auth = () => {
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-12 bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden min-h-screen lg:min-h-0">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-3 xs:p-4 sm:p-6 lg:p-8 xl:p-12 bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden min-h-screen min-h-[100dvh] lg:min-h-0">
         {/* Mobile/Tablet background decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute -top-40 -right-40 w-64 sm:w-80 h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-64 sm:w-80 h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-        <div className="w-full max-w-md relative z-10 px-1 sm:px-0">
+        <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
           {/* Mobile logo */}
-          <div className="text-center mb-6 sm:mb-8 lg:hidden">
-            <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
-            <p className="text-muted-foreground text-xs sm:text-sm">Mental Matematika Platformasi</p>
+          <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
+            <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
+            <p className="text-muted-foreground text-[11px] xs:text-xs sm:text-sm">Mental Matematika Platformasi</p>
           </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
             {/* Card top decoration */}
             <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
             
-            <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
+            <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
               {mode === 'forgot-password' ? (
                 <>
-                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 animate-bounce-slow">
-                    <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
+                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 animate-bounce-slow">
+                    <Mail className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
                   </div>
-                  <CardTitle className="text-xl sm:text-2xl font-display">Parolni tiklash</CardTitle>
-                  <CardDescription className="mt-1.5 sm:mt-2 text-sm">
+                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Parolni tiklash</CardTitle>
+                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
                     Email manzilingizni kiriting, parolni tiklash havolasini yuboramiz
                   </CardDescription>
                 </>
               ) : (
                 <>
-                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 relative group">
+                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 relative group">
                     {mode === 'login' ? (
-                      <LogIn className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <LogIn className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     ) : (
-                      <UserPlus className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <UserPlus className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     )}
-                    <div className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
-                      <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-accent-foreground" />
+                    <div className="absolute -top-0.5 xs:-top-1 -right-0.5 xs:-right-1 h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
+                      <Zap className="h-2 w-2 xs:h-2.5 xs:w-2.5 sm:h-3 sm:w-3 text-accent-foreground" />
                     </div>
                   </div>
-                  <CardTitle className="text-xl sm:text-2xl font-display">
+                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">
                     {mode === 'login' ? 'Xush kelibsiz!' : "Ro'yxatdan o'tish"}
                   </CardTitle>
-                  <CardDescription className="mt-1.5 sm:mt-2 text-sm">
+                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
                     {mode === 'login' 
                       ? "Hisobingizga kiring va davom eting" 
                       : "Ma'lumotlarni kiriting va Telegram orqali tasdiqlang"}
@@ -674,13 +679,13 @@ const Auth = () => {
               )}
             </CardHeader>
             
-            <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
-              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
+              <form onSubmit={handleSubmit} className="space-y-2.5 xs:space-y-3 sm:space-y-4">
                 {mode === 'signup' && (
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label htmlFor="username" className="text-xs sm:text-sm font-medium">Ism</Label>
+                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="username" className="text-[11px] xs:text-xs sm:text-sm font-medium">Ism</Label>
                     <div className="relative group">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <User className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="username"
                         type="text"
@@ -688,12 +693,12 @@ const Auth = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={loading || sendingCode}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.username && (
-                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
-                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
+                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
                         {errors.username}
                       </p>
                     )}
@@ -701,12 +706,12 @@ const Auth = () => {
                 )}
 
                 {mode === 'signup' && (
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label htmlFor="phoneNumber" className="text-xs sm:text-sm font-medium">
+                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="phoneNumber" className="text-[11px] xs:text-xs sm:text-sm font-medium">
                       Telefon raqami <span className="text-destructive">*</span>
                     </Label>
                     <div className="relative group">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Phone className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="phoneNumber"
                         type="tel"
@@ -714,25 +719,25 @@ const Auth = () => {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
                         disabled={loading || sendingCode}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.phoneNumber && (
-                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
-                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
+                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
                         {errors.phoneNumber}
                       </p>
                     )}
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] xs:text-xs text-muted-foreground">
                       Telegram botga tasdiqlash kodi yuboriladi
                     </p>
                   </div>
                 )}
                 
-                <div className="space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="email" className="text-xs sm:text-sm font-medium">Email</Label>
+                <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="email" className="text-[11px] xs:text-xs sm:text-sm font-medium">Email</Label>
                   <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Mail className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="email"
                       type="email"
@@ -740,33 +745,33 @@ const Auth = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading || sendingCode}
-                      className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
-                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                    <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
+                      <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
                       {errors.email}
                     </p>
                   )}
                 </div>
                 
                 {mode !== 'forgot-password' && (
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Parol</Label>
+                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label htmlFor="password" className="text-[11px] xs:text-xs sm:text-sm font-medium">Parol</Label>
                       {mode === 'login' && (
                         <button
                           type="button"
                           onClick={() => switchMode('forgot-password')}
-                          className="text-xs text-primary hover:text-primary/80 font-medium transition-colors hover:underline touch-target"
+                          className="text-[10px] xs:text-xs text-primary hover:text-primary/80 font-medium transition-colors hover:underline touch-target whitespace-nowrap"
                         >
                           Parolni unutdingizmi?
                         </button>
                       )}
                     </div>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Lock className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
                         type="password"
@@ -774,12 +779,12 @@ const Auth = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading || sendingCode}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.password && (
-                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
-                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
+                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
                         {errors.password}
                       </p>
                     )}
@@ -792,15 +797,16 @@ const Auth = () => {
 
                 {/* Remember me checkbox for login */}
                 {mode === 'login' && (
-                  <div className="flex items-center space-x-2 pt-1">
+                  <div className="flex items-center space-x-2 pt-0.5 xs:pt-1">
                     <Checkbox
                       id="rememberMe"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked === true)}
+                      className="h-4 w-4 xs:h-5 xs:w-5"
                     />
                     <Label
                       htmlFor="rememberMe"
-                      className="text-xs sm:text-sm font-normal text-muted-foreground cursor-pointer select-none"
+                      className="text-[11px] xs:text-xs sm:text-sm font-normal text-muted-foreground cursor-pointer select-none"
                     >
                       Meni eslab qol
                     </Label>
@@ -810,7 +816,7 @@ const Auth = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 mt-4 sm:mt-6 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5 touch-target"
+                  className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 mt-3 xs:mt-4 sm:mt-6 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5 touch-target"
                   disabled={loading || sendingCode}
                 >
                   {loading || sendingCode ? (
@@ -834,19 +840,19 @@ const Auth = () => {
                 </Button>
               </form>
 
-              <div className="text-center mt-4">
+              <div className="text-center mt-3 xs:mt-4">
                 {mode === 'forgot-password' ? (
                   <button
                     type="button"
                     onClick={() => switchMode('login')}
-                    className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors group touch-target"
+                    className="text-primary hover:text-primary/80 text-[11px] xs:text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 xs:gap-2 transition-colors group touch-target py-1"
                     disabled={loading}
                   >
-                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
                     Kirish sahifasiga qaytish
                   </button>
                 ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground">
                     {mode === 'login' ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?"}{' '}
                     <button
                       type="button"
@@ -863,23 +869,23 @@ const Auth = () => {
           </Card>
 
           {/* Back to home */}
-          <div className="mt-5 sm:mt-6 text-center">
+          <div className="mt-4 xs:mt-5 sm:mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group touch-target"
+              className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
             >
-              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
               Bosh sahifaga qaytish
             </button>
           </div>
 
           {/* Trust indicators for mobile */}
-          <div className="mt-6 sm:mt-8 lg:hidden">
-            <div className="flex justify-center gap-4 sm:gap-6 text-center text-xs text-muted-foreground">
+          <div className="mt-4 xs:mt-6 sm:mt-8 lg:hidden pb-safe">
+            <div className="flex justify-center gap-2 xs:gap-3 sm:gap-6 text-center text-[10px] xs:text-xs text-muted-foreground">
               {stats.map((stat, index) => (
-                <div key={index} className="px-2 py-1.5 rounded-lg bg-card/50 dark:bg-card/30 border border-border/30 dark:border-border/20">
-                  <p className="text-base sm:text-lg font-bold text-foreground">{stat.value}</p>
-                  <p>{stat.label}</p>
+                <div key={index} className="px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg bg-card/50 dark:bg-card/30 border border-border/30 dark:border-border/20 min-w-[70px] xs:min-w-[80px]">
+                  <p className="text-sm xs:text-base sm:text-lg font-bold text-foreground">{stat.value}</p>
+                  <p className="truncate">{stat.label}</p>
                 </div>
               ))}
             </div>
