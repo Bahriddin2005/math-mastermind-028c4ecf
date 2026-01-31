@@ -99,12 +99,16 @@ serve(async (req) => {
 
     // Format message for Telegram (using HTML for safety)
     const message = 
-      `🔐 <b>IQROMAX - Tasdiqlash kodi</b>\n\n` +
-      `Assalomu alaykum, ${firstName}!\n\n` +
-      `Sizning tasdiqlash kodingiz:\n\n` +
-      `<code>${code}</code>\n\n` +
-      `⏰ Kod 10 daqiqa ichida amal qiladi.\n\n` +
-      `⚠️ Bu kodni hech kimga bermang!`;
+      `🔐 <b>IQROMAX - Ro'yxatdan o'tish</b>\n\n` +
+      `Assalomu alaykum, ${firstName}! 👋\n\n` +
+      `Sizning bir martalik tasdiqlash kodingiz:\n\n` +
+      `📱 <code>${code}</code>\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `⏰ <b>Amal qilish muddati:</b> 10 daqiqa\n` +
+      `📧 <b>Email:</b> ${email}\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `⚠️ <b>Muhim:</b> Bu kodni hech kimga bermang!\n` +
+      `Agar siz bu kodni so'ramagan bo'lsangiz, xabarni e'tiborsiz qoldiring.`;
 
     console.log('Sending verification code to user Telegram:', { chatId, email });
 

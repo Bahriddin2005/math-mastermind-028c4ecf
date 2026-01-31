@@ -65,7 +65,7 @@ serve(async (req) => {
       if (text === '/start') {
         const keyboard = {
           keyboard: [[{
-            text: "📱 Telefon raqamni ulashish",
+            text: "📱 Telefon raqamimni ulashish",
             request_contact: true
           }]],
           resize_keyboard: true,
@@ -75,10 +75,12 @@ serve(async (req) => {
         await sendTelegramMessage(
           TELEGRAM_BOT_TOKEN,
           chatId,
+          `🎯 <b>IQROMAX - Aqliy arifmetika platformasi</b>\n\n` +
           `Assalomu alaykum, ${firstName}! 👋\n\n` +
-          `IQROMAX platformasiga xush kelibsiz!\n\n` +
-          `Ro'yxatdan o'tish kodlarini olish uchun telefon raqamingizni ulashing. ` +
-          `Quyidagi tugmani bosing:`,
+          `Bizning platformaga xush kelibsiz! 🎉\n\n` +
+          `📌 <b>Nima uchun telefon raqam kerak?</b>\n` +
+          `Ro'yxatdan o'tish va parolni tiklashda tasdiqlash kodlari shu yerga keladi.\n\n` +
+          `👇 <b>Quyidagi tugmani bosing:</b>`,
           keyboard
         );
       }
@@ -122,10 +124,15 @@ serve(async (req) => {
           await sendTelegramMessage(
             TELEGRAM_BOT_TOKEN,
             chatId,
-            `✅ Telefon raqamingiz muvaffaqiyatli saqlandi!\n\n` +
-            `📱 Raqam: ${phoneNumber}\n\n` +
-            `Endi siz IQROMAX platformasida ro'yxatdan o'tganingizda, ` +
-            `tasdiqlash kodi shu chatga keladi.`,
+            `✅ <b>Muvaffaqiyatli ulandi!</b>\n\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `📱 <b>Telefon:</b> ${phoneNumber}\n` +
+            `👤 <b>Ism:</b> ${firstName}\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n\n` +
+            `🎉 Tabriklaymiz! Endi siz IQROMAX platformasida:\n\n` +
+            `• Ro'yxatdan o'tishingiz\n` +
+            `• Parolni tiklashingiz mumkin\n\n` +
+            `Tasdiqlash kodlari shu chatga keladi. 📩`,
             { remove_keyboard: true }
           );
         }
