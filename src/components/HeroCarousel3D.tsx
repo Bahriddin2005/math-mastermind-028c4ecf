@@ -284,8 +284,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
                   style={{ 
                     transform: current === index 
-                      ? `scale(1.08) translate(${mousePosition.x * -20}px, ${mousePosition.y * -15}px)` 
-                      : 'scale(1.15)',
+                      ? `scale(1.08) translate(${mousePosition.x * -20 + 200}px, ${mousePosition.y * -15}px)` 
+                      : 'scale(1.15) translateX(200px)',
                   }}
                 />
 
