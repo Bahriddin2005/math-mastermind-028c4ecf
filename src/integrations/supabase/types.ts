@@ -960,6 +960,51 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          created_at: string
+          id: string
+          plan_type: string
+          receipt_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          subscription_end: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          plan_type: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          subscription_end?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          plan_type?: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          subscription_end?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       problem_sheets: {
         Row: {
           columns_per_row: number
@@ -1134,6 +1179,42 @@ export type Database = {
           order_index?: number | null
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      telegram_users: {
+        Row: {
+          chat_id: string
+          created_at: string
+          first_name: string | null
+          id: string
+          is_active: boolean
+          last_name: string | null
+          phone_number: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_name?: string | null
+          phone_number: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          is_active?: boolean
+          last_name?: string | null
+          phone_number?: string
+          updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -1736,6 +1817,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      verification_codes: {
+        Row: {
+          code: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          phone_number: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          phone_number: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          phone_number?: string
+        }
+        Relationships: []
       }
       weekly_challenge_results: {
         Row: {
