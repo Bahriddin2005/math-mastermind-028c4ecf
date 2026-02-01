@@ -70,14 +70,42 @@
     .card { background: #f8f9ff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; }
     footer { text-align: center; padding: 40px; color: #666; font-size: 0.9em; }
     .flutter-tip { background: #e0f7fa; border-left: 4px solid #00bcd4; padding: 15px; margin: 15px 0; border-radius: 0 12px 12px 0; }
+    .download-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #8B5CF6, #EC4899);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+    }
     @media print {
       body { background: white; }
       .section { box-shadow: none; border: 1px solid #ddd; }
       pre { font-size: 0.8em; }
+      .download-btn { display: none !important; }
     }
   </style>
 </head>
 <body>
+
+<button class="download-btn" onclick="window.print()">
+  📥 PDF yuklab olish
+</button>
 
 <h1>🧮 IQROMAX</h1>
 <p class="subtitle">Mental Arifmetika O'rganish Platformasi</p>
