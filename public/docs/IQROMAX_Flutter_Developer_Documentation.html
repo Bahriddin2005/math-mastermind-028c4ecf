@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IQROMAX - Flutter Mobil Dasturchi Dokumentatsiyasi</title>
+  <style>
+    @page { margin: 2cm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.8;
+      color: #1a1a2e;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #fff5f8 100%);
+    }
+    h1 {
+      font-size: 2.5em;
+      background: linear-gradient(135deg, #8B5CF6, #EC4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle { text-align: center; color: #666; font-size: 1.1em; margin-bottom: 40px; }
+    h2 { color: #8B5CF6; border-bottom: 3px solid #8B5CF6; padding-bottom: 10px; margin: 40px 0 20px; font-size: 1.6em; page-break-after: avoid; }
+    h3 { color: #EC4899; margin: 25px 0 15px; font-size: 1.3em; page-break-after: avoid; }
+    h4 { color: #3B82F6; margin: 20px 0 10px; font-size: 1.1em; }
+    .toc { background: white; padding: 25px 30px; border-radius: 16px; box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1); margin-bottom: 40px; }
+    .toc h2 { margin-top: 0; border: none; }
+    .toc ul { list-style: none; }
+    .toc li { margin: 8px 0; }
+    .toc a { color: #8B5CF6; text-decoration: none; }
+    .toc a:hover { color: #EC4899; }
+    .section { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); margin-bottom: 30px; page-break-inside: avoid; }
+    .section h2:first-child { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; }
+    th, td { border: 1px solid #e0e0e0; padding: 12px 15px; text-align: left; }
+    th { background: linear-gradient(135deg, #8B5CF6, #A78BFA); color: white; }
+    tr:nth-child(even) { background: #f9f9ff; }
+    tr:hover { background: #f0f0ff; }
+    code { background: #1e1e2e; color: #a6e3a1; padding: 3px 8px; border-radius: 4px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9em; }
+    pre { background: #1e1e2e; color: #cdd6f4; padding: 20px; border-radius: 12px; overflow-x: auto; margin: 15px 0; font-size: 0.85em; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .keyword { color: #cba6f7; }
+    .string { color: #a6e3a1; }
+    .comment { color: #6c7086; }
+    .function { color: #89b4fa; }
+    .number { color: #fab387; }
+    .class { color: #f9e2af; }
+    .endpoint { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-left: 4px solid #3B82F6; padding: 20px; margin: 20px 0; border-radius: 0 12px 12px 0; page-break-inside: avoid; }
+    .method { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85em; margin-right: 10px; }
+    .method.post { background: #22c55e; color: white; }
+    .method.get { background: #3B82F6; color: white; }
+    .method.put { background: #f59e0b; color: white; }
+    .method.delete { background: #ef4444; color: white; }
+    .color-box { display: inline-block; width: 40px; height: 40px; border-radius: 8px; vertical-align: middle; margin-right: 10px; border: 2px solid #ddd; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+    .badge.required { background: #fee2e2; color: #dc2626; }
+    .badge.optional { background: #e0f2fe; color: #0369a1; }
+    .alert { padding: 15px 20px; border-radius: 12px; margin: 20px 0; }
+    .alert.info { background: #dbeafe; border-left: 4px solid #3B82F6; }
+    .alert.warning { background: #fef3c7; border-left: 4px solid #f59e0b; }
+    .alert.success { background: #dcfce7; border-left: 4px solid #22c55e; }
+    .alert.error { background: #fee2e2; border-left: 4px solid #ef4444; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+    .card { background: #f8f9ff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; }
+    footer { text-align: center; padding: 40px; color: #666; font-size: 0.9em; }
+    .flutter-tip { background: #e0f7fa; border-left: 4px solid #00bcd4; padding: 15px; margin: 15px 0; border-radius: 0 12px 12px 0; }
+    @media print {
+      body { background: white; }
+      .section { box-shadow: none; border: 1px solid #ddd; }
+      pre { font-size: 0.8em; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>🧮 IQROMAX</h1>
+<p class="subtitle">Mental Arifmetika O'rganish Platformasi</p>
+<p class="subtitle"><strong>Flutter Mobil Dasturchi Dokumentatsiyasi</strong></p>
+<p class="subtitle"><strong>Versiya:</strong> 2.0 | <strong>Sana:</strong> 2025-02-01</p>
+
+<!-- Table of Contents -->
+<div class="toc">
+  <h2>📋 Mundarija</h2>
+  <ul>
+    <li><a href="#overview">1. Loyiha haqida umumiy ma'lumot</a></li>
+    <li><a href="#flutter-setup">2. Flutter loyihani sozlash</a></li>
+    <li><a href="#supabase-config">3. Supabase konfiguratsiya</a></li>
+    <li><a href="#database">4. Ma'lumotlar bazasi sxemasi (to'liq)</a></li>
+    <li><a href="#api">5. API Endpointlar (Edge Functions)</a></li>
+    <li><a href="#auth">6. Autentifikatsiya</a></li>
+    <li><a href="#soroban-engine">7. Soroban Mental Arifmetika Engine</a></li>
+    <li><a href="#realtime">8. Realtime (Jonli yangilanishlar)</a></li>
+    <li><a href="#storage">9. Storage (Fayllar saqlash)</a></li>
+    <li><a href="#gamification">10. Gamifikatsiya tizimi</a></li>
+    <li><a href="#design-system">11. Dizayn tizimi</a></li>
+    <li><a href="#screens">12. Ekranlar va Navigatsiya</a></li>
+    <li><a href="#flutter-models">13. Flutter Data Models</a></li>
+    <li><a href="#best-practices">14. Best Practices va Tavsiyalar</a></li>
+  </ul>
+</div>
+
+<!-- Section 1: Overview -->
+<div class="section" id="overview">
+  <h2>1. 📱 Loyiha haqida umumiy ma'lumot</h2>
+  
+  <h3>1.1 Loyiha nomi</h3>
+  <p><strong>IQROMAX</strong> - Bolalar uchun mental arifmetika o'rganish platformasi (Yapon soroban metodikasi)</p>
+  
+  <h3>1.2 Maqsad</h3>
+  <p>Bolalarni o'yin orqali yapon soroban abakusida mental arifmetika (tez hisoblash) ko'nikmalariga o'rgatish.</p>
+  
+  <h3>1.3 Asosiy xususiyatlar</h3>
+  <ul>
+    <li>✅ Soroban abakus simulatori (sensorli boshqaruv)</li>
+    <li>✅ Interaktiv abakus amaliyoti (qadam-baqadam o'rgatish)</li>
+    <li>✅ Mental arifmetika mashqlari (formulasiz, kichik do'st, katta do'st)</li>
+    <li>✅ Video darslar kurslari</li>
+    <li>✅ Kunlik va haftalik musobaqalar</li>
+    <li>✅ Multiplayer o'yinlar va turnirlar</li>
+    <li>✅ Liderlar jadvali (Realtime)</li>
+    <li>✅ Yutuqlar, nishonlar va XP tizimi</li>
+    <li>✅ AI yordamchi chatbot (ko'p tilli)</li>
+    <li>✅ Ovozli javoblar (TTS/STT - ElevenLabs)</li>
+    <li>✅ VIP obuna (Stripe)</li>
+  </ul>
+  
+  <h3>1.4 Maqsadli auditoriya</h3>
+  <table>
+    <tr><th>Auditoriya</th><th>Yosh</th><th>Xususiyatlar</th></tr>
+    <tr><td>Asosiy</td><td>5-14 yosh</td><td>Bolalar - o'yin elementi muhim</td></tr>
+    <tr><td>Ikkilamchi</td><td>25-45 yosh</td><td>Ota-onalar - progress monitoring</td></tr>
+    <tr><td>Uchinchi</td><td>20-50 yosh</td><td>O'qituvchilar - boshqaruv panel</td></tr>
+  </table>
+</div>
+
+<!-- Section 2: Flutter Setup -->
+<div class="section" id="flutter-setup">
+  <h2>2. 🔧 Flutter loyihani sozlash</h2>
+  
+  <h3>2.1 Kerakli dependencies (pubspec.yaml)</h3>
+  <pre>
+<span class="keyword">dependencies</span>:
+  <span class="class">flutter</span>:
+    sdk: flutter
+  
+  <span class="comment"># Supabase</span>
+  supabase_flutter: ^2.5.0
+  
+  <span class="comment"># State management</span>
+  flutter_riverpod: ^2.5.1
+  <span class="comment"># yoki</span>
+  flutter_bloc: ^8.1.5
+  
+  <span class="comment"># Navigatsiya</span>
+  go_router: ^14.0.0
+  
+  <span class="comment"># UI</span>
+  flutter_animate: ^4.5.0
+  lottie: ^3.1.0
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  
+  <span class="comment"># Audio</span>
+  just_audio: ^0.9.37
+  record: ^5.1.0
+  
+  <span class="comment"># To'lovlar</span>
+  flutter_stripe: ^10.1.1
+  
+  <span class="comment"># Local storage</span>
+  shared_preferences: ^2.2.3
+  hive_flutter: ^1.1.0
+  
+  <span class="comment"># Utillar</span>
+  intl: ^0.19.0
+  uuid: ^4.3.3
+  http: ^1.2.0
+  </pre>
+
+  <h3>2.2 main.dart boshlang'ich konfiguratsiya</h3>
+  <pre>
+<span class="keyword">import</span> <span class="string">'package:flutter/material.dart'</span>;
+<span class="keyword">import</span> <span class="string">'package:supabase_flutter/supabase_flutter.dart'</span>;
+
+<span class="keyword">Future</span>&lt;<span class="keyword">void</span>&gt; <span class="function">main</span>() <span class="keyword">async</span> {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  <span class="keyword">await</span> Supabase.initialize(
+    url: <span class="string">'https://rkhmmnqhzeogdushseqb.supabase.co'</span>,
+    anonKey: <span class="string">'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJraG1tbnFoemVvZ2R1c2hzZXFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MjQ5MjUsImV4cCI6MjA4MjMwMDkyNX0.Yw-zg29_w2oJYGPMByJOwZiZBLxNqpt8qOZEk3lMV-g'</span>,
+  );
+  
+  runApp(<span class="keyword">const</span> IQROMAXApp());
+}
+
+<span class="comment">// Supabase client ni istalgan joyda olish</span>
+<span class="keyword">final</span> supabase = Supabase.instance.client;
+  </pre>
+</div>
+
+<!-- Section 3: Supabase Config -->
+<div class="section" id="supabase-config">
+  <h2>3. 🔗 Supabase konfiguratsiya</h2>
+  
+  <h3>3.1 Ulanish ma'lumotlari</h3>
+  <table>
+    <tr><th>Parametr</th><th>Qiymat</th></tr>
+    <tr><td>Project URL</td><td><code>https://rkhmmnqhzeogdushseqb.supabase.co</code></td></tr>
+    <tr><td>Anon Key</td><td><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code> (to'liq yuqorida)</td></tr>
+    <tr><td>Project ID</td><td><code>rkhmmnqhzeogdushseqb</code></td></tr>
+  </table>
+  
+  <h3>3.2 Edge Functions URL</h3>
+  <pre>
+<span class="keyword">const</span> String baseUrl = <span class="string">'https://rkhmmnqhzeogdushseqb.supabase.co/functions/v1'</span>;
+
+<span class="comment">// Endpointlar:</span>
+<span class="keyword">const</span> String helpChatUrl = <span class="string">'\$baseUrl/help-chat'</span>;
+<span class="keyword">const</span> String ttsUrl = <span class="string">'\$baseUrl/elevenlabs-tts'</span>;
+<span class="keyword">const</span> String sttUrl = <span class="string">'\$baseUrl/elevenlabs-stt'</span>;
+<span class="keyword">const</span> String checkoutUrl = <span class="string">'\$baseUrl/create-checkout'</span>;
+<span class="keyword">const</span> String subscriptionUrl = <span class="string">'\$baseUrl/check-subscription'</span>;
+<span class="keyword">const</span> String portalUrl = <span class="string">'\$baseUrl/customer-portal'</span>;
+  </pre>
+  
+  <h3>3.3 Storage Buckets</h3>
+  <table>
+    <tr><th>Bucket nomi</th><th>Public</th><th>Maqsadi</th></tr>
+    <tr><td>avatars</td><td>✅ Ha</td><td>Foydalanuvchi avatarlari</td></tr>
+    <tr><td>course-videos</td><td>✅ Ha</td><td>Dars videolari</td></tr>
+    <tr><td>payment-receipts</td><td>❌ Yo'q</td><td>To'lov kvitansiyalari</td></tr>
+  </table>
+</div>
+
+<!-- Section 4: Database -->
+<div class="section" id="database">
+  <h2>4. 🗄️ Ma'lumotlar bazasi sxemasi</h2>
+  
+  <div class="alert info">
+    <strong>📌 Eslatma:</strong> Barcha jadvallar UUID primary key, RLS (Row Level Security) yoqilgan. Timestamps avtomatik boshqariladi.
+  </div>
+  
+  <h3>4.1 Asosiy jadvallar</h3>
+  
+  <h4>👤 profiles</h4>
+  <table>
+    <tr><th>Ustun</th><th>Turi</th><th>Tavsif</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Primary key</td></tr>
+    <tr><td>user_id</td><td>UUID</td><td>Auth user ID (unique)</td></tr>
+    <tr><td>username</td><td>TEXT</td><td>Foydalanuvchi nomi</td></tr>
+    <tr><td>avatar_url</td><td>TEXT</td><td>Avatar rasm URL</td></tr>
+    <tr><td>phone_number</td><td>TEXT</td><td>Telefon raqami</td></tr>
+    <tr><td>total_score</td><td>INTEGER</td><td>Umumiy ball (default: 0)</td></tr>
+    <tr><td>total_problems_solved</td><td>INTEGER</td><td>Yechilgan masalalar (default: 0)</td></tr>
+    <tr><td>current_streak</td><td>INTEGER</td><td>Joriy ketma-ket kunlar</td></tr>
+    <tr><td>best_streak</td><td>INTEGER</td><td>Eng yaxshi ketma-ketlik</td></tr>
+    <tr><td>daily_goal</td><td>INTEGER</td><td>Kunlik maqsad (default: 20)</td></tr>
+    <tr><td>last_active_date</td><td>DATE</td><td>Oxirgi faollik sanasi</td></tr>
+    <tr><td>vip_expires_at</td><td>TIMESTAMP</td><td>VIP tugash sanasi</td></tr>
+    <tr><td>selected_frame</td><td>TEXT</td><td>Tanlangan avatar ramkasi</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Yaratilgan vaqt</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td>Yangilangan vaqt</td></tr>
+  </table>
+  
+  <h4>🎮 game_sessions</h4>
+  <table>
+    <tr><th>Ustun</th><th>Turi</th><th>Tavsif</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Primary key</td></tr>
+    <tr><td>user_id</td><td>UUID</td><td>Foydalanuvchi ID</td></tr>
+    <tr><td>section</td><td>TEXT</td><td>Bo'lim: 'mental', 'abacus-practice', 'quick-math'</td></tr>
+    <tr><td>mode</td><td>TEXT</td><td>Rejim: 'timer', 'target', 'practice', 'interactive'</td></tr>
+    <tr><td>difficulty</td><td>TEXT</td><td>Qiyinlik: '1-digit', '2-digit', '3-digit'</td></tr>
+    <tr><td>formula_type</td><td>TEXT</td><td>'formulasiz', 'kichik_dost', 'katta_dost', 'mix'</td></tr>
+    <tr><td>score</td><td>INTEGER</td><td>O'yin balli</td></tr>
+    <tr><td>correct</td><td>INTEGER</td><td>To'g'ri javoblar soni</td></tr>
+    <tr><td>incorrect</td><td>INTEGER</td><td>Noto'g'ri javoblar soni</td></tr>
+    <tr><td>total_time</td><td>INTEGER</td><td>Umumiy vaqt (sekund)</td></tr>
+    <tr><td>problems_solved</td><td>INTEGER</td><td>Yechilgan masalalar soni</td></tr>
+    <tr><td>best_streak</td><td>INTEGER</td><td>Eng yaxshi ketma-ketlik</td></tr>
+    <tr><td>timer_duration</td><td>INTEGER</td><td>Timer davomiyligi</td></tr>
+    <tr><td>target_problems</td><td>INTEGER</td><td>Maqsad masalalar soni</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td>Yaratilgan vaqt</td></tr>
+  </table>
+  
+  <h4>⚡ user_gamification</h4>
+  <table>
+    <tr><th>Ustun</th><th>Turi</th><th>Tavsif</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Primary key</td></tr>
+    <tr><td>user_id</td><td>UUID</td><td>Foydalanuvchi ID (unique)</td></tr>
+    <tr><td>level</td><td>INTEGER</td><td>Daraja (default: 1)</td></tr>
+    <tr><td>current_xp</td><td>INTEGER</td><td>Joriy XP (0-100)</td></tr>
+    <tr><td>total_xp</td><td>INTEGER</td><td>Umumiy XP</td></tr>
+    <tr><td>energy</td><td>INTEGER</td><td>Joriy energiya (default: 100)</td></tr>
+    <tr><td>max_energy</td><td>INTEGER</td><td>Maksimal energiya (default: 100)</td></tr>
+    <tr><td>last_energy_update</td><td>TIMESTAMP</td><td>Energiya yangilangan vaqt</td></tr>
+    <tr><td>combo</td><td>INTEGER</td><td>Joriy kombo</td></tr>
+    <tr><td>max_combo</td><td>INTEGER</td><td>Maksimal kombo</td></tr>
+    <tr><td>total_correct</td><td>INTEGER</td><td>Jami to'g'ri javoblar</td></tr>
+    <tr><td>total_incorrect</td><td>INTEGER</td><td>Jami noto'g'ri javoblar</td></tr>
+    <tr><td>difficulty_level</td><td>INTEGER</td><td>Adaptiv qiyinlik darajasi</td></tr>
+    <tr><td>last_5_results</td><td>BOOLEAN[]</td><td>Oxirgi 5 javob natijalari</td></tr>
+  </table>
+  
+  <h4>🏅 user_badges</h4>
+  <table>
+    <tr><th>Ustun</th><th>Turi</th><th>Tavsif</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Primary key</td></tr>
+    <tr><td>user_id</td><td>UUID</td><td>Foydalanuvchi ID</td></tr>
+    <tr><td>badge_type</td><td>TEXT</td><td>Nishon turi (unique per user)</td></tr>
+    <tr><td>badge_name</td><td>TEXT</td><td>Nishon nomi</td></tr>
+    <tr><td>badge_icon</td><td>TEXT</td><td>Emoji yoki icon nomi</td></tr>
+    <tr><td>description</td><td>TEXT</td><td>Tavsif</td></tr>
+    <tr><td>competition_id</td><td>UUID</td><td>Musobaqa ID (nullable)</td></tr>
+    <tr><td>competition_type</td><td>TEXT</td><td>'daily', 'weekly', NULL</td></tr>
+    <tr><td>earned_at</td><td>TIMESTAMP</td><td>Olingan sana</td></tr>
+  </table>
+  
+  <h4>🎯 daily_challenges</h4>
+  <table>
+    <tr><th>Ustun</th><th>Turi</th><th>Tavsif</th></tr>
+    <tr><td>id</td><td>UUID</td><td>Primary key</td></tr>
+    <tr><td>challenge_date</td><td>DATE</td><td>Musobaqa sanasi (unique)</td></tr>
+    <tr><td>digit_count</td><td>INTEGER</td><td>Raqamlar soni (1-3)</td></tr>
+    <tr><td>problem_count</td><td>INTEGER</td><td>Masalalar soni (5, 7, 10)</td></tr>
+    <tr><td>speed</td><td>NUMERIC</td><td>Tezlik (0.3, 0.5, 0.7, 1.0)</td></tr>
+    <tr><td>formula_type</td><td>TEXT</td><td>Formula turi</td></tr>
+    <tr><td>seed</td><td>INTEGER</td><td>Tasodifiy seed (barcha uchun bir xil)</td></tr>
+  </table>
+  
+  <h4>📚 courses & lessons</h4>
+  <pre>
+<span class="comment">// Kurslar</span>
+courses: id, title, description, difficulty, thumbnail_url, is_published, order_index
+
+<span class="comment">// Darslar</span>
+lessons: id, course_id (FK), title, description, video_url, 
+         duration_minutes, practice_config (JSONB), order_index, is_published
+         
+<span class="comment">// Foydalanuvchi progressi</span>
+user_lesson_progress: id, user_id, lesson_id, watched_seconds, 
+                      completed, practice_completed, practice_score
+  </pre>
+  
+  <h4>🏆 weekly_challenges & results</h4>
+  <pre>
+weekly_challenges: id, week_start, week_end, title, digit_count, 
+                   problem_count, formula_type, speed, created_by
+
+weekly_challenge_results: id, challenge_id, user_id, username, avatar_url,
+                          total_score, correct_answers, best_time, games_played
+  </pre>
+  
+  <h4>👥 multiplayer_rooms & participants</h4>
+  <pre>
+multiplayer_rooms: id, room_code (unique), host_id, status, 
+                   digit_count, problem_count, speed, formula_type,
+                   current_problem, started_at, finished_at
+
+multiplayer_participants: id, room_id (FK), user_id, username, avatar_url,
+                          score, answer, answer_time, is_correct, is_ready
+  </pre>
+</div>
+
+<!-- Section 5: API -->
+<div class="section" id="api">
+  <h2>5. 🔌 API Endpointlar (Edge Functions)</h2>
+  
+  <h3>5.1 AI Chat - help-chat</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/help-chat</h4>
+    <p><strong>Tavsif:</strong> Ko'p tilli AI chatbot (O'zbek, Rus, Ingliz). Matematik masalalarni yechadi, rasmlarni tahlil qiladi.</p>
+    
+    <p><strong>Headers:</strong></p>
+    <pre>
+Authorization: Bearer {SUPABASE_ANON_KEY}
+Content-Type: application/json
+    </pre>
+    
+    <p><strong>Request Body:</strong></p>
+    <pre>
+{
+  <span class="string">"message"</span>: <span class="string">"3 + 5 x 2 ni hisoblang"</span>,
+  <span class="string">"faqContext"</span>: <span class="string">"FAQ ma'lumotlari..."</span>,
+  <span class="string">"coursesContext"</span>: <span class="string">"Mavjud kurslar..."</span>,
+  <span class="string">"lessonsContext"</span>: <span class="string">"Mavjud darslar..."</span>,
+  <span class="string">"userProgressContext"</span>: <span class="string">"User: level 5, score: 1500..."</span>,
+  <span class="string">"imageBase64"</span>: <span class="string">"base64_encoded_image"</span>, <span class="comment">// ixtiyoriy</span>
+  <span class="string">"pdfBase64"</span>: <span class="string">"base64_encoded_pdf"</span>, <span class="comment">// ixtiyoriy</span>
+  <span class="string">"pdfFileName"</span>: <span class="string">"document.pdf"</span> <span class="comment">// ixtiyoriy</span>
+}
+    </pre>
+    
+    <p><strong>Response (200):</strong></p>
+    <pre>{ <span class="string">"response"</span>: <span class="string">"3 + 5 x 2 = 3 + 10 = 13. Javob: 13"</span> }</pre>
+    
+    <p><strong>Error responses:</strong></p>
+    <pre>
+<span class="comment">// 429 - Rate limit</span>
+{ <span class="string">"error"</span>: <span class="string">"Juda ko'p so'rov yuborildi..."</span> }
+
+<span class="comment">// 402 - AI credits exhausted</span>
+{ <span class="string">"error"</span>: <span class="string">"AI xizmati vaqtincha mavjud emas."</span> }
+    </pre>
+  </div>
+  
+  <h3>5.2 Text-to-Speech - elevenlabs-tts</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/elevenlabs-tts</h4>
+    <p><strong>Tavsif:</strong> Matnni ovozga aylantirish (ElevenLabs API)</p>
+    
+    <p><strong>Request Body:</strong></p>
+    <pre>
+{
+  <span class="string">"text"</span>: <span class="string">"Salom, bu test xabari"</span>,
+  <span class="string">"voiceId"</span>: <span class="string">"EXAVITQu4vr4xnSDxMaL"</span> <span class="comment">// ixtiyoriy, default: Sarah</span>
+}
+    </pre>
+    
+    <p><strong>Response:</strong> <code>audio/mpeg</code> binary data</p>
+    
+    <div class="flutter-tip">
+      <strong>📱 Flutter implementation:</strong>
+      <pre>
+<span class="keyword">final</span> response = <span class="keyword">await</span> http.post(
+  Uri.parse(<span class="string">'\$baseUrl/elevenlabs-tts'</span>),
+  headers: {<span class="string">'Authorization'</span>: <span class="string">'Bearer \$anonKey'</span>, <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span>},
+  body: jsonEncode({<span class="string">'text'</span>: <span class="string">'Salom'</span>}),
+);
+
+<span class="keyword">if</span> (response.statusCode == <span class="number">200</span>) {
+  <span class="comment">// Play audio bytes</span>
+  <span class="keyword">final</span> audioBytes = response.bodyBytes;
+  <span class="keyword">await</span> audioPlayer.setAudioSource(BytesAudioSource(audioBytes));
+  <span class="keyword">await</span> audioPlayer.play();
+}
+      </pre>
+    </div>
+  </div>
+  
+  <h3>5.3 Speech-to-Text - elevenlabs-stt</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/elevenlabs-stt</h4>
+    <p><strong>Tavsif:</strong> Ovozni matnga aylantirish</p>
+    <p><strong>Content-Type:</strong> multipart/form-data</p>
+    
+    <p><strong>Request Body:</strong></p>
+    <pre>
+audio: File <span class="comment">// Audio fayl (wav, mp3, webm, ...)</span>
+    </pre>
+    
+    <p><strong>Response:</strong></p>
+    <pre>{ <span class="string">"text"</span>: <span class="string">"Yigirma besh"</span> }</pre>
+  </div>
+  
+  <h3>5.4 Stripe Checkout - create-checkout</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/create-checkout</h4>
+    <p><strong>Tavsif:</strong> VIP obuna uchun Stripe checkout sessiyasi</p>
+    <p><strong>Auth:</strong> <span class="badge required">Required</span> User JWT token</p>
+    
+    <p><strong>Request Body:</strong></p>
+    <pre>{ <span class="string">"priceId"</span>: <span class="string">"price_xxx"</span> }</pre>
+    
+    <p><strong>Response:</strong></p>
+    <pre>{ <span class="string">"url"</span>: <span class="string">"https://checkout.stripe.com/c/pay/..."</span> }</pre>
+  </div>
+  
+  <h3>5.5 Check Subscription - check-subscription</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/check-subscription</h4>
+    <p><strong>Tavsif:</strong> Foydalanuvchi obuna holatini tekshirish</p>
+    <p><strong>Auth:</strong> <span class="badge required">Required</span></p>
+    
+    <p><strong>Response:</strong></p>
+    <pre>
+{
+  <span class="string">"subscribed"</span>: <span class="keyword">true</span>,
+  <span class="string">"product_id"</span>: <span class="string">"prod_xxx"</span>,
+  <span class="string">"subscription_end"</span>: <span class="string">"2025-12-31T23:59:59Z"</span>
+}
+    </pre>
+  </div>
+  
+  <h3>5.6 Customer Portal - customer-portal</h3>
+  <div class="endpoint">
+    <h4><span class="method post">POST</span> /functions/v1/customer-portal</h4>
+    <p><strong>Tavsif:</strong> Stripe billing portal URL olish</p>
+    <p><strong>Auth:</strong> <span class="badge required">Required</span></p>
+    
+    <p><strong>Response:</strong></p>
+    <pre>{ <span class="string">"url"</span>: <span class="string">"https://billing.stripe.com/..."</span> }</pre>
+  </div>
+</div>
+
+<!-- Section 6: Auth -->
+<div class="section" id="auth">
+  <h2>6. 🔐 Autentifikatsiya</h2>
+  
+  <h3>6.1 Qo'llab-quvvatlanadigan usullar</h3>
+  <ul>
+    <li>✅ Email + Parol (signUp / signInWithPassword)</li>
+    <li>✅ Google OAuth (signInWithOAuth)</li>
+    <li>✅ Parolni tiklash (resetPasswordForEmail)</li>
+  </ul>
+  
+  <h3>6.2 Flutter Auth implementatsiyasi</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">AuthService</span> {
+  <span class="keyword">final</span> supabase = Supabase.instance.client;
+  
+  <span class="comment">// Ro'yxatdan o'tish</span>
+  <span class="keyword">Future</span>&lt;AuthResponse&gt; <span class="function">signUp</span>({
+    <span class="keyword">required</span> String email,
+    <span class="keyword">required</span> String password,
+    <span class="keyword">required</span> String username,
+  }) <span class="keyword">async</span> {
+    <span class="keyword">return await</span> supabase.auth.signUp(
+      email: email,
+      password: password,
+      data: {<span class="string">'username'</span>: username},
+    );
+  }
+  
+  <span class="comment">// Kirish</span>
+  <span class="keyword">Future</span>&lt;AuthResponse&gt; <span class="function">signIn</span>({
+    <span class="keyword">required</span> String email,
+    <span class="keyword">required</span> String password,
+  }) <span class="keyword">async</span> {
+    <span class="keyword">return await</span> supabase.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
+  }
+  
+  <span class="comment">// Google bilan kirish</span>
+  <span class="keyword">Future</span>&lt;<span class="keyword">void</span>&gt; <span class="function">signInWithGoogle</span>() <span class="keyword">async</span> {
+    <span class="keyword">await</span> supabase.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: <span class="string">'io.supabase.iqromax://login-callback'</span>,
+    );
+  }
+  
+  <span class="comment">// Chiqish</span>
+  <span class="keyword">Future</span>&lt;<span class="keyword">void</span>&gt; <span class="function">signOut</span>() <span class="keyword">async</span> {
+    <span class="keyword">await</span> supabase.auth.signOut();
+  }
+  
+  <span class="comment">// Joriy foydalanuvchi</span>
+  User? <span class="keyword">get</span> currentUser => supabase.auth.currentUser;
+  
+  <span class="comment">// Auth state stream</span>
+  Stream&lt;AuthState&gt; <span class="keyword">get</span> authStateChanges => 
+    supabase.auth.onAuthStateChange;
+}
+  </pre>
+  
+  <h3>6.3 Profile avtomatik yaratilishi</h3>
+  <div class="alert success">
+    <strong>✅ Trigger:</strong> Yangi foydalanuvchi ro'yxatdan o'tganda <code>handle_new_user()</code> trigger avtomatik <code>profiles</code> jadvaliga yozuv qo'shadi.
+  </div>
+</div>
+
+<!-- Section 7: Soroban Engine -->
+<div class="section" id="soroban-engine">
+  <h2>7. 🧮 Soroban Mental Arifmetika Engine</h2>
+  
+  <div class="alert info">
+    <strong>📌 Muhim:</strong> Bu engine yapon soroban metodikasiga asoslangan. Masalalar tasodifiy emas, balki formula qoidalariga muvofiq generatsiya qilinadi.
+  </div>
+  
+  <h3>7.1 Formula turlari</h3>
+  <table>
+    <tr><th>Formula</th><th>Kod</th><th>Tavsif</th></tr>
+    <tr><td>Formulasiz</td><td><code>formulasiz</code></td><td>Oddiy qo'shish/ayirish, formula ishlatilmaydi</td></tr>
+    <tr><td>Kichik do'st (Formula 5)</td><td><code>kichik_dost</code></td><td>5 ga to'ldiruvchi: 4+1=5, 3+2=5, 2+3=5, 1+4=5</td></tr>
+    <tr><td>Katta do'st (Formula 10)</td><td><code>katta_dost</code></td><td>10 ga to'ldiruvchi: 9+1, 8+2, 7+3, 6+4, 5+5, ...</td></tr>
+    <tr><td>Aralash</td><td><code>mix</code></td><td>Barcha formulalar aralash</td></tr>
+  </table>
+  
+  <h3>7.2 Kichik do'st (Formula 5) qoidalari</h3>
+  <pre>
+<span class="comment">// Qo'shishda:</span>
+4 + 1 = 5  →  abakusda: +5, -4  (4ni ayirib, 5ni qo'shish)
+3 + 2 = 5  →  abakusda: +5, -3
+2 + 3 = 5  →  abakusda: +5, -2
+1 + 4 = 5  →  abakusda: +5, -1
+
+<span class="comment">// Ayirishda:</span>
+5 - 1 = 4  →  abakusda: -5, +4
+5 - 2 = 3  →  abakusda: -5, +3
+5 - 3 = 2  →  abakusda: -5, +2
+5 - 4 = 1  →  abakusda: -5, +1
+  </pre>
+  
+  <h3>7.3 Katta do'st (Formula 10) qoidalari</h3>
+  <pre>
+<span class="comment">// Qo'shishda (+N = +10, -komplement):</span>
++9 → +10, -1     |  +5 → +10, -5
++8 → +10, -2     |  +4 → +10, -6
++7 → +10, -3     |  +3 → +10, -7
++6 → +10, -4     |  +2 → +10, -8
+                 |  +1 → +10, -9
+
+<span class="comment">// Ayirishda (-N = -10, +komplement):</span>
+-9 → -10, +1     |  -5 → -10, +5
+-8 → -10, +2     |  -4 → -10, +6
+-7 → -10, +3     |  -3 → -10, +7
+-6 → -10, +4     |  -2 → -10, +8
+                 |  -1 → -10, +9
+  </pre>
+  
+  <h3>7.4 Flutter da Soroban Engine implementatsiyasi</h3>
+  <pre>
+<span class="keyword">enum</span> <span class="class">FormulaCategory</span> { formulasiz, kichikDost, kattaDost, mix }
+
+<span class="keyword">class</span> <span class="class">SorobanProblem</span> {
+  <span class="keyword">final</span> <span class="keyword">int</span> startValue;
+  <span class="keyword">final</span> List&lt;SorobanOperation&gt; operations;
+  <span class="keyword">final</span> <span class="keyword">int</span> finalAnswer;
+  <span class="keyword">final</span> List&lt;<span class="keyword">int</span>&gt; sequence; <span class="comment">// Ekranda ko'rsatiladigan sonlar</span>
+}
+
+<span class="keyword">class</span> <span class="class">SorobanOperation</span> {
+  <span class="keyword">final</span> <span class="keyword">int</span> delta;
+  <span class="keyword">final</span> <span class="keyword">bool</span> isAdd;
+  <span class="keyword">final</span> FormulaCategory formulaType;
+  <span class="keyword">final</span> <span class="keyword">bool</span> isCarry; <span class="comment">// Katta do'st ishlatildimi?</span>
+}
+
+<span class="keyword">class</span> <span class="class">SorobanEngine</span> {
+  <span class="comment">/// Misol generatsiya qilish</span>
+  SorobanProblem <span class="function">generateProblem</span>({
+    <span class="keyword">required</span> FormulaCategory category,
+    <span class="keyword">required</span> <span class="keyword">int</span> digitCount,  <span class="comment">// 1, 2, 3, ...</span>
+    <span class="keyword">required</span> <span class="keyword">int</span> termCount,   <span class="comment">// 3, 5, 7, 10</span>
+  }) {
+    <span class="comment">// ... implementation</span>
+  }
+  
+  <span class="comment">/// Formulasiz amal ruxsat etiladimi?</span>
+  <span class="keyword">bool</span> <span class="function">isFormulasizAllowed</span>(<span class="keyword">int</span> currentDigit, <span class="keyword">int</span> delta, <span class="keyword">bool</span> isAdd) {
+    <span class="comment">// Qoidalar jadvali bo'yicha tekshirish</span>
+  }
+  
+  <span class="comment">/// Kichik do'st ruxsat etiladimi?</span>
+  <span class="keyword">bool</span> <span class="function">isKichikDostAllowed</span>(<span class="keyword">int</span> currentDigit, <span class="keyword">int</span> delta, <span class="keyword">bool</span> isAdd);
+  
+  <span class="comment">/// Katta do'st ruxsat etiladimi?</span>
+  <span class="keyword">bool</span> <span class="function">isKattaDostAllowed</span>(<span class="keyword">int</span> currentValue, <span class="keyword">int</span> delta, <span class="keyword">bool</span> isAdd);
+}
+  </pre>
+  
+  <h3>7.5 Abakus State boshqaruvi</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">AbacusColumn</span> {
+  <span class="keyword">int</span> digit; <span class="comment">// 0-9</span>
+  
+  <span class="keyword">bool</span> <span class="keyword">get</span> topBeadActive => digit >= <span class="number">5</span>;
+  <span class="keyword">int</span> <span class="keyword">get</span> bottomBeadsActive => digit % <span class="number">5</span>;
+}
+
+<span class="keyword">class</span> <span class="class">AbacusState</span> {
+  List&lt;AbacusColumn&gt; columns; <span class="comment">// O'ngdan chapga: [birlik, o'nlik, ...]</span>
+  
+  <span class="keyword">int</span> <span class="keyword">get</span> value => columns.asMap().entries
+    .fold(<span class="number">0</span>, (sum, e) => sum + e.value.digit * pow(<span class="number">10</span>, e.key).toInt());
+    
+  <span class="keyword">void</span> <span class="function">setValue</span>(<span class="keyword">int</span> value) {
+    <span class="comment">// Son ni ustunlarga ajratish</span>
+  }
+}
+  </pre>
+</div>
+
+<!-- Section 8: Realtime -->
+<div class="section" id="realtime">
+  <h2>8. 📡 Realtime (Jonli yangilanishlar)</h2>
+  
+  <h3>8.1 Realtime yoqilgan jadvallar</h3>
+  <ul>
+    <li>✅ <code>daily_challenge_results</code> - Kunlik musobaqa natijalari</li>
+    <li>✅ <code>weekly_challenge_results</code> - Haftalik musobaqa natijalari</li>
+    <li>✅ <code>multiplayer_rooms</code> - Multiplayer xonalari</li>
+    <li>✅ <code>multiplayer_participants</code> - Ishtirokchilar</li>
+  </ul>
+  
+  <h3>8.2 Flutter Realtime subscription</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">LeaderboardService</span> {
+  <span class="keyword">final</span> supabase = Supabase.instance.client;
+  
+  <span class="comment">/// Kunlik musobaqa natijalarini realtime kuzatish</span>
+  Stream&lt;List&lt;Map&gt;&gt; <span class="function">watchDailyChallengeResults</span>(String challengeId) {
+    <span class="keyword">return</span> supabase
+      .from(<span class="string">'daily_challenge_results'</span>)
+      .stream(primaryKey: [<span class="string">'id'</span>])
+      .eq(<span class="string">'challenge_id'</span>, challengeId)
+      .order(<span class="string">'score'</span>, ascending: <span class="keyword">false</span>);
+  }
+  
+  <span class="comment">/// Multiplayer xona holatini kuzatish</span>
+  RealtimeChannel <span class="function">subscribeToRoom</span>(String roomId, Function(dynamic) onUpdate) {
+    <span class="keyword">return</span> supabase
+      .channel(<span class="string">'room_\$roomId'</span>)
+      .onPostgresChanges(
+        event: PostgresChangeEvent.all,
+        schema: <span class="string">'public'</span>,
+        table: <span class="string">'multiplayer_participants'</span>,
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: <span class="string">'room_id'</span>,
+          value: roomId,
+        ),
+        callback: (payload) => onUpdate(payload),
+      )
+      .subscribe();
+  }
+}
+  </pre>
+</div>
+
+<!-- Section 9: Storage -->
+<div class="section" id="storage">
+  <h2>9. 📁 Storage (Fayllar saqlash)</h2>
+  
+  <h3>9.1 Avatar yuklash</h3>
+  <pre>
+<span class="keyword">Future</span>&lt;String&gt; <span class="function">uploadAvatar</span>(String userId, File imageFile) <span class="keyword">async</span> {
+  <span class="keyword">final</span> fileExt = imageFile.path.split(<span class="string">'.'</span>).last;
+  <span class="keyword">final</span> fileName = <span class="string">'\$userId.\$fileExt'</span>;
+  
+  <span class="keyword">await</span> supabase.storage
+    .from(<span class="string">'avatars'</span>)
+    .upload(fileName, imageFile, fileOptions: FileOptions(upsert: <span class="keyword">true</span>));
+  
+  <span class="keyword">final</span> publicUrl = supabase.storage
+    .from(<span class="string">'avatars'</span>)
+    .getPublicUrl(fileName);
+  
+  <span class="comment">// Profile ni yangilash</span>
+  <span class="keyword">await</span> supabase
+    .from(<span class="string">'profiles'</span>)
+    .update({<span class="string">'avatar_url'</span>: publicUrl})
+    .eq(<span class="string">'user_id'</span>, userId);
+  
+  <span class="keyword">return</span> publicUrl;
+}
+  </pre>
+  
+  <h3>9.2 Storage URL formatlari</h3>
+  <pre>
+<span class="comment">// Public URL</span>
+https://rkhmmnqhzeogdushseqb.supabase.co/storage/v1/object/public/avatars/user123.jpg
+
+<span class="comment">// Video URL (kurs videolari)</span>
+https://rkhmmnqhzeogdushseqb.supabase.co/storage/v1/object/public/course-videos/lesson1.mp4
+  </pre>
+</div>
+
+<!-- Section 10: Gamification -->
+<div class="section" id="gamification">
+  <h2>10. 🎮 Gamifikatsiya tizimi</h2>
+  
+  <h3>10.1 XP va Level tizimi</h3>
+  <table>
+    <tr><th>Harakat</th><th>XP</th><th>Shart</th></tr>
+    <tr><td>To'g'ri javob</td><td>+10</td><td>Har bir to'g'ri javob</td></tr>
+    <tr><td>Kombo bonus</td><td>+2 per combo</td><td>Ketma-ket to'g'ri javoblar</td></tr>
+    <tr><td>Streak bonus</td><td>x1.5</td><td>3+ ketma-ket</td></tr>
+    <tr><td>Kunlik maqsad</td><td>+50</td><td>Kunlik maqsadni bajarish</td></tr>
+  </table>
+  
+  <h3>10.2 Level formula</h3>
+  <pre>
+<span class="comment">// Har level uchun kerakli XP</span>
+<span class="keyword">int</span> <span class="function">xpForLevel</span>(<span class="keyword">int</span> level) => level * <span class="number">100</span>;
+
+<span class="comment">// Level oshirish</span>
+<span class="keyword">if</span> (currentXp >= xpForLevel(level)) {
+  level++;
+  currentXp = currentXp - xpForLevel(level - <span class="number">1</span>);
+}
+  </pre>
+  
+  <h3>10.3 Energiya tizimi</h3>
+  <pre>
+<span class="comment">// Energiya regeneratsiya (har 5 daqiqada +1)</span>
+<span class="keyword">const</span> energyRegenMinutes = <span class="number">5</span>;
+<span class="keyword">const</span> maxEnergy = <span class="number">100</span>;
+
+<span class="comment">// O'yin uchun sarflanadigan energiya</span>
+<span class="keyword">const</span> energyPerGame = <span class="number">10</span>;
+  </pre>
+  
+  <h3>10.4 Badge (nishon) turlari</h3>
+  <table>
+    <tr><th>Badge Type</th><th>Nom</th><th>Shart</th></tr>
+    <tr><td>first_game</td><td>Birinchi qadam</td><td>1 o'yin o'ynash</td></tr>
+    <tr><td>solver_100</td><td>100 masala</td><td>100 ta masala yechish</td></tr>
+    <tr><td>solver_500</td><td>500 masala</td><td>500 ta masala yechish</td></tr>
+    <tr><td>streak_7</td><td>Haftalik seriya</td><td>7 kun ketma-ket</td></tr>
+    <tr><td>streak_30</td><td>Oylik seriya</td><td>30 kun ketma-ket</td></tr>
+    <tr><td>daily_winner</td><td>Kunlik g'olib</td><td>Kunlik musobaqada 1-o'rin</td></tr>
+    <tr><td>weekly_gold</td><td>Haftalik oltin</td><td>Haftalik musobaqada 1-o'rin</td></tr>
+    <tr><td>accuracy_95</td><td>Super aniqlik</td><td>95%+ aniqlik bilan o'yin</td></tr>
+    <tr><td>perfect_game</td><td>Mukammal o'yin</td><td>100% aniqlik, 10+ masala</td></tr>
+  </table>
+</div>
+
+<!-- Section 11: Design System -->
+<div class="section" id="design-system">
+  <h2>11. 🎨 Dizayn tizimi</h2>
+  
+  <h3>11.1 Ranglar (Light Theme)</h3>
+  <table>
+    <tr><th>Nom</th><th>HEX</th><th>HSL</th><th>Ko'rinish</th></tr>
+    <tr><td>Primary</td><td>#8B5CF6</td><td>270 95% 60%</td><td><span class="color-box" style="background:#8B5CF6"></span></td></tr>
+    <tr><td>Accent</td><td>#FFB800</td><td>40 100% 55%</td><td><span class="color-box" style="background:#FFB800"></span></td></tr>
+    <tr><td>Success</td><td>#22C55E</td><td>150 85% 45%</td><td><span class="color-box" style="background:#22C55E"></span></td></tr>
+    <tr><td>Warning</td><td>#EAB308</td><td>45 100% 50%</td><td><span class="color-box" style="background:#EAB308"></span></td></tr>
+    <tr><td>Destructive</td><td>#EF4444</td><td>0 90% 60%</td><td><span class="color-box" style="background:#EF4444"></span></td></tr>
+    <tr><td>Background</td><td>#FAFAFA</td><td>0 0% 98%</td><td><span class="color-box" style="background:#FAFAFA"></span></td></tr>
+    <tr><td>Foreground</td><td>#0A0A0A</td><td>0 0% 4%</td><td><span class="color-box" style="background:#0A0A0A"></span></td></tr>
+  </table>
+  
+  <h3>11.2 Bolalar uchun ranglar</h3>
+  <table>
+    <tr><th>Nom</th><th>HSL</th><th>Ko'rinish</th></tr>
+    <tr><td>Kids Purple</td><td>270 95% 60%</td><td><span class="color-box" style="background:hsl(270,95%,60%)"></span></td></tr>
+    <tr><td>Kids Blue</td><td>210 100% 55%</td><td><span class="color-box" style="background:hsl(210,100%,55%)"></span></td></tr>
+    <tr><td>Kids Green</td><td>150 85% 45%</td><td><span class="color-box" style="background:hsl(150,85%,45%)"></span></td></tr>
+    <tr><td>Kids Yellow</td><td>45 100% 55%</td><td><span class="color-box" style="background:hsl(45,100%,55%)"></span></td></tr>
+    <tr><td>Kids Pink</td><td>330 90% 65%</td><td><span class="color-box" style="background:hsl(330,90%,65%)"></span></td></tr>
+    <tr><td>Kids Orange</td><td>25 100% 55%</td><td><span class="color-box" style="background:hsl(25,100%,55%)"></span></td></tr>
+    <tr><td>Kids Cyan</td><td>180 90% 50%</td><td><span class="color-box" style="background:hsl(180,90%,50%)"></span></td></tr>
+  </table>
+  
+  <h3>11.3 Flutter Theme implementatsiyasi</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">AppTheme</span> {
+  <span class="keyword">static</span> <span class="keyword">final</span> lightTheme = ThemeData(
+    useMaterial3: <span class="keyword">true</span>,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: <span class="keyword">const</span> Color(<span class="number">0xFF8B5CF6</span>),
+      brightness: Brightness.light,
+    ),
+    fontFamily: <span class="string">'Nunito'</span>,
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        minimumSize: <span class="keyword">const</span> Size(<span class="number">56</span>, <span class="number">56</span>), <span class="comment">// Touch target</span>
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(<span class="number">24</span>),
+        ),
+      ),
+    ),
+  );
+}
+  </pre>
+  
+  <h3>11.4 Tipografiya</h3>
+  <table>
+    <tr><th>Element</th><th>Font</th><th>Mobil</th><th>Desktop</th><th>Weight</th></tr>
+    <tr><td>H1</td><td>Nunito</td><td>24px</td><td>48px</td><td>800-900</td></tr>
+    <tr><td>H2</td><td>Nunito</td><td>20px</td><td>32px</td><td>700-800</td></tr>
+    <tr><td>H3</td><td>Nunito</td><td>18px</td><td>24px</td><td>600-700</td></tr>
+    <tr><td>Body</td><td>Poppins</td><td>16px</td><td>18px</td><td>400-500</td></tr>
+    <tr><td>Button</td><td>Nunito</td><td>16px</td><td>18px</td><td>600-700</td></tr>
+  </table>
+</div>
+
+<!-- Section 12: Screens -->
+<div class="section" id="screens">
+  <h2>12. 📱 Ekranlar va Navigatsiya</h2>
+  
+  <h3>12.1 Ekranlar ro'yxati</h3>
+  <table>
+    <tr><th>Route</th><th>Sahifa</th><th>Auth</th><th>Tavsif</th></tr>
+    <tr><td>/</td><td>KidsHome</td><td>❌</td><td>Bosh sahifa</td></tr>
+    <tr><td>/auth</td><td>Auth</td><td>❌</td><td>Kirish/Ro'yxat</td></tr>
+    <tr><td>/train</td><td>Index</td><td>✅</td><td>Mashq qilish</td></tr>
+    <tr><td>/dashboard</td><td>Dashboard</td><td>✅</td><td>Boshqaruv panel</td></tr>
+    <tr><td>/abacus-simulator</td><td>AbacusSimulator</td><td>❌</td><td>Abakus simulatori</td></tr>
+    <tr><td>/abacus-practice</td><td>AbacusPractice</td><td>✅</td><td>Interaktiv abakus amaliyot</td></tr>
+    <tr><td>/mental-arithmetic</td><td>MentalArithmetic</td><td>✅</td><td>Mental arifmetika</td></tr>
+    <tr><td>/courses</td><td>Courses</td><td>❌</td><td>Kurslar ro'yxati</td></tr>
+    <tr><td>/courses/:id</td><td>CourseDetail</td><td>✅</td><td>Kurs tafsilotlari</td></tr>
+    <tr><td>/lessons/:id</td><td>LessonDetail</td><td>✅</td><td>Dars (video + amaliyot)</td></tr>
+    <tr><td>/achievements</td><td>Achievements</td><td>✅</td><td>Yutuqlar</td></tr>
+    <tr><td>/badges</td><td>Badges</td><td>❌</td><td>Nishonlar</td></tr>
+    <tr><td>/statistics</td><td>Statistics</td><td>✅</td><td>Statistika</td></tr>
+    <tr><td>/records</td><td>Records</td><td>✅</td><td>Rekordlar</td></tr>
+    <tr><td>/leaderboard</td><td>Leaderboard</td><td>❌</td><td>Liderlar jadvali</td></tr>
+    <tr><td>/weekly-game</td><td>WeeklyGame</td><td>✅</td><td>Haftalik musobaqa</td></tr>
+    <tr><td>/profile</td><td>Profile</td><td>✅</td><td>Profil</td></tr>
+    <tr><td>/settings</td><td>Settings</td><td>✅</td><td>Sozlamalar</td></tr>
+    <tr><td>/pricing</td><td>Pricing</td><td>❌</td><td>VIP obuna</td></tr>
+    <tr><td>/faq</td><td>FAQ</td><td>❌</td><td>Ko'p so'raladigan savollar</td></tr>
+    <tr><td>/contact</td><td>Contact</td><td>❌</td><td>Bog'lanish</td></tr>
+    <tr><td>/admin</td><td>Admin</td><td>✅ Admin</td><td>Admin panel</td></tr>
+  </table>
+  
+  <h3>12.2 Bottom Navigation</h3>
+  <pre>
+<span class="comment">// 4 ta asosiy tab</span>
+[
+  {icon: Home, label: <span class="string">'Bosh sahifa'</span>, route: <span class="string">'/'</span>},
+  {icon: Gamepad2, label: <span class="string">'Mashq'</span>, route: <span class="string">'/train'</span>, protected: <span class="keyword">true</span>},
+  {icon: Trophy, label: <span class="string">'Yutuqlar'</span>, route: <span class="string">'/achievements'</span>, protected: <span class="keyword">true</span>},
+  {icon: BarChart3, label: <span class="string">'Statistika'</span>, route: <span class="string">'/statistics'</span>, protected: <span class="keyword">true</span>},
+]
+  </pre>
+</div>
+
+<!-- Section 13: Flutter Models -->
+<div class="section" id="flutter-models">
+  <h2>13. 📦 Flutter Data Models</h2>
+  
+  <h3>13.1 Profile Model</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">Profile</span> {
+  <span class="keyword">final</span> String id;
+  <span class="keyword">final</span> String userId;
+  <span class="keyword">final</span> String username;
+  <span class="keyword">final</span> String? avatarUrl;
+  <span class="keyword">final</span> <span class="keyword">int</span> totalScore;
+  <span class="keyword">final</span> <span class="keyword">int</span> totalProblemsSolved;
+  <span class="keyword">final</span> <span class="keyword">int</span> currentStreak;
+  <span class="keyword">final</span> <span class="keyword">int</span> bestStreak;
+  <span class="keyword">final</span> <span class="keyword">int</span> dailyGoal;
+  <span class="keyword">final</span> DateTime? vipExpiresAt;
+  <span class="keyword">final</span> DateTime createdAt;
+  
+  <span class="keyword">bool</span> <span class="keyword">get</span> isVip => vipExpiresAt != <span class="keyword">null</span> && 
+    vipExpiresAt!.isAfter(DateTime.now());
+  
+  <span class="keyword">factory</span> Profile.<span class="function">fromJson</span>(Map&lt;String, <span class="keyword">dynamic</span>&gt; json) =&gt; Profile(
+    id: json[<span class="string">'id'</span>],
+    userId: json[<span class="string">'user_id'</span>],
+    username: json[<span class="string">'username'</span>],
+    avatarUrl: json[<span class="string">'avatar_url'</span>],
+    totalScore: json[<span class="string">'total_score'</span>] ?? <span class="number">0</span>,
+    totalProblemsSolved: json[<span class="string">'total_problems_solved'</span>] ?? <span class="number">0</span>,
+    currentStreak: json[<span class="string">'current_streak'</span>] ?? <span class="number">0</span>,
+    bestStreak: json[<span class="string">'best_streak'</span>] ?? <span class="number">0</span>,
+    dailyGoal: json[<span class="string">'daily_goal'</span>] ?? <span class="number">20</span>,
+    vipExpiresAt: json[<span class="string">'vip_expires_at'</span>] != <span class="keyword">null</span> 
+      ? DateTime.parse(json[<span class="string">'vip_expires_at'</span>]) 
+      : <span class="keyword">null</span>,
+    createdAt: DateTime.parse(json[<span class="string">'created_at'</span>]),
+  );
+}
+  </pre>
+  
+  <h3>13.2 GameSession Model</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">GameSession</span> {
+  <span class="keyword">final</span> String id;
+  <span class="keyword">final</span> String userId;
+  <span class="keyword">final</span> String section;
+  <span class="keyword">final</span> String mode;
+  <span class="keyword">final</span> String difficulty;
+  <span class="keyword">final</span> String? formulaType;
+  <span class="keyword">final</span> <span class="keyword">int</span> score;
+  <span class="keyword">final</span> <span class="keyword">int</span> correct;
+  <span class="keyword">final</span> <span class="keyword">int</span> incorrect;
+  <span class="keyword">final</span> <span class="keyword">int</span>? totalTime;
+  <span class="keyword">final</span> <span class="keyword">int</span>? bestStreak;
+  <span class="keyword">final</span> DateTime createdAt;
+  
+  <span class="keyword">double</span> <span class="keyword">get</span> accuracy => 
+    (correct + incorrect) > <span class="number">0</span> 
+      ? (correct / (correct + incorrect)) * <span class="number">100</span> 
+      : <span class="number">0</span>;
+  
+  Map&lt;String, <span class="keyword">dynamic</span>&gt; <span class="function">toJson</span>() =&gt; {
+    <span class="string">'user_id'</span>: userId,
+    <span class="string">'section'</span>: section,
+    <span class="string">'mode'</span>: mode,
+    <span class="string">'difficulty'</span>: difficulty,
+    <span class="string">'formula_type'</span>: formulaType,
+    <span class="string">'score'</span>: score,
+    <span class="string">'correct'</span>: correct,
+    <span class="string">'incorrect'</span>: incorrect,
+    <span class="string">'total_time'</span>: totalTime,
+    <span class="string">'best_streak'</span>: bestStreak,
+  };
+}
+  </pre>
+  
+  <h3>13.3 UserGamification Model</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">UserGamification</span> {
+  <span class="keyword">final</span> String id;
+  <span class="keyword">final</span> String userId;
+  <span class="keyword">final</span> <span class="keyword">int</span> level;
+  <span class="keyword">final</span> <span class="keyword">int</span> currentXp;
+  <span class="keyword">final</span> <span class="keyword">int</span> totalXp;
+  <span class="keyword">final</span> <span class="keyword">int</span> energy;
+  <span class="keyword">final</span> <span class="keyword">int</span> maxEnergy;
+  <span class="keyword">final</span> <span class="keyword">int</span> combo;
+  <span class="keyword">final</span> <span class="keyword">int</span> maxCombo;
+  <span class="keyword">final</span> <span class="keyword">int</span> difficultyLevel;
+  
+  <span class="keyword">int</span> <span class="keyword">get</span> xpForNextLevel => level * <span class="number">100</span>;
+  <span class="keyword">double</span> <span class="keyword">get</span> xpProgress => currentXp / xpForNextLevel;
+}
+  </pre>
+  
+  <h3>13.4 Badge Model</h3>
+  <pre>
+<span class="keyword">class</span> <span class="class">Badge</span> {
+  <span class="keyword">final</span> String id;
+  <span class="keyword">final</span> String userId;
+  <span class="keyword">final</span> String badgeType;
+  <span class="keyword">final</span> String badgeName;
+  <span class="keyword">final</span> String badgeIcon; <span class="comment">// Emoji</span>
+  <span class="keyword">final</span> String? description;
+  <span class="keyword">final</span> String? competitionType;
+  <span class="keyword">final</span> DateTime earnedAt;
+  
+  <span class="keyword">factory</span> Badge.<span class="function">fromJson</span>(Map&lt;String, <span class="keyword">dynamic</span>&gt; json) =&gt; Badge(
+    id: json[<span class="string">'id'</span>],
+    userId: json[<span class="string">'user_id'</span>],
+    badgeType: json[<span class="string">'badge_type'</span>],
+    badgeName: json[<span class="string">'badge_name'</span>],
+    badgeIcon: json[<span class="string">'badge_icon'</span>],
+    description: json[<span class="string">'description'</span>],
+    competitionType: json[<span class="string">'competition_type'</span>],
+    earnedAt: DateTime.parse(json[<span class="string">'earned_at'</span>]),
+  );
+}
+  </pre>
+</div>
+
+<!-- Section 14: Best Practices -->
+<div class="section" id="best-practices">
+  <h2>14. ✅ Best Practices va Tavsiyalar</h2>
+  
+  <h3>14.1 UI/UX tavsiyalari</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>📱 Touch Targets</h4>
+      <p>Minimal 44x44 px (iOS) yoki 48x48 dp (Android). Bolalar uchun 56x56+ tavsiya etiladi.</p>
+    </div>
+    <div class="card">
+      <h4>🔤 Font Size</h4>
+      <p>Minimal 16px. Bolalar uchun sarlavhalar 20-24px bo'lsin.</p>
+    </div>
+    <div class="card">
+      <h4>📐 Safe Area</h4>
+      <p>Notch va rounded corners uchun <code>SafeArea</code> widget ishlatish.</p>
+    </div>
+    <div class="card">
+      <h4>⚡ Animations</h4>
+      <p>60 FPS saqlang. Bolalar uchun animatsiyalar muhim - bounce, scale, confetti.</p>
+    </div>
+  </div>
+  
+  <h3>14.2 Performance tavsiyalari</h3>
+  <ul>
+    <li>✅ <code>CachedNetworkImage</code> ishlatish - avatarlar va rasmlar uchun</li>
+    <li>✅ <code>ListView.builder</code> - katta ro'yxatlar uchun lazy loading</li>
+    <li>✅ State management (Riverpod/Bloc) - keraksiz rebuild dan qochish</li>
+    <li>✅ <code>const</code> constructorlar ishlatish</li>
+    <li>✅ Debounce - klaviatura input uchun</li>
+  </ul>
+  
+  <h3>14.3 Offline qo'llab-quvvatlash</h3>
+  <pre>
+<span class="comment">// Hive yoki SharedPreferences bilan local cache</span>
+<span class="keyword">class</span> <span class="class">LocalCache</span> {
+  <span class="keyword">Future</span>&lt;<span class="keyword">void</span>&gt; <span class="function">cacheGameSession</span>(GameSession session) <span class="keyword">async</span> {
+    <span class="comment">// Offline da saqlash</span>
+    <span class="keyword">final</span> box = <span class="keyword">await</span> Hive.openBox(<span class="string">'offline_sessions'</span>);
+    <span class="keyword">await</span> box.add(session.toJson());
+  }
+  
+  <span class="keyword">Future</span>&lt;<span class="keyword">void</span>&gt; <span class="function">syncOfflineSessions</span>() <span class="keyword">async</span> {
+    <span class="comment">// Internet qaytganda sync qilish</span>
+    <span class="keyword">final</span> box = <span class="keyword">await</span> Hive.openBox(<span class="string">'offline_sessions'</span>);
+    <span class="keyword">for</span> (<span class="keyword">var</span> session <span class="keyword">in</span> box.values) {
+      <span class="keyword">await</span> supabase.from(<span class="string">'game_sessions'</span>).insert(session);
+    }
+    <span class="keyword">await</span> box.clear();
+  }
+}
+  </pre>
+  
+  <h3>14.4 Error handling</h3>
+  <pre>
+<span class="keyword">try</span> {
+  <span class="keyword">final</span> response = <span class="keyword">await</span> supabase.from(<span class="string">'profiles'</span>).select();
+} <span class="keyword">on</span> PostgrestException <span class="keyword">catch</span> (e) {
+  <span class="comment">// Database xatosi</span>
+  debugPrint(<span class="string">'Database error: \${e.message}'</span>);
+} <span class="keyword">on</span> AuthException <span class="keyword">catch</span> (e) {
+  <span class="comment">// Auth xatosi</span>
+  debugPrint(<span class="string">'Auth error: \${e.message}'</span>);
+} <span class="keyword">catch</span> (e) {
+  <span class="comment">// Boshqa xatolar</span>
+  debugPrint(<span class="string">'Error: \$e'</span>);
+}
+  </pre>
+  
+  <h3>14.5 Xavfsizlik</h3>
+  <div class="alert warning">
+    <strong>⚠️ Muhim:</strong>
+    <ul>
+      <li>ANON_KEY faqat RLS himoyalangan operatsiyalar uchun</li>
+      <li>SERVICE_ROLE_KEY ni hech qachon client kodida ishlatmang</li>
+      <li>Stripe secret key faqat Edge Functions da</li>
+      <li>User input ni sanitize qiling</li>
+    </ul>
+  </div>
+  
+  <h3>14.6 Testing</h3>
+  <pre>
+<span class="comment">// Test environment uchun</span>
+Supabase.initialize(
+  url: <span class="string">'https://rkhmmnqhzeogdushseqb.supabase.co'</span>,
+  anonKey: <span class="string">'...'</span>,
+  debug: <span class="keyword">true</span>, <span class="comment">// Development uchun</span>
+);
+  </pre>
+</div>
+
+<footer>
+  <p>📄 IQROMAX Flutter Developer Dokumentatsiya</p>
+  <p>Yaratilgan: 2025-02-01 | Versiya: 2.0</p>
+  <p>© 2025 IQROMAX - Barcha huquqlar himoyalangan</p>
+  <br>
+  <p><em>Bu hujjatni Word formatida saqlash uchun: Brauzerda oching → Ctrl+P → "Save as PDF" yoki "Microsoft Print to PDF"</em></p>
+</footer>
+
+</body>
+</html>
