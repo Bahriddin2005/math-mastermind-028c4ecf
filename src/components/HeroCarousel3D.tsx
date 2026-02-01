@@ -264,9 +264,11 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         <CarouselContent className="will-change-transform" style={{ touchAction: 'pan-y pinch-zoom' }}>
           {slides.map((slide, index) => (
             <CarouselItem key={slide.id} className="touch-manipulation cursor-grab active:cursor-grabbing">
-              {/* Mobile-optimized height with 3D depth */}
+              {/* Mobile-optimized height with 3D depth and hover effects */}
               <div 
-                className="relative h-[420px] xs:h-[480px] sm:h-[520px] md:h-[600px] lg:h-[680px] overflow-hidden transition-all duration-300 ease-out"
+                className={`relative h-[380px] xs:h-[420px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden transition-all duration-300 ease-out group ${
+                  current === index ? 'hover:scale-[1.02]' : ''
+                }`}
                 style={{ 
                   transform: current === index 
                     ? 'rotateY(0deg) scale(1)' 
@@ -276,12 +278,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   transformStyle: 'preserve-3d',
                 }}
               >
-                {/* Image Background with Parallax */}
+                {/* Image Background with Parallax and Hover Effect */}
                 <img 
                   src={slide.image}
                   alt={slide.id}
                   loading={index === 0 ? 'eager' : 'lazy'}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out will-change-transform group-hover:scale-110"
                   style={{ 
                     transform: current === index 
                       ? `scale(1.08) translate(${mousePosition.x * -20}px, ${mousePosition.y * -15}px)` 
@@ -289,48 +291,49 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   }}
                 />
 
-                {/* Animated gradient overlay */}
+                {/* Animated gradient overlay with hover effect */}
                 <div 
-                  className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-kid-yellow/20 bg-[length:400%_400%] animate-[gradient-shift_8s_ease-in-out_infinite] opacity-60"
+                  className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-kid-yellow/20 bg-[length:400%_400%] animate-[gradient-shift_8s_ease-in-out_infinite] opacity-60 group-hover:opacity-80 transition-opacity duration-300"
                 />
                 
-                {/* Blur overlay for better text readability */}
-                <div className="absolute inset-0 backdrop-blur-[2px] sm:backdrop-blur-[1px]" />
+                {/* Blur overlay for better text readability - lighter on mobile */}
+                <div className="absolute inset-0 backdrop-blur-[1px] sm:backdrop-blur-[0.5px]" />
                 
                 {/* Stronger gradient for mobile readability */}
-                <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradientOverlay}`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10 sm:from-black/50 sm:via-transparent sm:to-transparent" />
+                <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradientOverlay} group-hover:opacity-90 transition-opacity duration-300`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 sm:from-black/60 sm:via-transparent sm:to-transparent" />
                 
-                {/* Vignette effect */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
+                {/* Vignette effect with hover enhancement */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)] group-hover:opacity-50 transition-opacity duration-300" />
                 
-                {/* Animated glow spots */}
-                <div className="absolute top-1/4 left-1/4 w-32 h-32 sm:w-64 sm:h-64 bg-kid-yellow/20 rounded-full blur-3xl animate-pulse opacity-50" />
-                <div className="absolute bottom-1/3 right-1/4 w-24 h-24 sm:w-48 sm:h-48 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
+                {/* Animated glow spots - reduced for mobile performance */}
+                <div className="absolute top-1/4 left-1/4 w-24 h-24 sm:w-48 sm:h-48 md:w-64 md:h-64 bg-kid-yellow/20 rounded-full blur-3xl animate-pulse opacity-50 group-hover:opacity-70 transition-opacity" />
+                <div className="absolute bottom-1/3 right-1/4 w-20 h-20 sm:w-36 sm:h-36 md:w-48 md:h-48 bg-primary/20 rounded-full blur-3xl animate-pulse opacity-40 group-hover:opacity-60 transition-opacity" style={{ animationDelay: '1s' }} />
 
-                {/* Floating particles */}
+                {/* Floating particles - reduced count for mobile */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  {[...Array(12)].map((_, i) => (
+                  {[...Array(8)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full opacity-60"
+                      className="absolute w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full opacity-60 will-change-transform"
                       style={{
-                        left: `${10 + (i * 7) % 80}%`,
+                        left: `${10 + (i * 10) % 80}%`,
                         top: `${20 + (i * 11) % 60}%`,
-                        animation: `float ${3 + (i % 3)}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.3}s`,
+                        animation: `float ${4 + (i % 3)}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.4}s`,
                         boxShadow: '0 0 6px 2px rgba(255,255,255,0.6)',
                       }}
                     />
                   ))}
-                  {[...Array(6)].map((_, i) => (
+                  {/* Stars - hidden on small mobile for performance */}
+                  {[...Array(4)].map((_, i) => (
                     <div
                       key={`star-${i}`}
-                      className="absolute text-white/70 animate-pulse"
+                      className="absolute text-white/70 animate-pulse hidden xs:block"
                       style={{
-                        left: `${15 + (i * 15) % 70}%`,
-                        top: `${10 + (i * 13) % 50}%`,
-                        fontSize: `${8 + (i % 3) * 4}px`,
+                        left: `${15 + (i * 18) % 70}%`,
+                        top: `${10 + (i * 15) % 50}%`,
+                        fontSize: `${10 + (i % 3) * 4}px`,
                         animationDelay: `${i * 0.5}s`,
                         filter: 'drop-shadow(0 0 4px rgba(255,255,255,0.8))',
                       }}
