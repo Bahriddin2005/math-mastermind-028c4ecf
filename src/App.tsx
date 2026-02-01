@@ -5,9 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
-import { SubscriptionProvider } from "@/hooks/useSubscription";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { PremiumRoute } from "@/components/PremiumRoute";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { HelpChatWidget } from "@/components/HelpChatWidget";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -59,68 +57,63 @@ const handleRefresh = async () => {
   window.location.reload();
 };
 
-import PaymentSuccess from "@/pages/PaymentSuccess";
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <TooltipProvider>
         <AuthProvider>
-          <SubscriptionProvider>
-            <SessionTimeoutProvider>
-              <PageLoader />
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <ScrollToTop />
-                <PullToRefresh onRefresh={handleRefresh}>
-                  <div className="pb-16 md:pb-0">
-                    <PageTransition>
-                      <Routes>
-                        <Route path="/" element={<KidsHome />} />
-                        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                        <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                        <Route path="/auth" element={<Auth />} />
-                        <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                        <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="/contact" element={<Contact />} />
-                        <Route path="/pricing" element={<Pricing />} />
-                        <Route path="/payment-success" element={<PaymentSuccess />} />
-                        <Route path="/blog" element={<Blog />} />
-                        <Route path="/blog/:id" element={<BlogPostPage />} />
-                        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-                        <Route path="/faq" element={<FAQ />} />
-                        <Route path="/courses" element={<PremiumRoute><KidsCourses /></PremiumRoute>} />
-                        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                        <Route path="/leaderboard" element={<KidsLeaderboard />} />
-                        <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
-                        <Route path="/lesson-stats" element={<ProtectedRoute><LessonStats /></ProtectedRoute>} />
-                        <Route path="/courses/:courseId" element={<PremiumRoute><CourseDetail /></PremiumRoute>} />
-                        <Route path="/lessons/:lessonId" element={<PremiumRoute><LessonDetail /></PremiumRoute>} />
-                        <Route path="/weekly-game" element={<PremiumRoute><WeeklyGame /></PremiumRoute>} />
-                        <Route path="/badges" element={<Badges />} />
-                        <Route path="/install" element={<Install />} />
-                        <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
-                        <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-                        <Route path="/statistics" element={<PremiumRoute><Statistics /></PremiumRoute>} />
-                        <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
-                        <Route path="/problem-sheet" element={<PremiumRoute requiredTier="ustoz"><ProblemSheetGenerator /></PremiumRoute>} />
-                        <Route path="/challenge-stats" element={<ChallengeStats />} />
-                        <Route path="/privacy" element={<Privacy />} />
-                        <Route path="/terms" element={<Terms />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </PageTransition>
-                  </div>
-                </PullToRefresh>
-                <MobileBottomNav />
-                <PWAInstallBanner />
-                <HelpChatWidget />
-              </BrowserRouter>
-            </SessionTimeoutProvider>
-          </SubscriptionProvider>
+          <SessionTimeoutProvider>
+            <PageLoader />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
+            <PullToRefresh onRefresh={handleRefresh}>
+              <div className="pb-16 md:pb-0">
+                <PageTransition>
+                  <Routes>
+                    <Route path="/" element={<KidsHome />} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                    <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPostPage />} />
+                    <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/courses" element={<ProtectedRoute><KidsCourses /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/leaderboard" element={<KidsLeaderboard />} />
+                    <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboard /></ProtectedRoute>} />
+                    <Route path="/lesson-stats" element={<ProtectedRoute><LessonStats /></ProtectedRoute>} />
+                    <Route path="/courses/:courseId" element={<ProtectedRoute><CourseDetail /></ProtectedRoute>} />
+                    <Route path="/lessons/:lessonId" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
+                    <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
+                    <Route path="/badges" element={<Badges />} />
+                    <Route path="/install" element={<Install />} />
+                    <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
+                    <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
+                    <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+                    <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
+                    <Route path="/problem-sheet" element={<ProtectedRoute><ProblemSheetGenerator /></ProtectedRoute>} />
+                    <Route path="/challenge-stats" element={<ChallengeStats />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </PageTransition>
+              </div>
+            </PullToRefresh>
+            <MobileBottomNav />
+            <PWAInstallBanner />
+            <HelpChatWidget />
+          </BrowserRouter>
+          </SessionTimeoutProvider>
         </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>

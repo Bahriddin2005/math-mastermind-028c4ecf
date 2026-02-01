@@ -83,7 +83,7 @@ export const HeroCarousel = () => {
       <Carousel
         setApi={setApi}
         opts={{
-          align: "center",
+          align: "start",
           loop: true,
         }}
         plugins={[
@@ -94,11 +94,11 @@ export const HeroCarousel = () => {
         ]}
         className="w-full"
       >
-        <CarouselContent className="ml-0">
+        <CarouselContent className="-ml-2 md:-ml-4">
           {heroSlides.map((slide) => (
-            <CarouselItem key={slide.id} className="pl-0">
+            <CarouselItem key={slide.id} className="pl-2 md:pl-4">
               <div 
-                className={`relative w-full min-h-[280px] xs:min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] rounded-2xl sm:rounded-3xl bg-gradient-to-br ${slide.gradient} p-4 xs:p-5 sm:p-8 lg:p-10 flex flex-col justify-center items-center overflow-hidden`}
+                className={`relative w-full min-h-[280px] xs:min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] rounded-2xl sm:rounded-3xl bg-gradient-to-br ${slide.gradient} p-4 xs:p-5 sm:p-8 lg:p-10 flex flex-col justify-center overflow-hidden`}
               >
                 {/* Animated background effects */}
                 <div className="absolute inset-0 overflow-hidden rounded-2xl sm:rounded-3xl">
@@ -106,23 +106,11 @@ export const HeroCarousel = () => {
                   <div className="absolute -bottom-16 -left-16 sm:-bottom-32 sm:-left-32 w-40 sm:w-80 h-40 sm:h-80 bg-white/10 rounded-full blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
                 </div>
 
-                {/* Content - centered */}
-                <div className="relative z-10 flex flex-col items-center gap-4 sm:gap-6 text-center max-w-2xl mx-auto">
-                  {/* Image - centered at top */}
-                  <div className="w-full max-w-[220px] xs:max-w-[260px] sm:max-w-[320px] lg:max-w-[380px] mx-auto">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-white/20 rounded-xl sm:rounded-2xl blur-lg sm:blur-xl transform rotate-3" />
-                      <img 
-                        src={slide.image} 
-                        alt={slide.title}
-                        className="relative w-full h-32 xs:h-36 sm:h-48 lg:h-56 object-cover rounded-xl sm:rounded-2xl shadow-2xl border-2 sm:border-4 border-white/30 mx-auto"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Text content - centered */}
-                  <div className="flex-1 text-center">
-                    <div className="flex items-center gap-2 sm:gap-3 justify-center mb-3 sm:mb-4">
+                {/* Content */}
+                <div className="relative z-10 flex flex-col lg:flex-row items-center gap-4 sm:gap-6 lg:gap-12">
+                  {/* Left side - Text content */}
+                  <div className="flex-1 text-center lg:text-left order-2 lg:order-1">
+                    <div className="flex items-center gap-2 sm:gap-3 justify-center lg:justify-start mb-3 sm:mb-4">
                       <span className="text-3xl xs:text-4xl sm:text-5xl animate-bounce-soft">
                         {slide.icon}
                       </span>
@@ -133,17 +121,29 @@ export const HeroCarousel = () => {
                     <h1 className="text-lg xs:text-xl sm:text-2xl lg:text-4xl font-display font-black text-white mb-2 sm:mb-3 leading-tight">
                       {slide.subtitle}
                     </h1>
-                    <p className="text-white/80 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-lg mx-auto line-clamp-2 sm:line-clamp-none">
+                    <p className="text-white/80 text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 max-w-lg mx-auto lg:mx-0 line-clamp-2 sm:line-clamp-none">
                       {slide.description}
                     </p>
                     <Button 
                       size="default"
-                      className="bg-white text-gray-900 hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-auto mx-auto"
+                      className="bg-white text-gray-900 hover:bg-white/90 font-bold shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 h-auto"
                       onClick={() => navigate(slide.href)}
                     >
                       {slide.buttonText}
                       <ArrowRight className="ml-1.5 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                     </Button>
+                  </div>
+
+                  {/* Right side - Image */}
+                  <div className="flex-shrink-0 order-1 lg:order-2 w-full max-w-[200px] xs:max-w-[240px] sm:max-w-[280px] lg:max-w-[40%]">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-white/20 rounded-xl sm:rounded-2xl blur-lg sm:blur-xl transform rotate-3" />
+                      <img 
+                        src={slide.image} 
+                        alt={slide.title}
+                        className="relative w-full h-28 xs:h-32 sm:h-44 lg:h-56 object-cover rounded-xl sm:rounded-2xl shadow-2xl border-2 sm:border-4 border-white/30"
+                      />
+                    </div>
                   </div>
                 </div>
 

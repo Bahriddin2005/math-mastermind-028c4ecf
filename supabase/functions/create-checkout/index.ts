@@ -56,10 +56,7 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      subscription_data: {
-        trial_period_days: 7, // 7 kunlik bepul sinov
-      },
-      success_url: `${req.headers.get("origin")}/payment-success?success=true`,
+      success_url: `${req.headers.get("origin")}/pricing?success=true`,
       cancel_url: `${req.headers.get("origin")}/pricing?canceled=true`,
     });
 

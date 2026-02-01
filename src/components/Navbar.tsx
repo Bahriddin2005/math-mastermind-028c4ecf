@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Crown } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3 } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,7 +17,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { XPLevelBar } from './XPLevelBar';
-import { PremiumBadge } from './PremiumBadge';
 
 interface NavbarProps {
   soundEnabled: boolean;
@@ -157,9 +156,6 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
           {/* Right side controls - Ultra compact for mobile */}
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2">
-            {/* Premium Badge */}
-            <PremiumBadge variant="compact" showTierName className="hidden xs:flex" />
-            
             {/* Compact XP Bar - Tablet+ */}
             {user && (
               <div className="hidden md:flex items-center gap-2 bg-secondary/60 rounded-full px-3 py-1.5 border border-border/30">
@@ -229,10 +225,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-sm truncate">{profile?.username || 'Foydalanuvchi'}</p>
-                        <PremiumBadge variant="compact" showTierName={false} />
-                      </div>
+                      <p className="font-semibold text-sm truncate">{profile?.username || 'Foydalanuvchi'}</p>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Trophy className="h-3 w-3 text-warning" />
                         {profile?.total_score || 0} ball

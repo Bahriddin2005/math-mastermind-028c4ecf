@@ -27,8 +27,6 @@ export const usePullToRefresh = ({
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isPulling || isRefreshing) return;
-    
-    // Allow normal scrolling if not at top
     if (window.scrollY > 0) {
       setIsPulling(false);
       setPullDistance(0);
@@ -38,20 +36,16 @@ export const usePullToRefresh = ({
     currentY.current = e.touches[0].clientY;
     const diff = currentY.current - startY.current;
 
-    // Only activate pull-to-refresh when pulling down from top
-    if (diff > 0 && window.scrollY === 0) {
+    if (diff > 0) {
       // Resistance effect - pull distance increases slower as you pull more
       const resistance = 0.5;
       const distance = Math.min(diff * resistance, maxPull);
       setPullDistance(distance);
       
-      // Only prevent default if actually pulling (not just touching)
-      if (distance > 20) {
+      // Prevent default scrolling when pulling
+      if (distance > 10) {
         e.preventDefault();
       }
-    } else {
-      // Reset if scrolling up or page has scrolled
-      setPullDistance(0);
     }
   }, [isPulling, isRefreshing, maxPull]);
 

@@ -38,6 +38,7 @@ import {
   FileText
 } from 'lucide-react';
 import { HeroCarousel3D } from './HeroCarousel3D';
+import { TractionStats } from './TractionStats';
 import { InvestorHighlights } from './InvestorHighlights';
 
 interface Testimonial {
@@ -151,6 +152,8 @@ export const GuestDashboard = () => {
       {/* ✨ HERO SECTION - 3D Carousel with Animations */}
       <HeroCarousel3D totalUsers={stats.total_users} />
 
+      {/* 📊 TRACTION STATS - For Investors */}
+      <TractionStats />
 
       {/* 👥 WHO IS THIS FOR - Audience Segments */}
       <div className="space-y-4 sm:space-y-5">

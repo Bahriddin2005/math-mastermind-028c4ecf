@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMFA } from '@/hooks/useMFA';
-import { supabase } from '@/integrations/supabase/client';
 import { Logo } from '@/components/Logo';
 import { TwoFactorVerify } from '@/components/TwoFactorVerify';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { 
   Loader2, 
   LogIn, 
@@ -31,36 +29,29 @@ import {
   Star,
   ChevronRight,
   GraduationCap,
-  Phone,
-  MessageSquare,
-  RefreshCw
+  Phone
 } from 'lucide-react';
 import { z } from 'zod';
 import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 
 const loginSchema = z.object({
-  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
+  email: z.string().email("Noto'g'ri email format"),
   password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
 });
 
-const signupSchema = z.object({
-  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
-  password: z.string().min(6, "Xavfsiz parol uchun kamida 6 ta belgi kiriting"),
-  username: z.string().min(2, "Iltimos, to'liq ismingizni kiriting (kamida 2 ta belgi)"),
-  phoneNumber: z.string()
-    .min(9, "Telefon raqamingizni kiriting")
-    .refine(
-      (val) => /^\+?[0-9]{9,15}$/.test(val.replace(/\s/g, '')),
-      { message: "Telefon raqami formati: +998 XX XXX XX XX" }
-    ),
+const signupSchema = loginSchema.extend({
+  username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
+  phoneNumber: z.string().optional().refine(
+    (val) => !val || /^\+?[0-9]{9,15}$/.test(val.replace(/\s/g, '')),
+    { message: "Noto'g'ri telefon raqami formati" }
+  ),
 });
 
 const emailSchema = z.object({
-  email: z.string().email("Email manzili noto'g'ri formatda kiritilgan"),
+  email: z.string().email("Noto'g'ri email format"),
 });
 
 type AuthMode = 'login' | 'signup' | 'forgot-password';
-type SignupStep = 'info' | 'verification';
 
 const features = [
   { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
@@ -77,32 +68,20 @@ const stats = [
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
-  const [signupStep, setSignupStep] = useState<SignupStep>('info');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sendingCode, setSendingCode] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showMFAVerify, setShowMFAVerify] = useState(false);
-  const [codeResendTimer, setCodeResendTimer] = useState(0);
   
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
   const mfa = useMFA();
   const navigate = useNavigate();
   const { toast: toastHook } = useToast();
-
-  // Resend timer countdown
-  useEffect(() => {
-    if (codeResendTimer > 0) {
-      const timer = setTimeout(() => setCodeResendTimer(codeResendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [codeResendTimer]);
 
   // Load remembered email on mount
   useEffect(() => {
@@ -116,6 +95,7 @@ const Auth = () => {
   // Check MFA status after user is available
   useEffect(() => {
     if (user && !mfa.loading) {
+      // If MFA is enabled but not verified (aal1 but needs aal2), show verify screen
       if (mfa.isEnabled && !mfa.isVerified && mfa.currentLevel === 'aal1') {
         setShowMFAVerify(true);
       } else if (!showMFAVerify) {
@@ -149,141 +129,6 @@ const Auth = () => {
     }
   };
 
-  const sendVerificationCode = async () => {
-    if (!validateForm()) return false;
-    
-    setSendingCode(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('send-verification-code', {
-        body: {
-          email,
-          phoneNumber: unformatPhoneNumber(phoneNumber)
-        }
-      });
-
-      // Handle edge function error - parse the response body for telegram_not_registered
-      if (error) {
-        // Try to get error details from the context
-        const errorContext = (error as any).context;
-        if (errorContext) {
-          try {
-            const errorBody = await errorContext.json();
-            if (errorBody?.error === 'telegram_not_registered') {
-              toastHook({
-                variant: 'destructive',
-                title: '📱 Telegram botga ulanish kerak',
-                description: 'Avval Telegram\'da @iqromaxuz_bot ga o\'ting, /start bosing va telefon raqamingizni ulashing. So\'ng qayta urinib ko\'ring.',
-                duration: 12000,
-              });
-              return false;
-            }
-          } catch (parseError) {
-            // Couldn't parse error body, continue with generic error handling
-          }
-        }
-        throw error;
-      }
-      
-      if (data?.success) {
-        setSignupStep('verification');
-        setCodeResendTimer(60); // 60 second cooldown
-        toastHook({
-          title: '✅ Kod yuborildi!',
-          description: 'Telegram chatda 6 xonali tasdiqlash kodini olasiz',
-        });
-        return true;
-      } else if (data?.error === 'telegram_not_registered') {
-        // User hasn't registered their phone with Telegram bot
-        toastHook({
-          variant: 'destructive',
-          title: '📱 Telegram botga ulanish kerak',
-          description: 'Avval Telegram\'da @iqromaxuz_bot ga o\'ting, /start bosing va telefon raqamingizni ulashing. So\'ng qayta urinib ko\'ring.',
-          duration: 12000,
-        });
-        return false;
-      } else {
-        throw new Error(data?.message || data?.error || 'Tasdiqlash kodini yuborib bo\'lmadi');
-      }
-    } catch (error: any) {
-      console.error('Error sending verification code:', error);
-      toastHook({
-        variant: 'destructive',
-        title: '❌ Xatolik yuz berdi',
-        description: error.message || 'Tasdiqlash kodini yuborishda muammo. Internet aloqangizni tekshiring.',
-      });
-      return false;
-    } finally {
-      setSendingCode(false);
-    }
-  };
-
-  const verifyCodeAndSignup = async () => {
-    if (verificationCode.length !== 6) {
-      toastHook({
-        variant: 'destructive',
-        title: '⚠️ Kod to\'liq emas',
-        description: 'Iltimos, Telegram orqali yuborilgan 6 xonali kodni to\'liq kiriting',
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Verify the code
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('verify-code', {
-        body: {
-          email,
-          code: verificationCode
-        }
-      });
-
-      if (verifyError) throw verifyError;
-
-      if (!verifyData?.valid) {
-        toastHook({
-          variant: 'destructive',
-          title: '❌ Kod tasdiqlanmadi',
-          description: verifyData?.error || "Kiritilgan kod noto'g'ri yoki muddati o'tgan. Yangi kod so'rang.",
-        });
-        return;
-      }
-
-      // Code verified - proceed with signup
-      const { error } = await signUp(email, password, username, unformatPhoneNumber(phoneNumber));
-      
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toastHook({
-            variant: 'destructive',
-            title: '⚠️ Email band',
-            description: "Bu email manzili allaqachon ro'yxatdan o'tgan. Kirish sahifasidan foydalaning yoki boshqa email kiriting.",
-          });
-        } else {
-          toastHook({
-            variant: 'destructive',
-            title: '❌ Ro\'yxatdan o\'tib bo\'lmadi',
-            description: error.message,
-          });
-        }
-      } else {
-        toastHook({
-          title: '🎉 Tabriklaymiz!',
-          description: 'Akkauntingiz muvaffaqiyatli yaratildi!',
-        });
-        navigate('/onboarding');
-      }
-    } catch (error: any) {
-      console.error('Error during signup:', error);
-      toastHook({
-        variant: 'destructive',
-        title: '❌ Xatolik yuz berdi',
-        description: error.message || "Ro'yxatdan o'tishda muammo. Qaytadan urinib ko'ring.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -293,6 +138,7 @@ const Auth = () => {
     
     try {
       if (mode === 'login') {
+        // Handle remember me - save or remove email from localStorage
         if (rememberMe) {
           localStorage.setItem('iqromax_remembered_email', email);
         } else {
@@ -301,46 +147,54 @@ const Auth = () => {
         
         const { error } = await signIn(email, password);
         if (error) {
-          let errorTitle = '❌ Kirib bo\'lmadi';
-          let errorMessage = error.message;
-          
-          if (error.message === 'Invalid login credentials') {
-            errorMessage = "Email yoki parol noto'g'ri. Tekshirib qayta urinib ko'ring.";
-          } else if (error.message.includes('Email not confirmed')) {
-            errorTitle = '📧 Email tasdiqlanmagan';
-            errorMessage = "Emailingizga yuborilgan tasdiqlash havolasini bosing.";
-          } else if (error.message.includes('Too many requests')) {
-            errorTitle = '⏳ Biroz kuting';
-            errorMessage = "Juda ko'p urinish. 1 daqiqadan so'ng qayta urinib ko'ring.";
-          }
-          
           toastHook({
             variant: 'destructive',
-            title: errorTitle,
-            description: errorMessage,
+            title: 'Xatolik',
+            description: error.message === 'Invalid login credentials' 
+              ? "Email yoki parol noto'g'ri" 
+              : error.message,
           });
         } else {
           toastHook({
-            title: '👋 Xush kelibsiz!',
-            description: 'Tizimga muvaffaqiyatli kirdingiz',
+            title: 'Muvaffaqiyat!',
+            description: 'Tizimga kirdingiz',
           });
         }
       } else if (mode === 'signup') {
-        // For signup, we handle it differently with verification
-        if (signupStep === 'info') {
-          await sendVerificationCode();
+        const { error } = await signUp(email, password, username, phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined);
+        if (error) {
+          if (error.message.includes('already registered')) {
+            toastHook({
+              variant: 'destructive',
+              title: 'Xatolik',
+              description: "Bu email allaqachon ro'yxatdan o'tgan",
+            });
+          } else {
+            toastHook({
+              variant: 'destructive',
+              title: 'Xatolik',
+              description: error.message,
+            });
+          }
+        } else {
+          toastHook({
+            title: 'Muvaffaqiyat!',
+            description: 'Akkaunt yaratildi!',
+          });
+          // Redirect to onboarding for new users
+          navigate('/onboarding');
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
         if (error) {
           toastHook({
             variant: 'destructive',
-            title: '❌ Xatolik yuz berdi',
-            description: error.message || "Parolni tiklash havolasini yuborib bo'lmadi",
+            title: 'Xatolik',
+            description: error.message,
           });
         } else {
           setResetEmailSent(true);
-          toast.success('✅ Parolni tiklash havolasi emailingizga yuborildi!');
+          toast.success('Parolni tiklash havolasi emailingizga yuborildi');
         }
       }
     } finally {
@@ -350,8 +204,6 @@ const Auth = () => {
 
   const switchMode = (newMode: AuthMode) => {
     setMode(newMode);
-    setSignupStep('info');
-    setVerificationCode('');
     setErrors({});
     setResetEmailSent(false);
   };
@@ -374,188 +226,50 @@ const Auth = () => {
     );
   }
 
-  // Reset email sent success state
+  // Reset email sent success state - Dark Mode & Mobile optimized
   if (resetEmailSent) {
     return (
-      <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+        {/* Background decorations - Enhanced for dark mode */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
-          <div className="min-h-full flex items-center justify-center p-3 xs:p-4 sm:p-6 py-8 xs:py-10 sm:py-12">
-            <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
-              <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90">
-                <CardContent className="pt-6 xs:pt-8 sm:pt-10 pb-6 xs:pb-8 sm:pb-10 text-center px-3 xs:px-4 sm:px-6">
-                  <div className="h-14 w-14 xs:h-16 xs:w-16 sm:h-20 sm:w-20 rounded-xl xs:rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-4 xs:mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
-                    <Check className="h-7 w-7 xs:h-8 xs:w-8 sm:h-10 sm:w-10 text-white" />
-                  </div>
-                  <h2 className="text-lg xs:text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
-                  <p className="text-muted-foreground mb-5 xs:mb-6 sm:mb-8 leading-relaxed text-xs xs:text-sm sm:text-base px-1 xs:px-2">
-                    Parolni tiklash havolasi <strong className="text-foreground break-all">{email}</strong> emailiga yuborildi. 
-                    Spam papkasini ham tekshiring.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => switchMode('login')}
-                    className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-10 xs:h-11 sm:h-10 px-4 xs:px-5 text-sm xs:text-base touch-target dark:border-border/30 dark:hover:bg-primary w-full xs:w-auto"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Kirish sahifasiga qaytish
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Verification step UI
-  if (mode === 'signup' && signupStep === 'verification') {
-    return (
-      <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-56 xs:w-72 sm:w-96 h-56 xs:h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-
-        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
-          <div className="min-h-full flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 py-6 xs:py-8 sm:py-10">
-            <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
-              <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
-                <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
+        <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
+          <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90">
+            <CardContent className="pt-8 sm:pt-10 pb-8 sm:pb-10 text-center px-4 sm:px-6">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-success to-emerald-500 flex items-center justify-center mx-auto mb-5 sm:mb-6 shadow-lg shadow-success/30 dark:shadow-success/50 animate-bounce-slow">
+                <Check className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
               </div>
-
-              <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
-                <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
-                
-                <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
-                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50">
-                    <MessageSquare className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
-                  </div>
-                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Tasdiqlash kodi</CardTitle>
-                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
-                    Telegram botdan yuborilgan 6 xonali kodni kiriting
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
-                  <div className="space-y-4 xs:space-y-5 sm:space-y-6">
-                    {/* Info badge */}
-                    <div className="p-2.5 xs:p-3 rounded-lg bg-primary/10 border border-primary/20 text-xs xs:text-sm text-center">
-                      <p className="text-muted-foreground leading-relaxed">
-                        <span className="font-medium text-foreground break-all">{email}</span>
-                        <br className="xs:hidden" />
-                        <span className="hidden xs:inline"> va </span>
-                        <span className="xs:hidden"> </span>
-                        <span className="font-medium text-foreground">{phoneNumber}</span> uchun kod yuborildi
-                      </p>
-                    </div>
-
-                    {/* OTP Input */}
-                    <div className="flex justify-center overflow-x-auto py-1">
-                      <InputOTP
-                        maxLength={6}
-                        value={verificationCode}
-                        onChange={setVerificationCode}
-                        disabled={loading}
-                        className="gap-1 xs:gap-1.5 sm:gap-2"
-                      >
-                        <InputOTPGroup className="gap-1 xs:gap-1.5 sm:gap-2">
-                          <InputOTPSlot index={0} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                          <InputOTPSlot index={1} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                          <InputOTPSlot index={2} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                          <InputOTPSlot index={3} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                          <InputOTPSlot index={4} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                          <InputOTPSlot index={5} className="w-9 h-11 xs:w-10 xs:h-12 sm:w-12 sm:h-14 text-base xs:text-lg sm:text-xl" />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </div>
-
-                    {/* Resend button */}
-                    <div className="text-center">
-                      {codeResendTimer > 0 ? (
-                        <p className="text-xs xs:text-sm text-muted-foreground">
-                          Qayta yuborish: <span className="font-medium">{codeResendTimer}s</span>
-                        </p>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={sendVerificationCode}
-                          disabled={sendingCode}
-                          className="text-xs xs:text-sm text-primary hover:text-primary/80 font-medium inline-flex items-center gap-1.5 xs:gap-2 transition-colors py-2"
-                        >
-                          {sendingCode ? (
-                            <Loader2 className="h-3.5 w-3.5 xs:h-4 xs:w-4 animate-spin" />
-                          ) : (
-                            <RefreshCw className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
-                          )}
-                          Kodni qayta yuborish
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Submit button */}
-                    <Button 
-                      onClick={verifyCodeAndSignup}
-                      size="lg" 
-                      className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl transition-all"
-                      disabled={loading || verificationCode.length !== 6}
-                    >
-                      {loading ? (
-                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <span className="hidden xs:inline">Tasdiqlash va ro'yxatdan o'tish</span>
-                          <span className="xs:hidden">Tasdiqlash</span>
-                          <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </>
-                      )}
-                    </Button>
-
-                    {/* Back button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSignupStep('info');
-                        setVerificationCode('');
-                      }}
-                      className="w-full text-primary hover:text-primary/80 text-xs xs:text-sm font-medium inline-flex items-center justify-center gap-1.5 xs:gap-2 transition-colors py-2"
-                    >
-                      <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4" />
-                      Ma'lumotlarni o'zgartirish
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="mt-4 xs:mt-5 sm:mt-6 text-center pb-4 xs:pb-6">
-                <button
-                  onClick={() => navigate('/')}
-                  className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
-                  Bosh sahifaga qaytish
-                </button>
-              </div>
-            </div>
-          </div>
+              <h2 className="text-xl sm:text-2xl font-display font-bold mb-2 sm:mb-3">Email yuborildi!</h2>
+              <p className="text-muted-foreground mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base px-2">
+                Parolni tiklash havolasi <strong className="text-foreground">{email}</strong> emailiga yuborildi. 
+                Spam papkasini ham tekshiring.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => switchMode('login')}
+                className="gap-2 hover:bg-primary hover:text-primary-foreground transition-all h-11 sm:h-10 px-5 touch-target dark:border-border/30 dark:hover:bg-primary"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Kirish sahifasiga qaytish
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col lg:flex-row">
+    <div className="min-h-screen flex">
       {/* Left side - Branding (Hidden on mobile/tablet) */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0 lg:h-screen">
-        {/* Animated gradient background */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+        {/* Animated gradient background - Dark mode enhanced */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent dark:from-primary/90 dark:via-primary/80 dark:to-accent/90" />
         
-        {/* Animated shapes */}
+        {/* Animated shapes - Enhanced */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 right-20 w-72 h-72 bg-white/10 dark:bg-white/15 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-40 left-10 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
@@ -630,171 +344,164 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden">
-        {/* Mobile/Tablet background decorations */}
+      {/* Right side - Form - Mobile & Dark Mode optimized */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-12 bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden min-h-screen lg:min-h-0">
+        {/* Mobile/Tablet background decorations - Enhanced for dark mode */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute -top-32 xs:-top-40 -right-32 xs:-right-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-32 xs:-bottom-40 -left-32 xs:-left-40 w-48 xs:w-64 sm:w-80 h-48 xs:h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute -top-40 -right-40 w-64 sm:w-80 h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-64 sm:w-80 h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+        {/* Subtle grid pattern - Dark mode enhanced */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain -webkit-overflow-scrolling-touch">
-          <div className="min-h-full flex flex-col items-center justify-center p-3 xs:p-4 sm:p-6 lg:p-8 xl:p-12 py-6 xs:py-8 sm:py-10">
-          <div className="w-full max-w-[95%] xs:max-w-md relative z-10">
-            {/* Mobile logo */}
-            <div className="text-center mb-4 xs:mb-6 sm:mb-8 lg:hidden">
-              <Logo size="lg" className="mx-auto mb-1.5 xs:mb-2 sm:mb-3 scale-90 xs:scale-100" />
-              <p className="text-muted-foreground text-[11px] xs:text-xs sm:text-sm">Mental Matematika Platformasi</p>
-            </div>
+        <div className="w-full max-w-md relative z-10 px-1 sm:px-0">
+          {/* Mobile logo - Enhanced */}
+          <div className="text-center mb-6 sm:mb-8 lg:hidden">
+            <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
+            <p className="text-muted-foreground text-xs sm:text-sm">Mental Matematika Platformasi</p>
+          </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
-            {/* Card top decoration */}
+            {/* Card top decoration - Enhanced for dark */}
             <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
             
-            <CardHeader className="text-center pb-2 xs:pb-3 sm:pb-4 pt-4 xs:pt-5 sm:pt-6 px-3 xs:px-4 sm:px-6">
+            <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
               {mode === 'forgot-password' ? (
                 <>
-                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 animate-bounce-slow">
-                    <Mail className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground" />
+                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 animate-bounce-slow">
+                    <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
                   </div>
-                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">Parolni tiklash</CardTitle>
-                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
+                  <CardTitle className="text-xl sm:text-2xl font-display">Parolni tiklash</CardTitle>
+                  <CardDescription className="mt-1.5 sm:mt-2 text-sm">
                     Email manzilingizni kiriting, parolni tiklash havolasini yuboramiz
                   </CardDescription>
                 </>
               ) : (
                 <>
-                  <div className="h-12 w-12 xs:h-14 xs:w-14 sm:h-16 sm:w-16 rounded-lg xs:rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2.5 xs:mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 relative group">
+                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 relative group">
                     {mode === 'login' ? (
-                      <LogIn className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <LogIn className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     ) : (
-                      <UserPlus className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <UserPlus className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
                     )}
-                    <div className="absolute -top-0.5 xs:-top-1 -right-0.5 xs:-right-1 h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
-                      <Zap className="h-2 w-2 xs:h-2.5 xs:w-2.5 sm:h-3 sm:w-3 text-accent-foreground" />
+                    <div className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
+                      <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-accent-foreground" />
                     </div>
                   </div>
-                  <CardTitle className="text-lg xs:text-xl sm:text-2xl font-display">
+                  <CardTitle className="text-xl sm:text-2xl font-display">
                     {mode === 'login' ? 'Xush kelibsiz!' : "Ro'yxatdan o'tish"}
                   </CardTitle>
-                  <CardDescription className="mt-1 xs:mt-1.5 sm:mt-2 text-xs xs:text-sm">
+                  <CardDescription className="mt-1.5 sm:mt-2 text-sm">
                     {mode === 'login' 
                       ? "Hisobingizga kiring va davom eting" 
-                      : "Ma'lumotlarni kiriting va Telegram orqali tasdiqlang"}
+                      : "Bepul akkaunt yarating va boshlang"}
                   </CardDescription>
                 </>
               )}
             </CardHeader>
             
-            <CardContent className="pt-1 sm:pt-2 pb-4 xs:pb-5 sm:pb-6 px-3 xs:px-4 sm:px-6">
-              <form onSubmit={handleSubmit} className="space-y-2.5 xs:space-y-3 sm:space-y-4">
+            <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 {mode === 'signup' && (
-                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
-                    <Label htmlFor="username" className="text-[11px] xs:text-xs sm:text-sm font-medium">Ism</Label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="username" className="text-xs sm:text-sm font-medium">Ism</Label>
                     <div className="relative group">
-                      <User className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="username"
                         type="text"
                         placeholder="Ismingizni kiriting"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        disabled={loading || sendingCode}
-                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        disabled={loading}
+                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.username ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.username && (
-                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
-                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
-                        {errors.username}
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                    {errors.username}
                       </p>
                     )}
                   </div>
                 )}
 
                 {mode === 'signup' && (
-                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
-                    <Label htmlFor="phoneNumber" className="text-[11px] xs:text-xs sm:text-sm font-medium">
-                      Telefon raqami <span className="text-destructive">*</span>
-                    </Label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="phoneNumber" className="text-xs sm:text-sm font-medium">Telefon raqami (ixtiyoriy)</Label>
                     <div className="relative group">
-                      <Phone className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="phoneNumber"
                         type="tel"
                         placeholder="+998 90 123 45 67"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
-                        disabled={loading || sendingCode}
-                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        disabled={loading}
+                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.phoneNumber && (
-                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
-                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                         {errors.phoneNumber}
                       </p>
                     )}
-                    <p className="text-[10px] xs:text-xs text-muted-foreground">
-                      Telegram botga tasdiqlash kodi yuboriladi
-                    </p>
                   </div>
                 )}
                 
-                <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
-                  <Label htmlFor="email" className="text-[11px] xs:text-xs sm:text-sm font-medium">Email</Label>
+                <div className="space-y-1.5 sm:space-y-2">
+                  <Label htmlFor="email" className="text-xs sm:text-sm font-medium">Email</Label>
                   <div className="relative group">
-                    <Mail className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
                       id="email"
                       type="email"
                       placeholder="email@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      disabled={loading || sendingCode}
-                      className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      disabled={loading}
+                      className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
-                      <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
+                    <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                       {errors.email}
                     </p>
                   )}
                 </div>
                 
                 {mode !== 'forgot-password' && (
-                  <div className="space-y-1 xs:space-y-1.5 sm:space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <Label htmlFor="password" className="text-[11px] xs:text-xs sm:text-sm font-medium">Parol</Label>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password" className="text-xs sm:text-sm font-medium">Parol</Label>
                       {mode === 'login' && (
                         <button
                           type="button"
                           onClick={() => switchMode('forgot-password')}
-                          className="text-[10px] xs:text-xs text-primary hover:text-primary/80 font-medium transition-colors hover:underline touch-target whitespace-nowrap"
+                          className="text-xs text-primary hover:text-primary/80 font-medium transition-colors hover:underline touch-target"
                         >
                           Parolni unutdingizmi?
                         </button>
                       )}
                     </div>
                     <div className="relative group">
-                      <Lock className="absolute left-2.5 xs:left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       <Input
                         id="password"
                         type="password"
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        disabled={loading || sendingCode}
-                        className={`pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        disabled={loading}
+                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.password && (
-                      <p className="text-[11px] xs:text-xs sm:text-sm text-destructive flex items-center gap-1 xs:gap-1.5 animate-shake">
-                        <span className="h-1 w-1 xs:h-1.5 xs:w-1.5 rounded-full bg-destructive flex-shrink-0" />
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
                         {errors.password}
                       </p>
                     )}
@@ -807,16 +514,15 @@ const Auth = () => {
 
                 {/* Remember me checkbox for login */}
                 {mode === 'login' && (
-                  <div className="flex items-center space-x-2 pt-0.5 xs:pt-1">
+                  <div className="flex items-center space-x-2 pt-1">
                     <Checkbox
                       id="rememberMe"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked === true)}
-                      className="h-4 w-4 xs:h-5 xs:w-5"
                     />
                     <Label
                       htmlFor="rememberMe"
-                      className="text-[11px] xs:text-xs sm:text-sm font-normal text-muted-foreground cursor-pointer select-none"
+                      className="text-xs sm:text-sm font-normal text-muted-foreground cursor-pointer select-none"
                     >
                       Meni eslab qol
                     </Label>
@@ -826,10 +532,10 @@ const Auth = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="w-full h-10 xs:h-11 sm:h-12 text-xs xs:text-sm sm:text-base font-semibold gap-1.5 xs:gap-2 mt-3 xs:mt-4 sm:mt-6 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5 touch-target"
-                  disabled={loading || sendingCode}
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 mt-4 sm:mt-6 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5 touch-target"
+                  disabled={loading}
                 >
-                  {loading || sendingCode ? (
+                  {loading ? (
                     <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   ) : mode === 'login' ? (
                     <>
@@ -838,8 +544,8 @@ const Auth = () => {
                     </>
                   ) : mode === 'signup' ? (
                     <>
-                      Kod yuborish
-                      <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Ro'yxatdan o'tish
+                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
                     </>
                   ) : (
                     <>
@@ -850,19 +556,20 @@ const Auth = () => {
                 </Button>
               </form>
 
-              <div className="text-center mt-3 xs:mt-4">
+
+              <div className="text-center">
                 {mode === 'forgot-password' ? (
                   <button
                     type="button"
                     onClick={() => switchMode('login')}
-                    className="text-primary hover:text-primary/80 text-[11px] xs:text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 xs:gap-2 transition-colors group touch-target py-1"
+                    className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors group touch-target"
                     disabled={loading}
                   >
-                    <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                     Kirish sahifasiga qaytish
                   </button>
                 ) : (
-                  <p className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {mode === 'login' ? "Akkauntingiz yo'qmi?" : "Akkauntingiz bormi?"}{' '}
                     <button
                       type="button"
@@ -878,30 +585,28 @@ const Auth = () => {
             </CardContent>
           </Card>
 
-          {/* Back to home */}
-          <div className="mt-4 xs:mt-5 sm:mt-6 text-center">
+          {/* Back to home - Mobile optimized */}
+          <div className="mt-5 sm:mt-6 text-center">
             <button
               onClick={() => navigate('/')}
-              className="text-[11px] xs:text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5 xs:gap-2 group touch-target py-2"
+              className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-2 group touch-target"
             >
-              <ArrowLeft className="h-3.5 w-3.5 xs:h-4 xs:w-4 group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
               Bosh sahifaga qaytish
             </button>
           </div>
 
-          {/* Trust indicators for mobile */}
-          <div className="mt-4 xs:mt-6 sm:mt-8 lg:hidden pb-safe">
-            <div className="flex justify-center gap-2 xs:gap-3 sm:gap-6 text-center text-[10px] xs:text-xs text-muted-foreground">
+          {/* Trust indicators for mobile - Enhanced dark mode */}
+          <div className="mt-6 sm:mt-8 lg:hidden">
+            <div className="flex justify-center gap-4 sm:gap-6 text-center text-xs text-muted-foreground">
               {stats.map((stat, index) => (
-                <div key={index} className="px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg bg-card/50 dark:bg-card/30 border border-border/30 dark:border-border/20 min-w-[70px] xs:min-w-[80px]">
-                  <p className="text-sm xs:text-base sm:text-lg font-bold text-foreground">{stat.value}</p>
-                  <p className="truncate">{stat.label}</p>
+                <div key={index} className="px-2 py-1.5 rounded-lg bg-card/50 dark:bg-card/30 border border-border/30 dark:border-border/20">
+                  <p className="text-base sm:text-lg font-bold text-foreground">{stat.value}</p>
+                  <p>{stat.label}</p>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-        </div>
         </div>
       </div>
     </div>
