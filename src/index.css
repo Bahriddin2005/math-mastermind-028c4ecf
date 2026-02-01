@@ -228,6 +228,7 @@
     /* Use min-height for natural document flow */
     min-height: 100vh;
     min-height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: -webkit-fill-available; /* Samsung One UI support */
     /* Safe padding for notched phones */
     padding-bottom: env(safe-area-inset-bottom, 0px);
     /* Better text rendering */
@@ -242,6 +243,14 @@
     /* Allow natural content flow */
     position: relative;
     width: 100%;
+  }
+
+  /* Samsung One UI fullscreen support */
+  @supports (display-mode: fullscreen) {
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
   }
 
   /* Responsive typography with clamp() */
