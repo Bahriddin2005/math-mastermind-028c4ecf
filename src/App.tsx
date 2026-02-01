@@ -49,6 +49,8 @@ import Onboarding from "@/pages/Onboarding";
 import Privacy from "@/pages/Privacy";
 import Terms from "@/pages/Terms";
 import About from "@/pages/About";
+import AbacusSimulator from "@/pages/AbacusSimulator";
+import AbacusPractice from "@/pages/AbacusPractice";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +106,8 @@ const App = () => (
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/abacus-simulator" element={<AbacusSimulator />} />
+                    <Route path="/abacus-practice" element={<ProtectedRoute><AbacusPractice /></ProtectedRoute>} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </PageTransition>
