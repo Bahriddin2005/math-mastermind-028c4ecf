@@ -15,6 +15,7 @@ import { useSound } from "@/hooks/useSound";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useAdaptiveGamification } from "@/hooks/useAdaptiveGamification";
 import { GamificationDisplay } from "@/components/GamificationDisplay";
+import { WeeklyChallengeAdminPanel } from "@/components/WeeklyChallengeAdminPanel";
 import { Trophy, Play, Clock, Target, ArrowLeft, Check, X, Loader2, Award } from "lucide-react";
 import { toast } from "sonner";
 import { format, differenceInDays, differenceInHours } from "date-fns";
@@ -402,6 +403,8 @@ const WeeklyGame = () => {
 
       <main className="flex-1 container px-3 sm:px-4 py-4 sm:py-6">
         <div className="max-w-2xl mx-auto">
+          {/* Admin Panel - only visible to admins */}
+          <WeeklyChallengeAdminPanel />
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="dark:hover:bg-secondary/50">

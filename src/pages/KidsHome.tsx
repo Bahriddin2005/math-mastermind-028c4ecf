@@ -227,7 +227,7 @@ const KidsHome = () => {
         {/* Main Action Button */}
         <div className="container px-3 xs:px-4 py-2 sm:py-3">
           <button
-            onClick={() => navigate('/mental-arithmetic')}
+            onClick={() => navigate('/train')}
             className="w-full h-14 xs:h-16 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group touch-target"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
