@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 
 const navItems = [
   { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
-  { icon: Play, label: "Mashq", path: "/mental-arithmetic", emoji: "🎮" },
+  { icon: Play, label: "Mashq", path: "/train", emoji: "🎮" },
   { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
   { icon: BookOpen, label: "Darslar", path: "/courses", emoji: "📚" },
 ];
