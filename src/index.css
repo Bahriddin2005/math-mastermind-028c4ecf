@@ -230,10 +230,12 @@
     /* Better text rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Prevent overscroll bounce */
-    overscroll-behavior: none;
-    /* Prevent horizontal scroll/swipe */
+    /* Allow vertical scrolling */
+    overflow-y: auto !important;
     overflow-x: hidden;
+    /* Prevent overscroll bounce only on x-axis */
+    overscroll-behavior-x: none;
+    overscroll-behavior-y: auto;
   }
 
   html {

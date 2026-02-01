@@ -16,43 +16,49 @@ export const usePullToRefresh = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const startY = useRef(0);
   const currentY = useRef(0);
+  const isPullActive = useRef(false);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    // Only allow pull to refresh when at the top of the page
-    if (window.scrollY > 0) return;
+    // Only allow pull to refresh when at the very top of the page
+    if (window.scrollY > 5) return;
     
     startY.current = e.touches[0].clientY;
     setIsPulling(true);
+    isPullActive.current = false;
   }, []);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isPulling || isRefreshing) return;
-    if (window.scrollY > 0) {
+    
+    // If user scrolled down, cancel pull to refresh
+    if (window.scrollY > 5) {
       setIsPulling(false);
       setPullDistance(0);
+      isPullActive.current = false;
       return;
     }
 
     currentY.current = e.touches[0].clientY;
     const diff = currentY.current - startY.current;
 
-    if (diff > 0) {
+    // Only activate pull to refresh if pulling down significantly
+    if (diff > 20) {
+      isPullActive.current = true;
       // Resistance effect - pull distance increases slower as you pull more
-      const resistance = 0.5;
+      const resistance = 0.4;
       const distance = Math.min(diff * resistance, maxPull);
       setPullDistance(distance);
-      
-      // Prevent default scrolling when pulling
-      if (distance > 10) {
-        e.preventDefault();
-      }
+    } else {
+      // Allow normal scroll behavior
+      isPullActive.current = false;
+      setPullDistance(0);
     }
   }, [isPulling, isRefreshing, maxPull]);
 
   const handleTouchEnd = useCallback(async () => {
     if (!isPulling) return;
 
-    if (pullDistance >= threshold && !isRefreshing) {
+    if (pullDistance >= threshold && !isRefreshing && isPullActive.current) {
       setIsRefreshing(true);
       setPullDistance(threshold);
       
@@ -65,13 +71,13 @@ export const usePullToRefresh = ({
 
     setIsPulling(false);
     setPullDistance(0);
+    isPullActive.current = false;
   }, [isPulling, pullDistance, threshold, isRefreshing, onRefresh]);
 
   useEffect(() => {
-    const options: AddEventListenerOptions = { passive: false };
-    
+    // Use passive: true for all touch events to not block scrolling
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, options);
+    document.addEventListener('touchmove', handleTouchMove, { passive: true });
     document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
