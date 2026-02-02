@@ -43,12 +43,12 @@ export const RealisticAbacus = ({
   
   const showValue = showValueProp ?? (mode === 'beginner');
   
-  // Dynamic bead size based on column count - LARGER sizes
+  // Dynamic bead size based on column count - EXTRA LARGE sizes
   const getBeadSize = (cols: number): number => {
-    if (cols <= 5) return 52;
-    if (cols <= 9) return 44;
-    if (cols <= 13) return 38;
-    return 32;
+    if (cols <= 5) return 64;
+    if (cols <= 9) return 56;
+    if (cols <= 13) return 48;
+    return 42;
   };
   
   const [internalColumns, setInternalColumns] = useState<ColumnState[]>(() => {
