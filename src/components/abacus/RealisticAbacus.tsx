@@ -165,7 +165,7 @@ export const RealisticAbacus = ({
         className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
-          padding: compact ? 12 : 20,
+          padding: compact ? 16 : 32,
           boxShadow: `
             0 20px 40px -10px rgba(0,0,0,0.5),
             inset 0 1px 0 rgba(255,255,255,0.1),
