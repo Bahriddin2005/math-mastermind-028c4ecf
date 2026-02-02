@@ -23,7 +23,6 @@ import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 import heroSlideKids from '@/assets/hero-slide-kids.jpg';
 import heroSlideParents from '@/assets/hero-slide-parents.jpg';
 import heroSlideTeachers from '@/assets/hero-slide-teachers.jpg';
-import { useCursorTrail } from '@/hooks/useCursorTrail';
 
 interface HeroSlide {
   id: string;
@@ -57,16 +56,6 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
-  const containerDivRef = useRef<HTMLDivElement>(null);
-  
-  // Enable cursor trail effect - only on desktop
-  useCursorTrail(containerDivRef, true);
-  
-  const containerRef = useCallback((node: HTMLDivElement | null) => {
-    if (node) {
-      (containerDivRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    }
-  }, []);
 
   // Memoized slides - only 3 slides for performance
   const slides: HeroSlide[] = useMemo(() => [
@@ -81,17 +70,14 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="text-kid-yellow drop-shadow-lg animate-bounce">🚀</span>{' '}
-          <span className="text-kid-yellow drop-shadow-lg">5–14</span> yosh uchun{' '}
-          <span className="text-kid-yellow drop-shadow-lg animate-bounce" style={{ animationDelay: '0.2s' }}>🎮</span>
+          <span className="text-kid-yellow">🚀 5–14</span> yosh uchun{' '}
+          <span className="text-kid-yellow">🎮</span>
         </>
       ),
       description: (
         <>
-          <span className="text-emerald-300 drop-shadow-[0_0_10px_rgba(52,211,153,0.6)]">🎯 O'yin orqali</span>{' '}
-          <span className="text-yellow-300 drop-shadow-[0_0_10px_rgba(253,224,71,0.6)]">tez hisoblashni</span> o'rganing!{' '}
-          <span className="text-pink-300 drop-shadow-[0_0_10px_rgba(249,168,212,0.6)]">⭐ XP, Level</span> va{' '}
-          <span className="text-orange-300 drop-shadow-[0_0_10px_rgba(253,186,116,0.6)]">Badges to'plang! 🏆</span>
+          🎯 O'yin orqali tez hisoblashni o'rganing!{' '}
+          ⭐ XP, Level va Badges to'plang! 🏆
         </>
       ),
       cta: {
@@ -116,17 +102,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="animate-pulse">👨‍👩‍👧</span>{' '}
-          Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating{' '}
-          <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>📊</span>
+          👨‍👩‍👧 Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating 📊
         </>
       ),
       description: (
         <>
-          <span className="text-cyan-300 drop-shadow-[0_0_10px_rgba(103,232,249,0.6)]">📈 Real vaqtda</span>{' '}
-          <span className="text-blue-300 drop-shadow-[0_0_10px_rgba(147,197,253,0.6)]">statistika,</span>{' '}
-          <span className="text-violet-300 drop-shadow-[0_0_10px_rgba(196,181,253,0.6)]">📋 kunlik hisobot</span> va{' '}
-          <span className="text-rose-300 drop-shadow-[0_0_10px_rgba(253,164,175,0.6)]">💡 shaxsiy tavsiyalar oling!</span>
+          📈 Real vaqtda statistika, 📋 kunlik hisobot va 💡 shaxsiy tavsiyalar oling!
         </>
       ),
       cta: {
@@ -147,16 +128,12 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          <span className="animate-pulse">🎓</span>{' '}
-          <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring{' '}
-          <span className="animate-pulse" style={{ animationDelay: '0.3s' }}>✨</span>
+          🎓 <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring ✨
         </>
       ),
       description: (
         <>
-          <span className="text-amber-300 drop-shadow-[0_0_10px_rgba(252,211,77,0.6)]">📊 Guruh statistikasi,</span>{' '}
-          <span className="text-fuchsia-300 drop-shadow-[0_0_10px_rgba(240,171,252,0.6)]">📄 PDF/Excel eksport</span> va{' '}
-          <span className="text-lime-300 drop-shadow-[0_0_10px_rgba(190,242,100,0.6)]">🏅 sertifikatlar tizimi!</span>
+          📊 Guruh statistikasi, 📄 PDF/Excel eksport va 🏅 sertifikatlar tizimi!
         </>
       ),
       cta: {
@@ -197,9 +174,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
   return (
     <div 
-      ref={containerRef}
-      className="relative overflow-hidden rounded-none sm:rounded-2xl md:rounded-3xl shadow-2xl animate-fade-in -mx-4 sm:mx-0"
-      style={{ perspective: '1200px' }}
+      className="relative overflow-hidden rounded-none sm:rounded-2xl md:rounded-3xl shadow-2xl -mx-4 sm:mx-0"
     >
       <Carousel
         setApi={setApi}
