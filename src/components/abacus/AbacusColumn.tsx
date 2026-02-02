@@ -95,13 +95,23 @@ export const AbacusColumn = ({
         }}
       />
       
-      {/* Label */}
+      {/* Label - tepada, ko'zga tashlanadigan */}
       {showLabel && (
         <div 
-          className="text-center mb-1 z-10"
-          style={{ minHeight: 16 }}
+          className="text-center mb-2 z-20"
+          style={{ minHeight: 20 }}
         >
-          <div className="text-[10px] sm:text-xs font-bold text-slate-400">
+          <div 
+            className="px-1.5 py-0.5 rounded-md font-bold"
+            style={{
+              fontSize: beadSize > 30 ? 11 : 9,
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9))',
+              color: '#fff',
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+              boxShadow: '0 2px 4px rgba(99, 102, 241, 0.3)',
+              minWidth: beadSize * 0.8,
+            }}
+          >
             {getColumnLabel()}
           </div>
         </div>
