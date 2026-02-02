@@ -5,13 +5,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Play, RotateCcw, Check, Settings2, Clock, Star, Trophy, Volume2, Sparkles, Zap, Calculator } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { useAuth } from '@/hooks/useAuth';
 import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { InteractiveAbacus } from './InteractiveAbacus';
 
 interface AbacusFlashCardProps {
   onComplete?: (correct: number, total: number) => void;
@@ -193,6 +195,16 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     const saved = localStorage.getItem('flashCard_voiceEnabled');
     return saved !== null ? saved === 'true' : false;
   });
+  const [useAbacusInput, setUseAbacusInput] = useState(() => {
+    const saved = localStorage.getItem('flashCard_useAbacusInput');
+    return saved !== null ? saved === 'true' : false;
+  });
+  const [abacusValue, setAbacusValue] = useState(0);
+  
+  // localStorage ga saqlash
+  useEffect(() => {
+    localStorage.setItem('flashCard_useAbacusInput', String(useAbacusInput));
+  }, [useAbacusInput]);
   
   // Game state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -211,6 +223,16 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
   // Timer state
   const [timeLeft, setTimeLeft] = useState(0);
   const [answerStartTime, setAnswerStartTime] = useState<number | null>(null);
+  
+  // Abakus ustunlari - xonalar soniga qarab
+  const getAbacusColumns = useCallback(() => {
+    switch (digitLevel) {
+      case '1-digit': return 1;
+      case '2-digit': return 2;
+      case '3-digit': return 3;
+      default: return 1;
+    }
+  }, [digitLevel]);
   
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const displayIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -455,6 +477,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setStreak(0);
     setBestStreak(0);
     setUserAnswer('');
+    setAbacusValue(0); // Abakusni reset qilish
     
     playSound('start');
     
@@ -467,6 +490,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setCurrentProblem(prev => prev + 1);
     setFeedback(null);
     setUserAnswer('');
+    setAbacusValue(0); // Abakusni reset qilish
     setAnswerStartTime(null);
     
     const { numbers, answer } = generateProblemNumbers();
@@ -479,7 +503,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     
     clearAllTimers();
     
-    const userNum = parseInt(userAnswer, 10);
+    // Abakus rejimida abacusValue dan, oddiy rejimda userAnswer dan foydalanish
+    const userNum = useAbacusInput ? abacusValue : parseInt(userAnswer, 10);
     const timeTaken = answerStartTime ? (Date.now() - answerStartTime) / 1000 : answerTimeLimit;
     const isCorrect = userNum === correctAnswer;
     
@@ -588,6 +613,7 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     setCurrentDisplayIndex(-1);
     setIsDisplaying(false);
     setUserAnswer('');
+    setAbacusValue(0); // Abakusni reset qilish
     setFeedback(null);
     setScore({ correct: 0, incorrect: 0, totalPoints: 0 });
     setStreak(0);
@@ -674,42 +700,58 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
             </div>
           )}
 
-          {/* Answer Input - Beautiful Design */}
+          {/* Answer Input - Abakus yoki oddiy input */}
           {!isDisplaying && feedback === null && (
-            <div className="text-center space-y-6 xs:space-y-8 sm:space-y-10 w-full max-w-2xl px-4 xs:px-6 animate-zoom-in">
+            <div className="text-center space-y-4 xs:space-y-6 sm:space-y-8 w-full max-w-3xl px-4 xs:px-6 animate-zoom-in">
               {/* Header */}
               <div className="space-y-2">
                 <div className="flex items-center justify-center gap-2 text-primary">
                   <div className="h-1 w-8 sm:w-12 bg-gradient-to-r from-transparent to-primary/50 rounded-full" />
-                  <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">Javobingizni kiriting</span>
+                  <span className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">
+                    {useAbacusInput ? 'Abakusda javob bering' : 'Javobingizni kiriting'}
+                  </span>
                   <div className="h-1 w-8 sm:w-12 bg-gradient-to-l from-transparent to-primary/50 rounded-full" />
                 </div>
-                <p className="text-sm xs:text-base sm:text-lg text-muted-foreground">Natijani yozing va tekshiring</p>
+                <p className="text-sm xs:text-base sm:text-lg text-muted-foreground">
+                  {useAbacusInput ? 'Boncuklarni harakatlantiring' : 'Natijani yozing va tekshiring'}
+                </p>
               </div>
               
-              {/* Input Container */}
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 rounded-3xl blur-xl" />
-                <div className="relative bg-card/80 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 xs:p-8 sm:p-10 shadow-lg">
-                  <Input
-                    ref={inputRef}
-                    type="number"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="?"
-                    className="text-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold h-24 xs:h-32 sm:h-40 md:h-48 lg:h-56 border-2 border-primary/30 rounded-2xl xs:rounded-3xl bg-background/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300"
-                    autoFocus
+              {/* Abakus yoki Input */}
+              {useAbacusInput ? (
+                <div className="flex flex-col items-center gap-4">
+                  <InteractiveAbacus
+                    columns={getAbacusColumns()}
+                    value={abacusValue}
+                    onChange={setAbacusValue}
+                    showValue={true}
+                    compact={false}
                   />
                 </div>
-              </div>
+              ) : (
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 rounded-3xl blur-xl" />
+                  <div className="relative bg-card/80 backdrop-blur-sm border-2 border-primary/20 rounded-3xl p-6 xs:p-8 sm:p-10 shadow-lg">
+                    <Input
+                      ref={inputRef}
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="?"
+                      className="text-center text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold h-24 xs:h-32 sm:h-40 md:h-48 lg:h-56 border-2 border-primary/30 rounded-2xl xs:rounded-3xl bg-background/50 focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+              )}
               
               {/* Submit Button */}
               <Button 
                 onClick={checkAnswer} 
                 size="lg" 
                 className="gap-3 xs:gap-4 h-16 xs:h-20 sm:h-24 text-lg xs:text-xl sm:text-2xl md:text-3xl px-12 xs:px-16 sm:px-20 w-full max-w-md mx-auto rounded-2xl xs:rounded-3xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl hover:shadow-primary/25 transition-all duration-300 font-semibold"
-                disabled={!userAnswer}
+                disabled={useAbacusInput ? false : !userAnswer}
               >
                 <Check className="h-6 w-6 xs:h-8 xs:w-8 sm:h-10 sm:w-10" />
                 Tekshirish
@@ -895,8 +937,26 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               </div>
             </div>
 
+            {/* Abakus rejimi - Switch */}
+            <div className="flex items-center justify-between bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl p-3 sm:p-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-amber-500/20 border border-amber-500/30">
+                  <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" />
+                </div>
+                <div>
+                  <span className="text-sm sm:text-base font-semibold text-foreground">Abakus simulyator</span>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Javobni abakusda kiriting</p>
+                </div>
+              </div>
+              <Switch
+                checked={useAbacusInput}
+                onCheckedChange={setUseAbacusInput}
+                className="data-[state=checked]:bg-amber-500"
+              />
+            </div>
+
             {/* Start Button - Prominent */}
-            <Button 
+            <Button
               onClick={startGame} 
               size="lg" 
               className="w-full h-12 xs:h-13 sm:h-14 text-base xs:text-lg font-bold gap-2 xs:gap-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
