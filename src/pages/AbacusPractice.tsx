@@ -1,14 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Settings, Play, RotateCcw, Check, Trophy, Clock, Target } from 'lucide-react';
+import { ArrowLeft, Settings, Play, RotateCcw, Check, Trophy, Clock, Target, Minus, Plus, Monitor, Smartphone, Maximize2, Volume2, VolumeX, Settings2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { InteractiveAbacus } from '@/components/InteractiveAbacus';
+import { 
+  RealisticAbacus, 
+  AbacusModeSelector,
+  FullscreenAbacus,
+  type AbacusMode,
+  type AbacusOrientation,
+} from '@/components/abacus';
 import { generateProblem, type GeneratedProblem, type FormulaCategory } from '@/lib/sorobanEngine';
 import { useSound } from '@/hooks/useSound';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,8 +39,15 @@ interface SessionStats {
 
 const AbacusPractice = () => {
   const { user } = useAuth();
-  const { playSound } = useSound();
+  const { playSound, soundEnabled, toggleSound } = useSound();
   const isMobile = useIsMobile();
+  
+  // Abakus sozlamalari
+  const [abacusColumns, setAbacusColumns] = useState(5);
+  const [abacusMode, setAbacusMode] = useState<AbacusMode>('beginner');
+  const [abacusOrientation, setAbacusOrientation] = useState<AbacusOrientation>('horizontal');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showAbacusSettings, setShowAbacusSettings] = useState(false);
   
   // Sozlamalar
   const [settings, setSettings] = useState<PracticeSettings>({
@@ -319,6 +333,15 @@ const AbacusPractice = () => {
         </div>
       </header>
 
+      {/* Fullscreen Abacus Modal */}
+      <FullscreenAbacus
+        isOpen={isFullscreen}
+        onClose={() => setIsFullscreen(false)}
+        initialColumns={abacusColumns}
+        initialValue={abacusValue}
+        initialMode={abacusMode}
+      />
+
       <main className="container mx-auto px-4 py-4 pb-24">
         <AnimatePresence mode="wait">
           {/* Boshlash ekrani */}
@@ -337,6 +360,82 @@ const AbacusPractice = () => {
                   <p className="text-muted-foreground">
                     Misollarni abakusda ishlang va tez hisoblashni o'rganing!
                   </p>
+                </CardContent>
+              </Card>
+              
+              {/* Abakus sozlamalari */}
+              <Card className="border-primary/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Settings2 className="w-4 h-4" />
+                    Abakus Sozlamalari
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Rejim tanlash */}
+                  <AbacusModeSelector mode={abacusMode} onChange={setAbacusMode} />
+                  
+                  {/* Ustunlar soni */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Ustunlar soni:</span>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setAbacusColumns(prev => Math.max(3, prev - 1))}
+                        disabled={abacusColumns <= 3}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <span className="w-10 text-center font-bold text-lg">{abacusColumns}</span>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setAbacusColumns(prev => Math.min(17, prev + 1))}
+                        disabled={abacusColumns >= 17}
+                        className="w-8 h-8 p-0"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Yo'nalish tanlash */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Yo'nalish:</span>
+                    <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                      <Button
+                        variant={abacusOrientation === 'horizontal' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setAbacusOrientation('horizontal')}
+                        className="h-8 px-3 gap-1.5"
+                      >
+                        <Monitor className="w-4 h-4" />
+                        <span className="hidden sm:inline text-xs">Gorizontal</span>
+                      </Button>
+                      <Button
+                        variant={abacusOrientation === 'vertical' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setAbacusOrientation('vertical')}
+                        className="h-8 px-3 gap-1.5"
+                      >
+                        <Smartphone className="w-4 h-4" />
+                        <span className="hidden sm:inline text-xs">Vertikal</span>
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Fullscreen tugmasi */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsFullscreen(true)}
+                    className="w-full gap-1.5 h-9 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30 hover:border-primary/50"
+                  >
+                    <Maximize2 className="w-4 h-4" />
+                    <span>Fullscreen Rejim</span>
+                  </Button>
                 </CardContent>
               </Card>
               
@@ -382,22 +481,46 @@ const AbacusPractice = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className={cn(
+              className="space-y-4"
+            >
+              {/* Abakus settings quick access */}
+              <div className="flex justify-center gap-2 mb-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFullscreen(true)}
+                  className="gap-1.5 h-8 px-3 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  <span className="hidden sm:inline">Fullscreen</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleSound}
+                  className="w-8 h-8 p-0"
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                </Button>
+              </div>
+              
+              <div className={cn(
                 "flex gap-4",
                 isMobile ? "flex-col" : "flex-row"
-              )}
-            >
-              {/* Abakus */}
-              <div className={cn("flex-1 flex justify-center items-start", isMobile && "order-1")}>
-                <InteractiveAbacus
-                  columns={settings.digitCount < 3 ? 3 : settings.digitCount + 1}
-                  value={abacusValue}
-                  onChange={setAbacusValue}
-                  showValue={true}
-                  compact={isMobile}
-                  readOnly={gameState === 'answer'}
-                />
-              </div>
+              )}>
+                {/* Abakus */}
+                <div className={cn("flex-1 flex justify-center items-start", isMobile && "order-1")}>
+                  <RealisticAbacus
+                    columns={abacusColumns}
+                    value={abacusValue}
+                    onChange={setAbacusValue}
+                    mode={abacusMode}
+                    showValue={abacusMode !== 'mental'}
+                    orientation={abacusOrientation}
+                    readOnly={gameState === 'answer'}
+                    compact={isMobile}
+                  />
+                </div>
               
               {/* Amallar paneli */}
               <div className={cn(
@@ -482,6 +605,7 @@ const AbacusPractice = () => {
                     </CardContent>
                   </Card>
                 )}
+              </div>
               </div>
             </motion.div>
           )}
