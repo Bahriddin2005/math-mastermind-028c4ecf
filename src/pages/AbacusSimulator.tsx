@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import {
   RealisticAbacus, 
   AbacusModeSelector, 
   type AbacusMode,
+  type AbacusOrientation,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
@@ -16,6 +17,7 @@ const AbacusSimulator = () => {
   const [columns, setColumns] = useState(13);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
+  const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
   const [showSettings, setShowSettings] = useState(false);
   const { soundEnabled, toggleSound } = useSound();
 
@@ -139,6 +141,31 @@ const AbacusSimulator = () => {
                   </div>
                 </div>
                 
+                {/* Yo'nalish tanlash */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Yo'nalish:</span>
+                  <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                    <Button
+                      variant={orientation === 'horizontal' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setOrientation('horizontal')}
+                      className="h-8 px-3 gap-1.5"
+                    >
+                      <Monitor className="w-4 h-4" />
+                      <span className="hidden sm:inline text-xs">Gorizontal</span>
+                    </Button>
+                    <Button
+                      variant={orientation === 'vertical' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setOrientation('vertical')}
+                      className="h-8 px-3 gap-1.5"
+                    >
+                      <Smartphone className="w-4 h-4" />
+                      <span className="hidden sm:inline text-xs">Vertikal</span>
+                    </Button>
+                  </div>
+                </div>
+                
                 {/* Ustunlar nomlari */}
                 <div className="flex flex-wrap justify-center gap-2">
                   {Array.from({ length: columns }).reverse().map((_, i) => {
@@ -168,7 +195,10 @@ const AbacusSimulator = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex justify-center py-4"
+          className={cn(
+            "flex justify-center py-4",
+            orientation === 'vertical' && "min-h-[400px] items-center"
+          )}
         >
           <RealisticAbacus
             columns={columns}
@@ -176,6 +206,7 @@ const AbacusSimulator = () => {
             onChange={setValue}
             mode={mode}
             showValue={mode !== 'mental'}
+            orientation={orientation}
           />
         </motion.div>
 

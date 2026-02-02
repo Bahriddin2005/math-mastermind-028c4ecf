@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 
 export type AbacusMode = 'beginner' | 'mental' | 'test';
 export type AbacusTheme = 'classic' | 'modern' | 'kids';
+export type AbacusOrientation = 'horizontal' | 'vertical';
 
 interface ColumnState {
   upper: boolean;
@@ -21,6 +22,7 @@ interface RealisticAbacusProps {
   compact?: boolean;
   theme?: AbacusTheme;
   showValue?: boolean;
+  orientation?: AbacusOrientation;
 }
 
 /**
@@ -35,6 +37,7 @@ export const RealisticAbacus = ({
   readOnly = false,
   compact = false,
   showValue: showValueProp,
+  orientation = 'horizontal',
 }: RealisticAbacusProps) => {
   const { playSound } = useSound();
   
@@ -132,8 +135,13 @@ export const RealisticAbacus = ({
     return 4;
   };
   
+  const isVertical = orientation === 'vertical';
+  
   return (
-    <div className="flex flex-col items-center w-full overflow-x-auto">
+    <div className={cn(
+      "flex items-center w-full",
+      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto"
+    )}>
       {/* Abacus frame */}
       <motion.div 
         className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
@@ -145,6 +153,8 @@ export const RealisticAbacus = ({
             inset 0 1px 0 rgba(255,255,255,0.1),
             inset 0 -1px 0 rgba(0,0,0,0.3)
           `,
+          transform: isVertical ? 'rotate(90deg)' : 'none',
+          transformOrigin: 'center center',
         }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
