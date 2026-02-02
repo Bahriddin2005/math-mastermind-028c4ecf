@@ -195,19 +195,44 @@ const AbacusSimulator = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className={cn(
+          className="relative"
+        >
+          {/* Yo'nalish tugmalari */}
+          <div className="flex justify-center gap-2 mb-3">
+            <Button
+              variant={orientation === 'horizontal' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setOrientation('horizontal')}
+              className="gap-1.5 h-9 px-4"
+            >
+              <Monitor className="w-4 h-4" />
+              Gorizontal
+            </Button>
+            <Button
+              variant={orientation === 'vertical' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setOrientation('vertical')}
+              className="gap-1.5 h-9 px-4"
+            >
+              <Smartphone className="w-4 h-4" />
+              Vertikal
+            </Button>
+          </div>
+          
+          {/* Abakus komponenti */}
+          <div className={cn(
             "flex justify-center py-4",
             orientation === 'vertical' && "min-h-[400px] items-center"
-          )}
-        >
-          <RealisticAbacus
-            columns={columns}
-            value={value}
-            onChange={setValue}
-            mode={mode}
-            showValue={mode !== 'mental'}
-            orientation={orientation}
-          />
+          )}>
+            <RealisticAbacus
+              columns={columns}
+              value={value}
+              onChange={setValue}
+              mode={mode}
+              showValue={mode !== 'mental'}
+              orientation={orientation}
+            />
+          </div>
         </motion.div>
 
         {/* Qo'llanma */}
