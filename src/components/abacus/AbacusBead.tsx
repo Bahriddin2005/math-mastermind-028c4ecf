@@ -143,7 +143,7 @@ export const AbacusBead = ({
   };
 
   // Pill-shaped bead dimensions
-  const beadHeight = beadSize * 0.6;
+  const beadHeight = beadSize * 0.85;
   const beadWidth = beadSize * 1.3;
 
   return (
