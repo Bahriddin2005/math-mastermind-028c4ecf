@@ -13,7 +13,7 @@ import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
 
 const AbacusSimulator = () => {
-  const [columns, setColumns] = useState(3);
+  const [columns, setColumns] = useState(13);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
   const [showSettings, setShowSettings] = useState(false);
@@ -23,16 +23,21 @@ const AbacusSimulator = () => {
     setValue(0);
   }, []);
 
+  // Min: 3, Max: 17 ustun
   const adjustColumns = useCallback((delta: number) => {
-    const newColumns = Math.max(1, Math.min(5, columns + delta));
+    const newColumns = Math.max(3, Math.min(17, columns + delta));
     setColumns(newColumns);
     // Qiymatni yangi ustunlar soniga moslashtirish
     const maxValue = Math.pow(10, newColumns) - 1;
     setValue(prev => Math.min(prev, maxValue));
   }, [columns]);
 
-  // Ustun nomlari
-  const columnLabels = ['Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik"];
+  // Kengaytirilgan ustun nomlari (17 tagacha)
+  const columnLabels = [
+    'Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik", "Yuz minglik",
+    'Million', "O'n mln", "Yuz mln", 'Milliard', "O'n mlrd", "Yuz mlrd",
+    'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -116,17 +121,17 @@ const AbacusSimulator = () => {
                       variant="outline" 
                       size="sm"
                       onClick={() => adjustColumns(-1)}
-                      disabled={columns <= 1}
+                      disabled={columns <= 3}
                       className="w-8 h-8 p-0"
                     >
                       <Minus className="w-4 h-4" />
                     </Button>
-                    <span className="w-8 text-center font-bold text-lg">{columns}</span>
+                    <span className="w-10 text-center font-bold text-lg">{columns}</span>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => adjustColumns(1)}
-                      disabled={columns >= 5}
+                      disabled={columns >= 17}
                       className="w-8 h-8 p-0"
                     >
                       <Plus className="w-4 h-4" />

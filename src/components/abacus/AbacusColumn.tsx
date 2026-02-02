@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { AbacusBead, BeadColorType } from './AbacusBead';
 import { cn } from '@/lib/utils';
 
-// Rainbow color sequence for lower beads
-const RAINBOW_COLORS: BeadColorType[] = ['red', 'orange', 'yellow', 'cyan', 'blue', 'purple', 'pink'];
+// Row-based colors for lower beads (matching reference image)
+// Row 1 (top) = red, Row 2 = orange, Row 3 = yellow, Row 4 (bottom) = cyan
+const ROW_COLORS: BeadColorType[] = ['red', 'orange', 'yellow', 'cyan'];
 
 interface AbacusColumnProps {
   columnIndex: number;
@@ -20,7 +21,7 @@ interface AbacusColumnProps {
 }
 
 /**
- * Abakus ustuni - colorful style matching reference
+ * Abakus ustuni - row-based colorful style matching reference
  */
 export const AbacusColumn = ({
   columnIndex,
@@ -36,15 +37,13 @@ export const AbacusColumn = ({
 }: AbacusColumnProps) => {
   
   const getColumnLabel = () => {
-    const labels = ['1', '10', '100', '1K', '10K', '100K'];
+    const labels = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T', '10T', '100T', '1000T', '10000T'];
     return labels[columnIndex] || `10^${columnIndex}`;
   };
   
-  // Get rainbow color based on column position
-  const getLowerBeadColor = (): BeadColorType => {
-    // Reverse index so rightmost column starts with first color
-    const colorIndex = (totalColumns - 1 - columnIndex) % RAINBOW_COLORS.length;
-    return RAINBOW_COLORS[colorIndex];
+  // Get color based on ROW index (not column) - matches reference image
+  const getLowerBeadColorByRow = (rowIndex: number): BeadColorType => {
+    return ROW_COLORS[rowIndex] || 'cyan';
   };
   
   const handleUpperActivate = useCallback(() => {
@@ -79,7 +78,6 @@ export const AbacusColumn = ({
   
   const columnValue = (upperActive ? 5 : 0) + lowerCount;
   const beadHeight = beadSize * 0.6;
-  const lowerBeadColor = getLowerBeadColor();
   
   return (
     <div className="flex flex-col items-center relative">
@@ -143,11 +141,13 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Lower beads (4 beads, each value 1) - Rainbow colors */}
+      {/* Lower beads (4 beads, each value 1) - Row-based colors */}
       <div className="relative z-10 flex flex-col items-center" style={{ gap: 2 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = beadIndex < lowerCount;
+          // Row index: 0=top (red), 1=orange, 2=yellow, 3=bottom (cyan)
+          const rowIndex = 3 - visualIndex;
           
           return (
             <AbacusBead
@@ -157,7 +157,7 @@ export const AbacusColumn = ({
               onActivate={() => handleLowerActivate(beadIndex)}
               onDeactivate={() => handleLowerDeactivate(beadIndex)}
               beadSize={beadSize}
-              color={lowerBeadColor}
+              color={getLowerBeadColorByRow(rowIndex)}
               disabled={disabled}
             />
           );
