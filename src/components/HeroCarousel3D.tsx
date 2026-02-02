@@ -261,9 +261,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
         plugins={[autoplayPlugin]}
         className="w-full touch-pan-y select-none"
       >
-        <CarouselContent className="will-change-transform" style={{ touchAction: 'pan-y pinch-zoom' }}>
+        <CarouselContent className="will-change-transform ml-0" style={{ touchAction: 'pan-y pinch-zoom' }}>
           {slides.map((slide, index) => (
-            <CarouselItem key={slide.id} className="touch-manipulation cursor-grab active:cursor-grabbing">
+            <CarouselItem key={slide.id} className="touch-manipulation cursor-grab active:cursor-grabbing pl-0">
               {/* Mobile-optimized height with 3D depth and hover effects */}
               <div 
                 className={`relative h-[380px] xs:h-[420px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden transition-all duration-300 ease-out group ${
