@@ -4,6 +4,7 @@ export { AbacusColumn } from './AbacusColumn';
 export { RealisticAbacus } from './RealisticAbacus';
 export { AbacusModeSelector } from './AbacusModeSelector';
 export { AbacusThemeSelector } from './AbacusThemeSelector';
+export { FullscreenAbacus } from './FullscreenAbacus';
 
 // Types
 export type { AbacusMode, AbacusTheme, AbacusOrientation } from './RealisticAbacus';
