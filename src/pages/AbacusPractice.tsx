@@ -109,7 +109,9 @@ const AbacusPractice = () => {
     });
     setCurrentProblem(problem);
     setCurrentStep(0);
-    setAbacusValue(0);
+    // Abakusni startValue ga o'rnatish - bu muhim!
+    // Misol boshida foydalanuvchi startValue ni abakusda ko'rsatishi kerak
+    setAbacusValue(problem.startValue);
     setProblemStartTime(Date.now());
     setElapsedTime(0);
     setGameState('playing');
@@ -130,7 +132,12 @@ const AbacusPractice = () => {
   useEffect(() => {
     if (gameState !== 'playing' || !currentProblem) return;
     
-    const expectedValue = currentProblem.sequence
+    // startValue dan boshlab yig'ish - bu muhim!
+    // Misol: startValue=5, sequence=[+2, -2, +7]
+    // Step 0: 5 + 2 = 7
+    // Step 1: 5 + 2 + (-2) = 5  
+    // Step 2: 5 + 2 + (-2) + 7 = 12
+    const expectedValue = currentProblem.startValue + currentProblem.sequence
       .slice(0, currentStep + 1)
       .reduce((sum, val) => sum + val, 0);
     
@@ -208,9 +215,12 @@ const AbacusPractice = () => {
 
   // Joriy amal
   const currentOperation = currentProblem?.sequence[currentStep];
-  const expectedValue = currentProblem?.sequence
-    .slice(0, currentStep + 1)
-    .reduce((sum, val) => sum + val, 0);
+  // startValue dan boshlab hisoblash - bu muhim!
+  const expectedValue = currentProblem 
+    ? currentProblem.startValue + currentProblem.sequence
+        .slice(0, currentStep + 1)
+        .reduce((sum, val) => sum + val, 0)
+    : 0;
 
   // Vaqtni formatlash
   const formatTime = (ms: number) => {
@@ -538,6 +548,16 @@ const AbacusPractice = () => {
                 
                 {gameState === 'playing' && (
                   <>
+                    {/* Boshlang'ich qiymat */}
+                    <Card className="border-accent/50 bg-accent/5">
+                      <CardContent className="py-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Boshlang'ich:</span>
+                          <span className="text-xl font-bold text-accent">{currentProblem.startValue}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
                     {/* Joriy amal */}
                     <Card className="border-primary bg-primary/10">
                       <CardContent className="pt-4 text-center">
@@ -545,10 +565,7 @@ const AbacusPractice = () => {
                           Qadam {currentStep + 1}/{currentProblem.sequence.length}
                         </div>
                         <div className="text-4xl font-bold text-primary">
-                          {currentStep === 0 
-                            ? currentOperation 
-                            : (currentOperation && currentOperation >= 0 ? '+' : '') + currentOperation
-                          }
+                          {currentOperation && currentOperation >= 0 ? '+' : ''}{currentOperation}
                         </div>
                         <div className="text-sm text-muted-foreground mt-2">
                           Kutilayotgan: {expectedValue}
