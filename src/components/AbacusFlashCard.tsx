@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useConfetti } from '@/hooks/useConfetti';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { InteractiveAbacus } from './InteractiveAbacus';
+import { RealisticAbacus } from './abacus';
 
 interface AbacusFlashCardProps {
   onComplete?: (correct: number, total: number) => void;
@@ -720,12 +720,12 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
               {/* Abakus yoki Input */}
               {useAbacusInput ? (
                 <div className="flex flex-col items-center gap-4">
-                  <InteractiveAbacus
+                  <RealisticAbacus
                     columns={getAbacusColumns()}
                     value={abacusValue}
                     onChange={setAbacusValue}
-                    showValue={true}
-                    compact={false}
+                    mode="beginner"
+                    theme="classic"
                   />
                 </div>
               ) : (
