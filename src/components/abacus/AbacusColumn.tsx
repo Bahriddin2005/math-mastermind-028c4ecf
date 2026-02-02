@@ -80,7 +80,7 @@ export const AbacusColumn = ({
   const beadHeight = beadSize * 0.6;
   
   return (
-    <div className="flex flex-col items-center relative">
+    <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.4, padding: '0 4px' }}>
       {/* Vertical rod */}
       <div 
         className="absolute z-0"
