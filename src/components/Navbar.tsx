@@ -333,9 +333,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           </Button>
         </div>
 
-        {/* Compact User Card */}
+        {/* Compact User Card with Logout */}
         {user && profile && (
-          <div className="p-3 border-b border-border/40">
+          <div className="p-3 border-b border-border/40 space-y-2">
             <button
               onClick={() => handleNavigation('/settings')}
               className="w-full flex items-center gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 active:scale-[0.98] transition-all"
@@ -357,6 +357,16 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground -rotate-90 flex-shrink-0" />
             </button>
+            
+            {/* Logout button - moved to top */}
+            <Button 
+              variant="outline" 
+              onClick={handleSignOut}
+              className="w-full h-9 rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 active:scale-[0.98] text-sm"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Chiqish
+            </Button>
           </div>
         )}
 
@@ -434,18 +444,9 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
           </div>
         </div>
 
-        {/* Bottom Action - Compact */}
-        <div className="p-3 border-t border-border/40 safe-bottom">
-          {user ? (
-            <Button 
-              variant="outline" 
-              onClick={handleSignOut}
-              className="w-full h-10 rounded-xl border-destructive/30 text-destructive hover:bg-destructive/10 active:scale-[0.98]"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Chiqish
-            </Button>
-          ) : (
+        {/* Bottom Action - Only for guests */}
+        {!user && (
+          <div className="p-3 border-t border-border/40 safe-bottom">
             <Button 
               onClick={() => handleNavigation('/auth')}
               className="w-full h-10 rounded-xl bg-primary hover:bg-primary/90 active:scale-[0.98]"
@@ -453,8 +454,8 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
               <Sparkles className="h-4 w-4 mr-2" />
               Ro'yxatdan o'tish
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </>
   );
