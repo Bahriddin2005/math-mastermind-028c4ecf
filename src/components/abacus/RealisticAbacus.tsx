@@ -25,10 +25,10 @@ interface RealisticAbacusProps {
 
 /**
  * Professional Soroban Abacus Simulator
- * Colorful design matching reference image
+ * 13-column colorful design matching reference image
  */
 export const RealisticAbacus = ({
-  columns = 3,
+  columns = 13,
   value: controlledValue,
   onChange,
   mode = 'beginner',
@@ -39,6 +39,14 @@ export const RealisticAbacus = ({
   const { playSound } = useSound();
   
   const showValue = showValueProp ?? (mode === 'beginner');
+  
+  // Dynamic bead size based on column count
+  const getBeadSize = (cols: number): number => {
+    if (cols <= 5) return 40;
+    if (cols <= 9) return 32;
+    if (cols <= 13) return 28;
+    return 24;
+  };
   
   const [internalColumns, setInternalColumns] = useState<ColumnState[]>(() => {
     return calculateColumnsFromValue(controlledValue ?? 0, columns);
@@ -113,17 +121,25 @@ export const RealisticAbacus = ({
     playSound(isUpper ? 'beadHigh' : 'bead');
   }, [playSound]);
   
-  // Responsive bead size
-  const beadSize = compact ? 32 : 40;
+  // Dynamic bead size based on columns
+  const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
+  
+  // Dynamic gap based on columns
+  const getGap = (cols: number): number => {
+    if (cols <= 5) return 12;
+    if (cols <= 9) return 8;
+    if (cols <= 13) return 6;
+    return 4;
+  };
   
   return (
-    <div className="flex flex-col items-center w-full">
+    <div className="flex flex-col items-center w-full overflow-x-auto">
       {/* Abacus frame */}
       <motion.div 
         className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
         style={{
           background: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
-          padding: compact ? 12 : 16,
+          padding: compact ? 8 : 12,
           boxShadow: `
             0 20px 40px -10px rgba(0,0,0,0.5),
             inset 0 1px 0 rgba(255,255,255,0.1),
@@ -146,8 +162,8 @@ export const RealisticAbacus = ({
         <div 
           className="relative flex justify-center items-stretch"
           style={{ 
-            gap: compact ? 8 : 12,
-            padding: '8px 4px',
+            gap: getGap(columns),
+            padding: '6px 2px',
           }}
         >
           {/* Columns in reverse order (largest place value on left) */}
