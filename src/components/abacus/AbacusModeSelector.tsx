@@ -7,6 +7,7 @@ interface AbacusModeSelectorProps {
   mode: AbacusMode;
   onChange: (mode: AbacusMode) => void;
   disabled?: boolean;
+  compact?: boolean;
 }
 
 const modes = [
@@ -37,9 +38,13 @@ export const AbacusModeSelector = ({
   mode,
   onChange,
   disabled = false,
+  compact = false,
 }: AbacusModeSelectorProps) => {
   return (
-    <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+    <div className={cn(
+      "flex flex-wrap justify-center gap-2",
+      !compact && "sm:gap-3"
+    )}>
       {modes.map((m) => {
         const isActive = mode === m.id;
         const Icon = m.icon;
@@ -50,9 +55,10 @@ export const AbacusModeSelector = ({
             onClick={() => !disabled && onChange(m.id)}
             disabled={disabled}
             className={cn(
-              "relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl",
+              "relative flex items-center gap-2 rounded-xl",
               "transition-all duration-200",
               "border-2",
+              compact ? "px-2 py-1.5" : "px-3 sm:px-4 py-2",
               isActive 
                 ? "border-primary bg-primary/10 shadow-lg" 
                 : "border-border/50 bg-card/50 hover:bg-card hover:border-border",
@@ -75,20 +81,23 @@ export const AbacusModeSelector = ({
             )}
             
             <Icon className={cn(
-              "w-4 h-4 sm:w-5 sm:h-5",
-              isActive ? "text-primary" : "text-muted-foreground"
+              isActive ? "text-primary" : "text-muted-foreground",
+              compact ? "w-4 h-4" : "w-4 h-4 sm:w-5 sm:h-5"
             )} />
             
             <div className="text-left">
               <div className={cn(
-                "text-sm font-medium",
+                "font-medium",
+                compact ? "text-xs" : "text-sm",
                 isActive ? "text-primary" : "text-foreground"
               )}>
                 {m.name}
               </div>
-              <div className="text-[10px] sm:text-xs text-muted-foreground hidden sm:block">
-                {m.description}
-              </div>
+              {!compact && (
+                <div className="text-[10px] sm:text-xs text-muted-foreground hidden sm:block">
+                  {m.description}
+                </div>
+              )}
             </div>
             
             {isActive && (

@@ -1,12 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   RealisticAbacus, 
-  AbacusModeSelector, 
+  AbacusModeSelector,
+  FullscreenAbacus,
   type AbacusMode,
   type AbacusOrientation,
 } from '@/components/abacus';
@@ -19,6 +20,7 @@ const AbacusSimulator = () => {
   const [mode, setMode] = useState<AbacusMode>('beginner');
   const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
   const [showSettings, setShowSettings] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const { soundEnabled, toggleSound } = useSound();
 
   const handleReset = useCallback(() => {
@@ -42,7 +44,17 @@ const AbacusSimulator = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
+    <>
+      {/* Fullscreen Abacus Modal */}
+      <FullscreenAbacus
+        isOpen={isFullscreen}
+        onClose={() => setIsFullscreen(false)}
+        initialColumns={columns}
+        initialValue={value}
+        initialMode={mode}
+      />
+
+      <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -217,6 +229,15 @@ const AbacusSimulator = () => {
               <Smartphone className="w-4 h-4" />
               Vertikal
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFullscreen(true)}
+              className="gap-1.5 h-9 px-4 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/30 hover:border-primary/50"
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Fullscreen</span>
+            </Button>
           </div>
           
           {/* Abakus komponenti */}
@@ -287,6 +308,7 @@ const AbacusSimulator = () => {
         </Card>
       </main>
     </div>
+    </>
   );
 };
 
