@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AbacusColumn } from './AbacusColumn';
 import { useSound } from '@/hooks/useSound';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 export type AbacusMode = 'beginner' | 'mental' | 'test';
@@ -28,6 +29,7 @@ interface RealisticAbacusProps {
 /**
  * Professional Soroban Abacus Simulator
  * 13-column colorful design matching reference image
+ * Responsive: Large on desktop, compact on mobile
  */
 export const RealisticAbacus = ({
   columns = 13,
@@ -40,11 +42,20 @@ export const RealisticAbacus = ({
   orientation = 'horizontal',
 }: RealisticAbacusProps) => {
   const { playSound } = useSound();
+  const isMobile = useIsMobile();
   
   const showValue = showValueProp ?? (mode === 'beginner');
   
-  // Dynamic bead size based on column count - EXTRA LARGE sizes
+  // Responsive bead size: Large on desktop, compact on mobile
   const getBeadSize = (cols: number): number => {
+    if (isMobile) {
+      // Mobile: compact sizes
+      if (cols <= 5) return 32;
+      if (cols <= 9) return 26;
+      if (cols <= 13) return 22;
+      return 18;
+    }
+    // Desktop: large sizes
     if (cols <= 5) return 64;
     if (cols <= 9) return 56;
     if (cols <= 13) return 48;
