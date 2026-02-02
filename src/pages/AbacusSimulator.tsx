@@ -257,8 +257,8 @@ const AbacusSimulator = () => {
               <div className="space-y-1.5">
                 <p className="font-medium text-foreground">Qiymatlar:</p>
                 <ul className="space-y-1">
-                  <li>• <span className="text-red-500 font-bold">Qizil tosh</span> = 5 qiymat</li>
-                  <li>• <span className="text-emerald-500 font-bold">Yashil tosh</span> = 1 qiymat</li>
+                  <li>• <span className="text-emerald-500 font-bold">Yashil tosh</span> (yuqori) = 5 qiymat</li>
+                  <li>• <span className="text-orange-500 font-bold">Rangli toshlar</span> (pastki) = 1 qiymat</li>
                   <li>• Faqat chiziqqa tegib turgan tosh aktiv</li>
                 </ul>
               </div>
