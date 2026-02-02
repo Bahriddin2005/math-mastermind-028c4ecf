@@ -345,13 +345,13 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col items-start justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-left transition-all duration-300 ${
+                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-300 ${
                     current === index ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
                   {/* Badge Row - Beautiful glassmorphism design with staggered animation */}
                   <div 
-                    className={`flex flex-wrap items-center justify-start gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 transition-all duration-200 ${
+                    className={`flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 transition-all duration-200 ${
                       current === index ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
                     }`}
                     style={{ transitionDelay: current === index ? '50ms' : '0ms' }}
