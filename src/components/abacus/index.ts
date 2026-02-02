@@ -6,4 +6,4 @@ export { AbacusModeSelector } from './AbacusModeSelector';
 export { AbacusThemeSelector } from './AbacusThemeSelector';
 
 // Types
-export type { AbacusMode, AbacusTheme } from './RealisticAbacus';
+export type { AbacusMode, AbacusTheme, AbacusOrientation } from './RealisticAbacus';
