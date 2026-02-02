@@ -92,7 +92,7 @@ export const AbacusBead = ({
   const beadRef = useRef<HTMLDivElement>(null);
   
   const SNAP_THRESHOLD = beadSize * 0.3;
-  const ACTIVE_OFFSET = beadSize * 1.0;
+  const ACTIVE_OFFSET = beadSize * 0.30;
   
   const colors = colorPalette[color];
   
