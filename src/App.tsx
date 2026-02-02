@@ -35,7 +35,7 @@ const LessonDetail = lazy(() => import("@/pages/LessonDetail"));
 const WeeklyGame = lazy(() => import("@/pages/WeeklyGame"));
 const Badges = lazy(() => import("@/pages/Badges"));
 const Install = lazy(() => import("@/pages/Install"));
-const MentalArithmetic = lazy(() => import("@/pages/MentalArithmetic"));
+// MentalArithmetic removed
 const Achievements = lazy(() => import("@/pages/Achievements"));
 const ChallengeStats = lazy(() => import("@/pages/ChallengeStats"));
 const Statistics = lazy(() => import("@/pages/Statistics"));
@@ -122,7 +122,7 @@ const App = () => (
                       <Route path="/weekly-game" element={<ProtectedRoute><WeeklyGame /></ProtectedRoute>} />
                       <Route path="/badges" element={<Badges />} />
                       <Route path="/install" element={<Install />} />
-                      <Route path="/mental-arithmetic" element={<ProtectedRoute><MentalArithmetic /></ProtectedRoute>} />
+                      
                       <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
                       <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
                       <Route path="/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
