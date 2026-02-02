@@ -209,26 +209,8 @@ const AbacusSimulator = () => {
           transition={{ delay: 0.1 }}
           className="relative"
         >
-          {/* Yo'nalish tugmalari */}
+          {/* Fullscreen tugmasi */}
           <div className="flex justify-center gap-2 mb-3">
-            <Button
-              variant={orientation === 'horizontal' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setOrientation('horizontal')}
-              className="gap-1.5 h-9 px-4"
-            >
-              <Monitor className="w-4 h-4" />
-              Gorizontal
-            </Button>
-            <Button
-              variant={orientation === 'vertical' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setOrientation('vertical')}
-              className="gap-1.5 h-9 px-4"
-            >
-              <Smartphone className="w-4 h-4" />
-              Vertikal
-            </Button>
             <Button
               variant="outline"
               size="sm"
