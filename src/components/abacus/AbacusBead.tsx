@@ -144,7 +144,7 @@ export const AbacusBead = ({
 
   // Pill-shaped bead dimensions
   const beadHeight = beadSize * 0.6;
-  const beadWidth = beadSize;
+  const beadWidth = beadSize * 1.3;
 
   return (
     <motion.div
