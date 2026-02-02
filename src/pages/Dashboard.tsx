@@ -707,6 +707,47 @@ const Dashboard = () => {
               </div>
             </Card>
 
+            {/* Abakus Simulyatori Card */}
+            <Card 
+              className="overflow-hidden border-border/40 dark:border-border/20 cursor-pointer hover:shadow-xl dark:hover:shadow-2xl dark:hover:shadow-violet-500/20 transition-all group opacity-0 animate-slide-up"
+              style={{ animationDelay: '550ms', animationFillMode: 'forwards' }}
+              onClick={() => navigate('/abacus-simulator')}
+            >
+              <div className="p-4 sm:p-5 md:p-6 bg-gradient-to-br from-violet-500 to-purple-600 dark:from-violet-600/90 dark:to-purple-700/90 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-white/10 dark:bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-20 sm:w-24 h-20 sm:h-24 bg-white/5 dark:bg-white/3 rounded-full translate-y-1/2 -translate-x-1/2" />
+                
+                <div className="relative z-10 flex items-center gap-3 sm:gap-4">
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-white/20 dark:bg-white/15 backdrop-blur-sm flex items-center justify-center group-hover:scale-110 transition-transform shrink-0 shadow-lg dark:shadow-xl text-2xl sm:text-3xl md:text-4xl">
+                    🧮
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-display font-bold mb-0.5 sm:mb-1 truncate drop-shadow-sm">Abakus Simulyatori</h2>
+                    <p className="text-xs sm:text-sm opacity-90 dark:opacity-80">Professional Soroban bilan mashq qiling</p>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 dark:bg-white/15 rounded-lg sm:rounded-xl backdrop-blur-sm shrink-0 shadow-md">
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="font-medium text-sm sm:text-base">Ochish</span>
+                  </div>
+                </div>
+                
+                <div className="relative z-10 mt-3 sm:mt-4 grid grid-cols-3 gap-2 sm:gap-3 text-center">
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
+                    <p className="text-base sm:text-lg font-bold">17</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Ustunlar</p>
+                  </div>
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
+                    <p className="text-base sm:text-lg font-bold">3</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Rejimlar</p>
+                  </div>
+                  <div className="p-1.5 sm:p-2 rounded-lg bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
+                    <p className="text-base sm:text-lg font-bold">📱</p>
+                    <p className="text-[9px] sm:text-[10px] opacity-80 dark:opacity-70">Fullscreen</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Info Carousel & Testimonial Form */}
             <div className="space-y-4">
               <InfoCarousel />
