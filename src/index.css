@@ -222,6 +222,28 @@
     overflow-x: hidden;
   }
 
+  /* Reduced motion preference - CRITICAL for Android performance */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Android-specific optimizations */
+  @supports (-webkit-touch-callout: none) or (not (-webkit-overflow-scrolling: touch)) {
+    * {
+      /* Force GPU acceleration on Android */
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      /* Reduce paint complexity */
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+  }
+
   body {
     @apply bg-background text-foreground font-body antialiased;
     background: var(--gradient-hero);
@@ -243,6 +265,9 @@
     /* Allow natural content flow */
     position: relative;
     width: 100%;
+    /* Force GPU layer for smoother scrolling */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 
   /* Samsung One UI fullscreen support */
@@ -259,6 +284,8 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
+    /* Optimize text rendering */
+    text-rendering: optimizeSpeed;
   }
 
   /* Mobile-first responsive font sizes using clamp() */
@@ -281,6 +308,7 @@
     font-size: clamp(0.875rem, 2vw, 1.125rem);
     line-height: 1.6;
     overflow-wrap: break-word;
+    text-rendering: optimizeSpeed;
   }
 
   /* Better touch targets for interactive elements */
@@ -299,11 +327,19 @@
     }
   }
 
-  /* Responsive images by default */
+  /* Responsive images by default with lazy loading optimization */
   img {
     max-width: 100%;
     height: auto;
     display: block;
+    /* Content visibility for performance */
+    content-visibility: auto;
+  }
+
+  /* Optimize off-screen content */
+  .offscreen {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
   }
 }
 

@@ -10,6 +10,34 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  // Optimize build for low-bandwidth connections
+  build: {
+    // Split chunks for better caching
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core vendor chunk
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          // UI library chunk
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs'],
+          // Query and state management
+          'vendor-query': ['@tanstack/react-query'],
+          // Animation library (can be deferred)
+          'vendor-motion': ['framer-motion'],
+        },
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 500,
+    // Better compression
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: true,
+      },
+    },
+  },
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
@@ -58,8 +86,26 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,woff,woff2,webp}"],
+        // Aggressive precaching for offline support
+        skipWaiting: true,
+        clientsClaim: true,
         // Cache strategies for offline support
         runtimeCaching: [
+          // Stale-while-revalidate for HTML pages (fast load, update in background)
+          {
+            urlPattern: /^https:\/\/.*\.lovable\.app\/.*$/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "pages-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 1 day
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
@@ -88,28 +134,42 @@ export default defineConfig(({ mode }) => ({
               },
             },
           },
-          // Cache API calls with network-first strategy
+          // Stale-while-revalidate for API calls (faster perceived performance)
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
-            handler: "NetworkFirst",
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "api-cache",
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5, // 5 minutes
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 10, // 10 minutes
               },
-              networkTimeoutSeconds: 10,
               cacheableResponse: {
                 statuses: [0, 200],
               },
             },
           },
-          // Cache images
+          // Cache images aggressively
           {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
             handler: "CacheFirst",
             options: {
               cacheName: "images-cache",
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 60, // 60 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Cache JS and CSS files
+          {
+            urlPattern: /\.(?:js|css)$/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "static-resources",
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
