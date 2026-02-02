@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
+import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
+
+// Rainbow colors for lower beads
+export type BeadColorType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'blue' | 'purple' | 'pink';
 
 interface AbacusBeadProps {
   isUpper: boolean;
@@ -8,20 +11,71 @@ interface AbacusBeadProps {
   onActivate: () => void;
   onDeactivate: () => void;
   beadSize: number;
-  color?: 'red' | 'green' | 'blue' | 'brown';
+  color?: BeadColorType;
   disabled?: boolean;
   onMoveStart?: () => void;
   onMoveEnd?: () => void;
 }
 
+// Color palette matching the reference image
+const colorPalette: Record<BeadColorType, { 
+  bg: string; 
+  border: string;
+  shadow: string;
+  highlight: string;
+}> = {
+  green: {
+    bg: '#6CBE45',
+    border: '#5AAD35',
+    shadow: 'rgba(90, 173, 53, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  red: {
+    bg: '#EF5350',
+    border: '#E53935',
+    shadow: 'rgba(229, 57, 53, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  orange: {
+    bg: '#FFA726',
+    border: '#FB8C00',
+    shadow: 'rgba(251, 140, 0, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  yellow: {
+    bg: '#FFEE58',
+    border: '#FDD835',
+    shadow: 'rgba(253, 216, 53, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.5)',
+  },
+  cyan: {
+    bg: '#26C6DA',
+    border: '#00ACC1',
+    shadow: 'rgba(0, 172, 193, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  blue: {
+    bg: '#42A5F5',
+    border: '#1E88E5',
+    shadow: 'rgba(30, 136, 229, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  purple: {
+    bg: '#AB47BC',
+    border: '#8E24AA',
+    shadow: 'rgba(142, 36, 170, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+  pink: {
+    bg: '#EC407A',
+    border: '#D81B60',
+    shadow: 'rgba(216, 27, 96, 0.5)',
+    highlight: 'rgba(255, 255, 255, 0.4)',
+  },
+};
+
 /**
- * Individual Abacus Bead with Drag Support
- * 
- * Soroban qoidalariga mos:
- * - Yuqori tosh: faqat pastga tushsa aktiv
- * - Pastki tosh: faqat yuqoriga ko'tarilsa aktiv
- * - Smooth snap animation
- * - Touch va mouse support
+ * Individual Abacus Bead - Soroban style matching reference image
  */
 export const AbacusBead = ({
   isUpper,
@@ -29,7 +83,7 @@ export const AbacusBead = ({
   onActivate,
   onDeactivate,
   beadSize,
-  color = isUpper ? 'red' : 'green',
+  color = 'green',
   disabled = false,
   onMoveStart,
   onMoveEnd,
@@ -37,51 +91,17 @@ export const AbacusBead = ({
   const [isDragging, setIsDragging] = useState(false);
   const beadRef = useRef<HTMLDivElement>(null);
   
-  // Drag uchun motion values
-  const y = useMotionValue(0);
+  const SNAP_THRESHOLD = beadSize * 0.3;
+  const ACTIVE_OFFSET = beadSize * 0.7;
   
-  // Snap thresholds
-  const SNAP_THRESHOLD = beadSize * 0.4;
-  const ACTIVE_OFFSET = beadSize * 0.8;
+  const colors = colorPalette[color];
   
-  // Rang palitralari
-  const colorMap = {
-    red: {
-      gradient: 'from-red-400 via-red-500 to-red-700',
-      shadow: 'shadow-red-900/50',
-      highlight: 'from-red-300/60',
-      glow: 'rgba(239, 68, 68, 0.4)',
-    },
-    green: {
-      gradient: 'from-emerald-400 via-emerald-500 to-emerald-700',
-      shadow: 'shadow-emerald-900/50',
-      highlight: 'from-emerald-300/60',
-      glow: 'rgba(16, 185, 129, 0.4)',
-    },
-    blue: {
-      gradient: 'from-blue-400 via-blue-500 to-blue-700',
-      shadow: 'shadow-blue-900/50',
-      highlight: 'from-blue-300/60',
-      glow: 'rgba(59, 130, 246, 0.4)',
-    },
-    brown: {
-      gradient: 'from-amber-600 via-amber-700 to-amber-900',
-      shadow: 'shadow-amber-900/50',
-      highlight: 'from-amber-400/60',
-      glow: 'rgba(217, 119, 6, 0.4)',
-    },
-  };
-  
-  const colors = colorMap[color];
-  
-  // Drag boshlanishi
   const handleDragStart = () => {
     if (disabled) return;
     setIsDragging(true);
     onMoveStart?.();
   };
   
-  // Drag tugashi
   const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (disabled) return;
     setIsDragging(false);
@@ -89,14 +109,12 @@ export const AbacusBead = ({
     const offset = info.offset.y;
     
     if (isUpper) {
-      // Yuqori tosh: pastga tushsa aktiv
       if (!isActive && offset > SNAP_THRESHOLD) {
         onActivate();
       } else if (isActive && offset < -SNAP_THRESHOLD) {
         onDeactivate();
       }
     } else {
-      // Pastki tosh: yuqoriga ko'tarilsa aktiv
       if (!isActive && offset < -SNAP_THRESHOLD) {
         onActivate();
       } else if (isActive && offset > SNAP_THRESHOLD) {
@@ -104,12 +122,9 @@ export const AbacusBead = ({
       }
     }
     
-    // Reset position
-    y.set(0);
     onMoveEnd?.();
   };
   
-  // Click/Tap handler - toggle state
   const handleTap = () => {
     if (disabled) return;
     if (isActive) {
@@ -119,30 +134,31 @@ export const AbacusBead = ({
     }
   };
   
-  // Calculate position based on active state
   const getActiveOffset = () => {
     if (isUpper) {
       return isActive ? ACTIVE_OFFSET : 0;
     } else {
-      return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
+      return isActive ? -ACTIVE_OFFSET * 0.5 : 0;
     }
   };
+
+  // Pill-shaped bead dimensions
+  const beadHeight = beadSize * 0.6;
+  const beadWidth = beadSize;
 
   return (
     <motion.div
       ref={beadRef}
       className={cn(
-        "relative cursor-pointer touch-none select-none rounded-full",
-        "shadow-lg transition-shadow duration-200",
-        colors.shadow,
+        "relative cursor-pointer touch-none select-none",
+        "transition-shadow duration-200",
         isDragging && "z-20",
-        !disabled && "hover:scale-105 active:scale-95",
+        !disabled && "hover:brightness-110 active:brightness-95",
         disabled && "opacity-60 cursor-not-allowed"
       )}
       style={{
-        width: beadSize,
-        height: beadSize,
-        y: useTransform(y, (val) => val + getActiveOffset()),
+        width: beadWidth,
+        height: beadHeight,
       }}
       drag={disabled ? false : "y"}
       dragConstraints={{ top: -beadSize, bottom: beadSize }}
@@ -153,70 +169,43 @@ export const AbacusBead = ({
       whileTap={{ scale: 0.95 }}
       animate={{
         y: getActiveOffset(),
-        boxShadow: isDragging 
-          ? `0 8px 25px -4px ${colors.glow}` 
-          : `0 4px 12px -2px ${colors.glow}`,
       }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
     >
-      {/* Asosiy gradient */}
+      {/* Main bead body - pill shape */}
       <div 
-        className={cn(
-          "absolute inset-0 rounded-full",
-          "bg-gradient-to-br",
-          colors.gradient
-        )}
-      />
-      
-      {/* 3D Highlight effect */}
-      <div 
-        className={cn(
-          "absolute inset-[3px] rounded-full",
-          "bg-gradient-to-br to-transparent",
-          colors.highlight
-        )}
+        className="absolute inset-0 rounded-full"
         style={{
-          background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5) 0%, transparent 60%)`,
+          background: colors.bg,
+          border: `2px solid ${colors.border}`,
+          boxShadow: isDragging 
+            ? `0 4px 12px ${colors.shadow}` 
+            : `0 2px 6px ${colors.shadow}`,
         }}
       />
       
-      {/* Center reflection */}
+      {/* Top highlight for 3D effect */}
       <div 
-        className="absolute rounded-full"
+        className="absolute rounded-full pointer-events-none"
         style={{
-          top: '20%',
-          left: '20%',
-          width: '25%',
-          height: '25%',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%)',
-        }}
-      />
-      
-      {/* Bottom shadow for 3D depth */}
-      <div 
-        className="absolute rounded-full"
-        style={{
-          bottom: '10%',
+          top: '10%',
           left: '15%',
           right: '15%',
-          height: '20%',
-          background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))',
+          height: '30%',
+          background: `linear-gradient(to bottom, ${colors.highlight}, transparent)`,
           borderRadius: '50%',
         }}
       />
       
-      {/* Active glow effect */}
-      {isActive && (
-        <motion.div
-          className="absolute -inset-1 rounded-full"
-          style={{
-            background: `radial-gradient(circle, ${colors.glow} 0%, transparent 70%)`,
-          }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
-          transition={{ duration: 0.2 }}
-        />
-      )}
+      {/* Center hole effect (rod goes through) */}
+      <div 
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          width: beadWidth * 0.15,
+          height: beadHeight * 0.5,
+          background: 'rgba(0,0,0,0.15)',
+        }}
+      />
     </motion.div>
   );
 };
