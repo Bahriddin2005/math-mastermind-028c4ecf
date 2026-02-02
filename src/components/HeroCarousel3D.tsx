@@ -345,7 +345,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                 {/* Content - optimized padding for mobile */}
                 <div 
-                  className={`absolute inset-0 flex flex-col items-end justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-right transition-all duration-300 ${
+                  className={`absolute inset-0 flex flex-col items-center justify-end p-4 xs:p-5 sm:p-8 md:p-10 text-white text-center transition-all duration-300 ${
                     current === index ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
