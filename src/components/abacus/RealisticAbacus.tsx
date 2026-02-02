@@ -191,7 +191,7 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-stretch"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '16px 4px' : '28px 8px',
+            padding: compact ? '16px 24px' : '28px 48px',
           }}
         >
           {/* Columns in reverse order (largest place value on left) */}
