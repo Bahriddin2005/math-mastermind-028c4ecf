@@ -1,15 +1,13 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Palette, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   RealisticAbacus, 
   AbacusModeSelector, 
-  AbacusThemeSelector,
   type AbacusMode,
-  type AbacusTheme 
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
@@ -18,7 +16,6 @@ const AbacusSimulator = () => {
   const [columns, setColumns] = useState(3);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
-  const [theme, setTheme] = useState<AbacusTheme>('classic');
   const [showSettings, setShowSettings] = useState(false);
   const { soundEnabled, toggleSound } = useSound();
 
@@ -36,20 +33,6 @@ const AbacusSimulator = () => {
 
   // Ustun nomlari
   const columnLabels = ['Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik"];
-
-  // Theme based bead colors
-  const getBeadColors = (): { upper: 'red' | 'blue' | 'brown'; lower: 'green' | 'blue' | 'brown' } => {
-    switch (theme) {
-      case 'modern':
-        return { upper: 'blue', lower: 'blue' };
-      case 'kids':
-        return { upper: 'brown', lower: 'green' };
-      default:
-        return { upper: 'red', lower: 'green' };
-    }
-  };
-
-  const beadColors = getBeadColors();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -170,15 +153,6 @@ const AbacusSimulator = () => {
                     );
                   })}
                 </div>
-
-                {/* Tema tanlash */}
-                <div className="pt-2 border-t border-border/50">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Tema:</span>
-                  </div>
-                  <AbacusThemeSelector theme={theme} onChange={setTheme} />
-                </div>
               </CardContent>
             </Card>
           </motion.div>
@@ -196,10 +170,7 @@ const AbacusSimulator = () => {
             value={value}
             onChange={setValue}
             mode={mode}
-            theme={theme}
             showValue={mode !== 'mental'}
-            upperBeadColor={beadColors.upper}
-            lowerBeadColor={beadColors.lower}
           />
         </motion.div>
 
