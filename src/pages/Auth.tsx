@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Loader2, 
   LogIn, 
@@ -29,10 +30,17 @@ import {
   Star,
   ChevronRight,
   GraduationCap,
-  Phone
+  Phone,
+  RefreshCw,
+  ShieldCheck
 } from 'lucide-react';
 import { z } from 'zod';
 import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const loginSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
@@ -51,7 +59,7 @@ const emailSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password';
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-email';
 
 const features = [
   { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
@@ -78,6 +86,16 @@ const Auth = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showMFAVerify, setShowMFAVerify] = useState(false);
   
+  // Email verification states
+  const [verificationCode, setVerificationCode] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [pendingSignupData, setPendingSignupData] = useState<{
+    email: string;
+    password: string;
+    username: string;
+    phoneNumber?: string;
+  } | null>(null);
+  
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
   const mfa = useMFA();
   const navigate = useNavigate();
@@ -92,10 +110,17 @@ const Auth = () => {
     }
   }, []);
 
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
   // Check MFA status after user is available
   useEffect(() => {
     if (user && !mfa.loading) {
-      // If MFA is enabled but not verified (aal1 but needs aal2), show verify screen
       if (mfa.isEnabled && !mfa.isVerified && mfa.currentLevel === 'aal1') {
         setShowMFAVerify(true);
       } else if (!showMFAVerify) {
@@ -110,7 +135,7 @@ const Auth = () => {
         loginSchema.parse({ email, password });
       } else if (mode === 'signup') {
         signupSchema.parse({ email, password, username, phoneNumber });
-      } else {
+      } else if (mode === 'forgot-password') {
         emailSchema.parse({ email });
       }
       setErrors({});
@@ -129,6 +154,34 @@ const Auth = () => {
     }
   };
 
+  const sendVerificationCode = async (targetEmail: string, targetPhone?: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-verification-code', {
+        body: { email: targetEmail, phone_number: targetPhone }
+      });
+      
+      if (error) throw error;
+      return { success: true };
+    } catch (error: any) {
+      console.error('Failed to send verification code:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  const verifyCode = async (targetEmail: string, code: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-code', {
+        body: { email: targetEmail, code }
+      });
+      
+      if (error) throw error;
+      return data;
+    } catch (error: any) {
+      console.error('Failed to verify code:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -138,7 +191,6 @@ const Auth = () => {
     
     try {
       if (mode === 'login') {
-        // Handle remember me - save or remove email from localStorage
         if (rememberMe) {
           localStorage.setItem('iqromax_remembered_email', email);
         } else {
@@ -161,28 +213,29 @@ const Auth = () => {
           });
         }
       } else if (mode === 'signup') {
-        const { error } = await signUp(email, password, username, phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined);
-        if (error) {
-          if (error.message.includes('already registered')) {
-            toastHook({
-              variant: 'destructive',
-              title: 'Xatolik',
-              description: "Bu email allaqachon ro'yxatdan o'tgan",
-            });
-          } else {
-            toastHook({
-              variant: 'destructive',
-              title: 'Xatolik',
-              description: error.message,
-            });
-          }
+        // Store signup data and send verification code
+        setPendingSignupData({
+          email,
+          password,
+          username,
+          phoneNumber: phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined
+        });
+        
+        const result = await sendVerificationCode(email, phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined);
+        
+        if (result.success) {
+          setMode('verify-email');
+          setResendCooldown(60);
+          toastHook({
+            title: 'Kod yuborildi!',
+            description: `Tasdiqlash kodi ${email} manziliga yuborildi`,
+          });
         } else {
           toastHook({
-            title: 'Muvaffaqiyat!',
-            description: 'Akkaunt yaratildi!',
+            variant: 'destructive',
+            title: 'Xatolik',
+            description: result.error || 'Kod yuborishda xatolik yuz berdi',
           });
-          // Redirect to onboarding for new users
-          navigate('/onboarding');
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
@@ -202,10 +255,90 @@ const Auth = () => {
     }
   };
 
+  const handleVerifyCode = async () => {
+    if (verificationCode.length !== 6 || !pendingSignupData) return;
+    
+    setLoading(true);
+    
+    try {
+      const verifyResult = await verifyCode(pendingSignupData.email, verificationCode);
+      
+      if (!verifyResult.success) {
+        toastHook({
+          variant: 'destructive',
+          title: 'Xatolik',
+          description: verifyResult.error || "Noto'g'ri yoki muddati o'tgan kod",
+        });
+        setLoading(false);
+        return;
+      }
+      
+      // Code verified, now create the account
+      const { error } = await signUp(
+        pendingSignupData.email,
+        pendingSignupData.password,
+        pendingSignupData.username,
+        pendingSignupData.phoneNumber
+      );
+      
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toastHook({
+            variant: 'destructive',
+            title: 'Xatolik',
+            description: "Bu email allaqachon ro'yxatdan o'tgan",
+          });
+        } else {
+          toastHook({
+            variant: 'destructive',
+            title: 'Xatolik',
+            description: error.message,
+          });
+        }
+      } else {
+        toastHook({
+          title: 'Muvaffaqiyat!',
+          description: 'Akkaunt yaratildi!',
+        });
+        navigate('/onboarding');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (resendCooldown > 0 || !pendingSignupData) return;
+    
+    setLoading(true);
+    const result = await sendVerificationCode(
+      pendingSignupData.email, 
+      pendingSignupData.phoneNumber
+    );
+    setLoading(false);
+    
+    if (result.success) {
+      setResendCooldown(60);
+      setVerificationCode('');
+      toastHook({
+        title: 'Kod qayta yuborildi!',
+        description: `Yangi kod ${pendingSignupData.email} manziliga yuborildi`,
+      });
+    } else {
+      toastHook({
+        variant: 'destructive',
+        title: 'Xatolik',
+        description: result.error || 'Kod yuborishda xatolik',
+      });
+    }
+  };
+
   const switchMode = (newMode: AuthMode) => {
     setMode(newMode);
     setErrors({});
     setResetEmailSent(false);
+    setVerificationCode('');
+    setPendingSignupData(null);
   };
 
   const handleMFACancel = async () => {
@@ -226,11 +359,114 @@ const Auth = () => {
     );
   }
 
-  // Reset email sent success state - Dark Mode & Mobile optimized
+  // Email verification screen
+  if (mode === 'verify-email' && pendingSignupData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
+          <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
+            <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+            
+            <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50 animate-bounce-slow">
+                <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+              </div>
+              <CardTitle className="text-xl sm:text-2xl font-display">Emailni tasdiqlang</CardTitle>
+              <CardDescription className="mt-1.5 sm:mt-2 text-sm">
+                <strong className="text-foreground">{pendingSignupData.email}</strong> manziliga 6 xonali kod yuborildi
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
+              <div className="space-y-6">
+                {/* OTP Input */}
+                <div className="flex justify-center">
+                  <InputOTP
+                    maxLength={6}
+                    value={verificationCode}
+                    onChange={setVerificationCode}
+                    disabled={loading}
+                  >
+                    <InputOTPGroup className="gap-2">
+                      <InputOTPSlot index={0} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                      <InputOTPSlot index={1} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                      <InputOTPSlot index={2} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                      <InputOTPSlot index={3} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                      <InputOTPSlot index={4} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                      <InputOTPSlot index={5} className="h-12 w-12 sm:h-14 sm:w-14 text-xl sm:text-2xl font-bold border-2" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
+
+                <p className="text-center text-xs sm:text-sm text-muted-foreground">
+                  ⏱️ Kod 10 daqiqa davomida amal qiladi
+                </p>
+
+                {/* Verify Button */}
+                <Button 
+                  onClick={handleVerifyCode}
+                  size="lg" 
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5"
+                  disabled={loading || verificationCode.length !== 6}
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                      Tasdiqlash
+                    </>
+                  )}
+                </Button>
+
+                {/* Resend Code */}
+                <div className="text-center">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2">
+                    Kod kelmadimi?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={resendCooldown > 0 || loading}
+                    className="text-primary hover:text-primary/80 text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                    {resendCooldown > 0 
+                      ? `Qayta yuborish (${resendCooldown}s)` 
+                      : 'Kodni qayta yuborish'
+                    }
+                  </button>
+                </div>
+
+                {/* Back button */}
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => switchMode('signup')}
+                    className="text-muted-foreground hover:text-foreground text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors group"
+                    disabled={loading}
+                  >
+                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                    Orqaga qaytish
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Reset email sent success state
   if (resetEmailSent) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        {/* Background decorations - Enhanced for dark mode */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
@@ -266,25 +502,20 @@ const Auth = () => {
     <div className="min-h-screen flex">
       {/* Left side - Branding (Hidden on mobile/tablet) */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Animated gradient background - Dark mode enhanced */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent dark:from-primary/90 dark:via-primary/80 dark:to-accent/90" />
         
-        {/* Animated shapes - Enhanced */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 right-20 w-72 h-72 bg-white/10 dark:bg-white/15 rounded-full blur-3xl animate-pulse" />
           <div className="absolute bottom-40 left-10 w-96 h-96 bg-white/5 dark:bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }} />
           <div className="absolute -bottom-20 right-40 w-48 h-48 bg-accent/30 dark:bg-accent/40 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
           
-          {/* Floating geometric shapes */}
           <div className="absolute top-1/4 right-1/4 w-4 h-4 bg-white/30 dark:bg-white/40 rotate-45 animate-float" />
           <div className="absolute top-1/3 left-1/4 w-3 h-3 bg-white/20 dark:bg-white/30 rounded-full animate-float" style={{ animationDelay: '0.5s' }} />
           <div className="absolute bottom-1/3 right-1/3 w-5 h-5 bg-white/25 dark:bg-white/35 rotate-12 animate-float" style={{ animationDelay: '1s' }} />
         </div>
 
-        {/* Grid pattern overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
-        {/* Content */}
         <div className="relative z-10 flex flex-col justify-between p-8 xl:p-12 text-primary-foreground h-full w-full">
           <div className="flex items-center gap-3">
             <Logo size="lg" />
@@ -306,7 +537,6 @@ const Auth = () => {
               </p>
             </div>
             
-            {/* Features */}
             <div className="space-y-3">
               {features.map((feature, index) => (
                 <div 
@@ -322,7 +552,6 @@ const Auth = () => {
               ))}
             </div>
 
-            {/* Stats */}
             <div className="flex gap-6 xl:gap-8 pt-4">
               {stats.map((stat, index) => (
                 <div 
@@ -344,26 +573,22 @@ const Auth = () => {
         </div>
       </div>
 
-      {/* Right side - Form - Mobile & Dark Mode optimized */}
+      {/* Right side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 xl:p-12 bg-gradient-to-br from-background via-background to-secondary/20 dark:from-background dark:via-background dark:to-secondary/10 relative overflow-hidden min-h-screen lg:min-h-0">
-        {/* Mobile/Tablet background decorations - Enhanced for dark mode */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
           <div className="absolute -top-40 -right-40 w-64 sm:w-80 h-64 sm:h-80 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-40 -left-40 w-64 sm:w-80 h-64 sm:h-80 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
-        {/* Subtle grid pattern - Dark mode enhanced */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
         <div className="w-full max-w-md relative z-10 px-1 sm:px-0">
-          {/* Mobile logo - Enhanced */}
           <div className="text-center mb-6 sm:mb-8 lg:hidden">
             <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
             <p className="text-muted-foreground text-xs sm:text-sm">Mental Matematika Platformasi</p>
           </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
-            {/* Card top decoration - Enhanced for dark */}
             <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
             
             <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
@@ -505,14 +730,12 @@ const Auth = () => {
                         {errors.password}
                       </p>
                     )}
-                    {/* Password strength indicator for signup */}
                     {mode === 'signup' && password && (
                       <PasswordStrengthIndicator password={password} />
                     )}
                   </div>
                 )}
 
-                {/* Remember me checkbox for login */}
                 {mode === 'login' && (
                   <div className="flex items-center space-x-2 pt-1">
                     <Checkbox
@@ -585,7 +808,6 @@ const Auth = () => {
             </CardContent>
           </Card>
 
-          {/* Back to home - Mobile optimized */}
           <div className="mt-5 sm:mt-6 text-center">
             <button
               onClick={() => navigate('/')}
@@ -596,7 +818,6 @@ const Auth = () => {
             </button>
           </div>
 
-          {/* Trust indicators for mobile - Enhanced dark mode */}
           <div className="mt-6 sm:mt-8 lg:hidden">
             <div className="flex justify-center gap-4 sm:gap-6 text-center text-xs text-muted-foreground">
               {stats.map((stat, index) => (
