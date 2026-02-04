@@ -1636,13 +1636,13 @@ export const NumberTrainer = () => {
                       className="flex flex-wrap gap-2 sm:gap-2.5"
                     >
                       {[
-                        { value: 'oddiy', label: 'Oddiy', icon: '📘' },
-                        { value: 'formula5', label: 'Formula 5', icon: '🔢' },
-                        { value: 'formula10plus', label: 'Formula 10', icon: '➕' },
-                        { value: 'hammasi', label: 'Aralash', icon: '🎯' },
-                        { value: 'manfiy', label: 'Manfiy', icon: '➖' },
-                        { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️' },
-                        { value: 'bolish', label: "Bo'lish", icon: '➗' },
+                        { value: 'oddiy', label: 'Oddiy', icon: '📘', gradient: 'from-blue-500 to-blue-600', shadow: 'shadow-blue-500/30', border: 'border-blue-400' },
+                        { value: 'formula5', label: 'Formula 5', icon: '🔢', gradient: 'from-emerald-500 to-emerald-600', shadow: 'shadow-emerald-500/30', border: 'border-emerald-400' },
+                        { value: 'formula10plus', label: 'Formula 10', icon: '➕', gradient: 'from-purple-500 to-purple-600', shadow: 'shadow-purple-500/30', border: 'border-purple-400' },
+                        { value: 'hammasi', label: 'Aralash', icon: '🎯', gradient: 'from-amber-500 to-orange-500', shadow: 'shadow-amber-500/30', border: 'border-amber-400' },
+                        { value: 'manfiy', label: 'Manfiy', icon: '➖', gradient: 'from-rose-500 to-red-500', shadow: 'shadow-rose-500/30', border: 'border-rose-400' },
+                        { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️', gradient: 'from-cyan-500 to-teal-500', shadow: 'shadow-cyan-500/30', border: 'border-cyan-400' },
+                        { value: 'bolish', label: "Bo'lish", icon: '➗', gradient: 'from-indigo-500 to-violet-500', shadow: 'shadow-indigo-500/30', border: 'border-indigo-400' },
                       ].map((item) => (
                         <div key={item.value} className="relative">
                           <RadioGroupItem
@@ -1652,14 +1652,14 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-300 whitespace-nowrap text-xs sm:text-sm font-semibold min-w-[90px] sm:min-w-[110px] justify-center
+                            className={`flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl cursor-pointer transition-all duration-300 whitespace-nowrap text-xs sm:text-sm font-semibold min-w-[100px] sm:min-w-[120px] justify-center
                               ${formulaType === item.value 
-                                ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.03] border-2 border-primary/50'
-                                : 'bg-card dark:bg-slate-800/80 border-2 border-border/50 dark:border-slate-600/50 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-md'
+                                ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg ${item.shadow} scale-[1.05] border-2 ${item.border}`
+                                : 'bg-card dark:bg-slate-800/80 border-2 border-border/30 dark:border-slate-600/50 hover:border-primary/40 hover:bg-muted/50 dark:hover:bg-slate-700/80 hover:shadow-md hover:scale-[1.02]'
                               }`}
                           >
-                            <span className="text-base sm:text-lg">{item.icon}</span>
-                            <span>{item.label}</span>
+                            <span className="text-lg sm:text-xl drop-shadow-sm">{item.icon}</span>
+                            <span className="drop-shadow-sm">{item.label}</span>
                           </Label>
                         </div>
                       ))}
