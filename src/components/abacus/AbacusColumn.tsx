@@ -164,24 +164,28 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Lower beads (4 beads, each value 1) - overlapping diamond style */}
-      <div className="relative z-10 flex flex-col items-center" style={{ gap: -beadSize * 0.15 }}>
+      {/* Lower beads (4 beads) - overlapping like reference image */}
+      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: -beadSize * 0.1 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = beadIndex < lowerCount;
           const rowIndex = 3 - visualIndex;
           
           return (
-            <AbacusBead
-              key={beadIndex}
-              isUpper={false}
-              isActive={isActive}
-              onActivate={() => handleLowerActivate(beadIndex)}
-              onDeactivate={() => handleLowerDeactivate(beadIndex)}
-              beadSize={beadSize}
-              customColor={getLowerBeadColor(rowIndex)}
-              disabled={disabled}
-            />
+            <div 
+              key={beadIndex} 
+              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}
+            >
+              <AbacusBead
+                isUpper={false}
+                isActive={isActive}
+                onActivate={() => handleLowerActivate(beadIndex)}
+                onDeactivate={() => handleLowerDeactivate(beadIndex)}
+                beadSize={beadSize}
+                customColor={getLowerBeadColor(rowIndex)}
+                disabled={disabled}
+              />
+            </div>
           );
         })}
       </div>
