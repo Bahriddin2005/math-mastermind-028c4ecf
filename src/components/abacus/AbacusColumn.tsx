@@ -123,8 +123,8 @@ export const AbacusColumn = ({
         </div>
       )}
       
-      {/* Upper bead (value 5) - Custom color */}
-      <div className="relative z-10 mb-0.5">
+      {/* Upper bead (value 5) - positioned closer to reckoning bar */}
+      <div className="relative z-10" style={{ marginTop: beadHeight * 0.8 }}>
         <AbacusBead
           isUpper={true}
           isActive={upperActive}
