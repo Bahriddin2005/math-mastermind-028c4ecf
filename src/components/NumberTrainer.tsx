@@ -1633,7 +1633,7 @@ export const NumberTrainer = () => {
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="flex flex-col gap-2"
+                      className="flex flex-col gap-2 max-h-[200px] overflow-y-auto pr-1 scrollbar-thin"
                     >
                       {[
                         { value: 'oddiy', label: 'Oddiy', icon: '📘', gradient: 'from-blue-500 to-blue-600', shadow: 'shadow-blue-500/30', border: 'border-blue-400' },
@@ -1644,7 +1644,7 @@ export const NumberTrainer = () => {
                         { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️', gradient: 'from-cyan-500 to-teal-500', shadow: 'shadow-cyan-500/30', border: 'border-cyan-400' },
                         { value: 'bolish', label: "Bo'lish", icon: '➗', gradient: 'from-indigo-500 to-violet-500', shadow: 'shadow-indigo-500/30', border: 'border-indigo-400' },
                       ].map((item) => (
-                        <div key={item.value} className="relative w-full">
+                        <div key={item.value} className="relative w-full flex-shrink-0">
                           <RadioGroupItem
                             value={item.value}
                             id={`formula-${item.value}`}
@@ -1652,13 +1652,13 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 text-sm font-semibold w-full
+                            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-300 text-sm font-semibold w-full
                               ${formulaType === item.value 
                                 ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg ${item.shadow} scale-[1.02] border-2 ${item.border}`
                                 : 'bg-card dark:bg-slate-800/80 border-2 border-border/30 dark:border-slate-600/50 hover:border-primary/40 hover:bg-muted/50 dark:hover:bg-slate-700/80 hover:shadow-md'
                               }`}
                           >
-                            <span className="text-xl">{item.icon}</span>
+                            <span className="text-lg">{item.icon}</span>
                             <span className="drop-shadow-sm">{item.label}</span>
                           </Label>
                         </div>
