@@ -3,7 +3,7 @@ import { PageBackground } from '@/components/layout/PageBackground';
 
 const Index = () => {
   return (
-    <PageBackground>
+    <PageBackground className="min-h-screen">
       <NumberTrainer />
     </PageBackground>
   );
