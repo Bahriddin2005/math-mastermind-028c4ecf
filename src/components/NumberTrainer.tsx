@@ -1633,7 +1633,7 @@ export const NumberTrainer = () => {
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2"
+                      className="flex flex-wrap gap-1.5 sm:gap-2"
                     >
                       {[
                         { value: 'oddiy', label: 'Oddiy', icon: '📘' },
@@ -1644,22 +1644,22 @@ export const NumberTrainer = () => {
                         { value: 'kopaytirish', label: '×', icon: '✖️' },
                         { value: 'bolish', label: '÷', icon: '➗' },
                       ].map((item) => (
-                        <div key={item.value} className="flex items-center relative">
+                        <div key={item.value} className="relative">
                           <RadioGroupItem
                             value={item.value}
                             id={`formula-${item.value}`}
-                            className="peer sr-only"
+                            className="sr-only"
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex flex-col items-center justify-center w-full px-1 sm:px-2 py-2 sm:py-3 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 min-h-[52px] sm:min-h-[60px]
+                            className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all duration-200 border-2 whitespace-nowrap text-xs sm:text-sm font-medium
                               ${formulaType === item.value 
-                                ? 'bg-primary text-primary-foreground border-primary shadow-md'
+                                ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
                                 : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
                               }`}
                           >
-                            <span className="text-lg sm:text-xl">{item.icon}</span>
-                            <span className="font-medium text-[10px] sm:text-xs mt-0.5">{item.label}</span>
+                            <span>{item.icon}</span>
+                            <span>{item.label}</span>
                           </Label>
                         </div>
                       ))}
