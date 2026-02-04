@@ -1633,16 +1633,16 @@ export const NumberTrainer = () => {
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="flex flex-wrap gap-1.5 sm:gap-2"
+                      className="flex flex-wrap gap-2 sm:gap-2.5"
                     >
                       {[
                         { value: 'oddiy', label: 'Oddiy', icon: '📘' },
-                        { value: 'formula5', label: 'F5', icon: '🔢' },
-                        { value: 'formula10plus', label: 'F10', icon: '➕' },
-                        { value: 'hammasi', label: 'Mix', icon: '🎯' },
-                        { value: 'manfiy', label: '−', icon: '➖' },
-                        { value: 'kopaytirish', label: '×', icon: '✖️' },
-                        { value: 'bolish', label: '÷', icon: '➗' },
+                        { value: 'formula5', label: 'Formula 5', icon: '🔢' },
+                        { value: 'formula10plus', label: 'Formula 10', icon: '➕' },
+                        { value: 'hammasi', label: 'Aralash', icon: '🎯' },
+                        { value: 'manfiy', label: 'Manfiy', icon: '➖' },
+                        { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️' },
+                        { value: 'bolish', label: "Bo'lish", icon: '➗' },
                       ].map((item) => (
                         <div key={item.value} className="relative">
                           <RadioGroupItem
@@ -1652,13 +1652,13 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full cursor-pointer transition-all duration-200 border-2 whitespace-nowrap text-xs sm:text-sm font-medium
+                            className={`flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl cursor-pointer transition-all duration-300 whitespace-nowrap text-xs sm:text-sm font-semibold min-w-[90px] sm:min-w-[110px] justify-center
                               ${formulaType === item.value 
-                                ? 'bg-primary text-primary-foreground border-primary shadow-md scale-105'
-                                : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
+                                ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.03] border-2 border-primary/50'
+                                : 'bg-card dark:bg-slate-800/80 border-2 border-border/50 dark:border-slate-600/50 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 hover:shadow-md'
                               }`}
                           >
-                            <span>{item.icon}</span>
+                            <span className="text-base sm:text-lg">{item.icon}</span>
                             <span>{item.label}</span>
                           </Label>
                         </div>
