@@ -1633,7 +1633,7 @@ export const NumberTrainer = () => {
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="flex flex-wrap gap-2 sm:gap-2.5"
+                      className="flex flex-col gap-2"
                     >
                       {[
                         { value: 'oddiy', label: 'Oddiy', icon: '📘', gradient: 'from-blue-500 to-blue-600', shadow: 'shadow-blue-500/30', border: 'border-blue-400' },
@@ -1644,7 +1644,7 @@ export const NumberTrainer = () => {
                         { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️', gradient: 'from-cyan-500 to-teal-500', shadow: 'shadow-cyan-500/30', border: 'border-cyan-400' },
                         { value: 'bolish', label: "Bo'lish", icon: '➗', gradient: 'from-indigo-500 to-violet-500', shadow: 'shadow-indigo-500/30', border: 'border-indigo-400' },
                       ].map((item) => (
-                        <div key={item.value} className="relative">
+                        <div key={item.value} className="relative w-full">
                           <RadioGroupItem
                             value={item.value}
                             id={`formula-${item.value}`}
@@ -1652,13 +1652,13 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl cursor-pointer transition-all duration-300 whitespace-nowrap text-xs sm:text-sm font-semibold min-w-[100px] sm:min-w-[120px] justify-center
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 text-sm font-semibold w-full
                               ${formulaType === item.value 
-                                ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg ${item.shadow} scale-[1.05] border-2 ${item.border}`
-                                : 'bg-card dark:bg-slate-800/80 border-2 border-border/30 dark:border-slate-600/50 hover:border-primary/40 hover:bg-muted/50 dark:hover:bg-slate-700/80 hover:shadow-md hover:scale-[1.02]'
+                                ? `bg-gradient-to-r ${item.gradient} text-white shadow-lg ${item.shadow} scale-[1.02] border-2 ${item.border}`
+                                : 'bg-card dark:bg-slate-800/80 border-2 border-border/30 dark:border-slate-600/50 hover:border-primary/40 hover:bg-muted/50 dark:hover:bg-slate-700/80 hover:shadow-md'
                               }`}
                           >
-                            <span className="text-lg sm:text-xl drop-shadow-sm">{item.icon}</span>
+                            <span className="text-xl">{item.icon}</span>
                             <span className="drop-shadow-sm">{item.label}</span>
                           </Label>
                         </div>
