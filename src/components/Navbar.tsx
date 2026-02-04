@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3 } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Calculator } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -116,6 +116,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   const navItems = [
     { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
+    { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
     { path: '/courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
     { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
   ];
