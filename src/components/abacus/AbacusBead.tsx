@@ -7,20 +7,16 @@ export type BeadColorType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'bl
 
 // Helper function to darken/lighten a hex color
 const adjustColor = (hex: string, percent: number): string => {
-  // Remove # if present
   hex = hex.replace(/^#/, '');
   
-  // Parse the hex color
   let r = parseInt(hex.substring(0, 2), 16);
   let g = parseInt(hex.substring(2, 4), 16);
   let b = parseInt(hex.substring(4, 6), 16);
   
-  // Adjust each component
   r = Math.max(0, Math.min(255, r + (r * percent) / 100));
   g = Math.max(0, Math.min(255, g + (g * percent) / 100));
   b = Math.max(0, Math.min(255, b + (b * percent) / 100));
   
-  // Convert back to hex
   return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
 };
 
@@ -31,71 +27,14 @@ interface AbacusBeadProps {
   onDeactivate: () => void;
   beadSize: number;
   color?: BeadColorType;
-  customColor?: string; // Direct hex color for custom color schemes
+  customColor?: string;
   disabled?: boolean;
   onMoveStart?: () => void;
   onMoveEnd?: () => void;
 }
 
-// Color palette matching the reference image
-const colorPalette: Record<BeadColorType, { 
-  bg: string; 
-  border: string;
-  shadow: string;
-  highlight: string;
-}> = {
-  green: {
-    bg: '#6CBE45',
-    border: '#5AAD35',
-    shadow: 'rgba(90, 173, 53, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  red: {
-    bg: '#EF5350',
-    border: '#E53935',
-    shadow: 'rgba(229, 57, 53, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  orange: {
-    bg: '#FFA726',
-    border: '#FB8C00',
-    shadow: 'rgba(251, 140, 0, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  yellow: {
-    bg: '#FFEE58',
-    border: '#FDD835',
-    shadow: 'rgba(253, 216, 53, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.5)',
-  },
-  cyan: {
-    bg: '#26C6DA',
-    border: '#00ACC1',
-    shadow: 'rgba(0, 172, 193, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  blue: {
-    bg: '#42A5F5',
-    border: '#1E88E5',
-    shadow: 'rgba(30, 136, 229, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  purple: {
-    bg: '#AB47BC',
-    border: '#8E24AA',
-    shadow: 'rgba(142, 36, 170, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-  pink: {
-    bg: '#EC407A',
-    border: '#D81B60',
-    shadow: 'rgba(216, 27, 96, 0.5)',
-    highlight: 'rgba(255, 255, 255, 0.4)',
-  },
-};
-
 /**
- * Individual Abacus Bead - Soroban style matching reference image
+ * Diamond/Rhombus shaped Abacus Bead with 3D effect
  */
 export const AbacusBead = ({
   isUpper,
@@ -103,7 +42,6 @@ export const AbacusBead = ({
   onActivate,
   onDeactivate,
   beadSize,
-  color = 'green',
   customColor,
   disabled = false,
   onMoveStart,
@@ -113,21 +51,19 @@ export const AbacusBead = ({
   const beadRef = useRef<HTMLDivElement>(null);
   
   const SNAP_THRESHOLD = beadSize * 0.3;
-  const ACTIVE_OFFSET = beadSize * 0.30;
+  const ACTIVE_OFFSET = beadSize * 0.35;
   
-  // Use custom color if provided, otherwise use predefined palette
+  // Default terracotta color matching the reference image
+  const baseColor = customColor || '#A0522D';
+  
   const colors = useMemo(() => {
-    if (customColor) {
-      // Generate color palette from custom hex color
-      return {
-        bg: customColor,
-        border: adjustColor(customColor, -15),
-        shadow: `${customColor}80`,
-        highlight: 'rgba(255, 255, 255, 0.4)',
-      };
-    }
-    return colorPalette[color];
-  }, [customColor, color]);
+    return {
+      top: adjustColor(baseColor, 15),      // Lighter top
+      middle: baseColor,                     // Base color
+      bottom: adjustColor(baseColor, -40),   // Much darker bottom
+      highlight: adjustColor(baseColor, 30), // Highlight
+    };
+  }, [baseColor]);
   
   const handleDragStart = () => {
     if (disabled) return;
@@ -175,16 +111,15 @@ export const AbacusBead = ({
     }
   };
 
-  // Pill-shaped bead dimensions
-  const beadHeight = beadSize * 0.85;
-  const beadWidth = beadSize * 1.3;
+  // Diamond bead dimensions
+  const beadWidth = beadSize * 1.6;
+  const beadHeight = beadSize * 0.7;
 
   return (
     <motion.div
       ref={beadRef}
       className={cn(
         "relative cursor-pointer touch-none select-none",
-        "transition-shadow duration-200",
         isDragging && "z-20",
         !disabled && "hover:brightness-110 active:brightness-95",
         disabled && "opacity-60 cursor-not-allowed"
@@ -199,46 +134,72 @@ export const AbacusBead = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onTap={handleTap}
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ scale: 0.98 }}
       animate={{
         y: getActiveOffset(),
       }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
     >
-      {/* Main bead body - pill shape */}
-      <div 
-        className="absolute inset-0 rounded-full"
+      {/* Diamond/Rhombus shape using SVG for precise control */}
+      <svg
+        width={beadWidth}
+        height={beadHeight}
+        viewBox={`0 0 ${beadWidth} ${beadHeight}`}
+        className="absolute inset-0"
         style={{
-          background: colors.bg,
-          border: `2px solid ${colors.border}`,
-          boxShadow: isDragging 
-            ? `0 4px 12px ${colors.shadow}` 
-            : `0 2px 6px ${colors.shadow}`,
+          filter: isDragging ? 'drop-shadow(0 4px 8px rgba(0,0,0,0.4))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
         }}
-      />
-      
-      {/* Top highlight for 3D effect */}
-      <div 
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          top: '10%',
-          left: '15%',
-          right: '15%',
-          height: '30%',
-          background: `linear-gradient(to bottom, ${colors.highlight}, transparent)`,
-          borderRadius: '50%',
-        }}
-      />
-      
-      {/* Center hole effect (rod goes through) */}
-      <div 
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          width: beadWidth * 0.15,
-          height: beadHeight * 0.5,
-          background: 'rgba(0,0,0,0.15)',
-        }}
-      />
+      >
+        <defs>
+          {/* Gradient for 3D effect */}
+          <linearGradient id={`bead-gradient-${baseColor.replace('#', '')}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={colors.top} />
+            <stop offset="40%" stopColor={colors.middle} />
+            <stop offset="100%" stopColor={colors.bottom} />
+          </linearGradient>
+          
+          {/* Highlight gradient */}
+          <linearGradient id={`bead-highlight-${baseColor.replace('#', '')}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+            <stop offset="50%" stopColor="rgba(255,255,255,0)" />
+          </linearGradient>
+        </defs>
+        
+        {/* Main diamond shape - hexagonal/rhombus */}
+        <polygon
+          points={`
+            ${beadWidth * 0.5},0
+            ${beadWidth},${beadHeight * 0.35}
+            ${beadWidth},${beadHeight * 0.65}
+            ${beadWidth * 0.5},${beadHeight}
+            0,${beadHeight * 0.65}
+            0,${beadHeight * 0.35}
+          `}
+          fill={`url(#bead-gradient-${baseColor.replace('#', '')})`}
+          stroke={colors.bottom}
+          strokeWidth="1"
+        />
+        
+        {/* Top face highlight */}
+        <polygon
+          points={`
+            ${beadWidth * 0.5},${beadHeight * 0.05}
+            ${beadWidth * 0.9},${beadHeight * 0.35}
+            ${beadWidth * 0.5},${beadHeight * 0.45}
+            ${beadWidth * 0.1},${beadHeight * 0.35}
+          `}
+          fill={`url(#bead-highlight-${baseColor.replace('#', '')})`}
+        />
+        
+        {/* Center hole for rod */}
+        <ellipse
+          cx={beadWidth * 0.5}
+          cy={beadHeight * 0.5}
+          rx={beadWidth * 0.06}
+          ry={beadHeight * 0.15}
+          fill="rgba(0,0,0,0.3)"
+        />
+      </svg>
     </motion.div>
   );
 };

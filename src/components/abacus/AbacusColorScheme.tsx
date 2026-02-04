@@ -17,10 +17,10 @@ export const colorSchemes: ColorSchemeOption[] = [
   {
     id: 'classic',
     name: 'Klassik',
-    description: 'An\'anaviy ranglar',
-    upperBead: '#6CBE45',
-    lowerBeads: ['#EF5350', '#FFA726', '#FFEE58', '#26C6DA'],
-    frame: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
+    description: 'Terrakotta rangi',
+    upperBead: '#A0522D',
+    lowerBeads: ['#A0522D', '#A0522D', '#A0522D', '#A0522D'],
+    frame: 'linear-gradient(135deg, #3D4A5C 0%, #2C3644 50%, #1F2833 100%)',
   },
   {
     id: 'ocean',
@@ -58,8 +58,8 @@ export const colorSchemes: ColorSchemeOption[] = [
     id: 'mono',
     name: 'Monoxrom',
     description: 'Oq-qora ranglar',
-    upperBead: '#FFFFFF',
-    lowerBeads: ['#E5E7EB', '#D1D5DB', '#9CA3AF', '#6B7280'],
+    upperBead: '#D4D4D4',
+    lowerBeads: ['#A3A3A3', '#A3A3A3', '#A3A3A3', '#A3A3A3'],
     frame: 'linear-gradient(135deg, #374151 0%, #111827 100%)',
   },
 ];

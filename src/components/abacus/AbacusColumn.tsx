@@ -83,11 +83,11 @@ export const AbacusColumn = ({
   }, [lowerCount, onLowerChange, onBeadSound]);
   
   const columnValue = (upperActive ? 5 : 0) + lowerCount;
-  const beadHeight = beadSize * 0.6;
+  const beadHeight = beadSize * 0.7;
   
   return (
-    <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.4, padding: '0 4px' }}>
-      {/* Vertical rod */}
+    <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.7, padding: '0 2px' }}>
+      {/* Vertical rod - brown/copper colored matching reference */}
       <div 
         className="absolute z-0"
         style={{
@@ -95,9 +95,9 @@ export const AbacusColumn = ({
           transform: 'translateX(-50%)',
           top: 0,
           bottom: 0,
-          width: 4,
-          background: 'linear-gradient(to bottom, #5C6B7A, #4A5568)',
-          borderRadius: 2,
+          width: 6,
+          background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
+          borderRadius: 3,
         }}
       />
       
@@ -136,33 +136,39 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Reckoning bar */}
+      {/* Reckoning bar - gray horizontal bar matching reference */}
       <div
         className="relative z-20 w-full"
         style={{ 
-          height: 6,
-          marginTop: beadHeight * 0.3,
-          marginBottom: beadHeight * 0.3,
+          height: 10,
+          marginTop: beadHeight * 0.2,
+          marginBottom: beadHeight * 0.2,
         }}
       >
         <div 
           className="absolute left-1/2 -translate-x-1/2"
           style={{
-            width: beadSize * 1.4,
+            width: beadSize * 1.8,
             height: '100%',
-            background: 'linear-gradient(to bottom, #E8E8E8, #D0D0D0)',
-            borderRadius: 3,
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            background: 'linear-gradient(to bottom, #B0B0B0, #808080, #606060)',
+            borderRadius: 2,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
           }}
+        />
+        {/* Dots on the bar */}
+        <div 
+          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
+        />
+        <div 
+          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
         />
       </div>
       
-      {/* Lower beads (4 beads, each value 1) - Custom colors */}
-      <div className="relative z-10 flex flex-col items-center" style={{ gap: beadSize * 0.5 }}>
+      {/* Lower beads (4 beads, each value 1) - overlapping diamond style */}
+      <div className="relative z-10 flex flex-col items-center" style={{ gap: -beadSize * 0.15 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = beadIndex < lowerCount;
-          // Row index: 0=top (first color), 1=second, 2=third, 3=bottom (fourth color)
           const rowIndex = 3 - visualIndex;
           
           return (
