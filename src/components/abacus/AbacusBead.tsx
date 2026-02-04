@@ -1,9 +1,28 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // Rainbow colors for lower beads
 export type BeadColorType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'blue' | 'purple' | 'pink';
+
+// Helper function to darken/lighten a hex color
+const adjustColor = (hex: string, percent: number): string => {
+  // Remove # if present
+  hex = hex.replace(/^#/, '');
+  
+  // Parse the hex color
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+  
+  // Adjust each component
+  r = Math.max(0, Math.min(255, r + (r * percent) / 100));
+  g = Math.max(0, Math.min(255, g + (g * percent) / 100));
+  b = Math.max(0, Math.min(255, b + (b * percent) / 100));
+  
+  // Convert back to hex
+  return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+};
 
 interface AbacusBeadProps {
   isUpper: boolean;
@@ -12,6 +31,7 @@ interface AbacusBeadProps {
   onDeactivate: () => void;
   beadSize: number;
   color?: BeadColorType;
+  customColor?: string; // Direct hex color for custom color schemes
   disabled?: boolean;
   onMoveStart?: () => void;
   onMoveEnd?: () => void;
@@ -84,6 +104,7 @@ export const AbacusBead = ({
   onDeactivate,
   beadSize,
   color = 'green',
+  customColor,
   disabled = false,
   onMoveStart,
   onMoveEnd,
@@ -94,7 +115,19 @@ export const AbacusBead = ({
   const SNAP_THRESHOLD = beadSize * 0.3;
   const ACTIVE_OFFSET = beadSize * 0.30;
   
-  const colors = colorPalette[color];
+  // Use custom color if provided, otherwise use predefined palette
+  const colors = useMemo(() => {
+    if (customColor) {
+      // Generate color palette from custom hex color
+      return {
+        bg: customColor,
+        border: adjustColor(customColor, -15),
+        shadow: `${customColor}80`,
+        highlight: 'rgba(255, 255, 255, 0.4)',
+      };
+    }
+    return colorPalette[color];
+  }, [customColor, color]);
   
   const handleDragStart = () => {
     if (disabled) return;
