@@ -71,13 +71,13 @@ export const SectionCarousel = ({ title, emoji, items, gradient, buttonText, mai
           {items.map((item, index) => (
             <CarouselItem key={index} className="pl-2 sm:pl-3 basis-[75%] xs:basis-[70%] sm:basis-1/2 lg:basis-1/3">
               <Card 
-                className={`border-0 shadow-lg overflow-hidden bg-gradient-to-br ${gradient} cursor-pointer hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 touch-target h-full min-h-[140px] sm:min-h-[160px]`}
+                className={`border-0 shadow-lg overflow-hidden bg-gradient-to-br ${gradient} cursor-pointer hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 touch-target h-[140px] sm:h-[160px] rounded-2xl`}
                 onClick={() => navigate(item.href)}
               >
-                <CardContent className="p-4 xs:p-5 space-y-2 sm:space-y-3 h-full flex flex-col">
+                <CardContent className="p-4 xs:p-5 h-full flex flex-col justify-between">
                   <div className="text-3xl xs:text-4xl">{item.icon}</div>
-                  <div className="flex-1 flex flex-col justify-center">
-                    <h3 className="text-base xs:text-lg font-bold text-white mb-0.5 sm:mb-1">{item.title}</h3>
+                  <div>
+                    <h3 className="text-base xs:text-lg font-bold text-white mb-0.5 sm:mb-1 line-clamp-1">{item.title}</h3>
                     <p className="text-white/80 text-xs xs:text-sm leading-relaxed line-clamp-2">{item.description}</p>
                   </div>
                 </CardContent>
