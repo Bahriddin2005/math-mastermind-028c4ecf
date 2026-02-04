@@ -116,7 +116,6 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   const navItems = [
     { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
-    { path: '/mental-arithmetic', icon: Play, label: "Mashq", highlight: true, emoji: "🎮" },
     { path: '/courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
     { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
   ];
