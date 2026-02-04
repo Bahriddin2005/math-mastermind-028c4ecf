@@ -1633,16 +1633,16 @@ export const NumberTrainer = () => {
                     <RadioGroup
                       value={formulaType}
                       onValueChange={(v) => setFormulaType(v as FormulaType)}
-                      className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 sm:gap-2"
+                      className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2"
                     >
                       {[
-                        { value: 'oddiy', label: 'Formulasiz', icon: '📘', color: 'primary' },
-                        { value: 'formula5', label: 'Kichik formula (5)', icon: '🔢', color: 'primary' },
-                        { value: 'formula10plus', label: 'Katta formula (10)', icon: '➕', color: 'accent' },
-                        { value: 'hammasi', label: 'Mix formula', icon: '🎯', color: 'warning' },
-                        { value: 'manfiy', label: 'Manfiy sonlar', icon: '➖', color: 'destructive' },
-                        { value: 'kopaytirish', label: "Ko'paytirish", icon: '✖️', color: 'success' },
-                        { value: 'bolish', label: "Bo'lish", icon: '➗', color: 'blue' },
+                        { value: 'oddiy', label: 'Oddiy', icon: '📘' },
+                        { value: 'formula5', label: 'F5', icon: '🔢' },
+                        { value: 'formula10plus', label: 'F10', icon: '➕' },
+                        { value: 'hammasi', label: 'Mix', icon: '🎯' },
+                        { value: 'manfiy', label: '−', icon: '➖' },
+                        { value: 'kopaytirish', label: '×', icon: '✖️' },
+                        { value: 'bolish', label: '÷', icon: '➗' },
                       ].map((item) => (
                         <div key={item.value} className="flex items-center relative">
                           <RadioGroupItem
@@ -1652,19 +1652,14 @@ export const NumberTrainer = () => {
                           />
                           <Label
                             htmlFor={`formula-${item.value}`}
-                            className={`flex items-center gap-1.5 sm:gap-2 w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 
+                            className={`flex flex-col items-center justify-center w-full px-1 sm:px-2 py-2 sm:py-3 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 min-h-[52px] sm:min-h-[60px]
                               ${formulaType === item.value 
-                                ? item.color === 'primary' ? 'bg-primary text-primary-foreground border-primary shadow-glow'
-                                  : item.color === 'accent' ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow'
-                                  : item.color === 'warning' ? 'bg-warning text-warning-foreground border-warning'
-                                  : item.color === 'destructive' ? 'bg-destructive text-destructive-foreground border-destructive'
-                                  : item.color === 'success' ? 'bg-success text-success-foreground border-success'
-                                  : 'bg-blue-500 text-white border-blue-500'
+                                ? 'bg-primary text-primary-foreground border-primary shadow-md'
                                 : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
                               }`}
                           >
-                            <span className="text-sm sm:text-lg">{item.icon}</span>
-                            <span className="font-medium text-xs sm:text-sm">{item.label}</span>
+                            <span className="text-lg sm:text-xl">{item.icon}</span>
+                            <span className="font-medium text-[10px] sm:text-xs mt-0.5">{item.label}</span>
                           </Label>
                         </div>
                       ))}
