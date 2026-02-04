@@ -167,17 +167,18 @@ export const RealisticAbacus = ({
       "flex items-center w-full",
       isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto"
     )}>
-      {/* Abacus frame */}
+      {/* Abacus frame - dark slate gray matching reference */}
       <motion.div 
-        className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
+        className="relative rounded-lg overflow-hidden"
         style={{
-          background: colorPalette.frame,
-          padding: compact ? 16 : 32,
+          background: colorPalette.frame || 'linear-gradient(135deg, #3D4A5C 0%, #2C3644 50%, #1F2833 100%)',
+          padding: compact ? 12 : 24,
           boxShadow: `
-            0 20px 40px -10px rgba(0,0,0,0.5),
-            inset 0 1px 0 rgba(255,255,255,0.1),
-            inset 0 -1px 0 rgba(0,0,0,0.3)
+            0 20px 40px -10px rgba(0,0,0,0.6),
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            inset 0 -1px 0 rgba(0,0,0,0.4)
           `,
+          border: '4px solid #1A1F26',
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
         }}
@@ -187,9 +188,9 @@ export const RealisticAbacus = ({
       >
         {/* Inner frame border */}
         <div 
-          className="absolute inset-2 rounded-xl pointer-events-none"
+          className="absolute inset-1 rounded pointer-events-none"
           style={{
-            border: '2px solid rgba(255,255,255,0.08)',
+            border: '2px solid rgba(0,0,0,0.3)',
           }}
         />
         
@@ -198,7 +199,7 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-stretch"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '16px 24px' : '28px 48px',
+            padding: compact ? '12px 16px' : '20px 32px',
           }}
         >
           {/* Columns in reverse order (largest place value on left) */}
@@ -226,15 +227,11 @@ export const RealisticAbacus = ({
           })}
         </div>
         
-        {/* Frame decorative dots */}
-        <div className="absolute top-3 right-3 flex gap-1">
-          {[0, 1, 2].map((i) => (
-            <div 
-              key={i}
-              className="w-1.5 h-1.5 rounded-full bg-slate-600"
-            />
-          ))}
-        </div>
+        {/* Frame corner decorations */}
+        <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-black/20 rounded-tl" />
+        <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-black/20 rounded-tr" />
+        <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-black/20 rounded-bl" />
+        <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-black/20 rounded-br" />
       </motion.div>
       
       {/* Value display */}
