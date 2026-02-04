@@ -133,6 +133,27 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
             <Logo size="sm" />
           </Link>
           
+          {/* Center Navigation - Desktop only, only for logged in users */}
+          {user && (
+            <nav className="hidden lg:flex items-center gap-1 bg-secondary/60 backdrop-blur-sm rounded-full px-1.5 py-1 border border-border/30">
+              {navItems.map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
+                  className={`
+                    flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                    ${isActive(item.path) 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    }
+                  `}
+                >
+                  <item.icon className="h-3.5 w-3.5" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </nav>
+          )}
 
           {/* Right side controls - Ultra compact for mobile */}
           <div className="flex items-center gap-1 xs:gap-1.5 sm:gap-2">
