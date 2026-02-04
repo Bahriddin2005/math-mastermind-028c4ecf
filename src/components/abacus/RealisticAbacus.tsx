@@ -4,6 +4,8 @@ import { AbacusColumn } from './AbacusColumn';
 import { useSound } from '@/hooks/useSound';
 import { useDeviceType } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import type { AbacusColorScheme } from './AbacusColorScheme';
+import { getColorPaletteForScheme } from './AbacusColorScheme';
 
 export type AbacusMode = 'beginner' | 'mental' | 'test';
 export type AbacusTheme = 'classic' | 'modern' | 'kids';
@@ -24,6 +26,7 @@ interface RealisticAbacusProps {
   theme?: AbacusTheme;
   showValue?: boolean;
   orientation?: AbacusOrientation;
+  colorScheme?: AbacusColorScheme;
 }
 
 /**
@@ -40,11 +43,15 @@ export const RealisticAbacus = ({
   compact = false,
   showValue: showValueProp,
   orientation = 'horizontal',
+  colorScheme = 'classic',
 }: RealisticAbacusProps) => {
   const { playSound } = useSound();
   const deviceType = useDeviceType();
   
   const showValue = showValueProp ?? (mode === 'beginner');
+  
+  // Get color palette based on scheme
+  const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
   // Responsive bead size: Large on desktop, medium on tablet, compact on mobile
   const getBeadSize = (cols: number): number => {
@@ -164,7 +171,7 @@ export const RealisticAbacus = ({
       <motion.div 
         className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #2D3748 0%, #1A202C 100%)',
+          background: colorPalette.frame,
           padding: compact ? 16 : 32,
           boxShadow: `
             0 20px 40px -10px rgba(0,0,0,0.5),
@@ -212,6 +219,8 @@ export const RealisticAbacus = ({
                 showLabel={mode === 'beginner'}
                 disabled={readOnly}
                 onBeadSound={handleBeadSound}
+                upperBeadColor={colorPalette.upperBead}
+                lowerBeadColors={colorPalette.lowerBeads}
               />
             );
           })}

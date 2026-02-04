@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,8 +8,10 @@ import {
   RealisticAbacus, 
   AbacusModeSelector,
   FullscreenAbacus,
+  AbacusColorSchemeSelector,
   type AbacusMode,
   type AbacusOrientation,
+  type AbacusColorScheme,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
@@ -21,6 +23,8 @@ const AbacusSimulator = () => {
   const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
+  const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
   const { soundEnabled, toggleSound } = useSound();
 
   const handleReset = useCallback(() => {
@@ -43,6 +47,80 @@ const AbacusSimulator = () => {
     'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
   ];
 
+  // If showing color picker, render the color selection screen
+  if (showColorPicker) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background flex flex-col">
+        {/* Header */}
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm font-medium hidden sm:inline">Orqaga</span>
+            </Link>
+            
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              <Palette className="w-5 h-5 text-primary" />
+              <span>Rang tanlang</span>
+            </h1>
+            
+            <div className="w-20" />
+          </div>
+        </header>
+
+        <main className="flex-1 container mx-auto px-4 py-6 flex flex-col">
+          {/* Welcome message */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-6"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Abakus Simulator</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+              O'zingizga yoqqan rangni tanlang! 🎨
+            </h2>
+            <p className="text-muted-foreground">
+              Abakusingiz shu rangda bo'ladi
+            </p>
+          </motion.div>
+
+          {/* Color scheme selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="flex-1"
+          >
+            <AbacusColorSchemeSelector
+              selectedScheme={colorScheme}
+              onSelect={setColorScheme}
+            />
+          </motion.div>
+
+          {/* Continue button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-6 pb-6"
+          >
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
+              onClick={() => setShowColorPicker(false)}
+            >
+              Davom etish
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Fullscreen Abacus Modal */}
@@ -52,6 +130,7 @@ const AbacusSimulator = () => {
         initialColumns={columns}
         initialValue={value}
         initialMode={mode}
+        colorScheme={colorScheme}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -234,6 +313,7 @@ const AbacusSimulator = () => {
               mode={mode}
               showValue={mode !== 'mental'}
               orientation={orientation}
+              colorScheme={colorScheme}
             />
           </div>
         </motion.div>

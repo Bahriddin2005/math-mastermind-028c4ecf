@@ -7,6 +7,7 @@ import { useSound } from '@/hooks/useSound';
 import { useOrientation } from '@/hooks/useOrientation';
 import { cn } from '@/lib/utils';
 import type { AbacusMode } from './RealisticAbacus';
+import type { AbacusColorScheme } from './AbacusColorScheme';
 
 interface FullscreenAbacusProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface FullscreenAbacusProps {
   initialColumns?: number;
   initialValue?: number;
   initialMode?: AbacusMode;
+  colorScheme?: AbacusColorScheme;
 }
 
 // Test mode problem generator
@@ -38,6 +40,7 @@ export const FullscreenAbacus = ({
   initialColumns = 13,
   initialValue = 0,
   initialMode = 'beginner',
+  colorScheme = 'classic',
 }: FullscreenAbacusProps) => {
   const [columns, setColumns] = useState(initialColumns);
   const [value, setValue] = useState(initialValue);
@@ -403,6 +406,7 @@ export const FullscreenAbacus = ({
             mode={mode}
             showValue={false}
             compact
+            colorScheme={colorScheme}
           />
         </div>
       </div>
