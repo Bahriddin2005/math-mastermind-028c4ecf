@@ -98,25 +98,26 @@ export const useSound = () => {
           break;
 
         case 'bead':
-          // Wooden bead click sound - low frequency
+           // Fun xylophone-like sound for lower beads
           oscillator.type = 'sine';
-          oscillator.frequency.setValueAtTime(180, now);
-          oscillator.frequency.exponentialRampToValueAtTime(80, now + 0.08);
-          gainNode.gain.setValueAtTime(0.15, now);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+           oscillator.frequency.setValueAtTime(523.25, now); // C5
+           oscillator.frequency.exponentialRampToValueAtTime(392, now + 0.15);
+           gainNode.gain.setValueAtTime(0.25, now);
+           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
           oscillator.start(now);
-          oscillator.stop(now + 0.1);
+           oscillator.stop(now + 0.2);
           break;
 
         case 'beadHigh':
-          // Higher pitch bead for top bead (5 value)
+           // Bright bell-like sound for upper bead (5 value)
           oscillator.type = 'sine';
-          oscillator.frequency.setValueAtTime(350, now);
-          oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.1);
-          gainNode.gain.setValueAtTime(0.12, now);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+           oscillator.frequency.setValueAtTime(880, now); // A5
+           oscillator.frequency.setValueAtTime(1046.5, now + 0.05); // C6
+           oscillator.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+           gainNode.gain.setValueAtTime(0.2, now);
+           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
           oscillator.start(now);
-          oscillator.stop(now + 0.12);
+           oscillator.stop(now + 0.25);
           break;
 
         case 'countdown':
@@ -165,14 +166,15 @@ export const useSound = () => {
           break;
 
         case 'pop':
-          // Fun pop sound for kids - like bubble pop
+           // Cute bubble pop for drag start
           oscillator.type = 'sine';
-          oscillator.frequency.setValueAtTime(800, now);
-          oscillator.frequency.exponentialRampToValueAtTime(200, now + 0.1);
-          gainNode.gain.setValueAtTime(0.4, now);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+           oscillator.frequency.setValueAtTime(600, now);
+           oscillator.frequency.setValueAtTime(900, now + 0.03);
+           oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+           gainNode.gain.setValueAtTime(0.2, now);
+           gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
           oscillator.start(now);
-          oscillator.stop(now + 0.15);
+           oscillator.stop(now + 0.12);
           break;
 
         case 'whoosh':
