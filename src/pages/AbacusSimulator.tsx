@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,7 +25,42 @@ const AbacusSimulator = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
-  const { soundEnabled, toggleSound } = useSound();
+  const { soundEnabled, toggleSound, playSound } = useSound();
+  const [playingAllSounds, setPlayingAllSounds] = useState(false);
+
+  const allSoundTypes = [
+    { type: 'pop' as const, label: '🫧 Pop', delay: 0 },
+    { type: 'bead' as const, label: '🎹 Bead', delay: 300 },
+    { type: 'beadHigh' as const, label: '🔔 BeadHigh', delay: 600 },
+    { type: 'tick' as const, label: '⏱️ Tick', delay: 900 },
+    { type: 'correct' as const, label: '✅ Correct', delay: 1200 },
+    { type: 'incorrect' as const, label: '❌ Incorrect', delay: 1600 },
+    { type: 'start' as const, label: '🚀 Start', delay: 2000 },
+    { type: 'countdown' as const, label: '⏰ Countdown', delay: 2300 },
+    { type: 'combo' as const, label: '🔥 Combo', delay: 2600 },
+    { type: 'levelUp' as const, label: '⬆️ LevelUp', delay: 2900 },
+    { type: 'complete' as const, label: '🎉 Complete', delay: 3400 },
+    { type: 'winner' as const, label: '🏆 Winner', delay: 4100 },
+    { type: 'whoosh' as const, label: '💨 Whoosh', delay: 5000 },
+    { type: 'sparkle' as const, label: '✨ Sparkle', delay: 5300 },
+    { type: 'bounce' as const, label: '🏀 Bounce', delay: 5600 },
+  ];
+
+  const playAllSounds = useCallback(() => {
+    if (playingAllSounds) return;
+    setPlayingAllSounds(true);
+    
+    allSoundTypes.forEach(({ type, delay }) => {
+      setTimeout(() => {
+        playSound(type);
+      }, delay);
+    });
+    
+    // Reset state after all sounds played
+    setTimeout(() => {
+      setPlayingAllSounds(false);
+    }, 6000);
+  }, [playSound, playingAllSounds]);
 
   const handleReset = useCallback(() => {
     setValue(0);
@@ -208,6 +243,16 @@ const AbacusSimulator = () => {
               ) : (
                 <VolumeX className="w-4 h-4" />
               )}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={playAllSounds}
+              disabled={playingAllSounds || !soundEnabled}
+              className={cn("w-9 h-9 p-0", playingAllSounds && "animate-pulse bg-primary/20")}
+              title="Barcha tovushlarni tinglash"
+            >
+              <Music className="w-4 h-4" />
             </Button>
             <Button 
               variant="ghost" 
