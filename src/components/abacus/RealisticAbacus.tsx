@@ -165,7 +165,7 @@ export const RealisticAbacus = ({
   return (
     <div className={cn(
       "flex items-center w-full",
-      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto"
+      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto px-4 sm:px-6 lg:px-8"
     )}>
       {/* Abacus frame - dark slate gray matching reference */}
       <motion.div 
