@@ -32,7 +32,8 @@ import {
   GraduationCap,
   Phone,
   RefreshCw,
-  ShieldCheck
+  ShieldCheck,
+  Send
 } from 'lucide-react';
 import { z } from 'zod';
 import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
@@ -53,6 +54,7 @@ const signupSchema = loginSchema.extend({
     (val) => !val || /^\+?[0-9]{9,15}$/.test(val.replace(/\s/g, '')),
     { message: "Noto'g'ri telefon raqami formati" }
   ),
+  telegramUsername: z.string().min(3, "Telegram username kamida 3 ta belgidan iborat bo'lishi kerak"),
 });
 
 const emailSchema = z.object({
@@ -80,6 +82,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [telegramUsername, setTelegramUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -94,6 +97,7 @@ const Auth = () => {
     password: string;
     username: string;
     phoneNumber?: string;
+    telegramUsername: string;
   } | null>(null);
   
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
@@ -134,7 +138,7 @@ const Auth = () => {
       if (mode === 'login') {
         loginSchema.parse({ email, password });
       } else if (mode === 'signup') {
-        signupSchema.parse({ email, password, username, phoneNumber });
+        signupSchema.parse({ email, password, username, phoneNumber, telegramUsername });
       } else if (mode === 'forgot-password') {
         emailSchema.parse({ email });
       }
@@ -154,16 +158,19 @@ const Auth = () => {
     }
   };
 
-  const sendVerificationCode = async (targetEmail: string, targetPhone?: string) => {
+  const sendTelegramVerificationCode = async (targetTelegramUsername: string, targetEmail: string, targetPhone?: string) => {
     try {
-      const { data, error } = await supabase.functions.invoke('send-verification-code', {
-        body: { email: targetEmail, phone_number: targetPhone }
+      const { data, error } = await supabase.functions.invoke('send-telegram-code', {
+        body: { telegram_username: targetTelegramUsername, email: targetEmail, phone_number: targetPhone }
       });
       
       if (error) throw error;
+      if (data && !data.success) {
+        return { success: false, error: data.error };
+      }
       return { success: true };
     } catch (error: any) {
-      console.error('Failed to send verification code:', error);
+      console.error('Failed to send Telegram verification code:', error);
       return { success: false, error: error.message };
     }
   };
@@ -213,22 +220,27 @@ const Auth = () => {
           });
         }
       } else if (mode === 'signup') {
-        // Store signup data and send verification code
+        // Store signup data and send verification code via Telegram
         setPendingSignupData({
           email,
           password,
           username,
-          phoneNumber: phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined
+          phoneNumber: phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined,
+          telegramUsername: telegramUsername.replace(/^@/, '').trim()
         });
         
-        const result = await sendVerificationCode(email, phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined);
+        const result = await sendTelegramVerificationCode(
+          telegramUsername, 
+          email, 
+          phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined
+        );
         
         if (result.success) {
           setMode('verify-email');
           setResendCooldown(60);
           toastHook({
             title: 'Kod yuborildi!',
-            description: `Tasdiqlash kodi ${email} manziliga yuborildi`,
+            description: `Tasdiqlash kodi Telegram orqali yuborildi`,
           });
         } else {
           toastHook({
@@ -311,8 +323,9 @@ const Auth = () => {
     if (resendCooldown > 0 || !pendingSignupData) return;
     
     setLoading(true);
-    const result = await sendVerificationCode(
-      pendingSignupData.email, 
+    const result = await sendTelegramVerificationCode(
+      pendingSignupData.telegramUsername, 
+      pendingSignupData.email,
       pendingSignupData.phoneNumber
     );
     setLoading(false);
@@ -322,7 +335,7 @@ const Auth = () => {
       setVerificationCode('');
       toastHook({
         title: 'Kod qayta yuborildi!',
-        description: `Yangi kod ${pendingSignupData.email} manziliga yuborildi`,
+        description: `Yangi kod Telegram orqali yuborildi`,
       });
     } else {
       toastHook({
@@ -359,7 +372,7 @@ const Auth = () => {
     );
   }
 
-  // Email verification screen
+  // Telegram verification screen
   if (mode === 'verify-email' && pendingSignupData) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
@@ -373,12 +386,12 @@ const Auth = () => {
             <div className="h-1 bg-gradient-to-r from-primary via-accent to-primary" />
             
             <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50 animate-bounce-slow">
-                <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-sky-500/30 dark:shadow-sky-500/50 animate-bounce-slow">
+                <Send className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
-              <CardTitle className="text-xl sm:text-2xl font-display">Emailni tasdiqlang</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl font-display">Telegramni tekshiring</CardTitle>
               <CardDescription className="mt-1.5 sm:mt-2 text-sm">
-                <strong className="text-foreground">{pendingSignupData.email}</strong> manziliga 6 xonali kod yuborildi
+                Tasdiqlash kodi <strong className="text-foreground">@{pendingSignupData.telegramUsername}</strong> ga yuborildi
               </CardDescription>
             </CardHeader>
             
@@ -673,6 +686,36 @@ const Auth = () => {
                         {errors.phoneNumber}
                       </p>
                     )}
+                  </div>
+                )}
+
+                {mode === 'signup' && (
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="telegramUsername" className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                      <Send className="h-3.5 w-3.5 text-sky-500" />
+                      Telegram username
+                    </Label>
+                    <div className="relative group">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm sm:text-base">@</span>
+                      <Input
+                        id="telegramUsername"
+                        type="text"
+                        placeholder="username"
+                        value={telegramUsername}
+                        onChange={(e) => setTelegramUsername(e.target.value.replace(/^@/, ''))}
+                        disabled={loading}
+                        className={`pl-8 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.telegramUsername ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      />
+                    </div>
+                    {errors.telegramUsername && (
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                        {errors.telegramUsername}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ⚠️ Avval <a href="https://t.me/iqromaxbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxbot</a> ga /start yuboring
+                    </p>
                   </div>
                 )}
                 
