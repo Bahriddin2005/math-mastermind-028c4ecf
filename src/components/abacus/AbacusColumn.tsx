@@ -175,7 +175,7 @@ export const AbacusColumn = ({
         className="relative z-20 w-full"
         style={{ 
           height: 12,
-          marginTop: beadHeight * 0.2,
+          marginTop: beadHeight * 0.8,
           marginBottom: beadHeight * 0.2,
         }}
       >
