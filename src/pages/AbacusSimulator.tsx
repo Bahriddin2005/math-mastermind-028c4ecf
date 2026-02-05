@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,41 +25,42 @@ const AbacusSimulator = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
+  const [showSoundPicker, setShowSoundPicker] = useState(false);
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
   const allSoundTypes = [
-    { type: 'pop' as const, label: '🫧 Pop', delay: 0 },
-    { type: 'bead' as const, label: '🎹 Bead', delay: 300 },
-    { type: 'beadHigh' as const, label: '🔔 BeadHigh', delay: 600 },
-    { type: 'tick' as const, label: '⏱️ Tick', delay: 900 },
-    { type: 'correct' as const, label: '✅ Correct', delay: 1200 },
-    { type: 'incorrect' as const, label: '❌ Incorrect', delay: 1600 },
-    { type: 'start' as const, label: '🚀 Start', delay: 2000 },
-    { type: 'countdown' as const, label: '⏰ Countdown', delay: 2300 },
-    { type: 'combo' as const, label: '🔥 Combo', delay: 2600 },
-    { type: 'levelUp' as const, label: '⬆️ LevelUp', delay: 2900 },
-    { type: 'complete' as const, label: '🎉 Complete', delay: 3400 },
-    { type: 'winner' as const, label: '🏆 Winner', delay: 4100 },
-    { type: 'whoosh' as const, label: '💨 Whoosh', delay: 5000 },
-    { type: 'sparkle' as const, label: '✨ Sparkle', delay: 5300 },
-    { type: 'bounce' as const, label: '🏀 Bounce', delay: 5600 },
+    { type: 'pop' as const, label: '🫧 Pop', desc: 'Surish boshi' },
+    { type: 'bead' as const, label: '🎹 Bead', desc: 'Pastki tosh' },
+    { type: 'beadHigh' as const, label: '🔔 Bell', desc: 'Yuqori tosh' },
+    { type: 'tick' as const, label: '⏱️ Tick', desc: 'Taymer' },
+    { type: 'correct' as const, label: '✅ To\'g\'ri', desc: 'To\'g\'ri javob' },
+    { type: 'incorrect' as const, label: '❌ Xato', desc: 'Noto\'g\'ri javob' },
+    { type: 'start' as const, label: '🚀 Start', desc: 'O\'yin boshi' },
+    { type: 'countdown' as const, label: '⏰ Countdown', desc: 'Ortga sanash' },
+    { type: 'combo' as const, label: '🔥 Combo', desc: 'Ketma-ket' },
+    { type: 'levelUp' as const, label: '⬆️ Level Up', desc: 'Daraja oshdi' },
+    { type: 'complete' as const, label: '🎉 Complete', desc: 'Yakunlash' },
+    { type: 'winner' as const, label: '🏆 G\'olib', desc: 'G\'alaba' },
+    { type: 'whoosh' as const, label: '💨 Whoosh', desc: 'Tez harakat' },
+    { type: 'sparkle' as const, label: '✨ Sparkle', desc: 'Sehrli' },
+    { type: 'bounce' as const, label: '🏀 Bounce', desc: 'Sakrash' },
   ];
 
   const playAllSounds = useCallback(() => {
     if (playingAllSounds) return;
     setPlayingAllSounds(true);
     
-    allSoundTypes.forEach(({ type, delay }) => {
+    allSoundTypes.forEach(({ type }, index) => {
       setTimeout(() => {
         playSound(type);
-      }, delay);
+      }, index * 400);
     });
     
     // Reset state after all sounds played
     setTimeout(() => {
       setPlayingAllSounds(false);
-    }, 6000);
+    }, allSoundTypes.length * 400 + 500);
   }, [playSound, playingAllSounds]);
 
   const handleReset = useCallback(() => {
@@ -247,9 +248,9 @@ const AbacusSimulator = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={playAllSounds}
-              disabled={playingAllSounds || !soundEnabled}
-              className={cn("w-9 h-9 p-0", playingAllSounds && "animate-pulse bg-primary/20")}
+              onClick={() => setShowSoundPicker(!showSoundPicker)}
+              disabled={!soundEnabled}
+              className={cn("w-9 h-9 p-0", showSoundPicker && "bg-primary/20")}
               title="Barcha tovushlarni tinglash"
             >
               <Music className="w-4 h-4" />
@@ -283,6 +284,55 @@ const AbacusSimulator = () => {
         >
           <AbacusModeSelector mode={mode} onChange={setMode} />
         </motion.div>
+
+        {/* Tovushlar paneli */}
+        <AnimatePresence>
+          {showSoundPicker && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Music className="w-4 h-4 text-primary" />
+                      Tovushlar
+                    </CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={playAllSounds}
+                      disabled={playingAllSounds}
+                      className={cn("gap-1.5", playingAllSounds && "animate-pulse")}
+                    >
+                      <Play className="w-3 h-3" />
+                      {playingAllSounds ? "Ijro..." : "Hammasini"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                    {allSoundTypes.map(({ type, label, desc }) => (
+                      <motion.button
+                        key={type}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => playSound(type)}
+                        className="flex flex-col items-center gap-1 p-3 rounded-xl bg-background/80 border border-border/50 hover:border-primary/50 hover:bg-primary/10 transition-all"
+                      >
+                        <span className="text-xl">{label.split(' ')[0]}</span>
+                        <span className="text-xs font-medium">{label.split(' ')[1]}</span>
+                        <span className="text-[10px] text-muted-foreground hidden sm:block">{desc}</span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Sozlamalar paneli */}
         {showSettings && (
