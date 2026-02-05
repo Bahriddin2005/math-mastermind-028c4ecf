@@ -115,13 +115,25 @@ export const AbacusColumn = ({
         style={{
           left: '50%',
           transform: 'translateX(-50%)',
-          top: 0,
+          top: -10,
           bottom: 0,
           width: 6,
           background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
           borderRadius: 3,
         }}
-      />
+      >
+        {/* Rod top hook/cap */}
+        <div 
+          className="absolute -top-1 left-1/2 -translate-x-1/2"
+          style={{
+            width: 12,
+            height: 12,
+            background: 'radial-gradient(circle at 40% 40%, #A0522D, #5D3A1A)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 -2px 3px rgba(0,0,0,0.3)',
+          }}
+        />
+      </div>
       
       {/* Label - tepada, ko'zga tashlanadigan */}
       {showLabel && (
