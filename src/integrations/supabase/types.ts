@@ -1190,7 +1190,7 @@ export type Database = {
           id: string
           is_active: boolean
           last_name: string | null
-          phone_number: string
+          phone_number: string | null
           updated_at: string
           username: string | null
         }
@@ -1201,7 +1201,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           last_name?: string | null
-          phone_number: string
+          phone_number?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -1212,7 +1212,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           last_name?: string | null
-          phone_number?: string
+          phone_number?: string | null
           updated_at?: string
           username?: string | null
         }
