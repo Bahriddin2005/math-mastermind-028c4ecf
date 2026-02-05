@@ -79,11 +79,6 @@ export const AbacusBead = ({
     onMoveEnd?.();
   };
   
-  const handleTap = () => {
-    if (disabled) return;
-    isActive ? onDeactivate() : onActivate();
-  };
-  
   const getActiveOffset = () => {
     if (isUpper) return isActive ? ACTIVE_OFFSET : 0;
     return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
@@ -108,8 +103,6 @@ export const AbacusBead = ({
       dragElastic={0.1}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onTap={handleTap}
-      whileTap={{ scale: 0.98 }}
       animate={{ y: getActiveOffset() }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
     >
