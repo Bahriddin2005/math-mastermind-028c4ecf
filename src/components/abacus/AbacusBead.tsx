@@ -1,6 +1,7 @@
  import { useRef, useState } from 'react';
  import { motion, PanInfo } from 'framer-motion';
  import { cn } from '@/lib/utils';
+ import { useSound } from '@/hooks/useSound';
  
  export type BeadColorType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'blue' | 'purple' | 'pink';
  
@@ -33,6 +34,7 @@
  }: AbacusBeadProps) => {
    const [isDragging, setIsDragging] = useState(false);
    const beadRef = useRef<HTMLDivElement>(null);
+   const { playSound } = useSound();
    
    const SNAP_THRESHOLD = beadSize * 0.3;
    const ACTIVE_OFFSET = beadSize * 0.4;
@@ -43,6 +45,7 @@
    const handleDragStart = () => {
      if (disabled) return;
      setIsDragging(true);
+     playSound('pop');
      onMoveStart?.();
    };
    
@@ -52,11 +55,21 @@
      const offset = info.offset.y;
      
      if (isUpper) {
-       if (!isActive && offset > SNAP_THRESHOLD) onActivate();
-       else if (isActive && offset < -SNAP_THRESHOLD) onDeactivate();
+       if (!isActive && offset > SNAP_THRESHOLD) {
+         onActivate();
+         playSound('beadHigh');
+       } else if (isActive && offset < -SNAP_THRESHOLD) {
+         onDeactivate();
+         playSound('beadHigh');
+       }
      } else {
-       if (!isActive && offset < -SNAP_THRESHOLD) onActivate();
-       else if (isActive && offset > SNAP_THRESHOLD) onDeactivate();
+       if (!isActive && offset < -SNAP_THRESHOLD) {
+         onActivate();
+         playSound('bead');
+       } else if (isActive && offset > SNAP_THRESHOLD) {
+         onDeactivate();
+         playSound('bead');
+       }
      }
      onMoveEnd?.();
    };
