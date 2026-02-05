@@ -60,12 +60,12 @@ export const AbacusColumn = ({
   
   // Get color for lower bead based on row index
   const getLowerBeadColor = (rowIndex: number): string => {
-    if (lowerBeadColors && lowerBeadColors[rowIndex]) {
-      return lowerBeadColors[rowIndex];
+    // Use first color for all beads (uniform design)
+    if (lowerBeadColors && lowerBeadColors[0]) {
+      return lowerBeadColors[0];
     }
-    // Fallback to default colors
-    const defaultColors = ['#EF5350', '#FFA726', '#FFEE58', '#26C6DA'];
-    return defaultColors[rowIndex] || '#26C6DA';
+    // Fallback to terracotta color matching reference
+    return '#A0522D';
   };
   
   const handleUpperActivate = useCallback(() => {
@@ -115,19 +115,32 @@ export const AbacusColumn = ({
         style={{
           left: '50%',
           transform: 'translateX(-50%)',
-          top: 0,
+          top: -10,
           bottom: 0,
-          width: 6,
-          background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
-          borderRadius: 3,
+           width: 8,
+           background: 'linear-gradient(to right, #475569, #64748B, #475569)',
+           borderRadius: 4,
+           boxShadow: 'inset -1px 0 2px rgba(0,0,0,0.3), inset 1px 0 2px rgba(255,255,255,0.1)',
         }}
-      />
+      >
+        {/* Rod top hook/cap */}
+        <div 
+          className="absolute -top-1 left-1/2 -translate-x-1/2"
+          style={{
+             width: 14,
+             height: 14,
+             background: 'radial-gradient(circle at 40% 40%, #94A3B8, #475569)',
+            borderRadius: '50%',
+             boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.2)',
+          }}
+        />
+      </div>
       
       {/* Label - tepada, ko'zga tashlanadigan */}
       {showLabel && (
         <div 
-          className="text-center mb-2 z-20"
-          style={{ minHeight: 20 }}
+          className="text-center mb-1 z-20"
+          style={{ minHeight: 20, marginTop: -25 }}
         >
           <div 
             className="px-1.5 py-0.5 rounded-md font-bold"
@@ -145,8 +158,8 @@ export const AbacusColumn = ({
         </div>
       )}
       
-      {/* Upper bead (value 5) - positioned closer to reckoning bar */}
-      <div className="relative z-10" style={{ marginTop: beadHeight * 0.8 }}>
+      {/* Upper bead (value 5) - positioned at top */}
+      <div className="relative z-10" style={{ marginTop: beadHeight * 0.2 }}>
         <AbacusBead
           isUpper={true}
           isActive={upperActive}
@@ -162,32 +175,32 @@ export const AbacusColumn = ({
       <div
         className="relative z-20 w-full"
         style={{ 
-          height: 10,
-          marginTop: beadHeight * 0.2,
+          height: 12,
+          marginTop: beadHeight * 1.4,
           marginBottom: beadHeight * 0.2,
         }}
       >
         <div 
           className="absolute left-1/2 -translate-x-1/2"
           style={{
-            width: beadSize * 1.8,
+            width: beadSize * 2,
             height: '100%',
-            background: 'linear-gradient(to bottom, #B0B0B0, #808080, #606060)',
+             background: 'linear-gradient(to bottom, #64748B, #475569, #334155)',
             borderRadius: 2,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+             boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
           }}
         />
         {/* Dots on the bar */}
         <div 
-          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
+           className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
         />
         <div 
-          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
+           className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
         />
       </div>
       
-      {/* Lower beads (4 beads) - overlapping like reference image */}
-      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.7 }}>
+      {/* Lower beads (4 beads) */}
+      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 1.2 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = Boolean(lowerActive[beadIndex]);
