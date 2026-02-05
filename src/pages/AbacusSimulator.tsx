@@ -60,8 +60,8 @@ const AbacusSimulator = () => {
             </Link>
             
             <h1 className="text-lg font-bold flex items-center gap-2">
-              <Palette className="w-5 h-5 text-primary" />
-              <span>Rang tanlang</span>
+              <Calculator className="w-5 h-5 text-primary" />
+              <span>Abakus sozlamalari</span>
             </h1>
             
             <div className="w-20" />
@@ -80,11 +80,49 @@ const AbacusSimulator = () => {
               <span className="text-sm font-medium">Abakus Simulator</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-              O'zingizga yoqqan rangni tanlang! 🎨
+              Abakusni sozlang! 🧮
             </h2>
             <p className="text-muted-foreground">
-              Abakusingiz shu rangda bo'ladi
+              Ustunlar soni va rangni tanlang
             </p>
+          </motion.div>
+
+          {/* Column count selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-6"
+          >
+            <Card className="border-primary/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Calculator className="w-4 h-4 text-primary" />
+                  Ustunlar soni
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {[5, 7, 9, 10, 13, 15, 17].map((count) => (
+                    <Button
+                      key={count}
+                      variant={columns === count ? 'default' : 'outline'}
+                      size="lg"
+                      onClick={() => setColumns(count)}
+                      className={cn(
+                        "min-w-[60px] h-12 text-lg font-bold transition-all",
+                        columns === count && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      )}
+                    >
+                      {count}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-center text-sm text-muted-foreground mt-3">
+                  {columns} ta ustun = {columnLabels.slice(0, columns).reverse().join(', ')}
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Color scheme selector */}
@@ -94,10 +132,20 @@ const AbacusSimulator = () => {
             transition={{ delay: 0.1 }}
             className="flex-1"
           >
+            <Card className="border-primary/20 mb-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Palette className="w-4 h-4 text-primary" />
+                  Rang sxemasi
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
             <AbacusColorSchemeSelector
               selectedScheme={colorScheme}
               onSelect={setColorScheme}
             />
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Continue button */}
