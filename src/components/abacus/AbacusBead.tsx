@@ -1,19 +1,8 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export type BeadColorType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'blue' | 'purple' | 'pink';
-
-const adjustColor = (hex: string, percent: number): string => {
-  hex = hex.replace(/^#/, '');
-  let r = parseInt(hex.substring(0, 2), 16);
-  let g = parseInt(hex.substring(2, 4), 16);
-  let b = parseInt(hex.substring(4, 6), 16);
-  r = Math.max(0, Math.min(255, r + (r * percent) / 100));
-  g = Math.max(0, Math.min(255, g + (g * percent) / 100));
-  b = Math.max(0, Math.min(255, b + (b * percent) / 100));
-  return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
-};
 
 interface AbacusBeadProps {
   isUpper: boolean;
@@ -48,15 +37,8 @@ export const AbacusBead = ({
   const SNAP_THRESHOLD = beadSize * 0.3;
   const ACTIVE_OFFSET = beadSize * 0.4;
   
-  // Terracotta brown matching reference
-  const baseColor = customColor || '#8B4513';
-  
-  const colors = useMemo(() => ({
-    topFace: adjustColor(baseColor, 20),
-    middleFace: baseColor,
-    bottomFace: adjustColor(baseColor, -50),
-    edge: adjustColor(baseColor, -30),
-  }), [baseColor]);
+  // Default color
+  const baseColor = customColor || '#E74C3C';
   
   const handleDragStart = () => {
     if (disabled) return;
@@ -84,9 +66,9 @@ export const AbacusBead = ({
     return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
   };
 
-  // Diamond dimensions matching reference
-  const beadWidth = beadSize * 1.8;
-  const beadHeight = beadSize * 0.65;
+  // Round bead dimensions
+  const beadWidth = beadSize * 1.4;
+  const beadHeight = beadSize * 0.9;
 
   return (
     <motion.div
@@ -106,55 +88,36 @@ export const AbacusBead = ({
       animate={{ y: getActiveOffset() }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
     >
-      <svg
-        width={beadWidth}
-        height={beadHeight}
-        viewBox={`0 0 100 36`}
-        preserveAspectRatio="none"
-        className="absolute inset-0"
+      {/* 3D Round Bead */}
+      <div
+        className="relative rounded-full"
+        style={{
+          width: beadWidth,
+          height: beadHeight,
+          background: `
+            radial-gradient(ellipse 60% 40% at 30% 25%, rgba(255,255,255,0.8) 0%, transparent 50%),
+            radial-gradient(ellipse 80% 60% at 50% 50%, ${baseColor} 0%, ${baseColor} 100%)
+          `,
+          boxShadow: `
+            inset 0 -${beadHeight * 0.15}px ${beadHeight * 0.3}px rgba(0,0,0,0.4),
+            inset 0 ${beadHeight * 0.1}px ${beadHeight * 0.2}px rgba(255,255,255,0.3),
+            0 ${beadHeight * 0.15}px ${beadHeight * 0.25}px rgba(0,0,0,0.3),
+            0 ${beadHeight * 0.05}px ${beadHeight * 0.1}px rgba(0,0,0,0.2)
+          `,
+          border: `1px solid rgba(0,0,0,0.15)`,
+        }}
       >
-        {/* Bottom dark face */}
-        <polygon
-          points="50,36 0,22 0,14 50,28 100,14 100,22"
-          fill={colors.bottomFace}
-        />
-        
-        {/* Middle face - main color */}
-        <polygon
-          points="50,28 0,14 50,0 100,14"
-          fill={colors.middleFace}
-        />
-        
-        {/* Top highlight */}
-        <polygon
-          points="50,4 15,14 50,24 85,14"
-          fill={colors.topFace}
-          opacity="0.6"
-        />
-        
-        {/* Left edge shadow */}
-        <polygon
-          points="0,14 0,22 50,36 50,28"
-          fill={colors.edge}
-          opacity="0.5"
-        />
-        
-        {/* Right edge shadow */}
-        <polygon
-          points="100,14 100,22 50,36 50,28"
-          fill={colors.edge}
-          opacity="0.3"
-        />
-        
         {/* Center rod hole */}
-        <ellipse
-          cx="50"
-          cy="18"
-          rx="4"
-          ry="6"
-          fill="rgba(0,0,0,0.4)"
+        <div 
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            width: beadSize * 0.2,
+            height: beadSize * 0.35,
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0.3))',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)',
+          }}
         />
-      </svg>
+      </div>
     </motion.div>
   );
 };
