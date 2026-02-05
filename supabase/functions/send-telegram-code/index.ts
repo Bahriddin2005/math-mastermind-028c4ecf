@@ -78,20 +78,55 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Find user in telegram_users table by username
-    const { data: telegramUser, error: findError } = await supabaseAdmin
-      .from("telegram_users")
-      .select("*")
-      .ilike("username", cleanUsername)
-      .eq("is_active", true)
-      .single();
+    // Find user in telegram_users table by username (fallback: phone number)
+    const normalizedPhone = (phone_number ?? "").replace(/[^\d+]/g, "").trim();
+    const phoneDigits = normalizedPhone.replace(/^\+/, "");
+    const phoneCandidates = Array.from(new Set([
+      normalizedPhone,
+      phoneDigits,
+      phoneDigits ? `+${phoneDigits}` : "",
+    ].filter(Boolean)));
 
-    if (findError || !telegramUser) {
-      console.log("Telegram user not found:", cleanUsername);
+    let telegramUser: any = null;
+
+    if (cleanUsername) {
+      const { data, error } = await supabaseAdmin
+        .from("telegram_users")
+        .select("*")
+        .eq("is_active", true)
+        // allow both "username" and "@username" stored forms
+        .or(`username.ilike.${cleanUsername},username.ilike.@${cleanUsername}`)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Telegram user lookup error (username):", error);
+      }
+
+      telegramUser = data ?? null;
+    }
+
+    if (!telegramUser && phoneCandidates.length > 0) {
+      const { data, error } = await supabaseAdmin
+        .from("telegram_users")
+        .select("*")
+        .eq("is_active", true)
+        .in("phone_number", phoneCandidates)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Telegram user lookup error (phone):", error);
+      }
+
+      telegramUser = data ?? null;
+    }
+
+    if (!telegramUser) {
+      console.log("Telegram user not found:", cleanUsername || normalizedPhone);
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxuz_bot ga /start buyrug'ini yuboring." 
+        JSON.stringify({
+          success: false,
+          error:
+            "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxuz_bot ga /start yuboring va botga telefon raqamingizni (Contact) yuboring.",
         }),
         {
           status: 400,
