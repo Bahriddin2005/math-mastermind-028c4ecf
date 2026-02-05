@@ -109,7 +109,7 @@ export const AbacusColumn = ({
   
   return (
     <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.7, padding: '0 2px' }}>
-      {/* Vertical rod - brown/copper colored matching reference */}
+      {/* Vertical rod - sleek dark design */}
       <div 
         className="absolute z-0"
         style={{
@@ -117,9 +117,10 @@ export const AbacusColumn = ({
           transform: 'translateX(-50%)',
           top: 0,
           bottom: 0,
-          width: 6,
-          background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
-          borderRadius: 3,
+          width: 8,
+          background: 'linear-gradient(to right, #2C3E50, #34495E, #2C3E50)',
+          borderRadius: 4,
+          boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.3), inset 2px 0 4px rgba(255,255,255,0.1)',
         }}
       />
       
@@ -158,11 +159,11 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Reckoning bar - gray horizontal bar matching reference */}
+      {/* Reckoning bar - modern sleek design */}
       <div
         className="relative z-20 w-full"
         style={{ 
-          height: 10,
+          height: 14,
           marginTop: beadHeight * 0.2,
           marginBottom: beadHeight * 0.2,
         }}
@@ -172,22 +173,30 @@ export const AbacusColumn = ({
           style={{
             width: beadSize * 1.8,
             height: '100%',
-            background: 'linear-gradient(to bottom, #B0B0B0, #808080, #606060)',
-            borderRadius: 2,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+            background: 'linear-gradient(to bottom, #5D6D7E, #2C3E50, #1A252F)',
+            borderRadius: 4,
+            boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
           }}
         />
         {/* Dots on the bar */}
         <div 
-          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
+          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 30% 30%, #F39C12, #D68910)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+          }}
         />
         <div 
-          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/60"
+          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
+          style={{
+            background: 'radial-gradient(circle at 30% 30%, #F39C12, #D68910)',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
+          }}
         />
       </div>
       
-      {/* Lower beads (4 beads) - overlapping like reference image */}
-      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.7 }}>
+      {/* Lower beads (4 beads) */}
+      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.4 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = Boolean(lowerActive[beadIndex]);
@@ -196,7 +205,7 @@ export const AbacusColumn = ({
           return (
             <div 
               key={beadIndex} 
-              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}
+              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.15 : 0 }}
             >
               <AbacusBead
                 isUpper={false}

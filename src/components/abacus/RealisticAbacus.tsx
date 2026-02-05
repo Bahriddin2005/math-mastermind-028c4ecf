@@ -169,16 +169,17 @@ export const RealisticAbacus = ({
     )}>
       {/* Abacus frame - dark slate gray matching reference */}
       <motion.div 
-        className="relative rounded-lg overflow-hidden"
+        className="relative rounded-2xl overflow-hidden"
         style={{
-          background: colorPalette.frame || 'linear-gradient(135deg, #3D4A5C 0%, #2C3644 50%, #1F2833 100%)',
+          background: colorPalette.frame || 'linear-gradient(145deg, #1A1A2E 0%, #16213E 50%, #0F0F23 100%)',
           padding: compact ? 16 : 32,
           boxShadow: `
-            0 20px 40px -10px rgba(0,0,0,0.6),
-            inset 0 1px 0 rgba(255,255,255,0.05),
-            inset 0 -1px 0 rgba(0,0,0,0.4)
+            0 25px 50px -12px rgba(0,0,0,0.7),
+            0 0 0 1px rgba(255,255,255,0.05),
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            inset 0 -1px 0 rgba(0,0,0,0.5)
           `,
-          border: '4px solid #1A1F26',
+          border: '3px solid #2C3E50',
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
         }}
@@ -188,9 +189,10 @@ export const RealisticAbacus = ({
       >
         {/* Inner frame border */}
         <div 
-          className="absolute inset-1 rounded pointer-events-none"
+          className="absolute inset-2 rounded-xl pointer-events-none"
           style={{
-            border: '2px solid rgba(0,0,0,0.3)',
+            border: '1px solid rgba(255,255,255,0.05)',
+            boxShadow: 'inset 0 0 20px rgba(0,0,0,0.3)',
           }}
         />
         
@@ -228,10 +230,10 @@ export const RealisticAbacus = ({
         </div>
         
         {/* Frame corner decorations */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-black/20 rounded-tl" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-black/20 rounded-tr" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-black/20 rounded-bl" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-black/20 rounded-br" />
+        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-amber-500/30 rounded-tl-lg" />
+        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-amber-500/30 rounded-tr-lg" />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-amber-500/30 rounded-bl-lg" />
+        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-amber-500/30 rounded-br-lg" />
       </motion.div>
       
       {/* Value display */}
