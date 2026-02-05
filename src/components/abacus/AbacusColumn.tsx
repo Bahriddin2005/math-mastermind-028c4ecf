@@ -199,7 +199,7 @@ export const AbacusColumn = ({
       </div>
       
       {/* Lower beads (4 beads) */}
-      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.3 }}>
+      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.8 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = Boolean(lowerActive[beadIndex]);
