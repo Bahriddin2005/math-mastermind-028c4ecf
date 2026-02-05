@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music, Play } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music, Play, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,8 @@ import {
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
 
+export type BeadSoundType = 'pop' | 'bead' | 'beadHigh' | 'tick' | 'correct' | 'incorrect' | 'start' | 'countdown' | 'combo' | 'levelUp' | 'complete' | 'winner' | 'whoosh' | 'sparkle' | 'bounce';
+
 const AbacusSimulator = () => {
   const [columns, setColumns] = useState(10);
   const [value, setValue] = useState(0);
@@ -26,26 +28,36 @@ const AbacusSimulator = () => {
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
   const [showSoundPicker, setShowSoundPicker] = useState(false);
+  // Selected sounds for beads
+  const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
+  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
   const allSoundTypes = [
-    { type: 'pop' as const, label: '🫧 Pop', desc: 'Surish boshi' },
-    { type: 'bead' as const, label: '🎹 Bead', desc: 'Pastki tosh' },
-    { type: 'beadHigh' as const, label: '🔔 Bell', desc: 'Yuqori tosh' },
-    { type: 'tick' as const, label: '⏱️ Tick', desc: 'Taymer' },
-    { type: 'correct' as const, label: '✅ To\'g\'ri', desc: 'To\'g\'ri javob' },
-    { type: 'incorrect' as const, label: '❌ Xato', desc: 'Noto\'g\'ri javob' },
-    { type: 'start' as const, label: '🚀 Start', desc: 'O\'yin boshi' },
-    { type: 'countdown' as const, label: '⏰ Countdown', desc: 'Ortga sanash' },
-    { type: 'combo' as const, label: '🔥 Combo', desc: 'Ketma-ket' },
-    { type: 'levelUp' as const, label: '⬆️ Level Up', desc: 'Daraja oshdi' },
-    { type: 'complete' as const, label: '🎉 Complete', desc: 'Yakunlash' },
-    { type: 'winner' as const, label: '🏆 G\'olib', desc: 'G\'alaba' },
-    { type: 'whoosh' as const, label: '💨 Whoosh', desc: 'Tez harakat' },
-    { type: 'sparkle' as const, label: '✨ Sparkle', desc: 'Sehrli' },
-    { type: 'bounce' as const, label: '🏀 Bounce', desc: 'Sakrash' },
+    { type: 'pop' as BeadSoundType, label: '🫧 Pop', desc: 'Surish boshi' },
+    { type: 'bead' as BeadSoundType, label: '🎹 Bead', desc: 'Pastki tosh' },
+    { type: 'beadHigh' as BeadSoundType, label: '🔔 Bell', desc: 'Yuqori tosh' },
+    { type: 'tick' as BeadSoundType, label: '⏱️ Tick', desc: 'Taymer' },
+    { type: 'correct' as BeadSoundType, label: '✅ To\'g\'ri', desc: 'To\'g\'ri javob' },
+    { type: 'incorrect' as BeadSoundType, label: '❌ Xato', desc: 'Noto\'g\'ri javob' },
+    { type: 'start' as BeadSoundType, label: '🚀 Start', desc: 'O\'yin boshi' },
+    { type: 'countdown' as BeadSoundType, label: '⏰ Countdown', desc: 'Ortga sanash' },
+    { type: 'combo' as BeadSoundType, label: '🔥 Combo', desc: 'Ketma-ket' },
+    { type: 'levelUp' as BeadSoundType, label: '⬆️ Level Up', desc: 'Daraja oshdi' },
+    { type: 'complete' as BeadSoundType, label: '🎉 Complete', desc: 'Yakunlash' },
+    { type: 'winner' as BeadSoundType, label: '🏆 G\'olib', desc: 'G\'alaba' },
+    { type: 'whoosh' as BeadSoundType, label: '💨 Whoosh', desc: 'Tez harakat' },
+    { type: 'sparkle' as BeadSoundType, label: '✨ Sparkle', desc: 'Sehrli' },
+    { type: 'bounce' as BeadSoundType, label: '🏀 Bounce', desc: 'Sakrash' },
   ];
+
+  // Handle bead sound in simulator based on selected sounds
+  const handleBeadSound = useCallback((isUpper: boolean) => {
+    if (soundEnabled) {
+      playSound(isUpper ? upperBeadSound : lowerBeadSound);
+    }
+  }, [soundEnabled, playSound, upperBeadSound, lowerBeadSound]);
 
   const playAllSounds = useCallback(() => {
     if (playingAllSounds) return;
@@ -200,16 +212,6 @@ const AbacusSimulator = () => {
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={playAllSounds}
-                      disabled={playingAllSounds || !soundEnabled}
-                      className={cn("gap-1.5", playingAllSounds && "animate-pulse")}
-                    >
-                      <Play className="w-3 h-3" />
-                      {playingAllSounds ? "Ijro..." : "Hammasini"}
-                    </Button>
-                    <Button
                       variant={soundEnabled ? "default" : "outline"}
                       size="sm"
                       onClick={toggleSound}
@@ -222,26 +224,84 @@ const AbacusSimulator = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  {allSoundTypes.map(({ type, label, desc }) => (
-                    <motion.button
-                      key={type}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => soundEnabled && playSound(type)}
-                      disabled={!soundEnabled}
-                      className={cn(
-                        "flex flex-col items-center gap-1 p-3 rounded-xl bg-background/80 border border-border/50 transition-all",
-                        soundEnabled 
-                          ? "hover:border-primary/50 hover:bg-primary/10 cursor-pointer" 
-                          : "opacity-50 cursor-not-allowed"
-                      )}
-                    >
-                      <span className="text-xl">{label.split(' ')[0]}</span>
-                      <span className="text-xs font-medium">{label.split(' ')[1]}</span>
-                      <span className="text-[10px] text-muted-foreground hidden sm:block">{desc}</span>
-                    </motion.button>
-                  ))}
+                <div className="space-y-4">
+                  {/* Upper bead sound selector */}
+                  <div>
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full bg-emerald-500" />
+                      Yuqori tosh (5 qiymat) tovushi:
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {allSoundTypes.map(({ type, label }) => (
+                        <motion.button
+                          key={`upper-${type}`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setUpperBeadSound(type);
+                            soundEnabled && playSound(type);
+                          }}
+                          disabled={!soundEnabled}
+                          className={cn(
+                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
+                            upperBeadSound === type 
+                              ? "border-emerald-500 bg-emerald-500/10" 
+                              : "border-border/50",
+                            soundEnabled 
+                              ? "hover:border-emerald-500/50 cursor-pointer" 
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {upperBeadSound === type && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                          <span className="text-lg">{label.split(' ')[0]}</span>
+                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Lower bead sound selector */}
+                  <div>
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-500" />
+                      Pastki toshlar (1 qiymat) tovushi:
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {allSoundTypes.map(({ type, label }) => (
+                        <motion.button
+                          key={`lower-${type}`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setLowerBeadSound(type);
+                            soundEnabled && playSound(type);
+                          }}
+                          disabled={!soundEnabled}
+                          className={cn(
+                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
+                            lowerBeadSound === type 
+                              ? "border-orange-500 bg-orange-500/10" 
+                              : "border-border/50",
+                            soundEnabled 
+                              ? "hover:border-orange-500/50 cursor-pointer" 
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {lowerBeadSound === type && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                          <span className="text-lg">{label.split(' ')[0]}</span>
+                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -278,6 +338,7 @@ const AbacusSimulator = () => {
         initialValue={value}
         initialMode={mode}
         colorScheme={colorScheme}
+        onBeadSound={handleBeadSound}
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
@@ -520,6 +581,7 @@ const AbacusSimulator = () => {
               showValue={mode !== 'mental'}
               orientation={orientation}
               colorScheme={colorScheme}
+              onBeadSound={handleBeadSound}
             />
           </div>
         </motion.div>
