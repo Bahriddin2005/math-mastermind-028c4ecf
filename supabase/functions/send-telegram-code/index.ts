@@ -91,7 +91,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxbot ga /start buyrug'ini yuboring." 
+          error: "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxuz_bot ga /start buyrug'ini yuboring." 
         }),
         {
           status: 400,
