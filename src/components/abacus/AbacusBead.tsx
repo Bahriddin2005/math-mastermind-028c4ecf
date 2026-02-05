@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +27,6 @@ export const AbacusBead = memo(({
   disabled = false,
 }: AbacusBeadProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const beadRef = useRef<HTMLDivElement>(null);
   
   const SNAP_THRESHOLD = beadSize * 0.25;
   const ACTIVE_OFFSET = beadSize * 0.4;
@@ -80,12 +79,11 @@ export const AbacusBead = memo(({
   const lighterColor = adjustBrightness(baseColor, 40);
   const darkerColor = adjustBrightness(baseColor, -30);
   const glowColor = adjustBrightness(baseColor, 20);
-  const gradientId = `bead-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}`;
-  const shineId = `shine-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}`;
+  const gradientId = `bead-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}-${Math.random().toString(36).slice(2, 6)}`;
+  const shineId = `shine-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}-${Math.random().toString(36).slice(2, 6)}`;
 
   return (
     <motion.div
-      ref={beadRef}
       className={cn(
         "relative cursor-pointer touch-none select-none will-change-transform",
         isDragging && "z-20",
@@ -162,3 +160,5 @@ export const AbacusBead = memo(({
     </motion.div>
   );
 });
+
+AbacusBead.displayName = 'AbacusBead';
