@@ -169,28 +169,29 @@ export const RealisticAbacus = ({
     )}>
       {/* Abacus frame - dark slate gray matching reference */}
       <motion.div 
-        className="relative rounded-lg overflow-hidden"
+         className="relative rounded-3xl overflow-hidden"
         style={{
-          background: colorPalette.frame || 'linear-gradient(135deg, #3D4A5C 0%, #2C3644 50%, #1F2833 100%)',
-          padding: compact ? 16 : 32,
+           background: colorPalette.frame || 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+           padding: compact ? 20 : 40,
           boxShadow: `
-            0 20px 40px -10px rgba(0,0,0,0.6),
-            inset 0 1px 0 rgba(255,255,255,0.05),
-            inset 0 -1px 0 rgba(0,0,0,0.4)
+             0 25px 50px -12px rgba(0,0,0,0.7),
+             0 0 0 4px rgba(255,255,255,0.05),
+             inset 0 2px 4px rgba(255,255,255,0.1)
           `,
-          border: '4px solid #1F2937',
+           border: '6px solid rgba(255,255,255,0.08)',
+           borderRadius: '24px',
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
         }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+         initial={{ opacity: 0, scale: 0.95, y: 20 }}
+         animate={{ opacity: 1, scale: 1, y: 0 }}
+         transition={{ duration: 0.5, type: 'spring' }}
       >
         {/* Inner frame border */}
         <div 
-          className="absolute inset-1 rounded pointer-events-none"
+           className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{
-            border: '2px solid rgba(0,0,0,0.3)',
+             background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%)',
           }}
         />
         
@@ -228,10 +229,10 @@ export const RealisticAbacus = ({
         </div>
         
         {/* Frame corner decorations */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-black/20 rounded-tl" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-black/20 rounded-tr" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-black/20 rounded-bl" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-black/20 rounded-br" />
+         <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-white/10 rounded-tl-lg" />
+         <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-white/10 rounded-tr-lg" />
+         <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-white/10 rounded-bl-lg" />
+         <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-white/10 rounded-br-lg" />
       </motion.div>
       
       {/* Value display */}
@@ -239,19 +240,20 @@ export const RealisticAbacus = ({
         <AnimatePresence mode="wait">
           <motion.div
             key={currentValue}
-            initial={{ scale: 0.8, opacity: 0, y: -10 }}
+             initial={{ scale: 0.8, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
+             exit={{ scale: 0.8, opacity: 0, y: 20 }}
+             transition={{ duration: 0.3, type: 'spring' }}
             className="mt-4 sm:mt-5"
           >
             <div className={cn(
               "px-6 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl",
-              "bg-card/90 backdrop-blur-sm",
-              "border-2 border-primary/30",
-              "shadow-lg"
+               "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
+               "backdrop-blur-sm",
+               "border-2 border-primary/40",
+               "shadow-lg shadow-primary/20"
             )}>
-              <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-primary">
+               <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 {currentValue.toLocaleString()}
               </span>
             </div>

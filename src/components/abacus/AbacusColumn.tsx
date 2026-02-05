@@ -117,20 +117,21 @@ export const AbacusColumn = ({
           transform: 'translateX(-50%)',
           top: -10,
           bottom: 0,
-          width: 6,
-          background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
-          borderRadius: 3,
+           width: 8,
+           background: 'linear-gradient(to right, #475569, #64748B, #475569)',
+           borderRadius: 4,
+           boxShadow: 'inset -1px 0 2px rgba(0,0,0,0.3), inset 1px 0 2px rgba(255,255,255,0.1)',
         }}
       >
         {/* Rod top hook/cap */}
         <div 
           className="absolute -top-1 left-1/2 -translate-x-1/2"
           style={{
-            width: 12,
-            height: 12,
-            background: 'radial-gradient(circle at 40% 40%, #A0522D, #5D3A1A)',
+             width: 14,
+             height: 14,
+             background: 'radial-gradient(circle at 40% 40%, #94A3B8, #475569)',
             borderRadius: '50%',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 -2px 3px rgba(0,0,0,0.3)',
+             boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.2)',
           }}
         />
       </div>
@@ -184,17 +185,17 @@ export const AbacusColumn = ({
           style={{
             width: beadSize * 2,
             height: '100%',
-            background: 'linear-gradient(to bottom, #9CA3AF, #6B7280, #4B5563)',
+             background: 'linear-gradient(to bottom, #64748B, #475569, #334155)',
             borderRadius: 2,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+             boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
           }}
         />
         {/* Dots on the bar */}
         <div 
-          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/70"
+           className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
         />
         <div 
-          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/70"
+           className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
         />
       </div>
       
