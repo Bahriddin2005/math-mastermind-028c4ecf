@@ -17,7 +17,7 @@ import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
 
 const AbacusSimulator = () => {
-  const [columns, setColumns] = useState(13);
+  const [columns, setColumns] = useState(10);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
   const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
