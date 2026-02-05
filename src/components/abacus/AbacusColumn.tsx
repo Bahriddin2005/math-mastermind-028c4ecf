@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { AbacusBead } from './AbacusBead';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,22 @@ export const AbacusColumn = ({
   upperBeadColor,
   lowerBeadColors,
 }: AbacusColumnProps) => {
+  // Each lower bead can be moved independently (UI state). We still report the
+  // digit as a count to the parent.
+  const [lowerActive, setLowerActive] = useState<boolean[]>(() =>
+    Array.from({ length: 4 }, (_, i) => i < lowerCount)
+  );
+
+  // Sync local bead positions when parent changes value (reset/controlled).
+  useEffect(() => {
+    setLowerActive((prev) => {
+      const prevCount = prev.filter(Boolean).length;
+      if (prevCount === lowerCount) return prev;
+      return Array.from({ length: 4 }, (_, i) => i < lowerCount);
+    });
+  }, [lowerCount]);
+
+  const lowerActiveCount = useMemo(() => lowerActive.filter(Boolean).length, [lowerActive]);
   
   const getColumnLabel = () => {
     const labels = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T', '10T', '100T', '1000T', '10000T'];
@@ -65,27 +81,30 @@ export const AbacusColumn = ({
       onBeadSound?.(true);
     }
   }, [upperActive, onUpperChange, onBeadSound]);
-  
-  // Toggle individual bead - each bead works independently
-  const handleLowerToggle = useCallback((beadIndex: number, shouldActivate: boolean) => {
-    // Calculate new count based on which bead was toggled
-    let newCount = lowerCount;
-    
-    if (shouldActivate) {
-      // Activating this bead - set count to include this bead
-      newCount = beadIndex + 1;
-    } else {
-      // Deactivating this bead - set count to exclude this bead
-      newCount = beadIndex;
-    }
-    
-    if (newCount !== lowerCount) {
-      onLowerChange(Math.max(0, Math.min(4, newCount)));
-      onBeadSound?.(false);
-    }
-  }, [lowerCount, onLowerChange, onBeadSound]);
-  
-  const columnValue = (upperActive ? 5 : 0) + lowerCount;
+
+  const handleLowerActivate = useCallback((beadIndex: number) => {
+    if (disabled) return;
+    if (lowerActive[beadIndex]) return;
+
+    const next = [...lowerActive];
+    next[beadIndex] = true;
+    setLowerActive(next);
+    onLowerChange(next.filter(Boolean).length);
+    onBeadSound?.(false);
+  }, [disabled, lowerActive, onBeadSound, onLowerChange]);
+
+  const handleLowerDeactivate = useCallback((beadIndex: number) => {
+    if (disabled) return;
+    if (!lowerActive[beadIndex]) return;
+
+    const next = [...lowerActive];
+    next[beadIndex] = false;
+    setLowerActive(next);
+    onLowerChange(next.filter(Boolean).length);
+    onBeadSound?.(false);
+  }, [disabled, lowerActive, onBeadSound, onLowerChange]);
+
+  const columnValue = (upperActive ? 5 : 0) + lowerActiveCount;
   const beadHeight = beadSize * 0.7;
   
   return (
@@ -171,7 +190,7 @@ export const AbacusColumn = ({
       <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.7 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
-          const isActive = beadIndex < lowerCount;
+          const isActive = Boolean(lowerActive[beadIndex]);
           const rowIndex = 3 - visualIndex;
           
           return (
@@ -182,8 +201,8 @@ export const AbacusColumn = ({
               <AbacusBead
                 isUpper={false}
                 isActive={isActive}
-                onActivate={() => handleLowerToggle(beadIndex, true)}
-                onDeactivate={() => handleLowerToggle(beadIndex, false)}
+                onActivate={() => handleLowerActivate(beadIndex)}
+                onDeactivate={() => handleLowerDeactivate(beadIndex)}
                 beadSize={beadSize}
                 customColor={getLowerBeadColor(rowIndex)}
                 disabled={disabled}
