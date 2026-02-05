@@ -60,15 +60,22 @@ export const PageTransition = ({ children }: PageTransitionProps) => {
 
   // Skip transition styles for low-end devices
   if (skipAnimation) {
-    return <div>{displayChildren}</div>;
+    // ENTERPRISE: Use fragment to avoid extra DOM wrapper
+    return <>{displayChildren}</>;
   }
 
   return (
+    // ENTERPRISE: Minimal wrapper, no layout constraints
     <div
       className={`transition-opacity duration-150 ease-out ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
-      style={{ willChange: 'opacity' }}
+      style={{ 
+        willChange: 'opacity',
+        // ENTERPRISE: Ensure no layout restrictions
+        minHeight: 'auto',
+        overflow: 'visible'
+      }}
     >
       {displayChildren}
     </div>

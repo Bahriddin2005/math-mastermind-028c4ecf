@@ -210,16 +210,121 @@
 @layer base {
   * {
     @apply border-border;
+    /* Reset box sizing for consistent layout */
+    box-sizing: border-box;
   }
 
+  /* ============================================ */
+  /* ENTERPRISE MOBILE SCROLL FIX - START        */
+  /* Android + iOS Cross-Platform Support        */
+  /* ============================================ */
+
   html {
-    /* Smooth scrolling for mobile */
+    /* CRITICAL: Standard document flow */
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 100%;
+    
+    /* Smooth scrolling */
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    
     /* Prevent text size adjustment on orientation change */
     -webkit-text-size-adjust: 100%;
-    /* Prevent horizontal overflow */
+    text-size-adjust: 100%;
+    
+    /* CRITICAL: Enable vertical scroll, prevent horizontal */
     overflow-x: hidden;
+    overflow-y: auto;
+    
+    /* iOS Safari smooth scroll */
+    -webkit-overflow-scrolling: touch;
+    
+    /* Standard overscroll behavior */
+    overscroll-behavior: auto;
+    overscroll-behavior-x: none;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background: var(--gradient-hero);
+    
+    /* CRITICAL: Standard document flow - NOT fixed height */
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 100%;
+    
+    /* ENTERPRISE FIX: Use 100dvh for dynamic viewport */
+    min-height: 100dvh;
+    /* Fallback for older browsers */
+    min-height: -webkit-fill-available;
+    
+    /* CRITICAL: Body-based scrolling ONLY */
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    
+    /* iOS Safari momentum scrolling */
+    -webkit-overflow-scrolling: touch;
+    
+    /* Standard overscroll - allow natural pull */
+    overscroll-behavior-y: auto;
+    overscroll-behavior-x: none;
+    
+    /* CRITICAL: Relative positioning for flow layout */
+    position: relative;
+    width: 100%;
+    
+    /* Safe padding for notched phones */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    
+    /* Better text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* GPU acceleration for smooth scrolling */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* ENTERPRISE: Root container normalization */
+  #root {
+    /* CRITICAL: Flow layout, NOT fixed/absolute */
+    position: relative;
+    min-height: 100%;
+    height: auto;
+    width: 100%;
+    
+    /* CRITICAL: Allow content to flow naturally */
+    overflow: visible;
+    
+    /* Remove any restrictive styling */
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  /* Samsung One UI & Android fullscreen support */
+  @supports (display-mode: fullscreen) or (-webkit-fill-available: 0) {
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      min-height: 100dvh;
+    }
+  }
+
+  /* iOS Safari specific fixes */
+  @supports (-webkit-touch-callout: none) {
+    body {
+      /* Fix for iOS address bar height changes */
+      min-height: -webkit-fill-available;
+    }
+    
+    #root {
+      min-height: -webkit-fill-available;
+    }
   }
 
   /* Reduced motion preference - CRITICAL for Android performance */
@@ -232,51 +337,9 @@
     }
   }
 
-  /* Android-specific optimizations */
-  @supports (-webkit-touch-callout: none) or (not (-webkit-overflow-scrolling: touch)) {
-    * {
-      /* Force GPU acceleration on Android */
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      /* Reduce paint complexity */
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-    }
-  }
-
-  body {
-    @apply bg-background text-foreground font-body antialiased;
-    background: var(--gradient-hero);
-    /* Use min-height for natural document flow */
-    min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height for mobile */
-    min-height: -webkit-fill-available; /* Samsung One UI support */
-    /* Safe padding for notched phones */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    /* Better text rendering */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    /* CRITICAL: Allow vertical scrolling */
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    /* Prevent overscroll bounce only on x-axis */
-    overscroll-behavior-x: none;
-    overscroll-behavior-y: auto;
-    /* Allow natural content flow */
-    position: relative;
-    width: 100%;
-    /* Force GPU layer for smoother scrolling */
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-
-  /* Samsung One UI fullscreen support */
-  @supports (display-mode: fullscreen) {
-    body {
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-    }
-  }
+  /* ============================================ */
+  /* ENTERPRISE MOBILE SCROLL FIX - END          */
+  /* ============================================ */
 
   /* Responsive typography with clamp() */
   h1, h2, h3, h4, h5, h6 {
@@ -284,7 +347,6 @@
     overflow-wrap: break-word;
     word-wrap: break-word;
     hyphens: auto;
-    /* Optimize text rendering */
     text-rendering: optimizeSpeed;
   }
 
@@ -332,7 +394,6 @@
     max-width: 100%;
     height: auto;
     display: block;
-    /* Content visibility for performance */
     content-visibility: auto;
   }
 

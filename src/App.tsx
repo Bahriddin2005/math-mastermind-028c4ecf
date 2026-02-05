@@ -95,7 +95,8 @@ const App = () => (
           <BrowserRouter>
             <ScrollToTop />
             <PullToRefresh onRefresh={handleRefresh}>
-              <div className="pb-16 md:pb-0">
+              {/* ENTERPRISE: Main content wrapper - allows natural document flow */}
+              <main className="relative min-h-screen pb-16 md:pb-0" style={{ minHeight: '100dvh' }}>
                 <PageTransition>
                   <Suspense fallback={<LazyFallback />}>
                     <Routes>
@@ -137,7 +138,7 @@ const App = () => (
                     </Routes>
                   </Suspense>
                 </PageTransition>
-              </div>
+              </main>
             </PullToRefresh>
             <MobileBottomNav />
             <PWAInstallBanner />
