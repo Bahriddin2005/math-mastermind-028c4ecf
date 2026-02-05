@@ -15,12 +15,13 @@ export const PullToRefresh = ({ onRefresh, children }: PullToRefreshProps) => {
   });
 
   return (
-    <div className="relative">
-      {/* Pull indicator */}
+    // ENTERPRISE: Minimal wrapper - allows natural document scroll
+    <div className="relative" style={{ overflow: 'visible', minHeight: 'auto' }}>
+      {/* Pull indicator - positioned fixed, won't affect layout */}
       <div 
         className={cn(
-          "fixed left-1/2 -translate-x-1/2 z-50 flex items-center justify-center transition-all duration-200 md:hidden",
-          pullDistance > 0 || isRefreshing ? "opacity-100" : "opacity-0 pointer-events-none"
+          "fixed left-1/2 -translate-x-1/2 z-[100] flex items-center justify-center transition-all duration-200 md:hidden pointer-events-none",
+          pullDistance > 0 || isRefreshing ? "opacity-100" : "opacity-0"
         )}
         style={{ 
           top: Math.max(pullDistance - 40, 16),
@@ -45,13 +46,18 @@ export const PullToRefresh = ({ onRefresh, children }: PullToRefreshProps) => {
         </div>
       </div>
 
-      {/* Content with pull effect */}
+      {/* ENTERPRISE: Content wrapper - NO transform when not pulling for smoother scroll */}
       <div 
-        className="transition-transform duration-200 ease-out"
         style={{ 
+          // Only apply transform when actively pulling
           transform: pullDistance > 0 && !isRefreshing 
             ? `translateY(${pullDistance * 0.3}px)` 
             : 'none',
+          // Smooth transition only when releasing
+          transition: pullDistance === 0 ? 'transform 0.2s ease-out' : 'none',
+          // CRITICAL: Never restrict overflow
+          overflow: 'visible',
+          minHeight: 'auto'
         }}
       >
         {children}

@@ -123,6 +123,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   return (
     <>
+      {/* ENTERPRISE: Sticky header - NOT fixed, allows natural scroll */}
       <header className="sticky top-0 z-50 w-full safe-top">
         {/* Clean glass background */}
         <div className="absolute inset-0 bg-background/85 backdrop-blur-xl" />

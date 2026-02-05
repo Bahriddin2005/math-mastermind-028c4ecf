@@ -20,7 +20,16 @@ export const MobileBottomNav = () => {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    /* ENTERPRISE: Fixed bottom nav - properly isolated, won't affect scroll */
+    <nav 
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
+      style={{ 
+        /* Prevent nav from interfering with touch events above it */
+        touchAction: 'none',
+        /* Ensure proper stacking */
+        isolation: 'isolate'
+      }}
+    >
       {/* Glass background with gradient border */}
       <div className="absolute inset-0 bg-gradient-to-t from-card via-card/98 to-card/95 backdrop-blur-xl" />
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
