@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { AbacusBead } from './AbacusBead';
 import { cn } from '@/lib/utils';
@@ -14,17 +14,17 @@ interface AbacusColumnProps {
   showLabel?: boolean;
   disabled?: boolean;
   onBeadSound?: (isUpper: boolean) => void;
-  // Custom colors from color scheme
   upperBeadColor?: string;
   lowerBeadColors?: string[];
 }
 
+const COLUMN_LABELS = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T'];
+
 /**
- * Abakus ustuni - customizable color style
+ * Optimized Abacus Column - fast and reliable
  */
-export const AbacusColumn = ({
+export const AbacusColumn = memo(({
   columnIndex,
-  totalColumns,
   upperActive,
   lowerCount,
   onUpperChange,
@@ -36,37 +36,22 @@ export const AbacusColumn = ({
   upperBeadColor,
   lowerBeadColors,
 }: AbacusColumnProps) => {
-  // Each lower bead can be moved independently (UI state). We still report the
-  // digit as a count to the parent.
   const [lowerActive, setLowerActive] = useState<boolean[]>(() =>
     Array.from({ length: 4 }, (_, i) => i < lowerCount)
   );
 
-  // Sync local bead positions when parent changes value (reset/controlled).
   useEffect(() => {
-    setLowerActive((prev) => {
-      const prevCount = prev.filter(Boolean).length;
-      if (prevCount === lowerCount) return prev;
-      return Array.from({ length: 4 }, (_, i) => i < lowerCount);
-    });
+    const prevCount = lowerActive.filter(Boolean).length;
+    if (prevCount !== lowerCount) {
+      setLowerActive(Array.from({ length: 4 }, (_, i) => i < lowerCount));
+    }
   }, [lowerCount]);
 
   const lowerActiveCount = useMemo(() => lowerActive.filter(Boolean).length, [lowerActive]);
   
-  const getColumnLabel = () => {
-    const labels = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T', '10T', '100T', '1000T', '10000T'];
-    return labels[columnIndex] || `10^${columnIndex}`;
-  };
+  const columnLabel = COLUMN_LABELS[columnIndex] || `10^${columnIndex}`;
   
-  // Get color for lower bead based on row index
-  const getLowerBeadColor = (rowIndex: number): string => {
-    // Use first color for all beads (uniform design)
-    if (lowerBeadColors && lowerBeadColors[0]) {
-      return lowerBeadColors[0];
-    }
-    // Fallback to terracotta color matching reference
-    return '#A0522D';
-  };
+  const lowerBeadColor = lowerBeadColors?.[0] || '#A0522D';
   
   const handleUpperActivate = useCallback(() => {
     if (!upperActive) {
@@ -83,9 +68,7 @@ export const AbacusColumn = ({
   }, [upperActive, onUpperChange, onBeadSound]);
 
   const handleLowerActivate = useCallback((beadIndex: number) => {
-    if (disabled) return;
-    if (lowerActive[beadIndex]) return;
-
+    if (disabled || lowerActive[beadIndex]) return;
     const next = [...lowerActive];
     next[beadIndex] = true;
     setLowerActive(next);
@@ -94,9 +77,7 @@ export const AbacusColumn = ({
   }, [disabled, lowerActive, onBeadSound, onLowerChange]);
 
   const handleLowerDeactivate = useCallback((beadIndex: number) => {
-    if (disabled) return;
-    if (!lowerActive[beadIndex]) return;
-
+    if (disabled || !lowerActive[beadIndex]) return;
     const next = [...lowerActive];
     next[beadIndex] = false;
     setLowerActive(next);
@@ -109,7 +90,7 @@ export const AbacusColumn = ({
   
   return (
     <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.7, padding: '0 2px' }}>
-      {/* Vertical rod - brown/copper colored matching reference */}
+      {/* Rod */}
       <div 
         className="absolute z-0"
         style={{
@@ -117,48 +98,39 @@ export const AbacusColumn = ({
           transform: 'translateX(-50%)',
           top: -10,
           bottom: 0,
-           width: 8,
-           background: 'linear-gradient(to right, #475569, #64748B, #475569)',
-           borderRadius: 4,
-           boxShadow: 'inset -1px 0 2px rgba(0,0,0,0.3), inset 1px 0 2px rgba(255,255,255,0.1)',
+          width: 8,
+          background: 'linear-gradient(to right, #475569, #64748B, #475569)',
+          borderRadius: 4,
         }}
       >
-        {/* Rod top hook/cap */}
         <div 
           className="absolute -top-1 left-1/2 -translate-x-1/2"
           style={{
-             width: 14,
-             height: 14,
-             background: 'radial-gradient(circle at 40% 40%, #94A3B8, #475569)',
+            width: 14,
+            height: 14,
+            background: 'radial-gradient(circle at 40% 40%, #94A3B8, #475569)',
             borderRadius: '50%',
-             boxShadow: '0 2px 4px rgba(0,0,0,0.4), inset 0 2px 2px rgba(255,255,255,0.2)',
           }}
         />
       </div>
       
-      {/* Label - tepada, ko'zga tashlanadigan */}
+      {/* Label */}
       {showLabel && (
-        <div 
-          className="text-center mb-1 z-20"
-          style={{ minHeight: 20, marginTop: -25 }}
-        >
+        <div className="text-center mb-1 z-20" style={{ minHeight: 20, marginTop: -25 }}>
           <div 
-            className="px-1.5 py-0.5 rounded-md font-bold"
+            className="px-1.5 py-0.5 rounded-md font-bold text-white"
             style={{
               fontSize: beadSize > 30 ? 11 : 9,
               background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9))',
-              color: '#fff',
-              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
-              boxShadow: '0 2px 4px rgba(99, 102, 241, 0.3)',
               minWidth: beadSize * 0.8,
             }}
           >
-            {getColumnLabel()}
+            {columnLabel}
           </div>
         </div>
       )}
       
-      {/* Upper bead (value 5) - positioned at top */}
+      {/* Upper bead */}
       <div className="relative z-10" style={{ marginTop: beadHeight * 0.2 }}>
         <AbacusBead
           isUpper={true}
@@ -171,53 +143,39 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Reckoning bar - gray horizontal bar matching reference */}
+      {/* Reckoning bar */}
       <div
         className="relative z-20 w-full"
-        style={{ 
-          height: 12,
-          marginTop: beadHeight * 1.4,
-          marginBottom: beadHeight * 0.2,
-        }}
+        style={{ height: 12, marginTop: beadHeight * 1.4, marginBottom: beadHeight * 0.2 }}
       >
         <div 
           className="absolute left-1/2 -translate-x-1/2"
           style={{
             width: beadSize * 2,
             height: '100%',
-             background: 'linear-gradient(to bottom, #64748B, #475569, #334155)',
+            background: 'linear-gradient(to bottom, #64748B, #475569, #334155)',
             borderRadius: 2,
-             boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
           }}
         />
-        {/* Dots on the bar */}
-        <div 
-           className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
-        />
-        <div 
-           className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800"
-        />
+        <div className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800" />
+        <div className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-800" />
       </div>
       
-      {/* Lower beads (4 beads) */}
+      {/* Lower beads */}
       <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 1.2 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = Boolean(lowerActive[beadIndex]);
-          const rowIndex = 3 - visualIndex;
           
           return (
-            <div 
-              key={beadIndex} 
-              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}
-            >
+            <div key={beadIndex} style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}>
               <AbacusBead
                 isUpper={false}
                 isActive={isActive}
                 onActivate={() => handleLowerActivate(beadIndex)}
                 onDeactivate={() => handleLowerDeactivate(beadIndex)}
                 beadSize={beadSize}
-                customColor={getLowerBeadColor(rowIndex)}
+                customColor={lowerBeadColor}
                 disabled={disabled}
               />
             </div>
@@ -225,14 +183,14 @@ export const AbacusColumn = ({
         })}
       </div>
       
-      {/* Column value indicator */}
+      {/* Value indicator */}
       {showLabel && (
         <motion.div 
           className="mt-2 text-center z-10"
           key={columnValue}
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0.5 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: 0.1 }}
         >
           <span className={cn(
             "inline-flex items-center justify-center",
@@ -247,4 +205,4 @@ export const AbacusColumn = ({
       )}
     </div>
   );
-};
+});
