@@ -158,7 +158,7 @@ export const AbacusColumn = ({
       )}
       
       {/* Upper bead (value 5) - positioned at top */}
-      <div className="relative z-10" style={{ marginTop: -beadHeight * 0.6 }}>
+      <div className="relative z-10" style={{ marginTop: -beadHeight * 0.2 }}>
         <AbacusBead
           isUpper={true}
           isActive={upperActive}
