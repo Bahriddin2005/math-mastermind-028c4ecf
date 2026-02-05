@@ -66,18 +66,21 @@ export const AbacusColumn = ({
     }
   }, [upperActive, onUpperChange, onBeadSound]);
   
-  const handleLowerActivate = useCallback((beadIndex: number) => {
-    const newCount = Math.max(lowerCount, beadIndex + 1);
-    if (newCount !== lowerCount) {
-      onLowerChange(newCount);
-      onBeadSound?.(false);
+  // Toggle individual bead - each bead works independently
+  const handleLowerToggle = useCallback((beadIndex: number, shouldActivate: boolean) => {
+    // Calculate new count based on which bead was toggled
+    let newCount = lowerCount;
+    
+    if (shouldActivate) {
+      // Activating this bead - set count to include this bead
+      newCount = beadIndex + 1;
+    } else {
+      // Deactivating this bead - set count to exclude this bead
+      newCount = beadIndex;
     }
-  }, [lowerCount, onLowerChange, onBeadSound]);
-  
-  const handleLowerDeactivate = useCallback((beadIndex: number) => {
-    const newCount = Math.min(lowerCount, beadIndex);
+    
     if (newCount !== lowerCount) {
-      onLowerChange(newCount);
+      onLowerChange(Math.max(0, Math.min(4, newCount)));
       onBeadSound?.(false);
     }
   }, [lowerCount, onLowerChange, onBeadSound]);
@@ -179,8 +182,8 @@ export const AbacusColumn = ({
               <AbacusBead
                 isUpper={false}
                 isActive={isActive}
-                onActivate={() => handleLowerActivate(beadIndex)}
-                onDeactivate={() => handleLowerDeactivate(beadIndex)}
+                onActivate={() => handleLowerToggle(beadIndex, true)}
+                onDeactivate={() => handleLowerToggle(beadIndex, false)}
                 beadSize={beadSize}
                 customColor={getLowerBeadColor(rowIndex)}
                 disabled={disabled}
