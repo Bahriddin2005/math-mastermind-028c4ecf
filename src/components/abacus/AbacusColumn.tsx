@@ -45,7 +45,7 @@ export const AbacusColumn = memo(({
     if (prevCount !== lowerCount) {
       setLowerActive(Array.from({ length: 4 }, (_, i) => i < lowerCount));
     }
-  }, [lowerCount]);
+  }, [lowerCount, lowerActive]);
 
   const lowerActiveCount = useMemo(() => lowerActive.filter(Boolean).length, [lowerActive]);
   
@@ -121,7 +121,7 @@ export const AbacusColumn = memo(({
             className="px-1.5 py-0.5 rounded-md font-bold text-white"
             style={{
               fontSize: beadSize > 30 ? 11 : 9,
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9))',
+              background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8))',
               minWidth: beadSize * 0.8,
             }}
           >
@@ -196,7 +196,7 @@ export const AbacusColumn = memo(({
             "inline-flex items-center justify-center",
             "min-w-[24px] h-6 px-2 rounded-md",
             "text-xs sm:text-sm font-bold",
-            "bg-slate-700/50 text-slate-300",
+            "bg-muted text-muted-foreground",
             columnValue > 0 && "bg-primary/20 text-primary"
           )}>
             {columnValue}
@@ -206,3 +206,5 @@ export const AbacusColumn = memo(({
     </div>
   );
 });
+
+AbacusColumn.displayName = 'AbacusColumn';
