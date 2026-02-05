@@ -172,7 +172,7 @@ export const RealisticAbacus = ({
         className="relative rounded-lg overflow-hidden"
         style={{
           background: colorPalette.frame || 'linear-gradient(135deg, #3D4A5C 0%, #2C3644 50%, #1F2833 100%)',
-          padding: compact ? 12 : 24,
+          padding: compact ? 16 : 32,
           boxShadow: `
             0 20px 40px -10px rgba(0,0,0,0.6),
             inset 0 1px 0 rgba(255,255,255,0.05),
@@ -199,7 +199,7 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-stretch"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '12px 16px' : '20px 32px',
+            padding: compact ? '16px 20px' : '28px 40px',
           }}
         >
           {/* Columns in reverse order (largest place value on left) */}
