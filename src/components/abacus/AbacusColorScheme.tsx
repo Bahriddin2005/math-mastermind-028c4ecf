@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Palette, Check, Sparkles } from 'lucide-react';
 
-export type AbacusColorScheme = 'classic' | 'ocean' | 'sunset' | 'forest' | 'candy' | 'mono';
+export type AbacusColorScheme = 'classic' | 'ocean' | 'sunset' | 'forest' | 'candy' | 'mono' | 'rainbow' | 'royal' | 'neon' | 'earth' | 'sakura' | 'golden';
 
 interface ColorSchemeOption {
   id: AbacusColorScheme;
@@ -61,6 +61,54 @@ export const colorSchemes: ColorSchemeOption[] = [
     upperBead: '#D4D4D4',
     lowerBeads: ['#A3A3A3', '#A3A3A3', '#A3A3A3', '#A3A3A3'],
     frame: 'linear-gradient(135deg, #374151 0%, #111827 100%)',
+  },
+  {
+    id: 'rainbow',
+    name: 'Kamalak',
+    description: 'Ranglar palitasi',
+    upperBead: '#8B5CF6',
+    lowerBeads: ['#EF4444', '#F59E0B', '#22C55E', '#3B82F6'],
+    frame: 'linear-gradient(135deg, #312E81 0%, #1E1B4B 100%)',
+  },
+  {
+    id: 'royal',
+    name: 'Qirollik',
+    description: "Binafsha va oltin",
+    upperBead: '#FFD700',
+    lowerBeads: ['#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD'],
+    frame: 'linear-gradient(135deg, #4C1D95 0%, #1E1B4B 100%)',
+  },
+  {
+    id: 'neon',
+    name: 'Neon',
+    description: "Yorqin neon ranglar",
+    upperBead: '#00FF88',
+    lowerBeads: ['#FF00FF', '#00FFFF', '#FFFF00', '#FF6600'],
+    frame: 'linear-gradient(135deg, #0F0F23 0%, #1A1A2E 100%)',
+  },
+  {
+    id: 'earth',
+    name: 'Yer',
+    description: 'Tabiiy tuproq ranglari',
+    upperBead: '#92400E',
+    lowerBeads: ['#78350F', '#A16207', '#CA8A04', '#D97706'],
+    frame: 'linear-gradient(135deg, #451A03 0%, #1C1917 100%)',
+  },
+  {
+    id: 'sakura',
+    name: 'Sakura',
+    description: "Pushti gul ranglari",
+    upperBead: '#FB7185',
+    lowerBeads: ['#FDA4AF', '#FECDD3', '#FFF1F2', '#FFE4E6'],
+    frame: 'linear-gradient(135deg, #831843 0%, #500724 100%)',
+  },
+  {
+    id: 'golden',
+    name: 'Oltin',
+    description: 'Qimmatbaho metallar',
+    upperBead: '#FCD34D',
+    lowerBeads: ['#F59E0B', '#D97706', '#B45309', '#92400E'],
+    frame: 'linear-gradient(135deg, #78350F 0%, #451A03 100%)',
   },
 ];
 
