@@ -714,7 +714,7 @@ const Auth = () => {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      ⚠️ Avval <a href="https://t.me/iqromaxbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxbot</a> ga /start yuboring
+                      ⚠️ Avval <a href="https://t.me/iqromaxuz_bot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxuz_bot</a> ga /start yuboring
                     </p>
                   </div>
                 )}
