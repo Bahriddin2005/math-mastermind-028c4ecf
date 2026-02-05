@@ -119,7 +119,7 @@ const AbacusSimulator = () => {
               Abakusni sozlang! 🧮
             </h2>
             <p className="text-muted-foreground">
-              Ustunlar soni va rangni tanlang
+              Ustunlar soni, rang va tovushni tanlang
             </p>
           </motion.div>
 
@@ -166,7 +166,7 @@ const AbacusSimulator = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex-1"
+            className="mb-6"
           >
             <Card className="border-primary/20 mb-4">
               <CardHeader className="pb-3">
@@ -180,6 +180,69 @@ const AbacusSimulator = () => {
               selectedScheme={colorScheme}
               onSelect={setColorScheme}
             />
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Sound selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="flex-1"
+          >
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Music className="w-4 h-4 text-primary" />
+                    Tovushlar
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={playAllSounds}
+                      disabled={playingAllSounds || !soundEnabled}
+                      className={cn("gap-1.5", playingAllSounds && "animate-pulse")}
+                    >
+                      <Play className="w-3 h-3" />
+                      {playingAllSounds ? "Ijro..." : "Hammasini"}
+                    </Button>
+                    <Button
+                      variant={soundEnabled ? "default" : "outline"}
+                      size="sm"
+                      onClick={toggleSound}
+                      className="gap-1.5"
+                    >
+                      {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                      {soundEnabled ? "Yoniq" : "O'chiq"}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {allSoundTypes.map(({ type, label, desc }) => (
+                    <motion.button
+                      key={type}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => soundEnabled && playSound(type)}
+                      disabled={!soundEnabled}
+                      className={cn(
+                        "flex flex-col items-center gap-1 p-3 rounded-xl bg-background/80 border border-border/50 transition-all",
+                        soundEnabled 
+                          ? "hover:border-primary/50 hover:bg-primary/10 cursor-pointer" 
+                          : "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      <span className="text-xl">{label.split(' ')[0]}</span>
+                      <span className="text-xs font-medium">{label.split(' ')[1]}</span>
+                      <span className="text-[10px] text-muted-foreground hidden sm:block">{desc}</span>
+                    </motion.button>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </motion.div>
