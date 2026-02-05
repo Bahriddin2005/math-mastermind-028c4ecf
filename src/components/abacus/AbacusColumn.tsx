@@ -138,7 +138,7 @@ export const AbacusColumn = ({
       {/* Label - tepada, ko'zga tashlanadigan */}
       {showLabel && (
         <div 
-          className="text-center mb-2 z-20"
+          className="text-center mb-1 z-20"
           style={{ minHeight: 20 }}
         >
           <div 
@@ -158,7 +158,7 @@ export const AbacusColumn = ({
       )}
       
       {/* Upper bead (value 5) - positioned at top */}
-      <div className="relative z-10" style={{ marginTop: 0 }}>
+      <div className="relative z-10" style={{ marginTop: -beadHeight * 0.3 }}>
         <AbacusBead
           isUpper={true}
           isActive={upperActive}
