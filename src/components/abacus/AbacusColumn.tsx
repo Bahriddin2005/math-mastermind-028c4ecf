@@ -138,8 +138,8 @@ export const AbacusColumn = ({
       {/* Label - tepada, ko'zga tashlanadigan */}
       {showLabel && (
         <div 
-          className="text-center mb-1 z-20"
-          style={{ minHeight: 20 }}
+          className="text-center z-20"
+          style={{ minHeight: 20, marginBottom: -8, marginTop: -10 }}
         >
           <div 
             className="px-1.5 py-0.5 rounded-md font-bold"
