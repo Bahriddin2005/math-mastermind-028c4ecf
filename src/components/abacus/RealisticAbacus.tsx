@@ -27,6 +27,7 @@ interface RealisticAbacusProps {
   showValue?: boolean;
   orientation?: AbacusOrientation;
   colorScheme?: AbacusColorScheme;
+  onBeadSound?: (isUpper: boolean) => void;
 }
 
 /**
@@ -44,6 +45,7 @@ export const RealisticAbacus = ({
   showValue: showValueProp,
   orientation = 'horizontal',
   colorScheme = 'classic',
+  onBeadSound: customBeadSound,
 }: RealisticAbacusProps) => {
   const { playSound } = useSound();
   const deviceType = useDeviceType();
@@ -146,8 +148,12 @@ export const RealisticAbacus = ({
   }, [currentColumns, updateColumn]);
   
   const handleBeadSound = useCallback((isUpper: boolean) => {
-    playSound(isUpper ? 'beadHigh' : 'bead');
-  }, [playSound]);
+    if (customBeadSound) {
+      customBeadSound(isUpper);
+    } else {
+      playSound(isUpper ? 'beadHigh' : 'bead');
+    }
+  }, [playSound, customBeadSound]);
   
   // Dynamic bead size based on columns
   const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);

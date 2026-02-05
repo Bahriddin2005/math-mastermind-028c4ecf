@@ -16,6 +16,7 @@ interface FullscreenAbacusProps {
   initialValue?: number;
   initialMode?: AbacusMode;
   colorScheme?: AbacusColorScheme;
+  onBeadSound?: (isUpper: boolean) => void;
 }
 
 // Test mode problem generator
@@ -41,6 +42,7 @@ export const FullscreenAbacus = ({
   initialValue = 0,
   initialMode = 'beginner',
   colorScheme = 'classic',
+  onBeadSound,
 }: FullscreenAbacusProps) => {
   const [columns, setColumns] = useState(initialColumns);
   const [value, setValue] = useState(initialValue);
@@ -407,6 +409,7 @@ export const FullscreenAbacus = ({
             showValue={false}
             compact
             colorScheme={colorScheme}
+            onBeadSound={onBeadSound}
           />
         </div>
       </div>
