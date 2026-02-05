@@ -64,8 +64,8 @@ export const AbacusColumn = ({
     if (lowerBeadColors && lowerBeadColors[0]) {
       return lowerBeadColors[0];
     }
-    // Fallback to uniform amber/orange color
-    return '#F39C12';
+    // Fallback to terracotta color matching reference
+    return '#A0522D';
   };
   
   const handleUpperActivate = useCallback(() => {
@@ -109,7 +109,7 @@ export const AbacusColumn = ({
   
   return (
     <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.7, padding: '0 2px' }}>
-      {/* Vertical rod - sleek dark design */}
+      {/* Vertical rod - brown/copper colored matching reference */}
       <div 
         className="absolute z-0"
         style={{
@@ -117,10 +117,9 @@ export const AbacusColumn = ({
           transform: 'translateX(-50%)',
           top: 0,
           bottom: 0,
-          width: 8,
-          background: 'linear-gradient(to right, #2C3E50, #34495E, #2C3E50)',
-          borderRadius: 4,
-          boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.3), inset 2px 0 4px rgba(255,255,255,0.1)',
+          width: 6,
+          background: 'linear-gradient(to right, #5D3A1A, #8B4513, #5D3A1A)',
+          borderRadius: 3,
         }}
       />
       
@@ -146,7 +145,7 @@ export const AbacusColumn = ({
         </div>
       )}
       
-      {/* Upper bead (value 5) - positioned closer to reckoning bar */}
+      {/* Upper bead (value 5) - positioned at top */}
       <div className="relative z-10" style={{ marginTop: 0 }}>
         <AbacusBead
           isUpper={true}
@@ -159,11 +158,11 @@ export const AbacusColumn = ({
         />
       </div>
       
-      {/* Reckoning bar - modern sleek design */}
+      {/* Reckoning bar - gray horizontal bar matching reference */}
       <div
         className="relative z-20 w-full"
         style={{ 
-          height: 14,
+          height: 12,
           marginTop: beadHeight * 0.2,
           marginBottom: beadHeight * 0.2,
         }}
@@ -171,32 +170,24 @@ export const AbacusColumn = ({
         <div 
           className="absolute left-1/2 -translate-x-1/2"
           style={{
-            width: beadSize * 1.8,
+            width: beadSize * 2,
             height: '100%',
-            background: 'linear-gradient(to bottom, #5D6D7E, #2C3E50, #1A252F)',
-            borderRadius: 4,
-            boxShadow: '0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+            background: 'linear-gradient(to bottom, #9CA3AF, #6B7280, #4B5563)',
+            borderRadius: 2,
+            boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
           }}
         />
         {/* Dots on the bar */}
         <div 
-          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
-          style={{
-            background: 'radial-gradient(circle at 30% 30%, #F39C12, #D68910)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
-          }}
+          className="absolute left-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/70"
         />
         <div 
-          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
-          style={{
-            background: 'radial-gradient(circle at 30% 30%, #F39C12, #D68910)',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
-          }}
+          className="absolute right-1/4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-black/70"
         />
       </div>
       
       {/* Lower beads (4 beads) */}
-      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.4 }}>
+      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.3 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
           const isActive = Boolean(lowerActive[beadIndex]);
@@ -205,7 +196,7 @@ export const AbacusColumn = ({
           return (
             <div 
               key={beadIndex} 
-              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.15 : 0 }}
+              style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}
             >
               <AbacusBead
                 isUpper={false}
