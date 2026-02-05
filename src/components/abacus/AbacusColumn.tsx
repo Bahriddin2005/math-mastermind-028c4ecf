@@ -60,12 +60,12 @@ export const AbacusColumn = ({
   
   // Get color for lower bead based on row index
   const getLowerBeadColor = (rowIndex: number): string => {
-    if (lowerBeadColors && lowerBeadColors[rowIndex]) {
-      return lowerBeadColors[rowIndex];
+    // Use first color for all beads (uniform design)
+    if (lowerBeadColors && lowerBeadColors[0]) {
+      return lowerBeadColors[0];
     }
-    // Fallback to default colors
-    const defaultColors = ['#EF5350', '#FFA726', '#FFEE58', '#26C6DA'];
-    return defaultColors[rowIndex] || '#26C6DA';
+    // Fallback to uniform amber/orange color
+    return '#F39C12';
   };
   
   const handleUpperActivate = useCallback(() => {
