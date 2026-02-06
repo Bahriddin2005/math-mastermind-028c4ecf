@@ -143,8 +143,8 @@ export const AbacusColumn = memo(({
       )}
       
       {/* === UPPER DECK — 1 bead === */}
-      <div className="relative z-10" style={{ height: beadHeight * 1.6 }}>
-        <div style={{ marginTop: 0 }}>
+      <div className="relative z-10" style={{ height: beadHeight * 2.2 }}>
+        <div style={{ marginTop: beadHeight * 0.3 }}>
           <AbacusBead
             isUpper={true}
             isActive={upperActive}
