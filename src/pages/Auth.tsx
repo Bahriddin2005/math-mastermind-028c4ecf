@@ -714,7 +714,7 @@ const Auth = () => {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      ⚠️ Avval <a href="https://t.me/iqromaxuz_bot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxuz_bot</a> ga /start yuboring va botga telefon raqamingizni (Contact) yuboring
+                      ⚠️ Avval <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxuzbot</a> ga /start yuboring va botga telefon raqamingizni (Contact) yuboring
                     </p>
                   </div>
                 )}
