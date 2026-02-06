@@ -10,41 +10,69 @@ const corsHeaders = {
 interface VerifyRequest {
   email: string;
   code: string;
+  /**
+   * If true (default), marks the code as used.
+   * If false, only validates the code without consuming it.
+   */
+  consume?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  // CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { email, code }: VerifyRequest = await req.json();
+    const { email, code, consume = true }: VerifyRequest = await req.json();
 
     if (!email || !code) {
-      throw new Error("Email and code are required");
+      return new Response(
+        JSON.stringify({ success: false, error: "Email va kod talab qilinadi" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+    if (!supabaseUrl || !serviceRoleKey) {
+      console.error("Missing Supabase env vars", {
+        hasUrl: !!supabaseUrl,
+        hasServiceRoleKey: !!serviceRoleKey,
+      });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Server sozlamasida xatolik (credentials yo'q)",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
 
     // Create Supabase client with service role
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find valid verification code
-    const { data: verificationCode, error: fetchError } = await supabaseAdmin
+    // Fetch the latest matching code (including used/expired) so we can return a clear reason
+    const { data: row, error: fetchError } = await supabaseAdmin
       .from("verification_codes")
-      .select("*")
+      .select("id,email,code,is_used,expires_at")
       .eq("email", email)
       .eq("code", code)
-      .eq("is_used", false)
-      .gt("expires_at", new Date().toISOString())
-      .single();
+      .order("created_at", { ascending: false })
+      .maybeSingle();
 
-    if (fetchError || !verificationCode) {
+    if (fetchError || !row) {
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Noto'g'ri yoki muddati o'tgan kod" 
+        JSON.stringify({
+          success: false,
+          error: "Noto'g'ri kod",
         }),
         {
           status: 400,
@@ -53,14 +81,56 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Mark code as used
-    await supabaseAdmin
-      .from("verification_codes")
-      .update({ is_used: true })
-      .eq("id", verificationCode.id);
+    if (row.is_used) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Bu kod allaqachon ishlatilgan. Yangi kod so'rang.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const nowIso = new Date().toISOString();
+    if (row.expires_at <= nowIso) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Kod muddati o'tgan. Yangi kod so'rang.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    if (consume) {
+      const { error: updateError } = await supabaseAdmin
+        .from("verification_codes")
+        .update({ is_used: true })
+        .eq("id", row.id);
+
+      if (updateError) {
+        console.error("Failed to mark code as used:", updateError);
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "Kod holatini yangilashda xatolik",
+          }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+    }
 
     return new Response(
-      JSON.stringify({ success: true, message: "Email verified successfully" }),
+      JSON.stringify({ success: true, message: "Code verified" }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -69,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in verify-code:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ success: false, error: error?.message ?? "Unknown error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
