@@ -59,21 +59,21 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 54;
-      if (cols <= 9) return 48;
-      if (cols <= 13) return 42;
-      return 36;
-    }
-    if (deviceType === 'tablet') {
       if (cols <= 5) return 68;
       if (cols <= 9) return 60;
       if (cols <= 13) return 54;
-      return 48;
+      return 46;
     }
-    if (cols <= 5) return 92;
-    if (cols <= 9) return 80;
-    if (cols <= 13) return 72;
-    return 64;
+    if (deviceType === 'tablet') {
+      if (cols <= 5) return 82;
+      if (cols <= 9) return 74;
+      if (cols <= 13) return 66;
+      return 58;
+    }
+    if (cols <= 5) return 108;
+    if (cols <= 9) return 96;
+    if (cols <= 13) return 86;
+    return 76;
   };
   
   // Engine state
