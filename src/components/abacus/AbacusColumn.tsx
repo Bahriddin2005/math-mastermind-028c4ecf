@@ -1,4 +1,4 @@
-import { useCallback, memo } from 'react';
+import { useCallback, memo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AbacusBead } from './AbacusBead';
 import { cn } from '@/lib/utils';
@@ -17,20 +17,20 @@ interface AbacusColumnProps {
   onBeadSound?: (isUpper: boolean) => void;
   upperBeadColor?: string;
   lowerBeadColors?: string[];
-  /** Show dot marker on 1s, 1000s, 1000000s rods */
   showUnitDot?: boolean;
 }
 
 const COLUMN_LABELS = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T'];
-
-// Unit marker positions (soroban convention: dots at 1s, 1000s, 1000000s)
 const UNIT_DOT_POSITIONS = [0, 3, 6, 9, 12];
 
 /**
- * Professional Soroban Column
- * Matches reference: vertical rod, upper deck (1 bead), reckoning bar, lower deck (4 beads)
- * Proportions match real soroban: upper deck ~1/3 height, lower deck ~2/3 height
+ * Converts a count (0-4) to individual bead boolean array [bead0, bead1, bead2, bead3]
+ * In soroban: bead0 is bottom (first to activate), bead3 is top
  */
+const countToBeads = (count: number): boolean[] => {
+  return [0, 1, 2, 3].map(i => i < count);
+};
+
 export const AbacusColumn = memo(({
   columnIndex,
   columnState,
@@ -46,6 +46,14 @@ export const AbacusColumn = memo(({
 }: AbacusColumnProps) => {
   const upperActive = columnState.upper === 1;
   const lowerCount = columnState.lower;
+  
+  // Individual bead states — derived from engine count
+  const [beadStates, setBeadStates] = useState<boolean[]>(() => countToBeads(lowerCount));
+  
+  // Sync when engine state changes externally (e.g. reset, controlled value)
+  useEffect(() => {
+    setBeadStates(countToBeads(lowerCount));
+  }, [lowerCount]);
   
   const columnLabel = COLUMN_LABELS[columnIndex] || `10^${columnIndex}`;
   const lowerBeadColor = lowerBeadColors?.[0] || '#8B4513';
@@ -66,30 +74,37 @@ export const AbacusColumn = memo(({
     onBeadSound?.(true);
   }, [disabled, upperActive, onUpperChange, onBeadSound]);
 
-  const handleLowerActivate = useCallback((beadIndex: number) => {
+  // Individual bead toggle — only the dragged bead moves
+  const handleBeadActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    // Activate up to this bead (soroban: beads below must also be active)
-    const newCount = beadIndex + 1;
-    if (newCount > 4 || newCount <= lowerCount) return;
-    onLowerChange(newCount);
+    setBeadStates(prev => {
+      const next = [...prev];
+      next[beadIndex] = true;
+      // Count active beads and report to engine
+      const newCount = next.filter(Boolean).length;
+      onLowerChange(newCount);
+      return next;
+    });
     onBeadSound?.(false);
-  }, [disabled, lowerCount, onLowerChange, onBeadSound]);
+  }, [disabled, onLowerChange, onBeadSound]);
 
-  const handleLowerDeactivate = useCallback((beadIndex: number) => {
+  const handleBeadDeactivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    // Deactivate from this bead up (soroban: beads above must also deactivate)
-    const newCount = beadIndex;
-    if (newCount < 0 || newCount >= lowerCount) return;
-    onLowerChange(newCount);
+    setBeadStates(prev => {
+      const next = [...prev];
+      next[beadIndex] = false;
+      const newCount = next.filter(Boolean).length;
+      onLowerChange(newCount);
+      return next;
+    });
     onBeadSound?.(false);
-  }, [disabled, lowerCount, onLowerChange, onBeadSound]);
+  }, [disabled, onLowerChange, onBeadSound]);
 
-  // Rod width scales with bead size
   const rodWidth = Math.max(4, beadSize * 0.12);
 
   return (
     <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.8, padding: '0 1px' }}>
-      {/* Vertical rod — extends through entire column */}
+      {/* Vertical rod */}
       <div 
         className="absolute z-0"
         style={{
@@ -98,12 +113,12 @@ export const AbacusColumn = memo(({
           top: 0,
           bottom: 0,
           width: rodWidth,
-          background: `linear-gradient(to right, #B8A082, #D4C4A8, #C8B896, #B8A082)`,
+          background: 'linear-gradient(to right, #B8A082, #D4C4A8, #C8B896, #B8A082)',
           borderRadius: rodWidth / 2,
         }}
       />
       
-      {/* Column label (place value) */}
+      {/* Column label */}
       {showLabel && (
         <div className="text-center mb-0.5 z-20" style={{ minHeight: 18, marginTop: -22 }}>
           <div 
@@ -121,7 +136,7 @@ export const AbacusColumn = memo(({
         </div>
       )}
       
-      {/* === UPPER DECK (Heaven) — 1 bead === */}
+      {/* === UPPER DECK — 1 bead === */}
       <div className="relative z-10" style={{ height: beadHeight * 2.2 }}>
         <div style={{ marginTop: beadHeight * 0.3 }}>
           <AbacusBead
@@ -136,7 +151,7 @@ export const AbacusColumn = memo(({
         </div>
       </div>
       
-      {/* === RECKONING BAR (Counting bar) === */}
+      {/* === RECKONING BAR === */}
       <div
         className="relative z-20 w-full"
         style={{ height: Math.max(8, beadSize * 0.22), marginTop: 2, marginBottom: 2 }}
@@ -151,7 +166,6 @@ export const AbacusColumn = memo(({
             boxShadow: '0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
           }}
         />
-        {/* Unit dot marker on bar */}
         {showUnitDot && isUnitDot && (
           <div 
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -165,36 +179,32 @@ export const AbacusColumn = memo(({
         )}
       </div>
       
-      {/* === LOWER DECK (Earth) — 4 beads === */}
+      {/* === LOWER DECK — 4 independent beads === */}
       <div 
-        className="relative z-10 flex flex-col items-center pointer-events-none" 
+        className="relative z-10 flex flex-col items-center" 
         style={{ marginTop: beadSize * 0.85 }}
       >
-        {[3, 2, 1, 0].map((beadIndex) => {
-          const isActive = beadIndex < lowerCount;
-          
-          return (
-            <div 
-              key={beadIndex} 
-              className="relative pointer-events-auto"
-              style={{ 
-                marginTop: beadIndex < 3 ? 2 : 0, // No overlap — positive gap
-                zIndex: 10 + (3 - beadIndex),
-                isolation: 'isolate',
-              }}
-            >
-              <AbacusBead
-                isUpper={false}
-                isActive={isActive}
-                onActivate={() => handleLowerActivate(beadIndex)}
-                onDeactivate={() => handleLowerDeactivate(beadIndex)}
-                beadSize={beadSize}
-                customColor={lowerBeadColor}
-                disabled={disabled}
-              />
-            </div>
-          );
-        })}
+        {[3, 2, 1, 0].map((beadIndex) => (
+          <div 
+            key={beadIndex} 
+            className="relative"
+            style={{ 
+              marginTop: beadIndex < 3 ? 2 : 0,
+              zIndex: 10 + (3 - beadIndex),
+              isolation: 'isolate',
+            }}
+          >
+            <AbacusBead
+              isUpper={false}
+              isActive={beadStates[beadIndex]}
+              onActivate={() => handleBeadActivate(beadIndex)}
+              onDeactivate={() => handleBeadDeactivate(beadIndex)}
+              beadSize={beadSize}
+              customColor={lowerBeadColor}
+              disabled={disabled}
+            />
+          </div>
+        ))}
       </div>
       
       {/* Value indicator */}
