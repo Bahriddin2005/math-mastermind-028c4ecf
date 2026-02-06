@@ -492,10 +492,10 @@ const AbacusPractice = () => {
               <div className={cn("flex gap-4", isMobile ? "flex-col" : "flex-row items-start")}>
                 {/* Abacus */}
                 <div className={cn(
-                  "flex justify-center items-start overflow-x-auto min-w-0",
-                  isMobile ? "order-1 w-full max-h-[45vh]" : "flex-1"
+                  "flex justify-center items-start overflow-hidden min-w-0",
+                  isMobile ? "order-1 w-full max-h-[42vh]" : "flex-1 max-h-[65vh]"
                 )}>
-                  <div className={cn(isMobile && "scale-[0.85] origin-top")}>
+                  <div className="scale-[0.78] origin-top">
                     <RealisticAbacus
                       columns={abacusColumns}
                       value={abacusValue}
@@ -504,7 +504,7 @@ const AbacusPractice = () => {
                       showValue={abacusMode !== 'mental'}
                       orientation={abacusOrientation}
                       readOnly={gameState === 'answer'}
-                      compact={isMobile}
+                      compact
                     />
                   </div>
                 </div>
