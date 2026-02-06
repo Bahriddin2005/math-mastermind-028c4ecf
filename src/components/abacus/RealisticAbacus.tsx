@@ -191,8 +191,8 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '8px 12px' : '52px 28px',
-            minHeight: compact ? 400 : 580,
+            padding: compact ? '8px 12px' : '64px 28px',
+            minHeight: compact ? 460 : 680,
           }}
         >
           {[...Array(columns)].map((_, i) => {
