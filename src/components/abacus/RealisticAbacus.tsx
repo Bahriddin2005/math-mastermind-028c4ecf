@@ -9,10 +9,8 @@ import { getColorPaletteForScheme } from './AbacusColorScheme';
 import {
   type AbacusState,
   stateFromValue,
-  resetAbacus,
   setUpperBead,
   setLowerBeads,
-  computeValue,
 } from '@/lib/abacusEngine';
 
 export type AbacusMode = 'beginner' | 'mental' | 'test';
@@ -34,9 +32,11 @@ interface RealisticAbacusProps {
 }
 
 /**
- * Professional Soroban Abacus Simulator
- * Uses abacusEngine as single source of truth.
- * UI never calculates values — engine does.
+ * Professional Soroban Abacus — Reference-Accurate Design
+ * 
+ * Matches real soroban: dark wooden frame, natural beads, proper proportions.
+ * Upper deck ~1/3, lower deck ~2/3.
+ * Engine-backed: zero desync possible.
  */
 export const RealisticAbacus = ({
   columns = 13,
@@ -56,76 +56,61 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Responsive bead size
+  // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 40;
-      if (cols <= 9) return 34;
-      if (cols <= 13) return 28;
-      return 22;
+      if (cols <= 5) return 38;
+      if (cols <= 9) return 32;
+      if (cols <= 13) return 26;
+      return 21;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 54;
-      if (cols <= 9) return 46;
-      if (cols <= 13) return 40;
-      return 34;
+      if (cols <= 5) return 50;
+      if (cols <= 9) return 44;
+      if (cols <= 13) return 38;
+      return 32;
     }
-    if (cols <= 5) return 76;
-    if (cols <= 9) return 66;
-    if (cols <= 13) return 58;
-    return 50;
+    if (cols <= 5) return 68;
+    if (cols <= 9) return 60;
+    if (cols <= 13) return 52;
+    return 44;
   };
   
-  // Engine state — single source of truth
+  // Engine state
   const [engineState, setEngineState] = useState<AbacusState>(() =>
     stateFromValue(controlledValue ?? 0, columns)
   );
   
-  // Sync with controlled value
   useEffect(() => {
     if (controlledValue !== undefined) {
       setEngineState(stateFromValue(controlledValue, columns));
     }
   }, [controlledValue, columns]);
   
-  // Sync column count changes
   useEffect(() => {
     if (engineState.columns.length !== columns) {
-      const currentValue = controlledValue ?? engineState.value;
-      setEngineState(stateFromValue(currentValue, columns));
+      setEngineState(stateFromValue(controlledValue ?? engineState.value, columns));
     }
   }, [columns]);
   
-  // Get current state (controlled or internal)
   const currentState = controlledValue !== undefined
     ? stateFromValue(controlledValue, columns)
     : engineState;
   
-  // Engine-validated upper bead change
   const handleUpperChange = useCallback((columnIndex: number, active: boolean) => {
     if (readOnly) return;
-    
     const newState = setUpperBead(currentState, columnIndex, active);
-    if (!newState) return; // Invalid move — rejected by engine
-    
-    if (controlledValue === undefined) {
-      setEngineState(newState);
-    }
+    if (!newState) return;
+    if (controlledValue === undefined) setEngineState(newState);
     onChange?.(newState.value);
   }, [currentState, controlledValue, onChange, readOnly]);
   
-  // Engine-validated lower bead change
   const handleLowerChange = useCallback((columnIndex: number, count: number) => {
     if (readOnly) return;
-    
-    // Clamp to valid range
     const clampedCount = Math.max(0, Math.min(4, count));
     const newState = setLowerBeads(currentState, columnIndex, clampedCount);
-    if (!newState) return; // Invalid move — rejected by engine
-    
-    if (controlledValue === undefined) {
-      setEngineState(newState);
-    }
+    if (!newState) return;
+    if (controlledValue === undefined) setEngineState(newState);
     onChange?.(newState.value);
   }, [currentState, controlledValue, onChange, readOnly]);
   
@@ -137,47 +122,67 @@ export const RealisticAbacus = ({
     }
   }, [playSound, customBeadSound]);
   
-  const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
+  const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    if (cols <= 5) return 12;
-    if (cols <= 9) return 8;
-    if (cols <= 13) return 6;
-    return 4;
+    if (cols <= 5) return 10;
+    if (cols <= 9) return 6;
+    if (cols <= 13) return 4;
+    return 2;
   };
   
   const isVertical = orientation === 'vertical';
   
+  // Frame colors — dark wood matching reference
+  const frameBackground = colorPalette.frame || 'linear-gradient(145deg, #1A0F08 0%, #2C1D12 20%, #1A0F08 50%, #0D0704 100%)';
+  
   return (
     <div className={cn(
       "flex items-center w-full",
-      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto px-4 sm:px-6 lg:px-8"
+      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto px-2 sm:px-4 lg:px-6"
     )}>
-      {/* Abacus frame */}
+      {/* === OUTER FRAME — thick dark wooden frame === */}
       <motion.div 
-        className="relative rounded-3xl overflow-hidden"
+        className="relative overflow-hidden"
         style={{
-          background: colorPalette.frame || 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-          padding: compact ? 20 : 40,
+          background: frameBackground,
+          padding: compact ? '12px 8px' : '20px 16px',
+          // Thick frame border matching reference
+          border: `${compact ? 6 : 10}px solid #0D0704`,
+          borderRadius: compact ? 12 : 18,
           boxShadow: `
-            0 25px 50px -12px rgba(0,0,0,0.7),
-            0 0 0 4px rgba(255,255,255,0.05),
-            inset 0 2px 4px rgba(255,255,255,0.1)
+            0 20px 60px -15px rgba(0,0,0,0.8),
+            inset 0 2px 4px rgba(255,255,255,0.03),
+            inset 0 -2px 4px rgba(0,0,0,0.3),
+            0 0 0 ${compact ? 2 : 3}px #3D2B1F
           `,
-          border: '6px solid rgba(255,255,255,0.08)',
-          borderRadius: '24px',
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
         }}
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        initial={{ opacity: 0, scale: 0.97, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5, type: 'spring' }}
+        transition={{ duration: 0.4, type: 'spring' }}
       >
-        {/* Inner frame gradient */}
+        {/* Wood grain texture overlay */}
         <div 
-          className="absolute inset-0 rounded-3xl pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
           style={{
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%)',
+            backgroundImage: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent 8px,
+              rgba(255,255,255,0.1) 8px,
+              rgba(255,255,255,0.1) 9px
+            )`,
+          }}
+        />
+        
+        {/* Inner frame edge highlight */}
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            borderRadius: 'inherit',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
           }}
         />
         
@@ -186,10 +191,9 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-stretch"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '16px 24px' : '28px 48px',
+            padding: compact ? '8px 12px' : '16px 28px',
           }}
         >
-          {/* Columns in reverse order (largest place value on left) */}
           {[...Array(columns)].map((_, i) => {
             const columnIndex = columns - 1 - i;
             const col = currentState.columns[columnIndex] || { upper: 0, lower: 0 };
@@ -212,12 +216,6 @@ export const RealisticAbacus = ({
             );
           })}
         </div>
-        
-        {/* Frame corner decorations */}
-        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-white/10 rounded-tl-lg" />
-        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-white/10 rounded-tr-lg" />
-        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-white/10 rounded-bl-lg" />
-        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-white/10 rounded-br-lg" />
       </motion.div>
       
       {/* Value display */}
@@ -225,20 +223,27 @@ export const RealisticAbacus = ({
         <AnimatePresence mode="wait">
           <motion.div
             key={currentState.value}
-            initial={{ scale: 0.8, opacity: 0, y: -20 }}
+            initial={{ scale: 0.8, opacity: 0, y: -15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, type: 'spring' }}
-            className="mt-4 sm:mt-5"
+            exit={{ scale: 0.8, opacity: 0, y: 15 }}
+            transition={{ duration: 0.25, type: 'spring' }}
+            className="mt-3 sm:mt-4"
           >
-            <div className={cn(
-              "px-6 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl",
-              "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
-              "backdrop-blur-sm",
-              "border-2 border-primary/40",
-              "shadow-lg shadow-primary/20"
-            )}>
-              <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+            <div 
+              className="px-5 sm:px-7 py-2 sm:py-2.5 rounded-xl"
+              style={{
+                background: 'linear-gradient(135deg, #2C1D12, #1A0F08)',
+                border: '2px solid #3D2B1F',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+              }}
+            >
+              <span 
+                className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider"
+                style={{
+                  color: '#F5E6D3',
+                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                }}
+              >
                 {currentState.value.toLocaleString()}
               </span>
             </div>
