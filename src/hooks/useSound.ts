@@ -30,7 +30,6 @@ export const useSound = () => {
   const playiOSBeadSound = useCallback((ctx: AudioContext, isUpper: boolean) => {
     const now = ctx.currentTime;
 
-    // Master gain + compressor
     const masterGain = ctx.createGain();
     masterGain.gain.setValueAtTime(2.8, now);
     const compressor = ctx.createDynamicsCompressor();
@@ -42,109 +41,127 @@ export const useSound = () => {
     masterGain.connect(compressor);
     compressor.connect(ctx.destination);
 
-    // iOS Marimba ringtone style — warm wooden mallet strike
-    // Notes: Upper = E6 (1318Hz), Lower = C5 (523Hz) — classic iOS intervals
-    const baseFreq = isUpper ? 1318.5 : 523.25;
+    // Crystal/Xylophone style — bright metallic bars with shimmering decay
+    // Upper = G#6 (1661Hz), Lower = E5 (659Hz) — iOS Crystal intervals
+    const baseFreq = isUpper ? 1661.2 : 659.25;
 
-    // === Layer 1: Marimba fundamental (warm sine with fast attack) ===
+    // === Layer 1: Metallic bar fundamental (bright sine, fast decay) ===
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(baseFreq, now);
-    // Slight pitch bend down (natural mallet behavior)
-    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.98, now + 0.3);
-    gain1.gain.setValueAtTime(0.5, now);
-    gain1.gain.setValueAtTime(0.45, now + 0.01);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    gain1.gain.setValueAtTime(0.55, now);
+    gain1.gain.setTargetAtTime(0.3, now + 0.005, 0.02);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
     osc1.connect(gain1);
     gain1.connect(masterGain);
     osc1.start(now);
-    osc1.stop(now + 0.35);
+    osc1.stop(now + 0.5);
 
-    // === Layer 2: 2nd harmonic (octave — marimba resonance) ===
+    // === Layer 2: 3rd partial (xylophone characteristic — 3x freq) ===
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(baseFreq * 2, now);
-    gain2.gain.setValueAtTime(0.2, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc2.frequency.setValueAtTime(baseFreq * 3, now);
+    gain2.gain.setValueAtTime(0.18, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
     osc2.connect(gain2);
     gain2.connect(masterGain);
     osc2.start(now);
-    osc2.stop(now + 0.2);
+    osc2.stop(now + 0.25);
 
-    // === Layer 3: 4th harmonic (brightness — iOS crystal tone) ===
+    // === Layer 3: 6th partial (metallic shimmer) ===
     const osc3 = ctx.createOscillator();
     const gain3 = ctx.createGain();
     osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(baseFreq * 4, now);
-    gain3.gain.setValueAtTime(0.08, now);
-    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc3.frequency.setValueAtTime(baseFreq * 6.27, now);
+    gain3.gain.setValueAtTime(0.07, now);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
     osc3.connect(gain3);
     gain3.connect(masterGain);
     osc3.start(now);
-    osc3.stop(now + 0.1);
+    osc3.stop(now + 0.12);
 
-    // === Layer 4: Mallet strike noise (realistic hit transient) ===
-    const bufferSize = Math.floor(ctx.sampleRate * 0.012);
+    // === Layer 4: 9.5th partial (inharmonic — crystal bell character) ===
+    const osc4 = ctx.createOscillator();
+    const gain4 = ctx.createGain();
+    osc4.type = 'sine';
+    osc4.frequency.setValueAtTime(baseFreq * 9.5, now);
+    gain4.gain.setValueAtTime(0.03, now);
+    gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    osc4.connect(gain4);
+    gain4.connect(masterGain);
+    osc4.start(now);
+    osc4.stop(now + 0.06);
+
+    // === Layer 5: Hard mallet strike transient ===
+    const bufferSize = Math.floor(ctx.sampleRate * 0.008);
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 6);
+      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 8);
     }
     const noiseSource = ctx.createBufferSource();
     noiseSource.buffer = noiseBuffer;
     const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.setValueAtTime(isUpper ? 6000 : 4000, now);
-    noiseFilter.Q.setValueAtTime(0.8, now);
+    noiseFilter.type = 'highpass';
+    noiseFilter.frequency.setValueAtTime(isUpper ? 7000 : 5000, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.35, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
+    noiseGain.gain.setValueAtTime(0.4, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
     noiseSource.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
     noiseGain.connect(masterGain);
     noiseSource.start(now);
 
-    // === Layer 5: Sub-resonance (warm body of marimba bar) ===
-    const osc4 = ctx.createOscillator();
-    const gain4 = ctx.createGain();
-    osc4.type = 'sine';
-    osc4.frequency.setValueAtTime(baseFreq / 2, now);
-    gain4.gain.setValueAtTime(0.15, now);
-    gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc4.connect(gain4);
-    gain4.connect(masterGain);
-    osc4.start(now);
-    osc4.stop(now + 0.25);
+    // === Layer 6: Sustain shimmer (vibrating metal bar afterglow) ===
+    const osc5 = ctx.createOscillator();
+    const gain5 = ctx.createGain();
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    // Subtle vibrato for metallic shimmer
+    lfo.frequency.setValueAtTime(8, now);
+    lfoGain.gain.setValueAtTime(baseFreq * 0.003, now);
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc5.frequency);
+    osc5.type = 'sine';
+    osc5.frequency.setValueAtTime(baseFreq * 2.01, now); // Slightly detuned octave
+    gain5.gain.setValueAtTime(0.1, now);
+    gain5.gain.setTargetAtTime(0.06, now + 0.02, 0.05);
+    gain5.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc5.connect(gain5);
+    gain5.connect(masterGain);
+    lfo.start(now);
+    osc5.start(now);
+    lfo.stop(now + 0.4);
+    osc5.stop(now + 0.4);
 
-    // === Layer 6: Gentle reverb tail (iOS spacious feel) ===
-    const delayNode = ctx.createDelay(0.15);
-    delayNode.delayTime.setValueAtTime(0.04, now);
-    const delayGain = ctx.createGain();
-    delayGain.gain.setValueAtTime(0.1, now);
-    delayGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    const delayFilter = ctx.createBiquadFilter();
-    delayFilter.type = 'lowpass';
-    delayFilter.frequency.setValueAtTime(2000, now);
-    masterGain.connect(delayNode);
-    delayNode.connect(delayFilter);
-    delayFilter.connect(delayGain);
-    delayGain.connect(ctx.destination);
+    // === Layer 7: Stereo-like reverb (iOS spacious crystal room) ===
+    const delay1 = ctx.createDelay(0.15);
+    delay1.delayTime.setValueAtTime(0.035, now);
+    const dGain1 = ctx.createGain();
+    dGain1.gain.setValueAtTime(0.12, now);
+    dGain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    const dFilter1 = ctx.createBiquadFilter();
+    dFilter1.type = 'lowpass';
+    dFilter1.frequency.setValueAtTime(3000, now);
+    masterGain.connect(delay1);
+    delay1.connect(dFilter1);
+    dFilter1.connect(dGain1);
+    dGain1.connect(ctx.destination);
 
-    // === Layer 7: Second delay (wider room) ===
     const delay2 = ctx.createDelay(0.2);
-    delay2.delayTime.setValueAtTime(0.085, now);
-    const delayGain2 = ctx.createGain();
-    delayGain2.gain.setValueAtTime(0.04, now);
-    delayGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    const delayFilter2 = ctx.createBiquadFilter();
-    delayFilter2.type = 'lowpass';
-    delayFilter2.frequency.setValueAtTime(1200, now);
+    delay2.delayTime.setValueAtTime(0.072, now);
+    const dGain2 = ctx.createGain();
+    dGain2.gain.setValueAtTime(0.06, now);
+    dGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    const dFilter2 = ctx.createBiquadFilter();
+    dFilter2.type = 'lowpass';
+    dFilter2.frequency.setValueAtTime(1800, now);
     masterGain.connect(delay2);
-    delay2.connect(delayFilter2);
-    delayFilter2.connect(delayGain2);
-    delayGain2.connect(ctx.destination);
+    delay2.connect(dFilter2);
+    dFilter2.connect(dGain2);
+    dGain2.connect(ctx.destination);
   }, []);
 
   const playSound = useCallback((type: SoundType) => {
