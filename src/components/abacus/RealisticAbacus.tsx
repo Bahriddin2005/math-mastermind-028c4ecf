@@ -146,7 +146,7 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden"
         style={{
           background: frameBackground,
-          padding: compact ? '12px 8px' : '20px 16px',
+          padding: compact ? '12px 16px' : '24px 32px',
           // Thick frame border matching reference
           border: `${compact ? 6 : 10}px solid #0D0704`,
           borderRadius: compact ? 12 : 18,
@@ -191,7 +191,7 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '8px 12px' : '64px 28px',
+            padding: compact ? '8px 20px' : '64px 48px',
             minHeight: compact ? 460 : 680,
           }}
         >
