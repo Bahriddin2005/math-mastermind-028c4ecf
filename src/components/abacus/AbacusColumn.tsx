@@ -99,7 +99,7 @@ export const AbacusColumn = memo(({
     });
     onBeadSound?.(false);
   }, [disabled, onLowerChange, onBeadSound]);
-  const rodWidth = Math.max(3, beadSize * 0.08);
+  const rodWidth = Math.max(5, beadSize * 0.15);
   return <div className="flex flex-col items-center relative" style={{
     minWidth: beadSize * 1.8,
     padding: '0 1px'
