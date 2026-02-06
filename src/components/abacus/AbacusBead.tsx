@@ -63,8 +63,8 @@ export const AbacusBead = memo(({
     return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
   }, [isUpper, isActive, ACTIVE_OFFSET]);
 
-  const beadWidth = beadSize * 1.4;
-  const beadHeight = beadSize * 0.9;
+  const beadWidth = beadSize * 1.6;
+  const beadHeight = beadSize * 1.15;
   
   // Pre-calculate colors once
   const adjustBrightness = (hex: string, percent: number): string => {
