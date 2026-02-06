@@ -99,7 +99,7 @@ export const AbacusColumn = memo(({
     });
     onBeadSound?.(false);
   }, [disabled, onLowerChange, onBeadSound]);
-  const rodWidth = Math.max(5, beadSize * 0.15);
+  const rodWidth = Math.max(6, beadSize * 0.18);
   return <div className="flex flex-col items-center relative" style={{
     minWidth: beadSize * 1.8,
     padding: '0 1px'
@@ -108,8 +108,8 @@ export const AbacusColumn = memo(({
       <div className="absolute z-0" style={{
       left: '50%',
       transform: 'translateX(-50%)',
-      top: -100,
-      bottom: -100,
+      top: -40,
+      bottom: -40,
       width: rodWidth,
       background: 'linear-gradient(to right, #B8A082, #D4C4A8, #C8B896, #B8A082)',
       borderRadius: rodWidth / 2
