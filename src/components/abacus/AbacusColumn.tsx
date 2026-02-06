@@ -68,18 +68,18 @@ export const AbacusColumn = memo(({
 
   const handleLowerActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    // Activate one bead at a time: increment count by 1
-    const newCount = lowerCount + 1;
-    if (newCount > 4) return;
+    // Activate up to this bead (soroban: beads below must also be active)
+    const newCount = beadIndex + 1;
+    if (newCount > 4 || newCount <= lowerCount) return;
     onLowerChange(newCount);
     onBeadSound?.(false);
   }, [disabled, lowerCount, onLowerChange, onBeadSound]);
 
   const handleLowerDeactivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    // Deactivate one bead at a time: decrement count by 1
-    const newCount = lowerCount - 1;
-    if (newCount < 0) return;
+    // Deactivate from this bead up (soroban: beads above must also deactivate)
+    const newCount = beadIndex;
+    if (newCount < 0 || newCount >= lowerCount) return;
     onLowerChange(newCount);
     onBeadSound?.(false);
   }, [disabled, lowerCount, onLowerChange, onBeadSound]);
@@ -173,11 +173,11 @@ export const AbacusColumn = memo(({
           return (
             <div 
               key={beadIndex} 
-              className="relative"
+              className="relative pointer-events-auto"
               style={{ 
-                marginTop: beadIndex < 3 ? -beadSize * 0.15 : 0,
-                zIndex: 3 - beadIndex, // Top bead gets highest z-index to prevent overlap capture
-                isolation: 'isolate', // Create new stacking context per bead
+                marginTop: beadIndex < 3 ? -beadSize * 0.08 : 0,
+                zIndex: 10 + (3 - beadIndex),
+                isolation: 'isolate',
               }}
             >
               <AbacusBead
