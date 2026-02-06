@@ -299,7 +299,7 @@ const AbacusPractice = () => {
         initialMode={abacusMode}
       />
 
-      <main className="container mx-auto px-4 py-5 pb-24 max-w-2xl">
+      <main className="container mx-auto px-4 py-5 pb-24 max-w-4xl">
         <AnimatePresence mode="wait">
           {/* ===== IDLE SCREEN ===== */}
           {gameState === 'idle' && (
@@ -489,9 +489,9 @@ const AbacusPractice = () => {
                 </Button>
               </div>
               
-              <div className={cn("flex gap-5", isMobile ? "flex-col" : "flex-row")}>
+              <div className={cn("flex gap-5", isMobile ? "flex-col" : "flex-row items-start")}>
                 {/* Abacus */}
-                <div className={cn("flex-1 flex justify-center items-start", isMobile && "order-1")}>
+                <div className={cn("flex-1 flex justify-center items-start overflow-x-auto min-w-0", isMobile && "order-1")}>
                   <RealisticAbacus
                     columns={abacusColumns}
                     value={abacusValue}
