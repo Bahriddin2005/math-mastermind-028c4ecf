@@ -68,6 +68,13 @@ export const AbacusBead = memo(({
       else if (isActive && offset > SNAP_THRESHOLD) onDeactivate();
     }
   }, [disabled, isUpper, isActive, SNAP_THRESHOLD, onActivate, onDeactivate]);
+
+  // Tap handler — toggle on click/tap
+  const handleTap = useCallback(() => {
+    if (disabled) return;
+    if (isActive) onDeactivate();
+    else onActivate();
+  }, [disabled, isActive, onActivate, onDeactivate]);
   
   const getActiveOffset = useCallback(() => {
     if (isUpper) return isActive ? ACTIVE_OFFSET : 0;
@@ -113,6 +120,7 @@ export const AbacusBead = memo(({
       dragElastic={0.05}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onTap={handleTap}
       animate={{ y: getActiveOffset() }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
     >
