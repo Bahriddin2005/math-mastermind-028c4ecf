@@ -493,9 +493,9 @@ const AbacusPractice = () => {
                 {/* Abacus */}
                 <div className={cn(
                   "flex justify-center items-start overflow-hidden min-w-0",
-                  isMobile ? "order-1 w-full max-h-[32vh]" : "flex-1 max-h-[48vh]"
+                  isMobile ? "order-1 w-full max-h-[28vh]" : "flex-1 max-h-[42vh]"
                 )}>
-                  <div className="scale-[0.6] origin-top">
+                  <div className="scale-[0.5] origin-top">
                     <RealisticAbacus
                       columns={abacusColumns}
                       value={abacusValue}
