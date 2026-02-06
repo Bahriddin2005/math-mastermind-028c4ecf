@@ -171,7 +171,15 @@ export const AbacusColumn = memo(({
           const isActive = beadIndex < lowerCount;
           
           return (
-            <div key={beadIndex} style={{ marginTop: beadIndex < 3 ? -beadSize * 0.28 : 0 }}>
+            <div 
+              key={beadIndex} 
+              className="relative"
+              style={{ 
+                marginTop: beadIndex < 3 ? -beadSize * 0.15 : 0,
+                zIndex: 3 - beadIndex, // Top bead gets highest z-index to prevent overlap capture
+                isolation: 'isolate', // Create new stacking context per bead
+              }}
+            >
               <AbacusBead
                 isUpper={false}
                 isActive={isActive}
