@@ -40,48 +40,44 @@ export const AbacusBead = memo(({
   disabled = false,
 }: AbacusBeadProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const dragStartY = useRef(0);
   
-  const SNAP_THRESHOLD = Math.max(beadSize * 0.2, 8);
   const ACTIVE_OFFSET = beadSize * 0.45;
   
   const baseColor = customColor || '#8B4513';
   
-  const handleDragStart = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (disabled) return;
-    setIsDragging(true);
-    dragStartY.current = info.point.y;
-  }, [disabled]);
-  
-  const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (disabled) return;
-    setIsDragging(false);
-    const offset = info.offset.y;
-    
-    if (Math.abs(offset) < SNAP_THRESHOLD) return;
-    
-    if (isUpper) {
-      if (!isActive && offset > SNAP_THRESHOLD) onActivate();
-      else if (isActive && offset < -SNAP_THRESHOLD) onDeactivate();
-    } else {
-      if (!isActive && offset < -SNAP_THRESHOLD) onActivate();
-      else if (isActive && offset > SNAP_THRESHOLD) onDeactivate();
-    }
-  }, [disabled, isUpper, isActive, SNAP_THRESHOLD, onActivate, onDeactivate]);
-
-  // Tap handler — toggle on click/tap
+  // Simple tap to toggle
   const handleTap = useCallback(() => {
     if (disabled) return;
     if (isActive) onDeactivate();
     else onActivate();
   }, [disabled, isActive, onActivate, onDeactivate]);
   
-  const getActiveOffset = useCallback(() => {
-    if (isUpper) return isActive ? ACTIVE_OFFSET : 0;
-    return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
-  }, [isUpper, isActive, ACTIVE_OFFSET]);
+  // Drag handlers with tight control
+  const handleDragStart = useCallback(() => {
+    if (disabled) return;
+    setIsDragging(true);
+  }, [disabled]);
+  
+  const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (disabled) return;
+    setIsDragging(false);
+    const dy = info.offset.y;
+    const threshold = beadSize * 0.15;
+    
+    if (isUpper) {
+      if (!isActive && dy > threshold) onActivate();
+      else if (isActive && dy < -threshold) onDeactivate();
+    } else {
+      if (!isActive && dy < -threshold) onActivate();
+      else if (isActive && dy > threshold) onDeactivate();
+    }
+  }, [disabled, isUpper, isActive, beadSize, onActivate, onDeactivate]);
+  
+  const targetY = isUpper
+    ? (isActive ? ACTIVE_OFFSET : 0)
+    : (isActive ? -ACTIVE_OFFSET * 0.6 : 0);
 
-  // Bead proportions: wide and thick like reference
+  // Bead proportions
   const beadWidth = beadSize * 1.7;
   const beadHeight = beadSize * 1.1;
   
@@ -116,13 +112,14 @@ export const AbacusBead = memo(({
         filter: isDragging ? `drop-shadow(0 4px 8px rgba(0,0,0,0.4))` : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
       }}
       drag={disabled ? false : "y"}
-      dragConstraints={{ top: -beadSize, bottom: beadSize }}
-      dragElastic={0.05}
+      dragConstraints={{ top: -beadSize * 0.5, bottom: beadSize * 0.5 }}
+      dragElastic={0}
+      dragSnapToOrigin
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onTap={handleTap}
-      animate={{ y: getActiveOffset() }}
-      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+      animate={{ y: targetY }}
+      transition={{ type: 'spring', stiffness: 600, damping: 35 }}
     >
       <svg
         width={beadWidth}
