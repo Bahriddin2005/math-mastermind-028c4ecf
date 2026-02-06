@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, memo } from 'react';
+import { useState, useCallback, useRef, memo, useMemo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +14,6 @@ interface AbacusBeadProps {
   disabled?: boolean;
 }
 
-// Pre-compute color adjustments outside render
 const adjustBrightness = (hex: string, percent: number): string => {
   const num = parseInt(hex.replace('#', ''), 16);
   const amt = Math.round(2.55 * percent);
@@ -27,10 +26,9 @@ const adjustBrightness = (hex: string, percent: number): string => {
 let beadIdCounter = 0;
 
 /**
- * Professional 3D Soroban Bead
- * - Drag snaps to valid positions ONLY (active/inactive)
- * - Minimum drag threshold prevents accidental moves
- * - Immediate feedback on valid moves
+ * Professional 3D Wooden Soroban Bead
+ * Realistic oval shape with wood grain texture, highlights, and shadows
+ * Matches reference: thick wooden beads with natural wood tones
  */
 export const AbacusBead = memo(({
   isUpper,
@@ -44,11 +42,10 @@ export const AbacusBead = memo(({
   const [isDragging, setIsDragging] = useState(false);
   const dragStartY = useRef(0);
   
-  // Minimum drag threshold to prevent accidental moves
   const SNAP_THRESHOLD = Math.max(beadSize * 0.2, 8);
-  const ACTIVE_OFFSET = beadSize * 0.4;
+  const ACTIVE_OFFSET = beadSize * 0.45;
   
-  const baseColor = customColor || '#FF6B6B';
+  const baseColor = customColor || '#8B4513';
   
   const handleDragStart = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (disabled) return;
@@ -61,25 +58,15 @@ export const AbacusBead = memo(({
     setIsDragging(false);
     const offset = info.offset.y;
     
-    // Only change state if drag exceeds threshold
     if (Math.abs(offset) < SNAP_THRESHOLD) return;
     
     if (isUpper) {
-      // Upper bead: drag DOWN to activate (touch bar), UP to deactivate
-      if (!isActive && offset > SNAP_THRESHOLD) {
-        onActivate();
-      } else if (isActive && offset < -SNAP_THRESHOLD) {
-        onDeactivate();
-      }
+      if (!isActive && offset > SNAP_THRESHOLD) onActivate();
+      else if (isActive && offset < -SNAP_THRESHOLD) onDeactivate();
     } else {
-      // Lower bead: drag UP to activate (touch bar), DOWN to deactivate
-      if (!isActive && offset < -SNAP_THRESHOLD) {
-        onActivate();
-      } else if (isActive && offset > SNAP_THRESHOLD) {
-        onDeactivate();
-      }
+      if (!isActive && offset < -SNAP_THRESHOLD) onActivate();
+      else if (isActive && offset > SNAP_THRESHOLD) onDeactivate();
     }
-    // If threshold not met or wrong direction → bead snaps back (no state change)
   }, [disabled, isUpper, isActive, SNAP_THRESHOLD, onActivate, onDeactivate]);
   
   const getActiveOffset = useCallback(() => {
@@ -87,30 +74,39 @@ export const AbacusBead = memo(({
     return isActive ? -ACTIVE_OFFSET * 0.6 : 0;
   }, [isUpper, isActive, ACTIVE_OFFSET]);
 
-  const beadWidth = beadSize * 1.6;
-  const beadHeight = beadSize * 1.15;
+  // Bead proportions: wide and thick like reference
+  const beadWidth = beadSize * 1.7;
+  const beadHeight = beadSize * 1.1;
   
-  const lighterColor = adjustBrightness(baseColor, 40);
-  const darkerColor = adjustBrightness(baseColor, -30);
-  const glowColor = adjustBrightness(baseColor, 20);
-  
-  // Stable unique IDs (not random per render)
   const idRef = useRef(`bead-${++beadIdCounter}`);
-  const gradientId = `${idRef.current}-grad`;
-  const shineId = `${idRef.current}-shine`;
+
+  // Pre-compute wooden colors
+  const colors = useMemo(() => {
+    const highlight = adjustBrightness(baseColor, 50);
+    const midLight = adjustBrightness(baseColor, 25);
+    const dark = adjustBrightness(baseColor, -35);
+    const darkest = adjustBrightness(baseColor, -50);
+    const rim = adjustBrightness(baseColor, -20);
+    return { highlight, midLight, dark, darkest, rim };
+  }, [baseColor]);
+
+  const gradId = `${idRef.current}-g`;
+  const shineId = `${idRef.current}-s`;
+  const grooveId = `${idRef.current}-gr`;
+  const shadowId = `${idRef.current}-sh`;
 
   return (
     <motion.div
       className={cn(
         "relative cursor-pointer touch-none select-none will-change-transform",
         isDragging && "z-20",
-        !disabled && "hover:brightness-110",
+        !disabled && "active:scale-[0.97]",
         disabled && "opacity-60 cursor-not-allowed"
       )}
       style={{ 
         width: beadWidth, 
         height: beadHeight,
-        filter: isDragging ? `drop-shadow(0 0 8px ${glowColor})` : 'none',
+        filter: isDragging ? `drop-shadow(0 4px 8px rgba(0,0,0,0.4))` : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
       }}
       drag={disabled ? false : "y"}
       dragConstraints={{ top: -beadSize, bottom: beadSize }}
@@ -119,60 +115,110 @@ export const AbacusBead = memo(({
       onDragEnd={handleDragEnd}
       animate={{ y: getActiveOffset() }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-      whileTap={{ scale: 0.97 }}
     >
       <svg
         width={beadWidth}
         height={beadHeight}
-        viewBox="0 0 100 60"
+        viewBox="0 0 120 65"
         preserveAspectRatio="none"
         className="absolute inset-0"
       >
         <defs>
-          <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={lighterColor} />
-            <stop offset="50%" stopColor={baseColor} />
-            <stop offset="100%" stopColor={darkerColor} />
+          {/* Main wooden gradient — top lit, bottom shadowed */}
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={colors.highlight} />
+            <stop offset="15%" stopColor={colors.midLight} />
+            <stop offset="40%" stopColor={baseColor} />
+            <stop offset="70%" stopColor={colors.dark} />
+            <stop offset="100%" stopColor={colors.darkest} />
           </linearGradient>
-          <radialGradient id={shineId} cx="30%" cy="20%" r="50%">
-            <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+          
+          {/* Top shine reflection */}
+          <radialGradient id={shineId} cx="35%" cy="15%" r="40%" fx="35%" fy="12%">
+            <stop offset="0%" stopColor="white" stopOpacity="0.55" />
+            <stop offset="60%" stopColor="white" stopOpacity="0.08" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
+          </radialGradient>
+          
+          {/* Horizontal groove lines (wood grain) */}
+          <pattern id={grooveId} x="0" y="0" width="120" height="6" patternUnits="userSpaceOnUse">
+            <line x1="10" y1="3" x2="110" y2="3" stroke={colors.dark} strokeWidth="0.5" strokeOpacity="0.2" />
+          </pattern>
+          
+          {/* Bottom shadow ellipse */}
+          <radialGradient id={shadowId} cx="50%" cy="80%" r="50%">
+            <stop offset="0%" stopColor={colors.darkest} stopOpacity="0.3" />
+            <stop offset="100%" stopColor={colors.darkest} stopOpacity="0" />
           </radialGradient>
         </defs>
         
+        {/* Drop shadow underneath bead */}
+        <ellipse cx="60" cy="56" rx="42" ry="6" fill="rgba(0,0,0,0.15)" />
+        
+        {/* Main bead body — biconcave disc shape */}
         <ellipse
-          cx="50"
-          cy="32"
-          rx="45"
-          ry="24"
-          fill={`url(#${gradientId})`}
-          style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.25))' }}
+          cx="60"
+          cy="33"
+          rx="52"
+          ry="26"
+          fill={`url(#${gradId})`}
         />
         
+        {/* Wood grain texture overlay */}
         <ellipse
-          cx="35"
-          cy="22"
-          rx="18"
-          ry="9"
+          cx="60"
+          cy="33"
+          rx="52"
+          ry="26"
+          fill={`url(#${grooveId})`}
+          opacity="0.3"
+        />
+        
+        {/* Top rim highlight — gives 3D roundness */}
+        <ellipse
+          cx="60"
+          cy="12"
+          rx="40"
+          ry="8"
           fill={`url(#${shineId})`}
         />
         
+        {/* Left edge highlight */}
         <ellipse
-          cx="50"
-          cy="48"
-          rx="28"
-          ry="5"
+          cx="18"
+          cy="30"
+          rx="6"
+          ry="14"
           fill="white"
-          opacity="0.12"
+          opacity="0.06"
         />
         
-        {/* Rod hole */}
+        {/* Bottom rim subtle reflection */}
         <ellipse
-          cx="50"
-          cy="30"
-          rx="4"
-          ry="4"
-          fill={darkerColor}
+          cx="60"
+          cy="52"
+          rx="30"
+          ry="5"
+          fill="white"
+          opacity="0.08"
+        />
+        
+        {/* Rod hole — center dark circle */}
+        <ellipse
+          cx="60"
+          cy="33"
+          rx="5"
+          ry="5"
+          fill={colors.darkest}
+          opacity="0.7"
+        />
+        <ellipse
+          cx="59"
+          cy="32"
+          rx="3"
+          ry="3"
+          fill={colors.dark}
+          opacity="0.5"
         />
       </svg>
     </motion.div>
