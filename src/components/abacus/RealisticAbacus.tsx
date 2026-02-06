@@ -143,7 +143,7 @@ export const RealisticAbacus = ({
     )}>
       {/* === OUTER FRAME — thick dark wooden frame === */}
       <motion.div 
-        className="relative overflow-hidden"
+        className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
           padding: compact ? '16px 24px' : '32px 48px',
@@ -188,7 +188,7 @@ export const RealisticAbacus = ({
         
         {/* Columns container */}
         <div 
-          className="relative flex justify-center items-center"
+          className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
             padding: compact ? '12px 28px' : '64px 68px',
