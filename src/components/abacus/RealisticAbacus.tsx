@@ -59,21 +59,21 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
+      if (cols <= 5) return 30;
+      if (cols <= 9) return 26;
+      if (cols <= 13) return 22;
+      return 18;
+    }
+    if (deviceType === 'tablet') {
       if (cols <= 5) return 38;
       if (cols <= 9) return 34;
       if (cols <= 13) return 28;
       return 24;
     }
-    if (deviceType === 'tablet') {
-      if (cols <= 5) return 46;
-      if (cols <= 9) return 40;
-      if (cols <= 13) return 36;
-      return 32;
-    }
-    if (cols <= 5) return 56;
-    if (cols <= 9) return 50;
-    if (cols <= 13) return 44;
-    return 38;
+    if (cols <= 5) return 44;
+    if (cols <= 9) return 40;
+    if (cols <= 13) return 34;
+    return 28;
   };
   
   // Engine state
@@ -190,8 +190,8 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '24px 36px' : '64px 68px',
-            minHeight: compact ? 520 : 720,
+            padding: compact ? '16px 24px' : '48px 56px',
+            minHeight: compact ? 380 : 580,
           }}
         >
           {[...Array(columns)].map((_, i) => {
