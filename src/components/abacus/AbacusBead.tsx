@@ -59,8 +59,9 @@ export const AbacusBead = memo(({
   const baseColor = customColor || '#8B4513';
 
   // Target position based on state
+  // Upper bead: moves UP (negative) to activate (toward reckoning bar from above)
   const restY = isUpper
-    ? (isActive ? SNAP_DISTANCE : 0)
+    ? (isActive ? -SNAP_DISTANCE : 0)
     : (isActive ? -SNAP_DISTANCE : 0);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
@@ -115,8 +116,9 @@ export const AbacusBead = memo(({
     const dy = e.clientY - state.startY;
     
     if (isUpper) {
-      if (!isActive && dy > DRAG_THRESHOLD) onActivate();
-      else if (isActive && dy < -DRAG_THRESHOLD) onDeactivate();
+      // Upper bead: drag UP to activate, drag DOWN to deactivate
+      if (!isActive && dy < -DRAG_THRESHOLD) onActivate();
+      else if (isActive && dy > DRAG_THRESHOLD) onDeactivate();
     } else {
       if (!isActive && dy < -DRAG_THRESHOLD) onActivate();
       else if (isActive && dy > DRAG_THRESHOLD) onDeactivate();
