@@ -115,21 +115,6 @@ export const AbacusColumn = memo(({
       borderRadius: rodWidth / 2
     }} />
       
-      {/* Column label */}
-      {showLabel && <div className="text-center mb-0.5 z-20" style={{
-      minHeight: 18,
-      marginTop: -80
-    }}>
-          <div className="px-1.5 rounded font-bold py-[10px]" style={{
-        fontSize: beadSize > 30 ? 10 : 8,
-        color: '#F5E6D3',
-        background: 'linear-gradient(135deg, #3D2B1F, #2A1810)',
-        minWidth: beadSize * 0.7,
-        border: '1px solid rgba(245, 230, 211, 0.15)'
-      }}>
-            {columnLabel}
-          </div>
-        </div>}
       
       {/* === UPPER DECK — 1 bead === */}
       <div className="relative z-10" style={{
