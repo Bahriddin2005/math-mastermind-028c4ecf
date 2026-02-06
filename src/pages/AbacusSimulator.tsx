@@ -570,7 +570,7 @@ const AbacusSimulator = () => {
           
           {/* Abakus komponenti */}
           <div className={cn(
-            "flex justify-center items-center py-6 w-full",
+            "flex justify-center items-center py-6 w-full max-w-[100vw]",
             orientation === 'vertical' && "min-h-[400px]"
           )}>
             <RealisticAbacus

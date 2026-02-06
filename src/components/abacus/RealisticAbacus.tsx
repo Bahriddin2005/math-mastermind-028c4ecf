@@ -125,10 +125,10 @@ export const RealisticAbacus = ({
   const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    if (cols <= 5) return 10;
-    if (cols <= 9) return 6;
-    if (cols <= 13) return 4;
-    return 2;
+    if (cols <= 5) return 16;
+    if (cols <= 9) return 12;
+    if (cols <= 13) return 8;
+    return 4;
   };
   
   const isVertical = orientation === 'vertical';
