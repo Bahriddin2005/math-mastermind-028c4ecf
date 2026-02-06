@@ -1,4 +1,4 @@
-import { useCallback, memo, useState, useEffect } from 'react';
+import { useCallback, memo, useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { AbacusBead } from './AbacusBead';
 import { cn } from '@/lib/utils';
@@ -47,12 +47,17 @@ export const AbacusColumn = memo(({
   const upperActive = columnState.upper === 1;
   const lowerCount = columnState.lower;
   
-  // Individual bead states — derived from engine count
+  // Individual bead states — each bead is independent
   const [beadStates, setBeadStates] = useState<boolean[]>(() => countToBeads(lowerCount));
+  const lastSentCount = useRef(lowerCount);
   
-  // Sync when engine state changes externally (e.g. reset, controlled value)
+  // Only sync from engine when change is EXTERNAL (reset, controlled value)
+  // Skip if we caused the change ourselves
   useEffect(() => {
-    setBeadStates(countToBeads(lowerCount));
+    if (lowerCount !== lastSentCount.current) {
+      setBeadStates(countToBeads(lowerCount));
+      lastSentCount.current = lowerCount;
+    }
   }, [lowerCount]);
   
   const columnLabel = COLUMN_LABELS[columnIndex] || `10^${columnIndex}`;
@@ -80,8 +85,8 @@ export const AbacusColumn = memo(({
     setBeadStates(prev => {
       const next = [...prev];
       next[beadIndex] = true;
-      // Count active beads and report to engine
       const newCount = next.filter(Boolean).length;
+      lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
       return next;
     });
@@ -94,6 +99,7 @@ export const AbacusColumn = memo(({
       const next = [...prev];
       next[beadIndex] = false;
       const newCount = next.filter(Boolean).length;
+      lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
       return next;
     });
