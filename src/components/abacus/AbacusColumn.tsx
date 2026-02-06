@@ -68,16 +68,18 @@ export const AbacusColumn = memo(({
 
   const handleLowerActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    const newCount = Math.max(lowerCount, beadIndex + 1);
-    if (newCount === lowerCount || newCount > 4) return;
+    // Activate one bead at a time: increment count by 1
+    const newCount = lowerCount + 1;
+    if (newCount > 4) return;
     onLowerChange(newCount);
     onBeadSound?.(false);
   }, [disabled, lowerCount, onLowerChange, onBeadSound]);
 
   const handleLowerDeactivate = useCallback((beadIndex: number) => {
     if (disabled) return;
-    const newCount = Math.min(lowerCount, beadIndex);
-    if (newCount === lowerCount) return;
+    // Deactivate one bead at a time: decrement count by 1
+    const newCount = lowerCount - 1;
+    if (newCount < 0) return;
     onLowerChange(newCount);
     onBeadSound?.(false);
   }, [disabled, lowerCount, onLowerChange, onBeadSound]);
