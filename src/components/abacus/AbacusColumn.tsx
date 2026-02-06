@@ -160,7 +160,7 @@ export const AbacusColumn = memo(({
       {/* === RECKONING BAR === */}
       <div
         className="relative z-20 w-full"
-        style={{ height: Math.max(8, beadSize * 0.22), marginTop: 2, marginBottom: 2 }}
+        style={{ height: Math.max(8, beadSize * 0.22), marginTop: beadSize * 0.4, marginBottom: 2 }}
       >
         <div 
           className="absolute left-1/2 -translate-x-1/2"
