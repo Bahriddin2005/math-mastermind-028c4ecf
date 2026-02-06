@@ -135,8 +135,7 @@ export const AbacusBead = memo(({
           ? 'drop-shadow(0 3px 6px rgba(0,0,0,0.35))'
           : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
       }}
-      onPointerDownCapture={(e) => {
-        // CRITICAL: Stop event from reaching other beads
+      onPointerDown={(e) => {
         e.stopPropagation();
       }}
       drag={disabled ? false : "y"}
