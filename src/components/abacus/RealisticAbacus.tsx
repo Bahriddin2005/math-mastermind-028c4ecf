@@ -58,24 +58,22 @@ export const RealisticAbacus = ({
   // Responsive bead size: Large on desktop, medium on tablet, compact on mobile
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      // Mobile: compact sizes
-      if (cols <= 5) return 32;
-      if (cols <= 9) return 26;
-      if (cols <= 13) return 22;
-      return 18;
+      if (cols <= 5) return 40;
+      if (cols <= 9) return 34;
+      if (cols <= 13) return 28;
+      return 22;
     }
     if (deviceType === 'tablet') {
-      // Tablet: medium sizes
-      if (cols <= 5) return 44;
-      if (cols <= 9) return 38;
-      if (cols <= 13) return 34;
-      return 28;
+      if (cols <= 5) return 54;
+      if (cols <= 9) return 46;
+      if (cols <= 13) return 40;
+      return 34;
     }
     // Desktop: large sizes
-    if (cols <= 5) return 64;
-    if (cols <= 9) return 56;
-    if (cols <= 13) return 48;
-    return 42;
+    if (cols <= 5) return 76;
+    if (cols <= 9) return 66;
+    if (cols <= 13) return 58;
+    return 50;
   };
   
   const [internalColumns, setInternalColumns] = useState<ColumnState[]>(() => {
