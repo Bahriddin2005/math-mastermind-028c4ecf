@@ -466,53 +466,58 @@ const AbacusPractice = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-4"
+              className="space-y-3"
             >
               {/* Quick actions bar */}
-              <div className="flex justify-center gap-2 mb-2">
+              <div className="flex justify-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setIsFullscreen(true)}
-                  className="gap-1.5 h-9 px-4 rounded-full border-primary/30 bg-primary/5 hover:bg-primary/10"
+                  className="gap-1.5 h-8 px-3 rounded-full border-primary/30 bg-primary/5 hover:bg-primary/10 text-xs"
                 >
-                  <Maximize2 className="w-4 h-4" />
-                  <span className="hidden sm:inline text-xs">Fullscreen</span>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  Fullscreen
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={toggleSound}
-                  className="w-9 h-9 p-0 rounded-full"
+                  className="w-8 h-8 p-0 rounded-full"
                 >
-                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
                 </Button>
               </div>
               
-              <div className={cn("flex gap-5", isMobile ? "flex-col" : "flex-row items-start")}>
+              <div className={cn("flex gap-4", isMobile ? "flex-col" : "flex-row items-start")}>
                 {/* Abacus */}
-                <div className={cn("flex-1 flex justify-center items-start overflow-x-auto min-w-0", isMobile && "order-1")}>
-                  <RealisticAbacus
-                    columns={abacusColumns}
-                    value={abacusValue}
-                    onChange={setAbacusValue}
-                    mode={abacusMode}
-                    showValue={abacusMode !== 'mental'}
-                    orientation={abacusOrientation}
-                    readOnly={gameState === 'answer'}
-                    compact={isMobile}
-                  />
+                <div className={cn(
+                  "flex justify-center items-start overflow-x-auto min-w-0",
+                  isMobile ? "order-1 w-full max-h-[45vh]" : "flex-1"
+                )}>
+                  <div className={cn(isMobile && "scale-[0.85] origin-top")}>
+                    <RealisticAbacus
+                      columns={abacusColumns}
+                      value={abacusValue}
+                      onChange={setAbacusValue}
+                      mode={abacusMode}
+                      showValue={abacusMode !== 'mental'}
+                      orientation={abacusOrientation}
+                      readOnly={gameState === 'answer'}
+                      compact={isMobile}
+                    />
+                  </div>
                 </div>
               
                 {/* Operations panel */}
-                <div className={cn("space-y-4", isMobile ? "order-2 w-full" : "w-80")}>
+                <div className={cn("space-y-3", isMobile ? "order-2 w-full" : "w-72 flex-shrink-0")}>
                   {/* Progress bar */}
-                  <div className="space-y-2.5">
-                    <div className="flex justify-between text-sm">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs">
                       <span className="font-medium">Misol {problemIndex + 1}/{settings.problemCount}</span>
                       <span className="font-mono text-muted-foreground">{formatTime(elapsedTime)}</span>
                     </div>
-                    <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
                       <motion.div
                         className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
                         initial={{ width: 0 }}
@@ -524,90 +529,77 @@ const AbacusPractice = () => {
                   
                   {gameState === 'playing' && (
                     <>
-                      {/* Start value */}
-                      <Card className="border-accent/40 bg-gradient-to-r from-accent/10 to-accent/5 shadow-sm">
-                        <CardContent className="py-3.5 px-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-muted-foreground">Boshlang'ich</span>
-                            <span className="text-xl font-bold text-accent-foreground">{currentProblem.startValue}</span>
+                      {/* Start value + Current operation combined */}
+                      <Card className="border-primary/40 bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
+                        <CardContent className="py-3 px-4 space-y-2">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="text-muted-foreground">Boshlang'ich: <strong className="text-accent-foreground">{currentProblem.startValue}</strong></span>
+                            <span className="text-muted-foreground">Qadam {currentStep + 1}/{currentProblem.sequence.length}</span>
+                          </div>
+                          <motion.div
+                            key={currentStep}
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="text-center"
+                          >
+                            <div className="text-4xl font-bold text-primary">
+                              {currentOperation && currentOperation >= 0 ? '+' : ''}{currentOperation}
+                            </div>
+                          </motion.div>
+                          <div className="text-[10px] text-muted-foreground/60 text-center flex items-center justify-center gap-1">
+                            <Target className="w-3 h-3" />
+                            Kutilayotgan: {expectedValue}
                           </div>
                         </CardContent>
                       </Card>
                       
-                      {/* Current operation */}
-                      <motion.div
-                        key={currentStep}
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ type: 'spring', stiffness: 300 }}
-                      >
-                        <Card className="border-primary/50 bg-gradient-to-br from-primary/15 to-primary/5 shadow-md">
-                          <CardContent className="pt-5 pb-5 text-center">
-                            <div className="text-xs text-muted-foreground mb-1.5 uppercase tracking-wider font-medium">
-                              Qadam {currentStep + 1}/{currentProblem.sequence.length}
-                            </div>
-                            <div className="text-5xl font-bold text-primary my-2">
-                              {currentOperation && currentOperation >= 0 ? '+' : ''}{currentOperation}
-                            </div>
-                            <div className="text-xs text-muted-foreground/70 mt-2 flex items-center justify-center gap-1">
-                              <Target className="w-3 h-3" />
-                              Kutilayotgan: {expectedValue}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                      
                       {/* Upcoming operations */}
                       {currentStep < currentProblem.sequence.length - 1 && (
-                        <Card className="border-border/50 shadow-sm">
-                          <CardContent className="pt-3.5 pb-3.5">
-                            <div className="text-xs text-muted-foreground mb-2 font-medium">Keyingi amallar:</div>
-                            <div className="flex flex-wrap gap-2">
-                              {currentProblem.sequence.slice(currentStep + 1, currentStep + 4).map((op, i) => (
-                                <span 
-                                  key={i}
-                                  className="px-3 py-1.5 bg-muted/80 rounded-lg text-sm font-mono font-medium border border-border/30"
-                                >
-                                  {op >= 0 ? '+' : ''}{op}
-                                </span>
-                              ))}
-                              {currentProblem.sequence.length - currentStep - 1 > 3 && (
-                                <span className="text-muted-foreground px-1 self-center">...</span>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          <span className="text-[10px] text-muted-foreground mr-1 self-center">Keyingi:</span>
+                          {currentProblem.sequence.slice(currentStep + 1, currentStep + 4).map((op, i) => (
+                            <span 
+                              key={i}
+                              className="px-2 py-1 bg-muted/80 rounded-md text-xs font-mono font-medium border border-border/30"
+                            >
+                              {op >= 0 ? '+' : ''}{op}
+                            </span>
+                          ))}
+                          {currentProblem.sequence.length - currentStep - 1 > 3 && (
+                            <span className="text-muted-foreground text-xs self-center">…</span>
+                          )}
+                        </div>
                       )}
                     </>
                   )}
                   
                   {gameState === 'answer' && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <Card className="border-accent/40 bg-gradient-to-br from-accent/10 to-accent/5 shadow-md">
-                        <CardContent className="pt-5 pb-5 space-y-4">
+                      <Card className="border-accent/40 bg-gradient-to-br from-accent/10 to-accent/5 shadow-sm">
+                        <CardContent className="py-4 px-4 space-y-3">
                           <div className="text-center">
-                            <div className="text-sm font-semibold text-accent-foreground mb-3 flex items-center justify-center gap-1.5">
-                              <Sparkles className="w-4 h-4" />
+                            <div className="text-xs font-semibold text-accent-foreground mb-2 flex items-center justify-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5" />
                               Javobni kiriting
                             </div>
                             <Input
                               type="number"
                               value={userAnswer}
                               onChange={(e) => setUserAnswer(e.target.value)}
-                              className="text-center text-3xl font-bold h-16 rounded-xl border-2 border-accent/30 focus:border-accent"
+                              className="text-center text-2xl font-bold h-12 rounded-xl border-2 border-accent/30 focus:border-accent"
                               placeholder="?"
                               autoFocus
                             />
                           </div>
                           <Button 
-                            className="w-full gap-2 h-12 rounded-xl text-base"
+                            className="w-full gap-2 h-10 rounded-xl"
                             onClick={checkAnswer}
                             disabled={!userAnswer}
                           >
-                            <Check className="w-5 h-5" />
+                            <Check className="w-4 h-4" />
                             Tekshirish
                           </Button>
                         </CardContent>
