@@ -175,10 +175,10 @@ const Auth = () => {
     }
   };
 
-  const verifyCode = async (targetEmail: string, code: string) => {
+  const verifyCode = async (targetEmail: string, code: string, consume = false) => {
     try {
       const { data, error } = await supabase.functions.invoke('verify-code', {
-        body: { email: targetEmail, code }
+        body: { email: targetEmail, code, consume }
       });
       
       if (error) throw error;
@@ -273,7 +273,8 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      const verifyResult = await verifyCode(pendingSignupData.email, verificationCode);
+      // 1) Validate code WITHOUT consuming (so user doesn't lose it if signup fails)
+      const verifyResult = await verifyCode(pendingSignupData.email, verificationCode, false);
       
       if (!verifyResult.success) {
         toastHook({
@@ -285,7 +286,7 @@ const Auth = () => {
         return;
       }
       
-      // Code verified, now create the account
+      // 2) Code is valid, now create the account
       const { error } = await signUp(
         pendingSignupData.email,
         pendingSignupData.password,
@@ -308,6 +309,9 @@ const Auth = () => {
           });
         }
       } else {
+        // 3) Consume the code ONLY after successful signup
+        await verifyCode(pendingSignupData.email, verificationCode, true);
+
         toastHook({
           title: 'Muvaffaqiyat!',
           description: 'Akkaunt yaratildi!',
@@ -714,7 +718,7 @@ const Auth = () => {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      ⚠️ Avval <a href="https://t.me/iqromaxuz_bot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxuz_bot</a> ga /start yuboring va botga telefon raqamingizni (Contact) yuboring
+                      ⚠️ Avval <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">@iqromaxuzbot</a> ga /start yuboring va botga telefon raqamingizni (Contact) yuboring
                     </p>
                   </div>
                 )}

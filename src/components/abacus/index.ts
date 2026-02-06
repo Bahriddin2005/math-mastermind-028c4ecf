@@ -10,3 +10,14 @@ export { FullscreenAbacus } from './FullscreenAbacus';
 // Types
 export type { AbacusMode, AbacusTheme, AbacusOrientation } from './RealisticAbacus';
 export type { AbacusColorScheme } from './AbacusColorScheme';
+
+// Engine
+export type { AbacusState, ColumnState } from '@/lib/abacusEngine';
+export {
+  createAbacusState,
+  stateFromValue,
+  resetAbacus,
+  computeValue,
+  validateState,
+  columnDigit,
+} from '@/lib/abacusEngine';
