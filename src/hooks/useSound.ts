@@ -30,149 +30,121 @@ export const useSound = () => {
   const playiOSBeadSound = useCallback((ctx: AudioContext, isUpper: boolean) => {
     const now = ctx.currentTime;
 
-    // Master output gain (LOUD) + compressor for polished iOS output
+    // Master gain + compressor
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(2.5, now); // 2.5x louder
+    masterGain.gain.setValueAtTime(2.8, now);
     const compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-18, now);
-    compressor.knee.setValueAtTime(8, now);
+    compressor.threshold.setValueAtTime(-15, now);
+    compressor.knee.setValueAtTime(6, now);
     compressor.ratio.setValueAtTime(3, now);
     compressor.attack.setValueAtTime(0.001, now);
-    compressor.release.setValueAtTime(0.03, now);
+    compressor.release.setValueAtTime(0.04, now);
     masterGain.connect(compressor);
     compressor.connect(ctx.destination);
 
-    // === Layer 1: Noise burst (realistic wooden click impact) ===
-    const bufferSize = ctx.sampleRate * 0.02;
+    // iOS Marimba ringtone style — warm wooden mallet strike
+    // Notes: Upper = E6 (1318Hz), Lower = C5 (523Hz) — classic iOS intervals
+    const baseFreq = isUpper ? 1318.5 : 523.25;
+
+    // === Layer 1: Marimba fundamental (warm sine with fast attack) ===
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(baseFreq, now);
+    // Slight pitch bend down (natural mallet behavior)
+    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.98, now + 0.3);
+    gain1.gain.setValueAtTime(0.5, now);
+    gain1.gain.setValueAtTime(0.45, now + 0.01);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc1.connect(gain1);
+    gain1.connect(masterGain);
+    osc1.start(now);
+    osc1.stop(now + 0.35);
+
+    // === Layer 2: 2nd harmonic (octave — marimba resonance) ===
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(baseFreq * 2, now);
+    gain2.gain.setValueAtTime(0.2, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc2.connect(gain2);
+    gain2.connect(masterGain);
+    osc2.start(now);
+    osc2.stop(now + 0.2);
+
+    // === Layer 3: 4th harmonic (brightness — iOS crystal tone) ===
+    const osc3 = ctx.createOscillator();
+    const gain3 = ctx.createGain();
+    osc3.type = 'sine';
+    osc3.frequency.setValueAtTime(baseFreq * 4, now);
+    gain3.gain.setValueAtTime(0.08, now);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc3.connect(gain3);
+    gain3.connect(masterGain);
+    osc3.start(now);
+    osc3.stop(now + 0.1);
+
+    // === Layer 4: Mallet strike noise (realistic hit transient) ===
+    const bufferSize = Math.floor(ctx.sampleRate * 0.012);
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      // Shaped noise — sharper initial transient
-      const envelope = Math.pow(1 - i / bufferSize, 4);
-      noiseData[i] = (Math.random() * 2 - 1) * envelope;
+      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 6);
     }
     const noiseSource = ctx.createBufferSource();
     noiseSource.buffer = noiseBuffer;
     const noiseFilter = ctx.createBiquadFilter();
     noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.setValueAtTime(isUpper ? 5000 : 3500, now);
-    noiseFilter.Q.setValueAtTime(1.2, now);
+    noiseFilter.frequency.setValueAtTime(isUpper ? 6000 : 4000, now);
+    noiseFilter.Q.setValueAtTime(0.8, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(isUpper ? 0.7 : 0.55, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+    noiseGain.gain.setValueAtTime(0.35, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
     noiseSource.connect(noiseFilter);
     noiseFilter.connect(noiseGain);
     noiseGain.connect(masterGain);
     noiseSource.start(now);
 
-    // === Layer 2: Primary attack (crisp iOS Taptic click) ===
-    const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
-    const filter1 = ctx.createBiquadFilter();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(isUpper ? 2400 : 1600, now);
-    osc1.frequency.exponentialRampToValueAtTime(isUpper ? 1200 : 800, now + 0.02);
-    filter1.type = 'peaking';
-    filter1.frequency.setValueAtTime(isUpper ? 2000 : 1400, now);
-    filter1.gain.setValueAtTime(6, now);
-    filter1.Q.setValueAtTime(2, now);
-    gain1.gain.setValueAtTime(0.45, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-    osc1.connect(filter1);
-    filter1.connect(gain1);
-    gain1.connect(masterGain);
-    osc1.start(now);
-    osc1.stop(now + 0.035);
-
-    // === Layer 3: Wood body resonance (soroban birch/bamboo) ===
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    const filter2 = ctx.createBiquadFilter();
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(isUpper ? 780 : 520, now);
-    osc2.frequency.exponentialRampToValueAtTime(isUpper ? 390 : 260, now + 0.08);
-    filter2.type = 'bandpass';
-    filter2.frequency.setValueAtTime(isUpper ? 1000 : 650, now);
-    filter2.Q.setValueAtTime(6, now);
-    gain2.gain.setValueAtTime(0.28, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-    osc2.connect(filter2);
-    filter2.connect(gain2);
-    gain2.connect(masterGain);
-    osc2.start(now);
-    osc2.stop(now + 0.1);
-
-    // === Layer 4: Second wood harmonic (hollow body depth) ===
-    const osc2b = ctx.createOscillator();
-    const gain2b = ctx.createGain();
-    osc2b.type = 'sine';
-    osc2b.frequency.setValueAtTime(isUpper ? 1560 : 1040, now);
-    osc2b.frequency.exponentialRampToValueAtTime(isUpper ? 780 : 520, now + 0.06);
-    gain2b.gain.setValueAtTime(0.12, now);
-    gain2b.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-    osc2b.connect(gain2b);
-    gain2b.connect(masterGain);
-    osc2b.start(now);
-    osc2b.stop(now + 0.07);
-
-    // === Layer 5: Sub-bass impact (physical weight of bead) ===
-    const osc3 = ctx.createOscillator();
-    const gain3 = ctx.createGain();
-    osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(isUpper ? 200 : 140, now);
-    osc3.frequency.exponentialRampToValueAtTime(55, now + 0.04);
-    gain3.gain.setValueAtTime(0.35, now);
-    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-    osc3.connect(gain3);
-    gain3.connect(masterGain);
-    osc3.start(now);
-    osc3.stop(now + 0.05);
-
-    // === Layer 6: High shimmer overtone (iOS crystal clarity) ===
+    // === Layer 5: Sub-resonance (warm body of marimba bar) ===
     const osc4 = ctx.createOscillator();
     const gain4 = ctx.createGain();
     osc4.type = 'sine';
-    osc4.frequency.setValueAtTime(isUpper ? 4200 : 3200, now);
-    osc4.frequency.exponentialRampToValueAtTime(isUpper ? 2100 : 1600, now + 0.018);
-    gain4.gain.setValueAtTime(0.1, now);
-    gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+    osc4.frequency.setValueAtTime(baseFreq / 2, now);
+    gain4.gain.setValueAtTime(0.15, now);
+    gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
     osc4.connect(gain4);
     gain4.connect(masterGain);
     osc4.start(now);
-    osc4.stop(now + 0.025);
+    osc4.stop(now + 0.25);
 
-    // === Layer 7: Natural decay tail (reverb-like ambience) ===
-    const osc5 = ctx.createOscillator();
-    const gain5 = ctx.createGain();
-    const filter5 = ctx.createBiquadFilter();
-    osc5.type = 'sine';
-    osc5.frequency.setValueAtTime(isUpper ? 1100 : 820, now + 0.008);
-    osc5.frequency.exponentialRampToValueAtTime(isUpper ? 550 : 410, now + 0.15);
-    filter5.type = 'lowpass';
-    filter5.frequency.setValueAtTime(2500, now);
-    filter5.frequency.exponentialRampToValueAtTime(400, now + 0.15);
-    gain5.gain.setValueAtTime(0, now);
-    gain5.gain.linearRampToValueAtTime(0.12, now + 0.008);
-    gain5.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    osc5.connect(filter5);
-    filter5.connect(gain5);
-    gain5.connect(masterGain);
-    osc5.start(now);
-    osc5.stop(now + 0.15);
-
-    // === Layer 8: Micro-delay echo (room ambience) ===
-    const delayNode = ctx.createDelay(0.1);
-    delayNode.delayTime.setValueAtTime(0.025, now);
+    // === Layer 6: Gentle reverb tail (iOS spacious feel) ===
+    const delayNode = ctx.createDelay(0.15);
+    delayNode.delayTime.setValueAtTime(0.04, now);
     const delayGain = ctx.createGain();
-    delayGain.gain.setValueAtTime(0.06, now);
-    delayGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    delayGain.gain.setValueAtTime(0.1, now);
+    delayGain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
     const delayFilter = ctx.createBiquadFilter();
     delayFilter.type = 'lowpass';
-    delayFilter.frequency.setValueAtTime(1500, now);
+    delayFilter.frequency.setValueAtTime(2000, now);
     masterGain.connect(delayNode);
     delayNode.connect(delayFilter);
     delayFilter.connect(delayGain);
     delayGain.connect(ctx.destination);
+
+    // === Layer 7: Second delay (wider room) ===
+    const delay2 = ctx.createDelay(0.2);
+    delay2.delayTime.setValueAtTime(0.085, now);
+    const delayGain2 = ctx.createGain();
+    delayGain2.gain.setValueAtTime(0.04, now);
+    delayGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    const delayFilter2 = ctx.createBiquadFilter();
+    delayFilter2.type = 'lowpass';
+    delayFilter2.frequency.setValueAtTime(1200, now);
+    masterGain.connect(delay2);
+    delay2.connect(delayFilter2);
+    delayFilter2.connect(delayGain2);
+    delayGain2.connect(ctx.destination);
   }, []);
 
   const playSound = useCallback((type: SoundType) => {
