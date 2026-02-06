@@ -59,21 +59,21 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 48;
-      if (cols <= 9) return 42;
-      if (cols <= 13) return 36;
-      return 30;
+      if (cols <= 5) return 38;
+      if (cols <= 9) return 34;
+      if (cols <= 13) return 28;
+      return 24;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 58;
-      if (cols <= 9) return 52;
-      if (cols <= 13) return 46;
-      return 40;
+      if (cols <= 5) return 46;
+      if (cols <= 9) return 40;
+      if (cols <= 13) return 36;
+      return 32;
     }
-    if (cols <= 5) return 72;
-    if (cols <= 9) return 64;
-    if (cols <= 13) return 56;
-    return 48;
+    if (cols <= 5) return 56;
+    if (cols <= 9) return 50;
+    if (cols <= 13) return 44;
+    return 38;
   };
   
   // Engine state
@@ -146,9 +146,9 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '56px 72px' : '64px 88px',
-          border: `${compact ? 16 : 20}px solid #0D0704`,
-          borderRadius: compact ? 22 : 28,
+          padding: compact ? '64px 80px' : '72px 96px',
+          border: `${compact ? 18 : 24}px solid #0D0704`,
+          borderRadius: compact ? 24 : 32,
           boxShadow: `
             0 20px 60px -15px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
