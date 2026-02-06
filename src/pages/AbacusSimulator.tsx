@@ -573,7 +573,7 @@ const AbacusSimulator = () => {
             "flex justify-center items-center py-6 w-full max-w-[100vw]",
             orientation === 'vertical' && "min-h-[400px]"
           )}>
-            <div className="scale-[1.15] origin-top">
+            <div className="scale-[1.35] origin-top">
             <RealisticAbacus
               columns={columns}
               value={value}
