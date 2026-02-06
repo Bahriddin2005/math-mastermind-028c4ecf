@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, memo, useMemo } from 'react';
-import { motion, PanInfo } from 'framer-motion';
+import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export type BeadSoundType = 'green' | 'red' | 'orange' | 'yellow' | 'cyan' | 'blue' | 'purple' | 'pink';
@@ -25,10 +25,15 @@ const adjustBrightness = (hex: string, percent: number): string => {
 
 let beadIdCounter = 0;
 
+// Minimum drag distance before bead starts responding (prevents accidental touch)
+const DRAG_INTENT_THRESHOLD = 12;
+
 /**
- * Professional 3D Wooden Soroban Bead
- * Realistic oval shape with wood grain texture, highlights, and shadows
- * Matches reference: thick wooden beads with natural wood tones
+ * Ultra-Realistic Soroban Bead — Drag-Only Interaction
+ * 
+ * NO click/tap movement. Beads move ONLY via intentional vertical drag.
+ * Physics-like: heavy, controlled, mechanical, precise.
+ * Snap-to-position: only two valid states (active/inactive), no floating.
  */
 export const AbacusBead = memo(({
   isUpper,
@@ -40,39 +45,56 @@ export const AbacusBead = memo(({
   disabled = false,
 }: AbacusBeadProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  
+  const intentConfirmed = useRef(false);
+  const dragAccumulator = useRef(0);
+
   const ACTIVE_OFFSET = beadSize * 0.45;
-  
+
   const baseColor = customColor || '#8B4513';
-  
-  // Simple tap to toggle
-  const handleTap = useCallback(() => {
-    if (disabled) return;
-    if (isActive) onDeactivate();
-    else onActivate();
-  }, [disabled, isActive, onActivate, onDeactivate]);
-  
-  // Drag handlers with tight control
+
+  // Drag start — reset intent tracking
   const handleDragStart = useCallback(() => {
     if (disabled) return;
-    setIsDragging(true);
+    intentConfirmed.current = false;
+    dragAccumulator.current = 0;
   }, [disabled]);
-  
+
+  // During drag — only show visual feedback after threshold
+  const handleDrag = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (disabled) return;
+    
+    const totalDrag = Math.abs(info.offset.y);
+    
+    if (!intentConfirmed.current && totalDrag >= DRAG_INTENT_THRESHOLD) {
+      intentConfirmed.current = true;
+      setIsDragging(true);
+    }
+  }, [disabled]);
+
+  // Drag end — determine final state based on drag direction
   const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (disabled) return;
     setIsDragging(false);
+    
+    // Only process if intent was confirmed (drag exceeded threshold)
+    if (!intentConfirmed.current) return;
+    
     const dy = info.offset.y;
-    const threshold = beadSize * 0.15;
     
     if (isUpper) {
-      if (!isActive && dy > threshold) onActivate();
-      else if (isActive && dy < -threshold) onDeactivate();
+      // Upper bead: drag DOWN to activate, drag UP to deactivate
+      if (!isActive && dy > DRAG_INTENT_THRESHOLD) onActivate();
+      else if (isActive && dy < -DRAG_INTENT_THRESHOLD) onDeactivate();
     } else {
-      if (!isActive && dy < -threshold) onActivate();
-      else if (isActive && dy > threshold) onDeactivate();
+      // Lower bead: drag UP to activate, drag DOWN to deactivate
+      if (!isActive && dy < -DRAG_INTENT_THRESHOLD) onActivate();
+      else if (isActive && dy > DRAG_INTENT_THRESHOLD) onDeactivate();
     }
-  }, [disabled, isUpper, isActive, beadSize, onActivate, onDeactivate]);
-  
+    
+    intentConfirmed.current = false;
+  }, [disabled, isUpper, isActive, onActivate, onDeactivate]);
+
+  // Snap position — only two valid states, no in-between
   const targetY = isUpper
     ? (isActive ? ACTIVE_OFFSET : 0)
     : (isActive ? -ACTIVE_OFFSET * 0.6 : 0);
@@ -80,7 +102,7 @@ export const AbacusBead = memo(({
   // Bead proportions
   const beadWidth = beadSize * 1.7;
   const beadHeight = beadSize * 1.1;
-  
+
   const idRef = useRef(`bead-${++beadIdCounter}`);
 
   // Pre-compute wooden colors
@@ -101,25 +123,33 @@ export const AbacusBead = memo(({
   return (
     <motion.div
       className={cn(
-        "relative cursor-pointer touch-none select-none will-change-transform",
+        "relative touch-none select-none will-change-transform",
         isDragging && "z-20",
-        !disabled && "active:scale-[0.97]",
-        disabled && "opacity-60 cursor-not-allowed"
+        disabled ? "opacity-60 cursor-not-allowed" : "cursor-grab",
+        isDragging && !disabled && "cursor-grabbing"
       )}
-      style={{ 
-        width: beadWidth, 
+      style={{
+        width: beadWidth,
         height: beadHeight,
-        filter: isDragging ? `drop-shadow(0 4px 8px rgba(0,0,0,0.4))` : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
+        filter: isDragging
+          ? 'drop-shadow(0 3px 6px rgba(0,0,0,0.35))'
+          : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
       }}
       drag={disabled ? false : "y"}
-      dragConstraints={{ top: -beadSize * 0.5, bottom: beadSize * 0.5 }}
+      dragConstraints={{ top: -beadSize * 0.55, bottom: beadSize * 0.55 }}
       dragElastic={0}
+      dragMomentum={false}
       dragSnapToOrigin
       onDragStart={handleDragStart}
+      onDrag={handleDrag}
       onDragEnd={handleDragEnd}
-      onTap={handleTap}
+      // NO onTap — beads do NOT respond to click/tap
       animate={{ y: targetY }}
-      transition={{ type: 'spring', stiffness: 600, damping: 35 }}
+      transition={{
+        type: 'tween',
+        duration: 0.15,
+        ease: [0.25, 0.1, 0.25, 1], // Smooth, no bounce — like wood sliding on rod
+      }}
     >
       <svg
         width={beadWidth}
@@ -137,94 +167,47 @@ export const AbacusBead = memo(({
             <stop offset="70%" stopColor={colors.dark} />
             <stop offset="100%" stopColor={colors.darkest} />
           </linearGradient>
-          
+
           {/* Top shine reflection */}
           <radialGradient id={shineId} cx="35%" cy="15%" r="40%" fx="35%" fy="12%">
             <stop offset="0%" stopColor="white" stopOpacity="0.55" />
             <stop offset="60%" stopColor="white" stopOpacity="0.08" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </radialGradient>
-          
+
           {/* Horizontal groove lines (wood grain) */}
           <pattern id={grooveId} x="0" y="0" width="120" height="6" patternUnits="userSpaceOnUse">
             <line x1="10" y1="3" x2="110" y2="3" stroke={colors.dark} strokeWidth="0.5" strokeOpacity="0.2" />
           </pattern>
-          
+
           {/* Bottom shadow ellipse */}
           <radialGradient id={shadowId} cx="50%" cy="80%" r="50%">
             <stop offset="0%" stopColor={colors.darkest} stopOpacity="0.3" />
             <stop offset="100%" stopColor={colors.darkest} stopOpacity="0" />
           </radialGradient>
         </defs>
-        
+
         {/* Drop shadow underneath bead */}
         <ellipse cx="60" cy="56" rx="42" ry="6" fill="rgba(0,0,0,0.15)" />
-        
-        {/* Main bead body — biconcave disc shape */}
-        <ellipse
-          cx="60"
-          cy="33"
-          rx="52"
-          ry="26"
-          fill={`url(#${gradId})`}
-        />
-        
+
+        {/* Main bead body */}
+        <ellipse cx="60" cy="33" rx="52" ry="26" fill={`url(#${gradId})`} />
+
         {/* Wood grain texture overlay */}
-        <ellipse
-          cx="60"
-          cy="33"
-          rx="52"
-          ry="26"
-          fill={`url(#${grooveId})`}
-          opacity="0.3"
-        />
-        
-        {/* Top rim highlight — gives 3D roundness */}
-        <ellipse
-          cx="60"
-          cy="12"
-          rx="40"
-          ry="8"
-          fill={`url(#${shineId})`}
-        />
-        
+        <ellipse cx="60" cy="33" rx="52" ry="26" fill={`url(#${grooveId})`} opacity="0.3" />
+
+        {/* Top rim highlight */}
+        <ellipse cx="60" cy="12" rx="40" ry="8" fill={`url(#${shineId})`} />
+
         {/* Left edge highlight */}
-        <ellipse
-          cx="18"
-          cy="30"
-          rx="6"
-          ry="14"
-          fill="white"
-          opacity="0.06"
-        />
-        
+        <ellipse cx="18" cy="30" rx="6" ry="14" fill="white" opacity="0.06" />
+
         {/* Bottom rim subtle reflection */}
-        <ellipse
-          cx="60"
-          cy="52"
-          rx="30"
-          ry="5"
-          fill="white"
-          opacity="0.08"
-        />
-        
+        <ellipse cx="60" cy="52" rx="30" ry="5" fill="white" opacity="0.08" />
+
         {/* Rod hole — center dark circle */}
-        <ellipse
-          cx="60"
-          cy="33"
-          rx="5"
-          ry="5"
-          fill={colors.darkest}
-          opacity="0.7"
-        />
-        <ellipse
-          cx="59"
-          cy="32"
-          rx="3"
-          ry="3"
-          fill={colors.dark}
-          opacity="0.5"
-        />
+        <ellipse cx="60" cy="33" rx="5" ry="5" fill={colors.darkest} opacity="0.7" />
+        <ellipse cx="59" cy="32" rx="3" ry="3" fill={colors.dark} opacity="0.5" />
       </svg>
     </motion.div>
   );
