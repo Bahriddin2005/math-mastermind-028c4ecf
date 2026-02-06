@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, useRef, memo } from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -14,8 +14,23 @@ interface AbacusBeadProps {
   disabled?: boolean;
 }
 
+// Pre-compute color adjustments outside render
+const adjustBrightness = (hex: string, percent: number): string => {
+  const num = parseInt(hex.replace('#', ''), 16);
+  const amt = Math.round(2.55 * percent);
+  const R = Math.min(255, Math.max(0, (num >> 16) + amt));
+  const G = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+  const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+  return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+};
+
+let beadIdCounter = 0;
+
 /**
- * Optimized 3D Bead - fast and reliable
+ * Professional 3D Soroban Bead
+ * - Drag snaps to valid positions ONLY (active/inactive)
+ * - Minimum drag threshold prevents accidental moves
+ * - Immediate feedback on valid moves
  */
 export const AbacusBead = memo(({
   isUpper,
@@ -27,15 +42,18 @@ export const AbacusBead = memo(({
   disabled = false,
 }: AbacusBeadProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const dragStartY = useRef(0);
   
-  const SNAP_THRESHOLD = beadSize * 0.25;
+  // Minimum drag threshold to prevent accidental moves
+  const SNAP_THRESHOLD = Math.max(beadSize * 0.2, 8);
   const ACTIVE_OFFSET = beadSize * 0.4;
   
   const baseColor = customColor || '#FF6B6B';
   
-  const handleDragStart = useCallback(() => {
+  const handleDragStart = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (disabled) return;
     setIsDragging(true);
+    dragStartY.current = info.point.y;
   }, [disabled]);
   
   const handleDragEnd = useCallback((_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
@@ -43,19 +61,25 @@ export const AbacusBead = memo(({
     setIsDragging(false);
     const offset = info.offset.y;
     
+    // Only change state if drag exceeds threshold
+    if (Math.abs(offset) < SNAP_THRESHOLD) return;
+    
     if (isUpper) {
+      // Upper bead: drag DOWN to activate (touch bar), UP to deactivate
       if (!isActive && offset > SNAP_THRESHOLD) {
         onActivate();
       } else if (isActive && offset < -SNAP_THRESHOLD) {
         onDeactivate();
       }
     } else {
+      // Lower bead: drag UP to activate (touch bar), DOWN to deactivate
       if (!isActive && offset < -SNAP_THRESHOLD) {
         onActivate();
       } else if (isActive && offset > SNAP_THRESHOLD) {
         onDeactivate();
       }
     }
+    // If threshold not met or wrong direction → bead snaps back (no state change)
   }, [disabled, isUpper, isActive, SNAP_THRESHOLD, onActivate, onDeactivate]);
   
   const getActiveOffset = useCallback(() => {
@@ -66,21 +90,14 @@ export const AbacusBead = memo(({
   const beadWidth = beadSize * 1.6;
   const beadHeight = beadSize * 1.15;
   
-  // Pre-calculate colors once
-  const adjustBrightness = (hex: string, percent: number): string => {
-    const num = parseInt(hex.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.min(255, Math.max(0, (num >> 16) + amt));
-    const G = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
-    const B = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
-  };
-  
   const lighterColor = adjustBrightness(baseColor, 40);
   const darkerColor = adjustBrightness(baseColor, -30);
   const glowColor = adjustBrightness(baseColor, 20);
-  const gradientId = `bead-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}-${Math.random().toString(36).slice(2, 6)}`;
-  const shineId = `shine-${baseColor.replace('#', '')}-${isUpper ? 'u' : 'l'}-${Math.random().toString(36).slice(2, 6)}`;
+  
+  // Stable unique IDs (not random per render)
+  const idRef = useRef(`bead-${++beadIdCounter}`);
+  const gradientId = `${idRef.current}-grad`;
+  const shineId = `${idRef.current}-shine`;
 
   return (
     <motion.div
@@ -149,6 +166,7 @@ export const AbacusBead = memo(({
           opacity="0.12"
         />
         
+        {/* Rod hole */}
         <ellipse
           cx="50"
           cy="30"

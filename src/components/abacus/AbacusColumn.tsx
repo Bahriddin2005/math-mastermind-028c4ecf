@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useMemo, useState, memo } from 'react';
+import { useCallback, useEffect, useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { AbacusBead } from './AbacusBead';
 import { cn } from '@/lib/utils';
+import type { ColumnState } from '@/lib/abacusEngine';
+import { isValidColumn, columnDigit } from '@/lib/abacusEngine';
 
 interface AbacusColumnProps {
   columnIndex: number;
   totalColumns: number;
-  upperActive: boolean;
-  lowerCount: number;
+  /** Engine-controlled column state */
+  columnState: ColumnState;
   onUpperChange: (active: boolean) => void;
   onLowerChange: (count: number) => void;
   beadSize?: number;
@@ -21,12 +23,14 @@ interface AbacusColumnProps {
 const COLUMN_LABELS = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M', '100M', '1B', '10B', '100B', '1T'];
 
 /**
- * Optimized Abacus Column - fast and reliable
+ * Professional Soroban Column
+ * - Reads state from engine (ColumnState) — never computes internally
+ * - All user actions dispatch to parent, which validates via engine
+ * - Visual state always matches logical state
  */
 export const AbacusColumn = memo(({
   columnIndex,
-  upperActive,
-  lowerCount,
+  columnState,
   onUpperChange,
   onLowerChange,
   beadSize = 40,
@@ -36,58 +40,47 @@ export const AbacusColumn = memo(({
   upperBeadColor,
   lowerBeadColors,
 }: AbacusColumnProps) => {
-  const [lowerActive, setLowerActive] = useState<boolean[]>(() =>
-    Array.from({ length: 4 }, (_, i) => i < lowerCount)
-  );
-
-  useEffect(() => {
-    const prevCount = lowerActive.filter(Boolean).length;
-    if (prevCount !== lowerCount) {
-      setLowerActive(Array.from({ length: 4 }, (_, i) => i < lowerCount));
-    }
-  }, [lowerCount, lowerActive]);
-
-  const lowerActiveCount = useMemo(() => lowerActive.filter(Boolean).length, [lowerActive]);
+  const upperActive = columnState.upper === 1;
+  const lowerCount = columnState.lower;
   
   const columnLabel = COLUMN_LABELS[columnIndex] || `10^${columnIndex}`;
-  
   const lowerBeadColor = lowerBeadColors?.[0] || '#A0522D';
-  
-  const handleUpperActivate = useCallback(() => {
-    if (!upperActive) {
-      onUpperChange(true);
-      onBeadSound?.(true);
-    }
-  }, [upperActive, onUpperChange, onBeadSound]);
-  
-  const handleUpperDeactivate = useCallback(() => {
-    if (upperActive) {
-      onUpperChange(false);
-      onBeadSound?.(true);
-    }
-  }, [upperActive, onUpperChange, onBeadSound]);
-
-  const handleLowerActivate = useCallback((beadIndex: number) => {
-    if (disabled || lowerActive[beadIndex]) return;
-    const next = [...lowerActive];
-    next[beadIndex] = true;
-    setLowerActive(next);
-    onLowerChange(next.filter(Boolean).length);
-    onBeadSound?.(false);
-  }, [disabled, lowerActive, onBeadSound, onLowerChange]);
-
-  const handleLowerDeactivate = useCallback((beadIndex: number) => {
-    if (disabled || !lowerActive[beadIndex]) return;
-    const next = [...lowerActive];
-    next[beadIndex] = false;
-    setLowerActive(next);
-    onLowerChange(next.filter(Boolean).length);
-    onBeadSound?.(false);
-  }, [disabled, lowerActive, onBeadSound, onLowerChange]);
-
-  const columnValue = (upperActive ? 5 : 0) + lowerActiveCount;
+  const columnValue = columnDigit(columnState);
   const beadHeight = beadSize * 0.7;
   
+  // Upper bead handlers
+  const handleUpperActivate = useCallback(() => {
+    if (disabled || upperActive) return;
+    onUpperChange(true);
+    onBeadSound?.(true);
+  }, [disabled, upperActive, onUpperChange, onBeadSound]);
+  
+  const handleUpperDeactivate = useCallback(() => {
+    if (disabled || !upperActive) return;
+    onUpperChange(false);
+    onBeadSound?.(true);
+  }, [disabled, upperActive, onUpperChange, onBeadSound]);
+
+  // Lower bead handlers — each bead activates/deactivates independently
+  const handleLowerActivate = useCallback((beadIndex: number) => {
+    if (disabled) return;
+    // Activating bead N means at least N+1 beads are active
+    const newCount = Math.max(lowerCount, beadIndex + 1);
+    if (newCount === lowerCount) return;
+    if (newCount > 4) return; // Safety: never exceed 4
+    onLowerChange(newCount);
+    onBeadSound?.(false);
+  }, [disabled, lowerCount, onLowerChange, onBeadSound]);
+
+  const handleLowerDeactivate = useCallback((beadIndex: number) => {
+    if (disabled) return;
+    // Deactivating bead N means at most N beads are active
+    const newCount = Math.min(lowerCount, beadIndex);
+    if (newCount === lowerCount) return;
+    onLowerChange(newCount);
+    onBeadSound?.(false);
+  }, [disabled, lowerCount, onLowerChange, onBeadSound]);
+
   return (
     <div className="flex flex-col items-center relative" style={{ minWidth: beadSize * 1.7, padding: '0 2px' }}>
       {/* Rod */}
@@ -165,7 +158,7 @@ export const AbacusColumn = memo(({
       <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 1.2 }}>
         {[3, 2, 1, 0].map((visualIndex) => {
           const beadIndex = visualIndex;
-          const isActive = Boolean(lowerActive[beadIndex]);
+          const isActive = beadIndex < lowerCount;
           
           return (
             <div key={beadIndex} style={{ marginTop: visualIndex < 3 ? -beadSize * 0.25 : 0 }}>
