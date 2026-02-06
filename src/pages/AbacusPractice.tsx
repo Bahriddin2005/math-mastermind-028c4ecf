@@ -495,7 +495,7 @@ const AbacusPractice = () => {
                   "flex justify-center items-start overflow-hidden min-w-0",
                   isMobile ? "order-1 w-full max-h-[42vh]" : "flex-1 max-h-[65vh]"
                 )}>
-                  <div className="scale-[0.78] origin-top">
+                  <div className="scale-[0.88] origin-top">
                     <RealisticAbacus
                       columns={abacusColumns}
                       value={abacusValue}
