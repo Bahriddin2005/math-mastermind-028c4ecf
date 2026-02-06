@@ -188,7 +188,7 @@ export const RealisticAbacus = ({
         
         {/* Columns container */}
         <div 
-          className="relative flex justify-center items-stretch"
+          className="relative flex justify-center items-center"
           style={{ 
             gap: getGap(columns),
             padding: compact ? '8px 12px' : '16px 28px',
