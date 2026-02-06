@@ -6,15 +6,18 @@ import { useDeviceType } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import type { AbacusColorScheme } from './AbacusColorScheme';
 import { getColorPaletteForScheme } from './AbacusColorScheme';
+import {
+  type AbacusState,
+  stateFromValue,
+  resetAbacus,
+  setUpperBead,
+  setLowerBeads,
+  computeValue,
+} from '@/lib/abacusEngine';
 
 export type AbacusMode = 'beginner' | 'mental' | 'test';
 export type AbacusTheme = 'classic' | 'modern' | 'kids';
 export type AbacusOrientation = 'horizontal' | 'vertical';
-
-interface ColumnState {
-  upper: boolean;
-  lower: number;
-}
 
 interface RealisticAbacusProps {
   columns?: number;
@@ -32,8 +35,8 @@ interface RealisticAbacusProps {
 
 /**
  * Professional Soroban Abacus Simulator
- * 13-column colorful design matching reference image
- * Responsive: Large on desktop, medium on tablet, compact on mobile
+ * Uses abacusEngine as single source of truth.
+ * UI never calculates values — engine does.
  */
 export const RealisticAbacus = ({
   columns = 13,
@@ -51,11 +54,9 @@ export const RealisticAbacus = ({
   const deviceType = useDeviceType();
   
   const showValue = showValueProp ?? (mode === 'beginner');
-  
-  // Get color palette based on scheme
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Responsive bead size: Large on desktop, medium on tablet, compact on mobile
+  // Responsive bead size
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
       if (cols <= 5) return 40;
@@ -69,81 +70,64 @@ export const RealisticAbacus = ({
       if (cols <= 13) return 40;
       return 34;
     }
-    // Desktop: large sizes
     if (cols <= 5) return 76;
     if (cols <= 9) return 66;
     if (cols <= 13) return 58;
     return 50;
   };
   
-  const [internalColumns, setInternalColumns] = useState<ColumnState[]>(() => {
-    return calculateColumnsFromValue(controlledValue ?? 0, columns);
-  });
+  // Engine state — single source of truth
+  const [engineState, setEngineState] = useState<AbacusState>(() =>
+    stateFromValue(controlledValue ?? 0, columns)
+  );
   
+  // Sync with controlled value
   useEffect(() => {
     if (controlledValue !== undefined) {
-      setInternalColumns(calculateColumnsFromValue(controlledValue, columns));
+      setEngineState(stateFromValue(controlledValue, columns));
     }
   }, [controlledValue, columns]);
   
-  function calculateColumnsFromValue(num: number, colCount: number): ColumnState[] {
-    const cols: ColumnState[] = [];
-    for (let i = 0; i < colCount; i++) {
-      const digit = Math.floor((num / Math.pow(10, i)) % 10);
-      cols.push({
-        upper: digit >= 5,
-        lower: digit % 5,
-      });
+  // Sync column count changes
+  useEffect(() => {
+    if (engineState.columns.length !== columns) {
+      const currentValue = controlledValue ?? engineState.value;
+      setEngineState(stateFromValue(currentValue, columns));
     }
-    return cols;
-  }
+  }, [columns]);
   
-  const calculateValueFromColumns = useCallback((cols: ColumnState[]): number => {
-    return cols.reduce((sum, col, index) => {
-      const digit = (col.upper ? 5 : 0) + col.lower;
-      return sum + digit * Math.pow(10, index);
-    }, 0);
-  }, []);
+  // Get current state (controlled or internal)
+  const currentState = controlledValue !== undefined
+    ? stateFromValue(controlledValue, columns)
+    : engineState;
   
-  const currentColumns = controlledValue !== undefined
-    ? calculateColumnsFromValue(controlledValue, columns)
-    : internalColumns;
-  
-  const currentValue = useMemo(() => 
-    calculateValueFromColumns(currentColumns),
-    [currentColumns, calculateValueFromColumns]
-  );
-  
-  const updateColumn = useCallback((columnIndex: number, updates: Partial<ColumnState>) => {
+  // Engine-validated upper bead change
+  const handleUpperChange = useCallback((columnIndex: number, active: boolean) => {
     if (readOnly) return;
     
-    const newColumns = [...currentColumns];
-    newColumns[columnIndex] = { ...newColumns[columnIndex], ...updates };
-    
-    const newValue = calculateValueFromColumns(newColumns);
+    const newState = setUpperBead(currentState, columnIndex, active);
+    if (!newState) return; // Invalid move — rejected by engine
     
     if (controlledValue === undefined) {
-      setInternalColumns(newColumns);
+      setEngineState(newState);
     }
-    
-    onChange?.(newValue);
-  }, [currentColumns, controlledValue, onChange, readOnly, calculateValueFromColumns]);
+    onChange?.(newState.value);
+  }, [currentState, controlledValue, onChange, readOnly]);
   
-  const handleUpperChange = useCallback((columnIndex: number, active: boolean) => {
-    updateColumn(columnIndex, { upper: active });
-  }, [updateColumn]);
-  
+  // Engine-validated lower bead change
   const handleLowerChange = useCallback((columnIndex: number, count: number) => {
-    const currentCol = currentColumns[columnIndex];
+    if (readOnly) return;
     
-    if (count > 4 && !currentCol.upper) {
-      updateColumn(columnIndex, { lower: count - 5, upper: true });
-    } else if (count < 0 && currentCol.upper) {
-      updateColumn(columnIndex, { lower: 4 + count, upper: false });
-    } else {
-      updateColumn(columnIndex, { lower: Math.max(0, Math.min(4, count)) });
+    // Clamp to valid range
+    const clampedCount = Math.max(0, Math.min(4, count));
+    const newState = setLowerBeads(currentState, columnIndex, clampedCount);
+    if (!newState) return; // Invalid move — rejected by engine
+    
+    if (controlledValue === undefined) {
+      setEngineState(newState);
     }
-  }, [currentColumns, updateColumn]);
+    onChange?.(newState.value);
+  }, [currentState, controlledValue, onChange, readOnly]);
   
   const handleBeadSound = useCallback((isUpper: boolean) => {
     if (customBeadSound) {
@@ -153,10 +137,8 @@ export const RealisticAbacus = ({
     }
   }, [playSound, customBeadSound]);
   
-  // Dynamic bead size based on columns
   const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
   
-  // Dynamic gap based on columns
   const getGap = (cols: number): number => {
     if (cols <= 5) return 12;
     if (cols <= 9) return 8;
@@ -171,31 +153,31 @@ export const RealisticAbacus = ({
       "flex items-center w-full",
       isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto px-4 sm:px-6 lg:px-8"
     )}>
-      {/* Abacus frame - dark slate gray matching reference */}
+      {/* Abacus frame */}
       <motion.div 
-         className="relative rounded-3xl overflow-hidden"
+        className="relative rounded-3xl overflow-hidden"
         style={{
-           background: colorPalette.frame || 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-           padding: compact ? 20 : 40,
+          background: colorPalette.frame || 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+          padding: compact ? 20 : 40,
           boxShadow: `
-             0 25px 50px -12px rgba(0,0,0,0.7),
-             0 0 0 4px rgba(255,255,255,0.05),
-             inset 0 2px 4px rgba(255,255,255,0.1)
+            0 25px 50px -12px rgba(0,0,0,0.7),
+            0 0 0 4px rgba(255,255,255,0.05),
+            inset 0 2px 4px rgba(255,255,255,0.1)
           `,
-           border: '6px solid rgba(255,255,255,0.08)',
-           borderRadius: '24px',
+          border: '6px solid rgba(255,255,255,0.08)',
+          borderRadius: '24px',
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
         }}
-         initial={{ opacity: 0, scale: 0.95, y: 20 }}
-         animate={{ opacity: 1, scale: 1, y: 0 }}
-         transition={{ duration: 0.5, type: 'spring' }}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, type: 'spring' }}
       >
-        {/* Inner frame border */}
+        {/* Inner frame gradient */}
         <div 
-           className="absolute inset-0 rounded-3xl pointer-events-none"
+          className="absolute inset-0 rounded-3xl pointer-events-none"
           style={{
-             background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 50%)',
           }}
         />
         
@@ -210,15 +192,14 @@ export const RealisticAbacus = ({
           {/* Columns in reverse order (largest place value on left) */}
           {[...Array(columns)].map((_, i) => {
             const columnIndex = columns - 1 - i;
-            const col = currentColumns[columnIndex] || { upper: false, lower: 0 };
+            const col = currentState.columns[columnIndex] || { upper: 0, lower: 0 };
             
             return (
               <AbacusColumn
                 key={columnIndex}
                 columnIndex={columnIndex}
                 totalColumns={columns}
-                upperActive={col.upper}
-                lowerCount={col.lower}
+                columnState={col}
                 onUpperChange={(active) => handleUpperChange(columnIndex, active)}
                 onLowerChange={(count) => handleLowerChange(columnIndex, count)}
                 beadSize={beadSize}
@@ -233,32 +214,32 @@ export const RealisticAbacus = ({
         </div>
         
         {/* Frame corner decorations */}
-         <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-white/10 rounded-tl-lg" />
-         <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-white/10 rounded-tr-lg" />
-         <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-white/10 rounded-bl-lg" />
-         <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-white/10 rounded-br-lg" />
+        <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-white/10 rounded-tl-lg" />
+        <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-white/10 rounded-tr-lg" />
+        <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-white/10 rounded-bl-lg" />
+        <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-white/10 rounded-br-lg" />
       </motion.div>
       
       {/* Value display */}
       {showValue && (
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentValue}
-             initial={{ scale: 0.8, opacity: 0, y: -20 }}
+            key={currentState.value}
+            initial={{ scale: 0.8, opacity: 0, y: -20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-             exit={{ scale: 0.8, opacity: 0, y: 20 }}
-             transition={{ duration: 0.3, type: 'spring' }}
+            exit={{ scale: 0.8, opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, type: 'spring' }}
             className="mt-4 sm:mt-5"
           >
             <div className={cn(
               "px-6 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl",
-               "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
-               "backdrop-blur-sm",
-               "border-2 border-primary/40",
-               "shadow-lg shadow-primary/20"
+              "bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20",
+              "backdrop-blur-sm",
+              "border-2 border-primary/40",
+              "shadow-lg shadow-primary/20"
             )}>
-               <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                {currentValue.toLocaleString()}
+              <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                {currentState.value.toLocaleString()}
               </span>
             </div>
           </motion.div>
