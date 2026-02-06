@@ -13,6 +13,8 @@ interface ColorSchemeOption {
   frame: string;
 }
 
+const CLASSIC_FRAME = 'linear-gradient(145deg, #1A0F08 0%, #2C1D12 20%, #1A0F08 50%, #0D0704 100%)';
+
 export const colorSchemes: ColorSchemeOption[] = [
   {
     id: 'classic',
@@ -20,7 +22,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Tabiiy yog\'och',
      upperBead: '#6B3A2A',
      lowerBeads: ['#8B4513', '#7A3B10', '#6B3A2A', '#5C2E0E'],
-     frame: 'linear-gradient(145deg, #1A0F08 0%, #2C1D12 20%, #1A0F08 50%, #0D0704 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'ocean',
@@ -28,7 +30,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: "Moviy to'lqinlar",
      upperBead: '#0E7490',
      lowerBeads: ['#0891B2', '#06B6D4', '#22D3EE', '#0E7490'],
-     frame: 'linear-gradient(145deg, #0C2D3F 0%, #0A1F2E 50%, #061218 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'sunset',
@@ -36,7 +38,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Issiq ranglar',
      upperBead: '#B45309',
      lowerBeads: ['#D97706', '#C2410C', '#B45309', '#92400E'],
-     frame: 'linear-gradient(145deg, #3D1A08 0%, #2A1206 50%, #1A0A04 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'forest',
@@ -44,7 +46,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Tabiat ranglari',
      upperBead: '#166534',
      lowerBeads: ['#15803D', '#166534', '#14532D', '#1B5E3A'],
-     frame: 'linear-gradient(145deg, #0A1F10 0%, #071508 50%, #040D05 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'candy',
@@ -52,7 +54,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: "Qand ranglar",
      upperBead: '#BE185D',
      lowerBeads: ['#DB2777', '#E11D48', '#BE185D', '#9D174D'],
-     frame: 'linear-gradient(145deg, #2A0A18 0%, #1A0610 50%, #0D0308 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'mono',
@@ -60,7 +62,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Klassik kulrang',
      upperBead: '#4B5563',
      lowerBeads: ['#6B7280', '#4B5563', '#374151', '#4B5563'],
-     frame: 'linear-gradient(145deg, #1F2937 0%, #111827 50%, #0A0F18 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'rainbow',
@@ -68,7 +70,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Barcha ranglar!',
      upperBead: '#7C3AED',
      lowerBeads: ['#DC2626', '#D97706', '#16A34A', '#2563EB'],
-     frame: 'linear-gradient(145deg, #1E1038 0%, #140A28 50%, #0A0518 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'royal',
@@ -76,7 +78,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: "Oltin va binafsha",
      upperBead: '#7C3AED',
      lowerBeads: ['#B45309', '#D97706', '#92400E', '#B45309'],
-     frame: 'linear-gradient(145deg, #2E1065 0%, #1E0A42 50%, #0F0520 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'neon',
@@ -84,7 +86,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: "Yorug'lik ranglari",
      upperBead: '#0891B2',
      lowerBeads: ['#C026D3', '#16A34A', '#CA8A04', '#EA580C'],
-     frame: 'linear-gradient(145deg, #0A0A1A 0%, #0F0A20 50%, #050510 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'earth',
@@ -92,7 +94,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Tabiiy ranglar',
      upperBead: '#78350F',
      lowerBeads: ['#92400E', '#A16207', '#854D0E', '#78350F'],
-     frame: 'linear-gradient(145deg, #1C1008 0%, #120A04 50%, #0A0602 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'sakura',
@@ -100,7 +102,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: "Bahor gullari",
      upperBead: '#BE185D',
      lowerBeads: ['#DB2777', '#E879A8', '#BE185D', '#9D174D'],
-     frame: 'linear-gradient(145deg, #2A0A18 0%, #1E0812 50%, #0D0308 100%)',
+     frame: CLASSIC_FRAME,
   },
   {
     id: 'golden',
@@ -108,7 +110,7 @@ export const colorSchemes: ColorSchemeOption[] = [
      description: 'Qimmatbaho ranglar',
      upperBead: '#A16207',
      lowerBeads: ['#CA8A04', '#B45309', '#A16207', '#854D0E'],
-     frame: 'linear-gradient(145deg, #2A1A08 0%, #1C1004 50%, #0F0A02 100%)',
+     frame: CLASSIC_FRAME,
   },
 ];
 
