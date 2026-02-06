@@ -116,8 +116,8 @@ export const AbacusColumn = memo(({
         style={{
           left: '50%',
           transform: 'translateX(-50%)',
-          top: 0,
-          bottom: 0,
+          top: -40,
+          bottom: -40,
           width: rodWidth,
           background: 'linear-gradient(to right, #B8A082, #D4C4A8, #C8B896, #B8A082)',
           borderRadius: rodWidth / 2,
