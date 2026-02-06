@@ -166,7 +166,10 @@ export const AbacusColumn = memo(({
       </div>
       
       {/* === LOWER DECK (Earth) — 4 beads === */}
-      <div className="relative z-10 flex flex-col items-center" style={{ marginTop: beadSize * 0.15 }}>
+      <div 
+        className="relative z-10 flex flex-col items-center pointer-events-none" 
+        style={{ marginTop: beadSize * 0.15 }}
+      >
         {[3, 2, 1, 0].map((beadIndex) => {
           const isActive = beadIndex < lowerCount;
           
@@ -175,7 +178,7 @@ export const AbacusColumn = memo(({
               key={beadIndex} 
               className="relative pointer-events-auto"
               style={{ 
-                marginTop: beadIndex < 3 ? -beadSize * 0.08 : 0,
+                marginTop: beadIndex < 3 ? 2 : 0, // No overlap — positive gap
                 zIndex: 10 + (3 - beadIndex),
                 isolation: 'isolate',
               }}

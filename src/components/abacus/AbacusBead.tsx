@@ -135,6 +135,10 @@ export const AbacusBead = memo(({
           ? 'drop-shadow(0 3px 6px rgba(0,0,0,0.35))'
           : 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
       }}
+      onPointerDownCapture={(e) => {
+        // CRITICAL: Stop event from reaching other beads
+        e.stopPropagation();
+      }}
       drag={disabled ? false : "y"}
       dragConstraints={{ top: -beadSize * 0.55, bottom: beadSize * 0.55 }}
       dragElastic={0}
@@ -148,7 +152,7 @@ export const AbacusBead = memo(({
       transition={{
         type: 'tween',
         duration: 0.15,
-        ease: [0.25, 0.1, 0.25, 1], // Smooth, no bounce — like wood sliding on rod
+        ease: [0.25, 0.1, 0.25, 1],
       }}
     >
       <svg
