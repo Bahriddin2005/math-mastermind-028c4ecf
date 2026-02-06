@@ -118,7 +118,7 @@ export const AbacusColumn = memo(({
       {/* Column label */}
       {showLabel && <div className="text-center mb-0.5 z-20" style={{
       minHeight: 18,
-      marginTop: -32
+      marginTop: -48
     }}>
           <div className="px-1.5 rounded font-bold py-[10px]" style={{
         fontSize: beadSize > 30 ? 10 : 8,
