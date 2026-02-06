@@ -94,10 +94,10 @@ export const AbacusBead = memo(({
     intentConfirmed.current = false;
   }, [disabled, isUpper, isActive, onActivate, onDeactivate]);
 
-  // Snap position — only two valid states, no in-between
+  // Snap position — active = touching the reckoning bar
   const targetY = isUpper
     ? (isActive ? ACTIVE_OFFSET : 0)
-    : (isActive ? -ACTIVE_OFFSET * 0.6 : 0);
+    : (isActive ? -ACTIVE_OFFSET * 1.8 : 0);
 
   // Bead proportions
   const beadWidth = beadSize * 1.7;
