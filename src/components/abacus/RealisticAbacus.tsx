@@ -59,21 +59,21 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 30;
-      if (cols <= 9) return 26;
-      if (cols <= 13) return 22;
-      return 18;
+      if (cols <= 5) return 68;
+      if (cols <= 9) return 60;
+      if (cols <= 13) return 54;
+      return 46;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 38;
-      if (cols <= 9) return 34;
-      if (cols <= 13) return 28;
-      return 24;
+      if (cols <= 5) return 82;
+      if (cols <= 9) return 74;
+      if (cols <= 13) return 66;
+      return 58;
     }
-    if (cols <= 5) return 44;
-    if (cols <= 9) return 40;
-    if (cols <= 13) return 34;
-    return 28;
+    if (cols <= 5) return 108;
+    if (cols <= 9) return 96;
+    if (cols <= 13) return 86;
+    return 76;
   };
   
   // Engine state
@@ -146,9 +146,10 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '64px 80px' : '72px 96px',
-          border: `${compact ? 18 : 24}px solid #0D0704`,
-          borderRadius: compact ? 24 : 32,
+          padding: compact ? '40px 56px' : '52px 72px',
+          // Thick frame border matching reference
+          border: `${compact ? 12 : 16}px solid #0D0704`,
+          borderRadius: compact ? 18 : 24,
           boxShadow: `
             0 20px 60px -15px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
@@ -190,8 +191,8 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '16px 24px' : '48px 56px',
-            minHeight: compact ? 380 : 580,
+            padding: compact ? '12px 28px' : '64px 68px',
+            minHeight: compact ? 460 : 680,
           }}
         >
           {[...Array(columns)].map((_, i) => {
