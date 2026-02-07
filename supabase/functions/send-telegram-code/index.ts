@@ -135,6 +135,38 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Validate that the phone number matches the one stored in telegram_users
+    const storedPhone = (telegramUser.phone_number ?? "").replace(/[^\d]/g, "");
+    const inputPhone = (phone_number ?? "").replace(/[^\d]/g, "");
+
+    if (!storedPhone) {
+      console.log("Telegram user has no phone number stored:", telegramUser.username);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Telegram botga telefon raqamingizni (Contact) yubormadingiz. Iltimos, @iqromaxuzbot ga kirib 📱 tugmasini bosing.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    if (inputPhone !== storedPhone) {
+      console.log("Phone mismatch. Input:", inputPhone, "Stored:", storedPhone);
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Kiritilgan telefon raqam Telegram botga yuborgan raqamingizdan farq qiladi. Iltimos, botga yuborgan raqamingizni kiriting.",
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     // Generate 6-digit code
     const code = generateCode();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
