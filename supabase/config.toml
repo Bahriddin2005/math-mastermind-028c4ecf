@@ -8,3 +8,30 @@ verify_jwt = false
 
 [functions.customer-portal]
 verify_jwt = false
+
+[functions.telegram-webhook]
+verify_jwt = false
+
+[functions.send-telegram-code]
+verify_jwt = false
+
+[functions.verify-code]
+verify_jwt = false
+
+[functions.help-chat]
+verify_jwt = false
+
+[functions.send-verification-code]
+verify_jwt = false
+
+[functions.send-weekly-report]
+verify_jwt = false
+
+[functions.elevenlabs-tts]
+verify_jwt = false
+
+[functions.elevenlabs-stt]
+verify_jwt = false
+
+[functions.send-telegram-code]
+verify_jwt = false
