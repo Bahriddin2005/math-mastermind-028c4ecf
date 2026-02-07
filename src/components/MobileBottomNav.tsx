@@ -1,18 +1,40 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Play, Trophy, BookOpen, Calculator } from 'lucide-react';
+import { Home, Play, Trophy, BookOpen, Calculator, BarChart3, FileText, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 
-const navItems = [
-  { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
-  { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
-  { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
-  { icon: BookOpen, label: "Darslar", path: "/courses", emoji: "📚" },
-];
+const getNavItems = (role: string | null) => {
+  if (role === 'parent') {
+    return [
+      { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
+      { icon: BarChart3, label: "Nazorat", path: "/parent-dashboard", emoji: "📊" },
+      { icon: FileText, label: "Hisobot", path: "/lesson-stats", emoji: "📋" },
+    ];
+  }
+  if (role === 'teacher') {
+    return [
+      { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
+      { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
+      { icon: GraduationCap, label: "Kurslar", path: "/courses", emoji: "📚" },
+      { icon: FileText, label: "Hisobot", path: "/lesson-stats", emoji: "📋" },
+    ];
+  }
+  // Student (default)
+  return [
+    { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
+    { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
+    { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
+    { icon: BookOpen, label: "Darslar", path: "/courses", emoji: "📚" },
+  ];
+};
 
 export const MobileBottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { role } = useUserRole();
+
+  const navItems = getNavItems(role);
 
   // Hide on auth page and for non-logged-in users
   if (!user || location.pathname === '/auth' || location.pathname === '/reset-password') {

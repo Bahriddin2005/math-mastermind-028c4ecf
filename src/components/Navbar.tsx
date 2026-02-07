@@ -1,8 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Calculator } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Calculator, Users, FileText } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useTheme } from 'next-themes';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,11 +26,11 @@ interface NavbarProps {
 
 export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
   const { user, signOut } = useAuth();
+  const { role, isAdmin, isParent, isTeacher, isStudent } = useUserRole();
   const navigate = useNavigate();
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<{ username: string; avatar_url: string | null; total_score: number } | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navScrollRef = useRef<HTMLDivElement>(null);
@@ -66,22 +67,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
     };
   }, [mobileMenuOpen]);
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-      setIsAdmin(!!data);
-    };
-    checkAdmin();
-  }, [user]);
+  // Admin check removed - now using useUserRole hook
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -114,12 +100,33 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItems = [
-    { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
-    { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
-    { path: '/courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
-    { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
-  ];
+  // Role-based navigation items
+  const getNavItems = () => {
+    if (isParent) {
+      return [
+        { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
+        { path: '/parent-dashboard', icon: BarChart3, label: "Nazorat", emoji: "📊" },
+        { path: '/lesson-stats', icon: FileText, label: "Hisobot", emoji: "📋" },
+      ];
+    }
+    if (isTeacher) {
+      return [
+        { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
+        { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
+        { path: '/courses', icon: GraduationCap, label: "Kurslar", emoji: "📚" },
+        { path: '/lesson-stats', icon: FileText, label: "Hisobotlar", emoji: "📋" },
+      ];
+    }
+    // Student (default)
+    return [
+      { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
+      { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
+      { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
+      { path: '/courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
+    ];
+  };
+
+  const navItems = getNavItems();
 
   return (
     <>
