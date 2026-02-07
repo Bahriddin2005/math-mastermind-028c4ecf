@@ -83,6 +83,7 @@ const Auth = () => {
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [telegramUsername, setTelegramUsername] = useState('');
+  const [userType, setUserType] = useState<'student' | 'parent' | 'teacher'>('student');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -98,6 +99,7 @@ const Auth = () => {
     username: string;
     phoneNumber?: string;
     telegramUsername: string;
+    userType: string;
   } | null>(null);
   
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
@@ -226,7 +228,8 @@ const Auth = () => {
           password,
           username,
           phoneNumber: phoneNumber ? unformatPhoneNumber(phoneNumber) : undefined,
-          telegramUsername: telegramUsername.replace(/^@/, '').trim()
+          telegramUsername: telegramUsername.replace(/^@/, '').trim(),
+          userType
         });
         
         const result = await sendTelegramVerificationCode(
@@ -291,7 +294,8 @@ const Auth = () => {
         pendingSignupData.email,
         pendingSignupData.password,
         pendingSignupData.username,
-        pendingSignupData.phoneNumber
+        pendingSignupData.phoneNumber,
+        pendingSignupData.userType
       );
       
       if (error) {
@@ -645,6 +649,33 @@ const Auth = () => {
             
             <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
               <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                {mode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label className="text-xs sm:text-sm font-medium">Kim sifatida ro'yxatdan o'tasiz?</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { value: 'student' as const, emoji: '🧒', label: "O'quvchi", desc: "O'yinlar va mashqlar" },
+                        { value: 'parent' as const, emoji: '👨‍👩‍👧', label: "Ota-ona", desc: "Farzandimni kuzataman" },
+                        { value: 'teacher' as const, emoji: '👩‍🏫', label: "O'qituvchi", desc: "Guruh va darslar" },
+                      ].map((role) => (
+                        <button
+                          key={role.value}
+                          type="button"
+                          onClick={() => setUserType(role.value)}
+                          className={`p-3 rounded-xl border-2 text-center transition-all ${
+                            userType === role.value
+                              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 shadow-md'
+                              : 'border-border/50 bg-card hover:border-emerald-300'
+                          }`}
+                        >
+                          <div className="text-2xl mb-1">{role.emoji}</div>
+                          <p className="text-xs font-bold">{role.label}</p>
+                          <p className="text-[9px] text-muted-foreground leading-tight mt-0.5">{role.desc}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {mode === 'signup' && (
                   <div className="space-y-1.5 sm:space-y-2">
                     <Label htmlFor="username" className="text-xs sm:text-sm font-medium">Ism</Label>
