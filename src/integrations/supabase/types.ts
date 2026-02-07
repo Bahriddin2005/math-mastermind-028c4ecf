@@ -1961,10 +1961,13 @@ export type Database = {
       get_platform_stats: {
         Args: never
         Returns: {
+          accuracy_rate: number
+          d7_retention: number
           total_courses: number
           total_lessons: number
           total_problems_solved: number
           total_users: number
+          weekly_growth: number
         }[]
       }
       has_role: {

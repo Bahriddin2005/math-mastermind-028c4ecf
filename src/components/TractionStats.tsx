@@ -8,6 +8,9 @@ interface PlatformStats {
   total_problems_solved: number;
   total_lessons: number;
   total_courses: number;
+  accuracy_rate: number;
+  d7_retention: number;
+  weekly_growth: number;
 }
 
 export const TractionStats = () => {
@@ -15,24 +18,24 @@ export const TractionStats = () => {
     total_users: 0,
     total_problems_solved: 0,
     total_lessons: 0,
-    total_courses: 0
+    total_courses: 0,
+    accuracy_rate: 0,
+    d7_retention: 0,
+    weekly_growth: 0,
   });
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
-      const { data } = await supabase.rpc('get_platform_stats');
+      const { data } = await supabase.rpc('get_platform_stats') as { data: any[] | null };
       if (data && data.length > 0) {
         setStats(data[0]);
       }
     };
     fetchStats();
-    
-    // Trigger animation
     setTimeout(() => setIsVisible(true), 200);
   }, []);
 
-  // Format number with animation effect
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
@@ -42,7 +45,7 @@ export const TractionStats = () => {
   const statItems = [
     {
       icon: Users,
-      value: stats.total_users || 150,
+      value: stats.total_users || 0,
       suffix: '+',
       label: 'Aktiv foydalanuvchilar',
       subtext: 'Beta foydalanuvchilar',
@@ -51,7 +54,7 @@ export const TractionStats = () => {
     },
     {
       icon: Calculator,
-      value: stats.total_problems_solved || 25000,
+      value: stats.total_problems_solved || 0,
       suffix: '+',
       label: "Yechilgan misollar",
       subtext: 'Jami mashqlar',
@@ -60,7 +63,7 @@ export const TractionStats = () => {
     },
     {
       icon: Target,
-      value: 85,
+      value: stats.accuracy_rate || 0,
       suffix: '%',
       label: "To'g'ri javob nisbati",
       subtext: "O'rtacha aniqlik",
@@ -69,7 +72,7 @@ export const TractionStats = () => {
     },
     {
       icon: TrendingUp,
-      value: 38,
+      value: stats.d7_retention || 0,
       suffix: '%',
       label: 'D7 Retention',
       subtext: '7 kunlik qaytish',
@@ -111,15 +114,12 @@ export const TractionStats = () => {
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              {/* Glow effect */}
               <div className={`absolute inset-0 rounded-xl ${item.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity blur-xl -z-10`} />
               
-              {/* Icon */}
               <div className={`h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 sm:mb-3 shadow-md`}>
                 <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               
-              {/* Value */}
               <div className="flex items-baseline gap-0.5 mb-1">
                 <span className={`text-xl sm:text-2xl md:text-3xl font-display font-black bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
                   {formatNumber(item.value)}
@@ -129,7 +129,6 @@ export const TractionStats = () => {
                 </span>
               </div>
               
-              {/* Label */}
               <p className="text-xs sm:text-sm font-semibold text-foreground leading-tight">{item.label}</p>
               <p className="text-[10px] sm:text-xs text-muted-foreground">{item.subtext}</p>
             </div>
@@ -149,7 +148,9 @@ export const TractionStats = () => {
               </div>
             </div>
             <div className="text-right">
-              <span className="text-xl sm:text-2xl font-display font-black text-emerald-500">+25%</span>
+              <span className="text-xl sm:text-2xl font-display font-black text-emerald-500">
+                {stats.weekly_growth > 0 ? '+' : ''}{stats.weekly_growth || 0}%
+              </span>
               <p className="text-[10px] sm:text-xs text-muted-foreground">Foydalanuvchilar</p>
             </div>
           </div>
