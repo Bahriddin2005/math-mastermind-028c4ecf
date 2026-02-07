@@ -70,11 +70,13 @@ const features = [
   { icon: GraduationCap, text: "Professional o'qituvchilar", color: "from-purple-500 to-pink-500" },
 ];
 
-const stats = [
-  { value: "10K+", label: "Foydalanuvchilar" },
-  { value: "500K+", label: "Yechilgan misollar" },
-  { value: "50+", label: "Video darslar" },
-];
+// Stats will be fetched from DB
+
+const formatStatNumber = (num: number) => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K+`;
+  return `${num}+`;
+};
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
@@ -89,6 +91,11 @@ const Auth = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showMFAVerify, setShowMFAVerify] = useState(false);
+  const [stats, setStats] = useState([
+    { value: "0+", label: "Foydalanuvchilar" },
+    { value: "0+", label: "Yechilgan misollar" },
+    { value: "0+", label: "Video darslar" },
+  ]);
   
   // Email verification states
   const [verificationCode, setVerificationCode] = useState('');
@@ -107,13 +114,27 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast: toastHook } = useToast();
 
-  // Load remembered email on mount
+  // Load remembered email and fetch stats on mount
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('iqromax_remembered_email');
     if (rememberedEmail) {
       setEmail(rememberedEmail);
       setRememberMe(true);
     }
+
+    // Fetch real platform stats
+    const fetchStats = async () => {
+      const { data } = await supabase.rpc('get_platform_stats') as { data: any[] | null };
+      if (data && data.length > 0) {
+        const s = data[0];
+        setStats([
+          { value: formatStatNumber(s.total_users || 0), label: "Foydalanuvchilar" },
+          { value: formatStatNumber(s.total_problems_solved || 0), label: "Yechilgan misollar" },
+          { value: formatStatNumber(s.total_lessons || 0), label: "Video darslar" },
+        ]);
+      }
+    };
+    fetchStats();
   }, []);
 
   // Resend cooldown timer
