@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMFA } from '@/hooks/useMFA';
@@ -14,31 +14,11 @@ import { toast } from 'sonner';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Loader2, 
-  LogIn, 
-  UserPlus, 
-  Mail, 
-  ArrowLeft, 
-  Check, 
-  Sparkles,
-  Brain,
-  Target,
-  Trophy,
-  Lock,
-  User,
-  Zap,
-  Star,
-  ChevronRight,
-  GraduationCap,
-  Phone,
-  RefreshCw,
-  ShieldCheck,
-  Send,
-  Copy,
-  ExternalLink
+  Loader2, LogIn, UserPlus, Mail, ArrowLeft, Check, Sparkles,
+  Brain, Target, Trophy, Lock, User, Zap, Star, ChevronRight,
+  GraduationCap, Send, ExternalLink, ShieldCheck, RefreshCw, AtSign
 } from 'lucide-react';
 import { z } from 'zod';
-import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 
 const loginSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
@@ -49,13 +29,14 @@ const signupSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
   password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
   username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
+  telegramUsername: z.string().min(3, "Telegram username kamida 3 ta belgidan iborat bo'lishi kerak"),
 });
 
 const emailSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-telegram';
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-otp';
 
 const features = [
   { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
@@ -75,6 +56,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [telegramUsername, setTelegramUsername] = useState('');
   const [userType, setUserType] = useState<'student' | 'parent' | 'teacher'>('student');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -87,25 +69,25 @@ const Auth = () => {
     { value: "0+", label: "Video darslar" },
   ]);
   
-  // New OTP flow states
-  const [otpCode, setOtpCode] = useState('');
+  // OTP verification states
   const [sessionToken, setSessionToken] = useState('');
+  const [otpInput, setOtpInput] = useState('');
   const [otpExpiresAt, setOtpExpiresAt] = useState<Date | null>(null);
   const [otpCountdown, setOtpCountdown] = useState(0);
-  const [pollingStatus, setPollingStatus] = useState<string>('pending');
+  const [verifyStatus, setVerifyStatus] = useState<'idle' | 'verifying' | 'verified' | 'error' | 'creating'>('idle');
   const [verifiedTelegramData, setVerifiedTelegramData] = useState<{
     telegram_id: string;
     telegram_username: string;
     telegram_first_name: string;
   } | null>(null);
-  const [codeCopied, setCodeCopied] = useState(false);
-  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [verifyError, setVerifyError] = useState('');
   
   const pendingSignupDataRef = useRef<{
     email: string;
     password: string;
     username: string;
     userType: string;
+    telegramUsername: string;
   } | null>(null);
   
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
@@ -113,7 +95,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast: toastHook } = useToast();
 
-  // Load remembered email and fetch stats on mount
+  // Load remembered email and fetch stats
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('iqromax_remembered_email');
     if (rememberedEmail) {
@@ -141,67 +123,13 @@ const Auth = () => {
       const timer = setInterval(() => {
         const remaining = Math.max(0, Math.floor((otpExpiresAt.getTime() - Date.now()) / 1000));
         setOtpCountdown(remaining);
-        if (remaining <= 0) {
-          clearInterval(timer);
-        }
+        if (remaining <= 0) clearInterval(timer);
       }, 1000);
       return () => clearInterval(timer);
     }
   }, [otpExpiresAt]);
 
-  // Polling for OTP verification status
-  const startPolling = useCallback((token: string) => {
-    if (pollingRef.current) clearInterval(pollingRef.current);
-    
-    pollingRef.current = setInterval(async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('check-otp-status', {
-          body: { session_token: token }
-        });
-        
-        if (error) return;
-        
-        if (data?.status === 'verified' && data?.success) {
-          setPollingStatus('verified');
-          setVerifiedTelegramData({
-            telegram_id: data.telegram_id,
-            telegram_username: data.telegram_username,
-            telegram_first_name: data.telegram_first_name,
-          });
-          if (pollingRef.current) clearInterval(pollingRef.current);
-        } else if (data?.status === 'expired') {
-          setPollingStatus('expired');
-          if (pollingRef.current) clearInterval(pollingRef.current);
-        } else if (data?.status === 'telegram_already_registered') {
-          setPollingStatus('telegram_already_registered');
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: data.error || 'Bu Telegram akkaunt allaqachon ro\'yxatdan o\'tgan',
-          });
-          if (pollingRef.current) clearInterval(pollingRef.current);
-        }
-      } catch (err) {
-        console.error('Polling error:', err);
-      }
-    }, 2000); // Poll every 2 seconds
-  }, [toastHook]);
-
-  // Cleanup polling on unmount
-  useEffect(() => {
-    return () => {
-      if (pollingRef.current) clearInterval(pollingRef.current);
-    };
-  }, []);
-
-  // Auto-create account when Telegram verifies
-  useEffect(() => {
-    if (pollingStatus === 'verified' && verifiedTelegramData && pendingSignupDataRef.current) {
-      handleCreateAccount();
-    }
-  }, [pollingStatus, verifiedTelegramData]);
-
-  // Check MFA status after user is available
+  // Check MFA status
   useEffect(() => {
     if (user && !mfa.loading) {
       if (mfa.isEnabled && !mfa.isVerified && mfa.currentLevel === 'aal1') {
@@ -217,7 +145,7 @@ const Auth = () => {
       if (mode === 'login') {
         loginSchema.parse({ email, password });
       } else if (mode === 'signup') {
-        signupSchema.parse({ email, password, username });
+        signupSchema.parse({ email, password, username, telegramUsername: telegramUsername.replace(/^@/, '') });
       } else if (mode === 'forgot-password') {
         emailSchema.parse({ email });
       }
@@ -227,9 +155,7 @@ const Auth = () => {
       if (err instanceof z.ZodError) {
         const newErrors: Record<string, string> = {};
         err.errors.forEach((e) => {
-          if (e.path[0]) {
-            newErrors[e.path[0] as string] = e.message;
-          }
+          if (e.path[0]) newErrors[e.path[0] as string] = e.message;
         });
         setErrors(newErrors);
       }
@@ -241,42 +167,27 @@ const Auth = () => {
     const data = pendingSignupDataRef.current;
     if (!data || !verifiedTelegramData) return;
     
-    setLoading(true);
+    setVerifyStatus('creating');
     try {
-      const { error } = await signUp(
-        data.email,
-        data.password,
-        data.username,
-        undefined,
-        data.userType
-      );
+      const { error } = await signUp(data.email, data.password, data.username, undefined, data.userType);
       
       if (error) {
-        if (error.message.includes('already registered')) {
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: "Bu email allaqachon ro'yxatdan o'tgan",
-          });
-        } else {
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: error.message,
-          });
-        }
+        const msg = error.message.includes('already registered')
+          ? "Bu email allaqachon ro'yxatdan o'tgan"
+          : error.message;
+        toastHook({ variant: 'destructive', title: 'Xatolik', description: msg });
+        setVerifyStatus('error');
+        setVerifyError(msg);
         return;
       }
 
-      // Bind telegram data to profile after signup
-      // Wait a moment for the profile to be created by the trigger
+      // Bind telegram data and consume OTP
       setTimeout(async () => {
-        const supabaseAdmin = supabase;
-        const { data: sessionData } = await supabaseAdmin.auth.getSession();
+        const { data: sessionData } = await supabase.auth.getSession();
         const userId = sessionData?.session?.user?.id;
         
         if (userId) {
-          await supabaseAdmin
+          await supabase
             .from('profiles')
             .update({
               telegram_id: verifiedTelegramData.telegram_id,
@@ -285,9 +196,9 @@ const Auth = () => {
             .eq('user_id', userId);
         }
 
-        // Mark OTP as used
-        await supabase.functions.invoke('verify-code', {
-          body: { email: data.email, code: otpCode, consume: true }
+        // Consume OTP
+        await supabase.functions.invoke('verify-otp-website', {
+          body: { session_token: sessionToken, otp_code: otpInput, consume: true }
         });
       }, 1500);
 
@@ -296,10 +207,57 @@ const Auth = () => {
         description: `Akkaunt yaratildi! Telegram: @${verifiedTelegramData.telegram_username}`,
       });
       navigate('/onboarding');
-    } finally {
-      setLoading(false);
+    } catch (err: any) {
+      setVerifyStatus('error');
+      setVerifyError(err.message);
     }
   };
+
+  const handleVerifyOtp = async () => {
+    if (!otpInput || otpInput.length !== 6) {
+      setVerifyError("6 raqamli kodni kiriting");
+      return;
+    }
+
+    setVerifyStatus('verifying');
+    setVerifyError('');
+
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-otp-website', {
+        body: { session_token: sessionToken, otp_code: otpInput, consume: false }
+      });
+
+      if (error) {
+        setVerifyStatus('error');
+        setVerifyError('Tekshirishda xatolik yuz berdi');
+        return;
+      }
+
+      if (!data?.success) {
+        setVerifyStatus('error');
+        setVerifyError(data?.error || 'Noto\'g\'ri kod');
+        return;
+      }
+
+      // OTP verified! Save telegram data and create account
+      setVerifiedTelegramData({
+        telegram_id: data.telegram_id,
+        telegram_username: data.telegram_username,
+        telegram_first_name: data.telegram_first_name,
+      });
+      setVerifyStatus('verified');
+    } catch (err: any) {
+      setVerifyStatus('error');
+      setVerifyError(err.message);
+    }
+  };
+
+  // Auto-create account after verification
+  useEffect(() => {
+    if (verifyStatus === 'verified' && verifiedTelegramData && pendingSignupDataRef.current) {
+      handleCreateAccount();
+    }
+  }, [verifyStatus, verifiedTelegramData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -308,11 +266,8 @@ const Auth = () => {
     
     try {
       if (mode === 'login') {
-        if (rememberMe) {
-          localStorage.setItem('iqromax_remembered_email', email);
-        } else {
-          localStorage.removeItem('iqromax_remembered_email');
-        }
+        if (rememberMe) localStorage.setItem('iqromax_remembered_email', email);
+        else localStorage.removeItem('iqromax_remembered_email');
         
         const { error } = await signIn(email, password);
         if (error) {
@@ -320,71 +275,47 @@ const Auth = () => {
             variant: 'destructive',
             title: 'Xatolik',
             description: error.message === 'Invalid login credentials' 
-              ? "Email yoki parol noto'g'ri" 
-              : error.message,
+              ? "Email yoki parol noto'g'ri" : error.message,
           });
         } else {
-          toastHook({
-            title: 'Muvaffaqiyat!',
-            description: 'Tizimga kirdingiz',
-          });
+          toastHook({ title: 'Muvaffaqiyat!', description: 'Tizimga kirdingiz' });
         }
       } else if (mode === 'signup') {
-        // Generate OTP via backend
+        // Send OTP to user's Telegram
+        const cleanTgUsername = telegramUsername.replace(/^@/, '').trim();
+        
         const { data, error } = await supabase.functions.invoke('generate-otp', {
-          body: { email }
+          body: { email, telegram_username: cleanTgUsername }
         });
         
         if (error) {
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: 'OTP yaratishda xatolik yuz berdi',
-          });
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: 'OTP yuborishda xatolik yuz berdi' });
           return;
         }
         
         if (data && !data.success) {
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: data.error || 'OTP yaratishda xatolik',
-          });
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: data.error || 'OTP yaratishda xatolik' });
           return;
         }
 
         // Store pending signup data
-        pendingSignupDataRef.current = {
-          email,
-          password,
-          username,
-          userType,
-        };
+        pendingSignupDataRef.current = { email, password, username, userType, telegramUsername: cleanTgUsername };
 
-        // Show OTP screen
-        setOtpCode(data.otp_code);
+        // Show OTP entry screen
         setSessionToken(data.session_token);
-        setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 300) * 1000));
-        setOtpCountdown(data.expires_in || 300);
-        setPollingStatus('pending');
+        setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 180) * 1000));
+        setOtpCountdown(data.expires_in || 180);
+        setOtpInput('');
+        setVerifyStatus('idle');
         setVerifiedTelegramData(null);
-        setMode('verify-telegram');
+        setVerifyError('');
+        setMode('verify-otp');
         
-        // Start polling for verification
-        startPolling(data.session_token);
-        
-        toastHook({
-          title: 'OTP kod tayyor!',
-          description: 'Kodni @iqromaxuzbot botga yuboring',
-        });
+        toastHook({ title: 'OTP yuborildi!', description: 'Telegram ga kelgan kodni kiriting' });
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
         if (error) {
-          toastHook({
-            variant: 'destructive',
-            title: 'Xatolik',
-            description: error.message,
-          });
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: error.message });
         } else {
           setResetEmailSent(true);
           toast.success('Parolni tiklash havolasi emailingizga yuborildi');
@@ -395,40 +326,30 @@ const Auth = () => {
     }
   };
 
-  const handleCopyCode = () => {
-    navigator.clipboard.writeText(otpCode);
-    setCodeCopied(true);
-    setTimeout(() => setCodeCopied(false), 2000);
-    toast.success('Kod nusxalandi!');
-  };
-
-  const handleRegenerateOtp = async () => {
-    if (pollingRef.current) clearInterval(pollingRef.current);
+  const handleResendOtp = async () => {
+    if (!pendingSignupDataRef.current) return;
     setLoading(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-otp', {
-        body: { email: pendingSignupDataRef.current?.email || email }
+        body: { 
+          email: pendingSignupDataRef.current.email, 
+          telegram_username: pendingSignupDataRef.current.telegramUsername 
+        }
       });
       
       if (error || !data?.success) {
-        toastHook({
-          variant: 'destructive',
-          title: 'Xatolik',
-          description: data?.error || 'Yangi kod yaratishda xatolik',
-        });
+        toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Yangi kod yuborishda xatolik' });
         return;
       }
 
-      setOtpCode(data.otp_code);
       setSessionToken(data.session_token);
-      setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 300) * 1000));
-      setOtpCountdown(data.expires_in || 300);
-      setPollingStatus('pending');
-      setVerifiedTelegramData(null);
-      startPolling(data.session_token);
-      
-      toast.success('Yangi OTP kod yaratildi!');
+      setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 180) * 1000));
+      setOtpCountdown(data.expires_in || 180);
+      setOtpInput('');
+      setVerifyStatus('idle');
+      setVerifyError('');
+      toast.success('Yangi OTP kod Telegram ga yuborildi!');
     } finally {
       setLoading(false);
     }
@@ -438,11 +359,11 @@ const Auth = () => {
     setMode(newMode);
     setErrors({});
     setResetEmailSent(false);
-    setOtpCode('');
+    setOtpInput('');
     setSessionToken('');
-    setPollingStatus('pending');
+    setVerifyStatus('idle');
     setVerifiedTelegramData(null);
-    if (pollingRef.current) clearInterval(pollingRef.current);
+    setVerifyError('');
   };
 
   const handleMFACancel = async () => {
@@ -456,21 +377,18 @@ const Auth = () => {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Show MFA verification screen
+  // MFA verification screen
   if (showMFAVerify && user) {
     return (
       <TwoFactorVerify
-        onSuccess={() => {
-          setShowMFAVerify(false);
-          navigate('/');
-        }}
+        onSuccess={() => { setShowMFAVerify(false); navigate('/'); }}
         onCancel={handleMFACancel}
       />
     );
   }
 
-  // Telegram OTP verification screen (NEW FLOW)
-  if (mode === 'verify-telegram') {
+  // OTP Entry Screen (NEW FLOW: user enters OTP received from Telegram)
+  if (mode === 'verify-otp') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -484,102 +402,82 @@ const Auth = () => {
             
             <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
               <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-sky-500/30 dark:shadow-sky-500/50">
-                <Send className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+                <ShieldCheck className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
               </div>
-              <CardTitle className="text-xl sm:text-2xl font-display">Telegram orqali tasdiqlash</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl font-display">OTP kodni kiriting</CardTitle>
               <CardDescription className="mt-1.5 sm:mt-2 text-sm">
-                Quyidagi kodni <strong className="text-foreground">@iqromaxuzbot</strong> ga yuboring
+                Telegram ga yuborilgan 6 raqamli kodni kiriting
               </CardDescription>
             </CardHeader>
             
             <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
               <div className="space-y-5">
-                {/* OTP Code Display */}
-                <div className="relative">
-                  <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30 border-2 border-sky-200 dark:border-sky-800 rounded-2xl p-6 text-center">
-                    <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-medium">Sizning kodingiz</p>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-4xl sm:text-5xl font-mono font-bold tracking-[0.3em] text-sky-600 dark:text-sky-400 select-all">
-                        {otpCode}
-                      </span>
-                      <button
-                        onClick={handleCopyCode}
-                        className="p-2 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-900/30 transition-colors"
-                        title="Nusxalash"
-                      >
-                        {codeCopied ? (
-                          <Check className="h-5 w-5 text-green-500" />
-                        ) : (
-                          <Copy className="h-5 w-5 text-sky-500" />
-                        )}
-                      </button>
+                {/* Info banner */}
+                <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30 border border-sky-200 dark:border-sky-800 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <Send className="h-5 w-5 text-sky-500 mt-0.5 shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-medium text-sky-700 dark:text-sky-300">
+                        OTP kod <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">@iqromaxuzbot <ExternalLink className="h-3 w-3" /></a> ga yuborildi
+                      </p>
+                      {otpCountdown > 0 && (
+                        <p className="text-xs text-sky-600 dark:text-sky-400 mt-1">
+                          ⏱️ Kod amal qiladi: <span className="font-mono font-bold">{formatTime(otpCountdown)}</span>
+                        </p>
+                      )}
+                      {otpCountdown <= 0 && (
+                        <p className="text-xs text-destructive mt-1 font-medium">⏰ Kod muddati tugadi</p>
+                      )}
                     </div>
-                    {otpCountdown > 0 && (
-                      <p className="text-xs text-muted-foreground mt-3">
-                        ⏱️ Kod amal qiladi: <span className="font-mono font-bold text-foreground">{formatTime(otpCountdown)}</span>
-                      </p>
-                    )}
-                    {otpCountdown <= 0 && (
-                      <p className="text-xs text-destructive mt-3 font-medium">
-                        ⏰ Kod muddati tugadi
-                      </p>
-                    )}
                   </div>
                 </div>
 
-                {/* Steps */}
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400">1</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">Telegram botni oching</p>
-                      <a
-                        href="https://t.me/iqromaxuzbot"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-sky-500 hover:text-sky-600 inline-flex items-center gap-1 mt-0.5"
-                      >
-                        @iqromaxuzbot <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400">2</span>
-                    </div>
-                    <p className="text-sm font-medium">Botga yuqoridagi 6 raqamli kodni yuboring</p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="h-6 w-6 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-xs font-bold text-sky-600 dark:text-sky-400">3</span>
-                    </div>
-                    <p className="text-sm font-medium">Tasdiqlash avtomatik amalga oshadi ✨</p>
-                  </div>
+                {/* OTP Input */}
+                <div className="space-y-2">
+                  <Label htmlFor="otp-input" className="text-sm font-medium">6 raqamli kod</Label>
+                  <Input
+                    id="otp-input"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={otpInput}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setOtpInput(val);
+                      setVerifyError('');
+                    }}
+                    disabled={verifyStatus === 'verifying' || verifyStatus === 'creating' || verifyStatus === 'verified'}
+                    className={`text-center text-3xl font-mono tracking-[0.5em] h-16 ${verifyError ? 'border-destructive' : ''}`}
+                    autoFocus
+                  />
+                  {verifyError && (
+                    <p className="text-xs text-destructive flex items-center gap-1.5 animate-shake">
+                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                      {verifyError}
+                    </p>
+                  )}
                 </div>
 
-                {/* Status indicator */}
-                <div className="rounded-xl border p-4">
-                  {pollingStatus === 'pending' && otpCountdown > 0 && (
-                    <div className="flex items-center gap-3">
-                      <Loader2 className="h-5 w-5 animate-spin text-sky-500" />
-                      <div>
-                        <p className="text-sm font-medium">Telegram tasdiqlanishini kutmoqdamiz...</p>
-                        <p className="text-xs text-muted-foreground">Botga kodni yuboring</p>
-                      </div>
-                    </div>
-                  )}
-                  {pollingStatus === 'pending' && otpCountdown <= 0 && (
-                    <div className="flex items-center gap-3">
-                      <RefreshCw className="h-5 w-5 text-amber-500" />
-                      <div>
-                        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Kod muddati tugadi</p>
-                        <p className="text-xs text-muted-foreground">Yangi kod yarating</p>
-                      </div>
-                    </div>
-                  )}
-                  {pollingStatus === 'verified' && verifiedTelegramData && (
+                {/* Verify button */}
+                {verifyStatus !== 'verified' && verifyStatus !== 'creating' && (
+                  <Button
+                    onClick={handleVerifyOtp}
+                    disabled={otpInput.length !== 6 || verifyStatus === 'verifying' || otpCountdown <= 0}
+                    className="w-full h-12 text-base font-semibold gap-2 rounded-full bg-sky-500 hover:bg-sky-600 shadow-lg shadow-sky-500/20"
+                  >
+                    {verifyStatus === 'verifying' ? (
+                      <><Loader2 className="h-5 w-5 animate-spin" /> Tekshirilmoqda...</>
+                    ) : (
+                      <><ShieldCheck className="h-5 w-5" /> Tasdiqlash</>
+                    )}
+                  </Button>
+                )}
+
+                {/* Status */}
+                {verifyStatus === 'verified' && verifiedTelegramData && (
+                  <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-4">
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                         <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
@@ -591,36 +489,26 @@ const Auth = () => {
                         </p>
                       </div>
                     </div>
-                  )}
-                  {pollingStatus === 'telegram_already_registered' && (
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="h-5 w-5 text-destructive" />
-                      <div>
-                        <p className="text-sm font-medium text-destructive">Bu Telegram allaqachon ro'yxatdan o'tgan</p>
-                        <p className="text-xs text-muted-foreground">Bitta Telegram = bitta akkaunt</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
-                {/* Creating account loading */}
-                {pollingStatus === 'verified' && loading && (
+                {verifyStatus === 'creating' && (
                   <div className="flex items-center justify-center gap-2 py-2">
                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     <span className="text-sm font-medium">Akkaunt yaratilmoqda...</span>
                   </div>
                 )}
 
-                {/* Regenerate OTP */}
-                {(otpCountdown <= 0 || pollingStatus === 'expired') && (
+                {/* Resend OTP */}
+                {(otpCountdown <= 0) && (
                   <Button 
-                    onClick={handleRegenerateOtp}
+                    onClick={handleResendOtp}
                     variant="outline"
                     className="w-full gap-2"
                     disabled={loading}
                   >
                     <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                    Yangi kod yaratish
+                    Yangi kod yuborish
                   </Button>
                 )}
 
@@ -630,7 +518,7 @@ const Auth = () => {
                     type="button"
                     onClick={() => switchMode('signup')}
                     className="text-muted-foreground hover:text-foreground text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors group"
-                    disabled={loading}
+                    disabled={verifyStatus === 'creating'}
                   >
                     <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                     Orqaga qaytish
@@ -920,21 +808,31 @@ const Auth = () => {
                   </div>
                 )}
 
+                {/* Telegram username field - only for signup */}
                 {mode === 'signup' && (
-                  <div className="rounded-lg bg-sky-50 dark:bg-sky-950/20 border border-sky-200 dark:border-sky-800 p-3">
-                    <div className="flex items-start gap-2">
-                      <Send className="h-4 w-4 text-sky-500 mt-0.5 shrink-0" />
-                      <div className="text-xs text-sky-700 dark:text-sky-300">
-                        <p className="font-medium mb-1">Telegram orqali tasdiqlanadi</p>
-                        <p className="text-sky-600 dark:text-sky-400">
-                          Ro'yxatdan o'tish uchun sizga OTP kod beriladi. Uni{' '}
-                          <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="font-medium underline">
-                            @iqromaxuzbot
-                          </a>{' '}
-                          ga yuborasiz.
-                        </p>
-                      </div>
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="telegram-username" className="text-xs sm:text-sm font-medium">Telegram username</Label>
+                    <div className="relative group">
+                      <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-sky-500 transition-colors" />
+                      <Input
+                        id="telegram-username"
+                        type="text"
+                        placeholder="username"
+                        value={telegramUsername}
+                        onChange={(e) => setTelegramUsername(e.target.value)}
+                        disabled={loading}
+                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.telegramUsername ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      />
                     </div>
+                    {errors.telegramUsername && (
+                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                        {errors.telegramUsername}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground">
+                      ⚠️ Avval <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="text-sky-500 underline">@iqromaxuzbot</a> ga /start yuboring
+                    </p>
                   </div>
                 )}
 
@@ -963,20 +861,11 @@ const Auth = () => {
                   {loading ? (
                     <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
                   ) : mode === 'login' ? (
-                    <>
-                      Kirish
-                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </>
+                    <>Kirish <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : mode === 'signup' ? (
-                    <>
-                      Ro'yxatdan o'tish
-                      <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </>
+                    <>OTP yuborish <Send className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : (
-                    <>
-                      Havola yuborish
-                      <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
-                    </>
+                    <>Havola yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   )}
                 </Button>
               </form>
@@ -1020,11 +909,11 @@ const Auth = () => {
           </div>
 
           <div className="mt-6 sm:mt-8 lg:hidden">
-            <div className="flex justify-center gap-4 sm:gap-6 text-center text-xs text-muted-foreground">
+            <div className="flex justify-center gap-6">
               {stats.map((stat, index) => (
-                <div key={index} className="px-2 py-1.5 rounded-lg bg-card/50 dark:bg-card/30 border border-border/30 dark:border-border/20">
-                  <p className="text-base sm:text-lg font-bold text-foreground">{stat.value}</p>
-                  <p>{stat.label}</p>
+                <div key={index} className="text-center">
+                  <p className="text-lg font-display font-bold">{stat.value}</p>
+                  <p className="text-[10px] text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
             </div>
