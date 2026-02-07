@@ -70,8 +70,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       },
       title: (
         <>
-          🎮 O'ynab o'rganamiz.{' '}
-          <span className="text-kid-yellow">🎯 Har kuni yangi topshiriqlar!</span>
+          <span className="block text-kid-yellow drop-shadow-[0_2px_8px_rgba(255,200,0,0.4)]">🎮 O'ynab o'rganamiz!</span>
+          <span className="block mt-1 text-white/95">🎯 Har kuni yangi topshiriqlar!</span>
         </>
       ),
       description: (
