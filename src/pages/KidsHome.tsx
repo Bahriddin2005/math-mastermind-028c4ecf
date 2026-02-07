@@ -278,8 +278,8 @@ const KidsHome = () => {
               </button>
               <button onClick={() => navigate('/problem-sheet')} className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 text-center active:scale-95 transition-all">
                 <div className="text-3xl mb-2">📝</div>
-                <p className="text-sm font-bold">Sertifikatlar</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">PDF chop etish</p>
+                <p className="text-sm font-bold">Misol varaqlar</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Misol yaratish</p>
               </button>
               <button onClick={() => navigate('/leaderboard')} className="p-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-teal-600/5 border border-teal-500/20 text-center active:scale-95 transition-all">
                 <div className="text-3xl mb-2">🏆</div>
