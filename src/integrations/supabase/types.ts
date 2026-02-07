@@ -1980,7 +1980,13 @@ export type Database = {
       increment_blog_views: { Args: { post_id: string }; Returns: undefined }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "user"
+        | "student"
+        | "parent"
+        | "teacher"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2108,7 +2114,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "student", "parent", "teacher"],
     },
   },
 } as const
