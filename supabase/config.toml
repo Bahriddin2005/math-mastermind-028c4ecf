@@ -44,3 +44,9 @@ verify_jwt = false
 
 [functions.set-telegram-webhook]
 verify_jwt = false
+
+[functions.reset-password-otp]
+verify_jwt = false
+
+[functions.reset-password-confirm]
+verify_jwt = false
