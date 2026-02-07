@@ -65,27 +65,27 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       gradientOverlay: 'from-black/60 via-black/20 to-transparent',
       badge: {
         icon: Rocket,
-        text: '#1 Mental Arifmetika',
+        text: "Bolalar uchun #1 mental arifmetika",
         bgColor: 'bg-kid-yellow/90 text-gray-900',
       },
       title: (
         <>
-          <span className="text-kid-yellow">🚀 5–14</span> yosh uchun{' '}
-          <span className="text-kid-yellow">🎮</span>
+          🎮 O'ynab o'rganamiz.{' '}
+          <span className="text-kid-yellow">🎯 Har kuni yangi topshiriqlar!</span>
         </>
       ),
       description: (
         <>
-          🎯 O'yin orqali tez hisoblashni o'rganing!{' '}
-          ⭐ XP, Level va Badges to'plang! 🏆
+          🎯 O'yin orqali tez va aniq hisoblashni o'rganing!{' '}
+          ⭐ XP to'plang, Level oshiring va yutuqlarga erishing! 🏆
         </>
       ),
       cta: {
-        icon: Play,
-        text: 'Bepul boshlash',
+        icon: Rocket,
+        text: 'Hozir bepul boshlash',
         className: 'bg-white text-primary hover:bg-white/90',
       },
-      showLogo: true,
+      showLogo: false,
       secondaryCta: {
         icon: Gamepad2,
         text: 'Demo sinab ko\'ring',
