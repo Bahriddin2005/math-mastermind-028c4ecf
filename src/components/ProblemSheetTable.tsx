@@ -20,26 +20,24 @@ export const ProblemSheetTable = ({
   const totalRows = Math.ceil(problems.length / columnsPerRow);
   
   return (
-    <div className="space-y-8">
-      {/* Problem Tables */}
+    <div className="space-y-6">
       {Array.from({ length: totalRows }).map((_, rowIndex) => {
         const startIdx = rowIndex * columnsPerRow;
         const rowProblems = problems.slice(startIdx, startIdx + columnsPerRow);
         
         if (rowProblems.length === 0) return null;
         
-        // Find max operations in this row
         const maxOps = Math.max(...rowProblems.map(p => p.sequence.length));
         
         return (
-          <div key={rowIndex} className="overflow-x-auto">
+          <div key={rowIndex} className="overflow-x-auto rounded-lg border border-border/50">
             <Table className="border-collapse">
               <TableHeader>
-                <TableRow className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary hover:to-primary/80">
+                <TableRow className="bg-primary hover:bg-primary">
                   {rowProblems.map((problem) => (
                     <TableHead 
                       key={problem.id} 
-                      className="text-center text-white font-bold border border-primary/50 min-w-[50px]"
+                      className="text-center text-primary-foreground font-bold border-r border-primary-foreground/20 last:border-r-0 min-w-[48px] py-2 text-xs"
                     >
                       {problem.id}
                     </TableHead>
@@ -47,13 +45,12 @@ export const ProblemSheetTable = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {/* Operation rows */}
                 {Array.from({ length: maxOps }).map((_, opIndex) => (
-                  <TableRow key={opIndex} className="hover:bg-muted/30">
+                  <TableRow key={opIndex} className={opIndex % 2 === 0 ? 'bg-muted/20' : 'bg-background'}>
                     {rowProblems.map((problem) => (
                       <TableCell 
                         key={problem.id} 
-                        className="text-center border border-border/50 py-2 font-mono text-sm"
+                        className="text-center border-r border-border/30 last:border-r-0 py-1.5 font-mono text-sm tabular-nums"
                       >
                         {problem.sequence[opIndex] !== undefined 
                           ? problem.sequence[opIndex] 
@@ -63,12 +60,12 @@ export const ProblemSheetTable = ({
                     ))}
                   </TableRow>
                 ))}
-                {/* Answer row (empty for writing) */}
-                <TableRow className="bg-amber-50 dark:bg-amber-900/20">
+                {/* Answer row */}
+                <TableRow className="bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/40">
                   {rowProblems.map((problem) => (
                     <TableCell 
                       key={problem.id}
-                      className="text-center border border-amber-300 dark:border-amber-600 py-3 font-bold"
+                      className="text-center border-r border-amber-200 dark:border-amber-800 last:border-r-0 py-2.5 font-bold border-t-2 border-t-amber-300 dark:border-t-amber-700"
                     >
                       {/* Empty for student to write */}
                     </TableCell>
@@ -82,36 +79,38 @@ export const ProblemSheetTable = ({
       
       {/* Answers Section */}
       {showAnswers && (
-        <div className="mt-8 pt-6 border-t-2 border-primary/30">
-          <h3 className="text-lg font-bold text-primary mb-4 text-center">
-            Javoblar
-          </h3>
-          <div className="space-y-3">
+        <div className="mt-6 pt-6 border-t-2 border-dashed border-primary/20">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-emerald-500/30" />
+            <h3 className="text-sm font-bold text-emerald-600 dark:text-emerald-400 px-3">
+              ✅ Javoblar
+            </h3>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-emerald-500/30" />
+          </div>
+          <div className="space-y-2">
             {Array.from({ length: Math.ceil(problems.length / 10) }).map((_, rowIndex) => {
               const startIdx = rowIndex * 10;
               const rowProblems = problems.slice(startIdx, startIdx + 10);
               
               return (
-                <div key={rowIndex} className="overflow-x-auto">
+                <div key={rowIndex} className="overflow-x-auto rounded-lg border border-emerald-200 dark:border-emerald-800/50">
                   <Table className="border-collapse">
                     <TableBody>
-                      {/* Problem IDs */}
-                      <TableRow className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-500 hover:to-green-600">
+                      <TableRow className="bg-emerald-500 hover:bg-emerald-500">
                         {rowProblems.map((problem) => (
                           <TableCell 
                             key={problem.id}
-                            className="text-center text-white font-bold border border-green-400 min-w-[50px] py-2"
+                            className="text-center text-white font-bold border-r border-emerald-400 last:border-r-0 min-w-[48px] py-1.5 text-xs"
                           >
                             {problem.id}
                           </TableCell>
                         ))}
                       </TableRow>
-                      {/* Answers */}
-                      <TableRow className="bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30">
+                      <TableRow className="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40">
                         {rowProblems.map((problem) => (
                           <TableCell 
                             key={problem.id}
-                            className="text-center font-bold border border-green-300 dark:border-green-600 py-2 font-mono"
+                            className="text-center font-bold border-r border-emerald-200 dark:border-emerald-800/50 last:border-r-0 py-1.5 font-mono tabular-nums text-sm"
                           >
                             {problem.answer}
                           </TableCell>
