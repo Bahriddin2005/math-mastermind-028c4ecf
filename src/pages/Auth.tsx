@@ -808,31 +808,51 @@ const Auth = () => {
                   </div>
                 )}
 
-                {/* Telegram username field - only for signup */}
+                {/* Telegram setup instruction + username field - only for signup */}
                 {mode === 'signup' && (
-                  <div className="space-y-1.5 sm:space-y-2">
-                    <Label htmlFor="telegram-username" className="text-xs sm:text-sm font-medium">Telegram username</Label>
-                    <div className="relative group">
-                      <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-sky-500 transition-colors" />
-                      <Input
-                        id="telegram-username"
-                        type="text"
-                        placeholder="username"
-                        value={telegramUsername}
-                        onChange={(e) => setTelegramUsername(e.target.value)}
-                        disabled={loading}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.telegramUsername ? 'border-destructive focus-visible:ring-destructive' : ''}`}
-                      />
+                  <div className="space-y-3">
+                    {/* Instruction banner */}
+                    <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30 border border-sky-200 dark:border-sky-800 rounded-xl p-3.5">
+                      <div className="flex items-start gap-2.5">
+                        <Send className="h-4 w-4 text-sky-500 mt-0.5 shrink-0" />
+                        <div className="text-xs space-y-1.5">
+                          <p className="font-semibold text-sky-700 dark:text-sky-300">Avval Telegram botni sozlang:</p>
+                          <ol className="list-decimal list-inside space-y-1 text-sky-600 dark:text-sky-400">
+                            <li>
+                              <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                                @iqromaxuzbot <ExternalLink className="h-2.5 w-2.5" />
+                              </a> ni oching
+                            </li>
+                            <li><span className="font-mono bg-sky-100 dark:bg-sky-900/50 px-1 rounded">/start</span> buyrug'ini yuboring</li>
+                            <li>📱 <strong>Telefon raqamni yuborish</strong> tugmasini bosing</li>
+                          </ol>
+                          <p className="text-sky-500 dark:text-sky-500 mt-1">✅ Shundan keyin username'ingizni pastga kiriting</p>
+                        </div>
+                      </div>
                     </div>
-                    {errors.telegramUsername && (
-                      <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
-                        <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                        {errors.telegramUsername}
-                      </p>
-                    )}
-                    <p className="text-[10px] text-muted-foreground">
-                      ⚠️ Avval <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="text-sky-500 underline">@iqromaxuzbot</a> ga /start yuboring
-                    </p>
+
+                    {/* Username input */}
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <Label htmlFor="telegram-username" className="text-xs sm:text-sm font-medium">Telegram username</Label>
+                      <div className="relative group">
+                        <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-sky-500 transition-colors" />
+                        <Input
+                          id="telegram-username"
+                          type="text"
+                          placeholder="username"
+                          value={telegramUsername}
+                          onChange={(e) => setTelegramUsername(e.target.value)}
+                          disabled={loading}
+                          className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.telegramUsername ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        />
+                      </div>
+                      {errors.telegramUsername && (
+                        <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
+                          <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                          {errors.telegramUsername}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
 
