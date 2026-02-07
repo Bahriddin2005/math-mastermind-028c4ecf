@@ -621,14 +621,14 @@ const Auth = () => {
                 </>
               ) : (
                 <>
-                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-primary/30 dark:shadow-primary/50 relative group">
+                  <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50 relative group">
                     {mode === 'login' ? (
-                      <LogIn className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <LogIn className="h-7 w-7 sm:h-8 sm:w-8 text-white group-hover:scale-110 transition-transform" />
                     ) : (
-                      <UserPlus className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground group-hover:scale-110 transition-transform" />
+                      <UserPlus className="h-7 w-7 sm:h-8 sm:w-8 text-white group-hover:scale-110 transition-transform" />
                     )}
-                    <div className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-accent rounded-full flex items-center justify-center animate-pulse">
-                      <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-accent-foreground" />
+                    <div className="absolute -top-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+                      <Zap className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-yellow-900" />
                     </div>
                   </div>
                   <CardTitle className="text-xl sm:text-2xl font-display">
@@ -636,7 +636,7 @@ const Auth = () => {
                   </CardTitle>
                   <CardDescription className="mt-1.5 sm:mt-2 text-sm">
                     {mode === 'login' 
-                      ? "Hisobingizga kiring va davom eting" 
+                      ? "Hisobingizga kiring va o'rganishni davom ettiring" 
                       : "Bepul akkaunt yarating va boshlang"}
                   </CardDescription>
                 </>
@@ -730,11 +730,11 @@ const Auth = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="email@example.com"
+                      placeholder="email@namuna.uz"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading}
-                      className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      className={`pl-10 h-11 sm:h-12 rounded-full transition-all focus:shadow-md focus:shadow-primary/10 bg-secondary/50 dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                     />
                   </div>
                   {errors.email && (
@@ -768,7 +768,7 @@ const Auth = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={loading}
-                        className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                        className={`pl-10 h-11 sm:h-12 rounded-full transition-all focus:shadow-md focus:shadow-primary/10 bg-secondary/50 dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.password ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                       />
                     </div>
                     {errors.password && (
@@ -802,7 +802,7 @@ const Auth = () => {
                 <Button 
                   type="submit" 
                   size="lg" 
-                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 mt-4 sm:mt-6 shadow-lg shadow-primary/20 dark:shadow-primary/40 hover:shadow-xl hover:shadow-primary/30 dark:hover:shadow-primary/50 transition-all hover:-translate-y-0.5 touch-target"
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2 mt-4 sm:mt-6 rounded-full bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 dark:shadow-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/30 dark:hover:shadow-emerald-500/50 transition-all hover:-translate-y-0.5 touch-target"
                   disabled={loading}
                 >
                   {loading ? (
