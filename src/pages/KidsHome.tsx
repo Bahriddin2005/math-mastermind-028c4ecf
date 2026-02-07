@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { Navbar } from '@/components/Navbar';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useSound } from '@/hooks/useSound';
 import { supabase } from '@/integrations/supabase/client';
 import { PandaMascot } from '@/components/PandaMascot';
 import { useConfettiEffect } from '@/components/kids/Confetti';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Play, Trophy, Zap, Flame, Star, Target } from 'lucide-react';
+import { Play, Trophy, Zap, Flame, Star, Target, BarChart3, FileText, Users, GraduationCap, Calculator } from 'lucide-react';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { SectionCarousel, kidsSection, parentsSection, teachersSection } from '@/components/SectionCarousel';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
@@ -38,6 +39,7 @@ interface GamificationData {
 const KidsHome = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { role, isParent, isTeacher, isStudent } = useUserRole();
   const { soundEnabled, toggleSound } = useSound();
   const { triggerConfetti } = useConfettiEffect();
   
@@ -152,7 +154,8 @@ const KidsHome = () => {
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
 
       <PullToRefresh onRefresh={handleRefresh}>
-        {/* User Stats Card - Visible Gamification */}
+        {/* User Stats Card - Only for students and teachers */}
+        {!isParent && (
         <div className="container px-3 xs:px-4 py-3 sm:py-4">
           <Card className="p-3 sm:p-4 bg-gradient-to-br from-card via-card to-primary/5 border-primary/20">
             <div className="flex items-center gap-3 sm:gap-4">
@@ -218,36 +221,107 @@ const KidsHome = () => {
             </div>
           </Card>
         </div>
+        )}
 
-        {/* Hero Carousel */}
-        <div className="container px-3 xs:px-4 py-2 sm:py-3">
-          <HeroCarousel />
-        </div>
+        {/* Role-specific content */}
+        {isParent ? (
+          /* PARENT HOME - Nazorat & Xotirjamlik */
+          <div className="container px-3 xs:px-4 space-y-3 py-2">
+            <h2 className="text-lg font-bold px-1">👨‍👩‍👧 Ota-ona paneli</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => navigate('/parent-dashboard')} className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📊</div>
+                <p className="text-sm font-bold">Nazorat paneli</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Farzand rivojlanishi</p>
+              </button>
+              <button onClick={() => navigate('/lesson-stats')} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📋</div>
+                <p className="text-sm font-bold">Kunlik hisobot</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Bugungi natijalar</p>
+              </button>
+              <button onClick={() => navigate('/statistics')} className="p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📈</div>
+                <p className="text-sm font-bold">Rivojlanish</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Grafik va tahlil</p>
+              </button>
+              <button onClick={() => navigate('/settings')} className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">💡</div>
+                <p className="text-sm font-bold">Tavsiyalar</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Yaxshilash yo'llari</p>
+              </button>
+            </div>
+          </div>
+        ) : isTeacher ? (
+          /* TEACHER HOME - Boshqaruv & Rivojlanish */
+          <div className="container px-3 xs:px-4 space-y-3 py-2">
+            <h2 className="text-lg font-bold px-1">👩‍🏫 O'qituvchi paneli</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <button onClick={() => navigate('/abacus-simulator')} className="p-4 rounded-2xl bg-gradient-to-br from-violet-500/10 to-violet-600/5 border border-violet-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">🧮</div>
+                <p className="text-sm font-bold">Abakus simulyator</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Darsda ko'rsatish</p>
+              </button>
+              <button onClick={() => navigate('/train')} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">🎯</div>
+                <p className="text-sm font-bold">Trenajor</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Mashq qilish</p>
+              </button>
+              <button onClick={() => navigate('/courses')} className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📚</div>
+                <p className="text-sm font-bold">Kurslar</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">O'quv materiallari</p>
+              </button>
+              <button onClick={() => navigate('/lesson-stats')} className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📋</div>
+                <p className="text-sm font-bold">Hisobotlar</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">O'quvchi natijalari</p>
+              </button>
+              <button onClick={() => navigate('/problem-sheet')} className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">📝</div>
+                <p className="text-sm font-bold">Sertifikatlar</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">PDF chop etish</p>
+              </button>
+              <button onClick={() => navigate('/leaderboard')} className="p-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-teal-600/5 border border-teal-500/20 text-center active:scale-95 transition-all">
+                <div className="text-3xl mb-2">🏆</div>
+                <p className="text-sm font-bold">Reyting</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Guruh natijalari</p>
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* STUDENT HOME - O'rganish & Qiziqish */
+          <>
+            {/* Hero Carousel */}
+            <div className="container px-3 xs:px-4 py-2 sm:py-3">
+              <HeroCarousel />
+            </div>
 
-        {/* Main Action Button */}
-        <div className="container px-3 xs:px-4 py-2 sm:py-3">
-          <button
-            onClick={() => navigate('/train')}
-            className="w-full h-14 xs:h-16 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group touch-target"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-            <span className="text-2xl sm:text-3xl">🎮</span>
-            <span className="text-base sm:text-lg font-bold text-white">O'ynab o'rgan</span>
-            <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-          </button>
-        </div>
+            {/* Main Action Button */}
+            <div className="container px-3 xs:px-4 py-2 sm:py-3">
+              <button
+                onClick={() => navigate('/train')}
+                className="w-full h-14 xs:h-16 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group touch-target"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                <span className="text-2xl sm:text-3xl">🎮</span>
+                <span className="text-base sm:text-lg font-bold text-white">O'ynab o'rgan</span>
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </button>
+            </div>
 
-        {/* Section Carousels */}
-        <div className="container px-3 xs:px-4 space-y-2">
-          <SectionCarousel {...kidsSection} />
-          <SectionCarousel {...parentsSection} />
-          <SectionCarousel {...teachersSection} />
-        </div>
+            {/* Section Carousels */}
+            <div className="container px-3 xs:px-4 space-y-2">
+              <SectionCarousel {...kidsSection} />
+            </div>
+          </>
+        )}
 
-        {/* Subscription Plans */}
-        <div className="container px-3 xs:px-4">
-          <SubscriptionPlans />
-        </div>
+        {/* Subscription Plans - only for students */}
+        {isStudent && (
+          <div className="container px-3 xs:px-4">
+            <SubscriptionPlans />
+          </div>
+        )}
       </PullToRefresh>
     </PageBackground>
   );
