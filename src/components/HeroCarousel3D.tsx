@@ -123,23 +123,24 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       gradientOverlay: 'from-amber-900/60 via-amber-900/20 to-transparent',
       badge: {
         icon: GraduationCap,
-        text: "O'qituvchilar uchun",
+        text: "O'qituvchilar paneli",
         bgColor: 'bg-amber-500 text-white',
         extraBadge: 'Beta',
       },
       title: (
         <>
-          🎓 <span className="text-kid-yellow">Sinf natijalarini</span> oson boshqaring ✨
+          <span className="block">📊 Sinf natijalarini oson</span>
+          <span className="block text-kid-yellow">va aniq boshqaring ✨</span>
         </>
       ),
       description: (
         <>
-          📊 Guruh statistikasi, 📄 PDF/Excel eksport va 🏅 sertifikatlar tizimi!
+          📊 Har bir guruh bo'yicha aniq statistika · 📄 Hisobotlarni PDF/Excelda yuklab oling · 🏅 Avtomatik sertifikatlar tizimi
         </>
       ),
       cta: {
         icon: FileText,
-        text: 'Boshlash',
+        text: 'Panelga kirish',
         className: 'bg-amber-500 text-white hover:bg-amber-600',
       },
     },
