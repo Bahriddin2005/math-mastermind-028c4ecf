@@ -1064,6 +1064,8 @@ export type Database = {
           last_active_date: string | null
           phone_number: string | null
           selected_frame: string | null
+          telegram_id: string | null
+          telegram_username: string | null
           total_problems_solved: number | null
           total_score: number | null
           updated_at: string
@@ -1081,6 +1083,8 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          telegram_id?: string | null
+          telegram_username?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
@@ -1098,6 +1102,8 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          telegram_id?: string | null
+          telegram_username?: string | null
           total_problems_solved?: number | null
           total_score?: number | null
           updated_at?: string
@@ -1826,7 +1832,12 @@ export type Database = {
           expires_at: string
           id: string
           is_used: boolean
+          is_verified: boolean
           phone_number: string
+          session_token: string | null
+          telegram_first_name: string | null
+          telegram_id: string | null
+          telegram_username: string | null
         }
         Insert: {
           code: string
@@ -1835,7 +1846,12 @@ export type Database = {
           expires_at?: string
           id?: string
           is_used?: boolean
+          is_verified?: boolean
           phone_number: string
+          session_token?: string | null
+          telegram_first_name?: string | null
+          telegram_id?: string | null
+          telegram_username?: string | null
         }
         Update: {
           code?: string
@@ -1844,7 +1860,12 @@ export type Database = {
           expires_at?: string
           id?: string
           is_used?: boolean
+          is_verified?: boolean
           phone_number?: string
+          session_token?: string | null
+          telegram_first_name?: string | null
+          telegram_id?: string | null
+          telegram_username?: string | null
         }
         Relationships: []
       }
