@@ -102,13 +102,13 @@ export const GuestDashboard = () => {
     ));
   };
 
-  // Audience segments - simplified
+  // Audience segments
   const audienceSegments = [
     {
       id: 'kids',
-      emoji: '🟢',
+      emoji: '🧒',
       title: "Bolalar",
-      subtitle: "O'yin orqali tez hisoblashni o'rganing",
+      subtitle: "Tez hisoblash, diqqat va fikrlash rivojlanadi",
       features: ["XP va Level tizimi", "Global reyting", "Badges to'plash"],
       gradient: "from-emerald-500 to-green-600",
       borderColor: "border-emerald-200 dark:border-emerald-800/40",
@@ -121,8 +121,8 @@ export const GuestDashboard = () => {
       emoji: '👨‍👩‍👧',
       title: "Ota-onalar",
       badge: "Kuzatuv paneli",
-      subtitle: "Farzandingiz rivojini real vaqtda kuzating",
-      features: ["Kunlik hisobot", "Progress statistika", "Tavsiyalar"],
+      subtitle: "Farzandingiz nima o'rganyapti — hammasi ko'z oldingizda",
+      features: ["Har kunlik mashg'ulotlar", "Rivojlanish ko'rsatkichlari", "Qanday yordam berish bo'yicha tavsiyalar"],
       gradient: "from-blue-500 to-cyan-600",
       borderColor: "border-blue-200 dark:border-blue-800/40",
       bgTint: "from-blue-50/60 to-white dark:from-blue-950/20 dark:to-card",
@@ -134,8 +134,8 @@ export const GuestDashboard = () => {
       emoji: '👩‍🏫',
       title: "O'qituvchilar",
       badge: "Beta",
-      subtitle: "Sinf natijalarini oson boshqaring",
-      features: ["Guruh statistikasi", "PDF/Excel eksport", "Sertifikatlar"],
+      subtitle: "Sinf va guruh natijalarini bir joyda ko'ring",
+      features: ["Guruh statistikasi", "Hisobotlarni yuklab olish (PDF / Excel)", "Diplomlar berish imkoniyati"],
       gradient: "from-amber-500 to-orange-600",
       borderColor: "border-amber-200 dark:border-amber-800/40",
       bgTint: "from-amber-50/60 to-white dark:from-amber-950/20 dark:to-card",
@@ -144,29 +144,22 @@ export const GuestDashboard = () => {
     }
   ];
 
-  // Platform benefits
-  const benefits = [
-    { icon: Brain, title: "Tez hisoblash", desc: "Mental arifmetika metodikasi" },
-    { icon: Target, title: "Diqqatni oshirish", desc: "Konsentratsiyani mustahkamlash" },
-    { icon: Clock, title: "Xotirani rivojlantirish", desc: "Qisqa va uzoq xotira" },
-    { icon: Award, title: "O'ziga ishonch", desc: "Muvaffaqiyat motivatsiyasi" },
-  ];
-
   return (
     <div className="space-y-6 sm:space-y-10 pb-8 sm:pb-0">
-      {/* ✨ HERO SECTION - 3D Carousel with Animations */}
+      {/* ✨ HERO SECTION */}
       <HeroCarousel3D totalUsers={stats.total_users} />
 
-      {/* 📊 TRACTION STATS - For Investors */}
+      {/* 📊 TRACTION STATS */}
       <TractionStats />
 
-      {/* 👥 WHO IS THIS FOR - Audience Segments */}
+      {/* 🎯 BU QANDAY ISHLAYDI */}
       <div className="space-y-4 sm:space-y-5">
         <div className="text-center">
-          <h2 className="text-lg sm:text-xl font-display font-bold text-foreground mb-1">Kim uchun?</h2>
-          <p className="text-xs sm:text-sm text-muted-foreground">Har bir foydalanuvchi uchun maxsus</p>
+          <h2 className="text-lg sm:text-xl font-display font-bold text-foreground mb-1">🎯 Bu qanday ishlaydi?</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">🧒 Bolalar o'ynab o'rganadi · 📈 Qisqa vaqt ichida sezilarli natija</p>
         </div>
 
+        {/* Audience cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {audienceSegments.map((segment) => (
             <Card 
@@ -213,8 +206,7 @@ export const GuestDashboard = () => {
         </div>
       </div>
 
-
-      {/* 🎮 GAMIFICATION PREVIEW - Why it works */}
+      {/* 🎮 O'YIN ELEMENTLARI */}
       <Card className="p-4 sm:p-6 border-border/40 bg-gradient-to-br from-card to-secondary/30">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
           <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -222,16 +214,16 @@ export const GuestDashboard = () => {
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-display font-bold text-foreground">O'yin elementlari</h2>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Har bir to'g'ri javob uchun mukofot</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">🎁 Har bir to'g'ri javob uchun mukofot</p>
           </div>
         </div>
 
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {[
-            { emoji: '⚡', title: 'XP', desc: 'Tajriba' },
-            { emoji: '🏆', title: 'Level', desc: 'Daraja' },
-            { emoji: '🔥', title: 'Streak', desc: 'Ketma-ket' },
-            { emoji: '🎖️', title: 'Badges', desc: 'Nishonlar' },
+            { emoji: '⚡', title: 'XP', desc: 'Tajriba ballari' },
+            { emoji: '🏆', title: 'Level', desc: 'Darajalar' },
+            { emoji: '🔥', title: 'Streak', desc: 'Ketma-ketlik' },
+            { emoji: '⭐', title: 'Badges', desc: 'Yutuq nishonlari' },
           ].map((item, i) => (
             <div key={i} className="p-3 sm:p-4 text-center rounded-2xl bg-card border border-border/50 hover:shadow-md transition-all">
               <div className="text-3xl sm:text-4xl mb-2">{item.emoji}</div>
@@ -242,33 +234,42 @@ export const GuestDashboard = () => {
         </div>
       </Card>
 
-      {/* 💡 INVESTOR HIGHLIGHTS - Why IQROMAX */}
+      {/* 💡 INVESTOR HIGHLIGHTS */}
       <InvestorHighlights />
 
-      {/* 📈 BENEFITS - What you get */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <h2 className="text-lg sm:text-xl font-display font-bold text-foreground mb-1">Nima foyda?</h2>
-          <p className="text-xs sm:text-sm text-muted-foreground">Mental arifmetika natijalari</p>
+      {/* 🚀 NEGA AYNAN IQROMAX */}
+      <Card className="p-4 sm:p-6 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="flex items-center gap-3 mb-4 sm:mb-5">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center shadow-lg">
+            <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-display font-bold text-foreground">Nega aynan IQROMAX?</h2>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-          {benefits.map((benefit, index) => (
-            <Card key={index} className="p-3 sm:p-4 text-center border-border/40 hover:shadow-md transition-all group">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <benefit.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-              </div>
-              <h4 className="font-display font-bold text-xs sm:text-sm mb-0.5">{benefit.title}</h4>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">{benefit.desc}</p>
-            </Card>
-          ))}
-        </div>
-      </div>
+        <ul className="space-y-3 mb-4">
+          <li className="flex items-start gap-2.5">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+            <span className="text-sm font-medium">Sun'iy intellekt asosida moslashuvchan topshiriqlar</span>
+          </li>
+          <li className="flex items-start gap-2.5">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+            <span className="text-sm font-medium">To'liq o'zbek tilida</span>
+          </li>
+        </ul>
 
-      {/* 🛣️ ROADMAP - For Investors */}
+        <div className="p-3 sm:p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            🌱 IQROMAX doim yangilanadi: yangi topshiriqlar, yangi o'yinlar va yanada foydali imkoniyatlar bilan.
+          </p>
+        </div>
+      </Card>
+
+      {/* 🛣️ ROADMAP */}
       <Card className="p-4 sm:p-6 border-border/40 bg-gradient-to-br from-secondary/50 to-transparent">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-primary to-kid-purple flex items-center justify-center shadow-md">
+          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
             <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </div>
           <div>
@@ -301,7 +302,7 @@ export const GuestDashboard = () => {
         </div>
       </Card>
 
-      {/* 💬 TESTIMONIALS - Social Proof */}
+      {/* 💬 TESTIMONIALS */}
       {testimonials.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -348,18 +349,32 @@ export const GuestDashboard = () => {
         </div>
       )}
 
-      {/* 🚀 FINAL CTA */}
+      {/* 🟢 FINAL CTA */}
       <Card className="p-5 sm:p-8 text-center bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 border border-primary/20">
-        <div className="flex items-center justify-center mb-3 sm:mb-4">
-          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl gradient-primary flex items-center justify-center shadow-xl">
-            <Rocket className="h-7 w-7 sm:h-8 sm:w-8 text-primary-foreground" />
+        <h3 className="text-lg sm:text-xl font-display font-bold mb-3">
+          🟢 Boshlash juda oson
+        </h3>
+        
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 max-w-md mx-auto">
+          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
+            <div className="text-2xl mb-1">🎮</div>
+            <p className="text-xs sm:text-sm font-bold">Bola</p>
+            <p className="text-[10px] text-muted-foreground">o'ynab o'rganadi</p>
+          </div>
+          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
+            <div className="text-2xl mb-1">👨‍👩‍👧</div>
+            <p className="text-xs sm:text-sm font-bold">Ota-ona</p>
+            <p className="text-[10px] text-muted-foreground">kuzatadi</p>
+          </div>
+          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
+            <div className="text-2xl mb-1">👩‍🏫</div>
+            <p className="text-xs sm:text-sm font-bold">O'qituvchi</p>
+            <p className="text-[10px] text-muted-foreground">boshqaradi</p>
           </div>
         </div>
-        <h3 className="text-lg sm:text-xl font-display font-bold mb-2">
-          Bugunoq boshlang!
-        </h3>
+
         <p className="text-muted-foreground mb-4 sm:mb-5 max-w-md mx-auto text-xs sm:text-sm">
-          Bepul ro'yxatdan o'ting va farzandingizning mental arifmetika sayohatini boshlang.
+          👉 Hoziroq boshlang va farqni ko'ring.
         </p>
         <div className="flex flex-col xs:flex-row justify-center gap-2 sm:gap-3">
           <Button size="lg" onClick={() => navigate('/auth')} className="gap-2 h-10 sm:h-11 px-5 sm:px-6 text-sm">
