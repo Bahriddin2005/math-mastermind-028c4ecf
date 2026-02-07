@@ -234,6 +234,68 @@ export const GuestDashboard = () => {
         </div>
       </Card>
 
+      {/* ❓ IQROMAX'DA NIMA O'RGANILADI */}
+      <div className="space-y-4 sm:space-y-5">
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl font-display font-bold text-foreground mb-1">❓ IQROMAX'da nima o'rganiladi?</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">🧒 Bolalar uchun mashqlar</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {/* Mental arifmetika */}
+          <Card className="border-emerald-200 dark:border-emerald-800/40 bg-gradient-to-br from-emerald-50/60 to-white dark:from-emerald-950/20 dark:to-card overflow-hidden">
+            <CardContent className="p-5 sm:p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-md">
+                  <span className="text-2xl">🧠</span>
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base sm:text-lg">Mental arifmetika</h3>
+                  <p className="text-xs text-muted-foreground">🎮 O'yinlar orqali tez va aniq hisoblash</p>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-border/30">
+                <p className="text-xs font-semibold text-foreground mb-2">Bola qanday foyda oladi?</p>
+                <ul className="space-y-1.5">
+                  {["Tez fikrlash va hisoblash rivojlanadi", "Diqqat va mantiq kuchayadi", "Matematika qiziqarli bo'lib boradi", "O'ziga ishonch ortadi"].map((t, i) => (
+                    <li key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tez o'qish */}
+          <Card className="border-blue-200 dark:border-blue-800/40 bg-gradient-to-br from-blue-50/60 to-white dark:from-blue-950/20 dark:to-card overflow-hidden">
+            <CardContent className="p-5 sm:p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
+                  <span className="text-2xl">📖</span>
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-base sm:text-lg">Tez o'qish</h3>
+                  <p className="text-xs text-muted-foreground">📚 Matnni tez, to'g'ri va tushunib o'qish</p>
+                </div>
+              </div>
+              <div className="mt-3 pt-3 border-t border-border/30">
+                <p className="text-xs font-semibold text-foreground mb-2">Bola qanday foyda oladi?</p>
+                <ul className="space-y-1.5">
+                  {["O'qish tezligi oshadi", "Matnni yaxshiroq tushunadi", "Darslarda va uy vazifasida vaqt tejaladi", "O'qishga qiziqish ortadi"].map((t, i) => (
+                    <li key={i} className="flex items-center gap-2 text-xs sm:text-sm">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* 💡 INVESTOR HIGHLIGHTS */}
       <InvestorHighlights />
 
