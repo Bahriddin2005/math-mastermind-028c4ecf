@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { AvatarCropDialog } from '@/components/AvatarCropDialog';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ const AVATAR_OPTIONS = [
 
 const Onboarding = () => {
   const { user, loading: authLoading } = useAuth();
+  const { role, isParent, isTeacher, isStudent } = useUserRole();
   const navigate = useNavigate();
   const { triggerConfetti } = useConfettiEffect();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -168,7 +170,53 @@ const Onboarding = () => {
       toast.error("Iltimos, ismingizni kiriting");
       return;
     }
+    if (step === 2) {
+      setStep(3); // Go to role-specific welcome
+      return;
+    }
     setStep(2);
+  };
+
+  // Role-specific welcome content
+  const getRoleWelcome = () => {
+    if (isParent) {
+      return {
+        title: "Farzandingiz rivojlanishini kuzating! 👨‍👩‍👧",
+        subtitle: "Ota-ona paneli tayyor",
+        features: [
+          { emoji: "📊", text: "Kunlik va haftalik hisobotlar" },
+          { emoji: "📈", text: "Rivojlanish grafiklari" },
+          { emoji: "💡", text: "Shaxsiy tavsiyalar" },
+          { emoji: "🔔", text: "Avtomatik bildirishnomalar" },
+        ],
+        cta: "Nazoratni boshlash",
+      };
+    }
+    if (isTeacher) {
+      return {
+        title: "Professional vositalar tayyor! 👩‍🏫",
+        subtitle: "O'qituvchi paneli",
+        features: [
+          { emoji: "🧮", text: "Abakus simulyator" },
+          { emoji: "📚", text: "Kurslar va darslar" },
+          { emoji: "📋", text: "O'quvchi hisobotlari" },
+          { emoji: "📝", text: "Sertifikatlar va PDF" },
+        ],
+        cta: "Panelga o'tish",
+      };
+    }
+    // Student
+    return {
+      title: "Sarguzashtga tayyor! 🎮",
+      subtitle: "O'ynab o'rganamiz",
+      features: [
+        { emoji: "🧮", text: "Abakus simulyator" },
+        { emoji: "🏆", text: "Haftalik musobaqalar" },
+        { emoji: "⭐", text: "Ball va yutuqlar" },
+        { emoji: "📚", text: "Video darslar" },
+      ],
+      cta: "O'yinni boshlash",
+    };
   };
 
   if (authLoading || checkingProfile) {
@@ -329,7 +377,7 @@ const Onboarding = () => {
                 </div>
               </motion.div>
 
-              {/* Complete button */}
+              {/* Next button */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -337,18 +385,11 @@ const Onboarding = () => {
                 className="space-y-3"
               >
                 <Button
-                  onClick={handleComplete}
-                  disabled={saving}
+                  onClick={nextStep}
                   className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90"
                 >
-                  {saving ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Sparkles className="h-5 w-5" />
-                      Boshlash
-                    </>
-                  )}
+                  Davom etish
+                  <ArrowRight className="h-5 w-5" />
                 </Button>
 
                 <Button
@@ -359,6 +400,100 @@ const Onboarding = () => {
                   ← Orqaga
                 </Button>
               </motion.div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center"
+            >
+              {/* Mascot */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", delay: 0.1 }}
+                className="mb-5"
+              >
+                <img 
+                  src={pandaMascot} 
+                  alt="Panda" 
+                  className="w-24 h-24 mx-auto drop-shadow-xl"
+                />
+              </motion.div>
+
+              {(() => {
+                const welcome = getRoleWelcome();
+                return (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <h2 className="text-2xl font-display font-black text-foreground mb-1">
+                        {welcome.title}
+                      </h2>
+                      <p className="text-muted-foreground mb-6">{welcome.subtitle}</p>
+                    </motion.div>
+
+                    {/* Features list */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="bg-card/80 backdrop-blur-sm rounded-2xl p-4 mb-6 border space-y-3"
+                    >
+                      {welcome.features.map((f, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.4 + i * 0.1 }}
+                          className="flex items-center gap-3 text-left"
+                        >
+                          <span className="text-2xl">{f.emoji}</span>
+                          <span className="text-sm font-medium">{f.text}</span>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+
+                    {/* Complete button */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.7 }}
+                      className="space-y-3"
+                    >
+                      <Button
+                        onClick={handleComplete}
+                        disabled={saving}
+                        className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <>
+                            <Sparkles className="h-5 w-5" />
+                            {welcome.cta}
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        onClick={() => setStep(2)}
+                        className="text-muted-foreground"
+                      >
+                        ← Orqaga
+                      </Button>
+                    </motion.div>
+                  </>
+                );
+              })()}
             </motion.div>
           )}
         </AnimatePresence>

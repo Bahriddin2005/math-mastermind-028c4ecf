@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Check, Crown, Star, Sparkles } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface PlanFeature {
   text: string;
@@ -17,6 +18,7 @@ interface SubscriptionPlan {
   borderColor: string;
   features: PlanFeature[];
   popular?: boolean;
+  forRoles: string[]; // which roles can see this plan
 }
 
 const plans: SubscriptionPlan[] = [
@@ -33,6 +35,7 @@ const plans: SubscriptionPlan[] = [
       { text: "Sertifikatlar", icon: "📜" },
     ],
     popular: false,
+    forRoles: ['teacher'],
   },
   {
     id: 'kids-pro',
@@ -47,12 +50,19 @@ const plans: SubscriptionPlan[] = [
       { text: "Reytinglar", icon: "📈" },
     ],
     popular: true,
+    forRoles: ['student'],
   },
 ];
 
 export const SubscriptionPlans = () => {
   const navigate = useNavigate();
+  const { role, isParent } = useUserRole();
 
+  // Parents don't see subscription plans (free for them)
+  if (isParent) return null;
+
+  // Filter plans by role
+  const visiblePlans = role ? plans.filter(p => p.forRoles.includes(role)) : plans;
   return (
     <div className="w-full py-6 sm:py-8">
       {/* Section Header */}
@@ -71,7 +81,7 @@ export const SubscriptionPlans = () => {
 
       {/* Plans Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto">
-        {plans.map((plan) => (
+        {visiblePlans.map((plan) => (
           <Card 
             key={plan.id}
             className={`relative overflow-hidden border-2 ${plan.borderColor} hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 cursor-pointer touch-target`}
