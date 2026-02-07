@@ -296,29 +296,75 @@ export const GuestDashboard = () => {
         </div>
       </div>
 
+      {/* 👩‍🏫 O'QITUVCHILAR UCHUN KURSLAR */}
+      <div className="space-y-4 sm:space-y-5">
+        <div className="text-center">
+          <h2 className="text-lg sm:text-xl font-display font-bold text-foreground mb-1">👩‍🏫 O'qituvchilar uchun kurslar</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">🎓 Amaliy bilim va metodikalar</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {[
+            { emoji: '✍️', title: "Savod chiqarish metodikasi", desc: "Bolalarga o'qish va yozishni to'g'ri o'rgatish usullari", cardClass: "border-emerald-200 dark:border-emerald-800/40 bg-gradient-to-br from-emerald-50/60 to-white dark:from-emerald-950/20 dark:to-card", iconClass: "bg-gradient-to-br from-emerald-500 to-green-600", checkClass: "text-emerald-500", features: ["Savodni bosqichma-bosqich o'rgatish", "Xatolar bilan ishlash metodlari", "Tayyor dars rejalar"] },
+            { emoji: '✒️', title: "Kalligrafiya", desc: "Chiroyli va tartibli yozuvni o'rgatish metodikasi", cardClass: "border-blue-200 dark:border-blue-800/40 bg-gradient-to-br from-blue-50/60 to-white dark:from-blue-950/20 dark:to-card", iconClass: "bg-gradient-to-br from-blue-500 to-cyan-600", checkClass: "text-blue-500", features: ["Yozuvni to'g'rilash usullari", "Qo'l motorikasini rivojlantirish", "Amaliy mashqlar to'plami"] },
+            { emoji: '✖️', title: "Karra jadvali metodikasi", desc: "Karra jadvalni oson va esda qolarli o'rgatish yo'llari", cardClass: "border-amber-200 dark:border-amber-800/40 bg-gradient-to-br from-amber-50/60 to-white dark:from-amber-950/20 dark:to-card", iconClass: "bg-gradient-to-br from-amber-500 to-orange-600", checkClass: "text-amber-500", features: ["Yodlashsiz o'rgatish usullari", "O'yinli mashqlar", "Tez natija beradigan metodlar"] },
+            { emoji: '🎓', title: "Milliy sertifikatga tayyorlov", desc: "Rasmiy sertifikat imtihonlariga tayyorlov kurslari", cardClass: "border-purple-200 dark:border-purple-800/40 bg-gradient-to-br from-purple-50/60 to-white dark:from-purple-950/20 dark:to-card", iconClass: "bg-gradient-to-br from-purple-500 to-violet-600", checkClass: "text-purple-500", features: ["Imtihon formatiga mos mashqlar", "Bilimlarni mustahkamlash", "Sertifikat olishga puxta tayyorgarlik"] },
+            { emoji: '🚀', title: "Zamonaviy malaka oshirish", desc: "O'qituvchilar uchun yangi metodlar va yondashuvlar", cardClass: "border-rose-200 dark:border-rose-800/40 bg-gradient-to-br from-rose-50/60 to-white dark:from-rose-950/20 dark:to-card", iconClass: "bg-gradient-to-br from-rose-500 to-pink-600", checkClass: "text-rose-500", features: ["Zamonaviy pedagogik usullar", "O'yin orqali ta'lim berish", "Dars samaradorligini oshirish"] },
+          ].map((course, i) => (
+            <Card key={i} className={`${course.cardClass} overflow-hidden`}>
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`h-11 w-11 rounded-2xl ${course.iconClass} flex items-center justify-center shadow-md`}>
+                    <span className="text-xl">{course.emoji}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display font-bold text-sm sm:text-base truncate">{course.title}</h3>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{course.desc}</p>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-border/30">
+                  <p className="text-[10px] font-semibold text-foreground mb-1.5">Foydasi:</p>
+                  <ul className="space-y-1">
+                    {course.features.map((f, j) => (
+                      <li key={j} className="flex items-center gap-2 text-xs">
+                        <CheckCircle2 className={`h-3 w-3 ${course.checkClass} shrink-0`} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* 💡 INVESTOR HIGHLIGHTS */}
       <InvestorHighlights />
 
-      {/* 🚀 NEGA AYNAN IQROMAX */}
+      {/* ✅ IQROMAX NIMASI BILAN QULAY */}
       <Card className="p-4 sm:p-6 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="flex items-center gap-3 mb-4 sm:mb-5">
           <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center shadow-lg">
             <Rocket className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-base sm:text-lg font-display font-bold text-foreground">Nega aynan IQROMAX?</h2>
+            <h2 className="text-base sm:text-lg font-display font-bold text-foreground">✅ IQROMAX nimasi bilan qulay?</h2>
           </div>
         </div>
 
         <ul className="space-y-3 mb-4">
-          <li className="flex items-start gap-2.5">
-            <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-            <span className="text-sm font-medium">Sun'iy intellekt asosida moslashuvchan topshiriqlar</span>
-          </li>
-          <li className="flex items-start gap-2.5">
-            <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-            <span className="text-sm font-medium">To'liq o'zbek tilida</span>
-          </li>
+          {[
+            { emoji: '🧒', text: "Bolalar uchun qiziqarli va foydali mashqlar" },
+            { emoji: '👩‍🏫', text: "O'qituvchilar uchun amaliy kurslar" },
+            { emoji: '👨‍👩‍👧', text: "Ota-onalar uchun kuzatuv va hisobotlar" },
+            { emoji: '🇺🇿', text: "To'liq o'zbek tilida platforma" },
+          ].map((item, i) => (
+            <li key={i} className="flex items-start gap-2.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+              <span className="text-sm font-medium">{item.emoji} {item.text}</span>
+            </li>
+          ))}
         </ul>
 
         <div className="p-3 sm:p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
@@ -414,24 +460,19 @@ export const GuestDashboard = () => {
       {/* 🟢 FINAL CTA */}
       <Card className="p-5 sm:p-8 text-center bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 border border-primary/20">
         <h3 className="text-lg sm:text-xl font-display font-bold mb-3">
-          🟢 Boshlash juda oson
+          🟢 Bitta platforma — ikki yo'nalish
         </h3>
         
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 max-w-md mx-auto">
-          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
-            <div className="text-2xl mb-1">🎮</div>
-            <p className="text-xs sm:text-sm font-bold">Bola</p>
-            <p className="text-[10px] text-muted-foreground">o'ynab o'rganadi</p>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 max-w-sm mx-auto">
+          <div className="text-center p-4 rounded-xl bg-card border border-border/40">
+            <div className="text-3xl mb-2">🎮</div>
+            <p className="text-sm sm:text-base font-bold">Bola</p>
+            <p className="text-xs text-muted-foreground">o'rganadi</p>
           </div>
-          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
-            <div className="text-2xl mb-1">👨‍👩‍👧</div>
-            <p className="text-xs sm:text-sm font-bold">Ota-ona</p>
-            <p className="text-[10px] text-muted-foreground">kuzatadi</p>
-          </div>
-          <div className="text-center p-3 rounded-xl bg-card border border-border/40">
-            <div className="text-2xl mb-1">👩‍🏫</div>
-            <p className="text-xs sm:text-sm font-bold">O'qituvchi</p>
-            <p className="text-[10px] text-muted-foreground">boshqaradi</p>
+          <div className="text-center p-4 rounded-xl bg-card border border-border/40">
+            <div className="text-3xl mb-2">👩‍🏫</div>
+            <p className="text-sm sm:text-base font-bold">O'qituvchi</p>
+            <p className="text-xs text-muted-foreground">rivojlanadi</p>
           </div>
         </div>
 
