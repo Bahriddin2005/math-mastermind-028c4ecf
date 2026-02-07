@@ -106,35 +106,40 @@ export const GuestDashboard = () => {
   const audienceSegments = [
     {
       id: 'kids',
-      emoji: '🎮',
+      emoji: '🟢',
+      emojiSize: 'text-3xl',
       title: "Bolalar",
-      ageRange: "5–14 yosh",
-      description: "O'yin orqali tez hisoblashni o'rganing",
+      subtitle: "O'yin orqali tez hisoblashni o'rganing",
       features: ["XP va Level tizimi", "Global reyting", "Badges to'plash"],
       gradient: "from-emerald-500 to-green-600",
-      borderColor: "border-emerald-500/30",
+      borderColor: "border-emerald-200 dark:border-emerald-800/40",
+      bgTint: "from-emerald-50/80 to-white dark:from-emerald-950/20 dark:to-card",
       href: "/auth"
     },
     {
       id: 'parents',
       emoji: '👨‍👩‍👧',
+      emojiSize: 'text-3xl',
       title: "Ota-onalar",
       badge: "Kuzatuv paneli",
-      description: "Farzandingiz rivojini real vaqtda kuzating",
+      subtitle: "Farzandingiz rivojini real vaqtda kuzating",
       features: ["Kunlik hisobot", "Progress statistika", "Tavsiyalar"],
       gradient: "from-blue-500 to-cyan-600",
-      borderColor: "border-blue-500/30",
+      borderColor: "border-blue-200 dark:border-blue-800/40",
+      bgTint: "from-blue-50/80 to-white dark:from-blue-950/20 dark:to-card",
       href: "/auth"
     },
     {
       id: 'teachers',
       emoji: '👩‍🏫',
+      emojiSize: 'text-3xl',
       title: "O'qituvchilar",
       badge: "Beta",
-      description: "Sinf natijalarini oson boshqaring",
+      subtitle: "Sinf natijalarini oson boshqaring",
       features: ["Guruh statistikasi", "PDF/Excel eksport", "Sertifikatlar"],
       gradient: "from-amber-500 to-orange-600",
-      borderColor: "border-amber-500/30",
+      borderColor: "border-amber-200 dark:border-amber-800/40",
+      bgTint: "from-amber-50/80 to-white dark:from-amber-950/20 dark:to-card",
       href: "/auth"
     }
   ];
@@ -163,21 +168,19 @@ export const GuestDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-          {audienceSegments.map((segment, index) => (
+          {audienceSegments.map((segment) => (
             <Card 
               key={segment.id}
-              className={`relative overflow-hidden border ${segment.borderColor} hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02]`}
+              className={`relative overflow-hidden border ${segment.borderColor} hover:shadow-lg transition-all cursor-pointer group hover:scale-[1.02] bg-gradient-to-br ${segment.bgTint}`}
               onClick={() => navigate(segment.href)}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${segment.gradient} opacity-[0.06] group-hover:opacity-[0.1] transition-opacity`} />
-              
-              <CardContent className="relative p-4 sm:p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br ${segment.gradient} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
-                    <span className="text-xl sm:text-2xl">{segment.emoji}</span>
+              <CardContent className="relative p-5 sm:p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${segment.gradient} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                    <span className={segment.emojiSize}>{segment.emoji}</span>
                   </div>
                   {segment.badge && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                    <span className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold ${
                       segment.badge === 'Beta' 
                         ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' 
                         : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
@@ -185,28 +188,23 @@ export const GuestDashboard = () => {
                       {segment.badge}
                     </span>
                   )}
-                  {segment.ageRange && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                      {segment.ageRange}
-                    </span>
-                  )}
                 </div>
 
-                <h3 className="font-display font-bold text-base sm:text-lg mb-1">{segment.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground mb-3">{segment.description}</p>
+                <h3 className="font-display font-bold text-lg sm:text-xl mb-1">{segment.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{segment.subtitle}</p>
 
-                <ul className="space-y-1.5">
+                <ul className="space-y-2.5">
                   {segment.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs sm:text-sm">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" />
-                      <span>{feature}</span>
+                    <li key={i} className="flex items-center gap-2.5 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                      <span className="font-medium">{feature}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className="mt-3 pt-3 border-t border-border/40">
-                  <span className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-primary group-hover:gap-2 transition-all">
-                    Boshlash <ArrowRight className="h-3.5 w-3.5" />
+                <div className="mt-4 pt-4 border-t border-border/30">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:gap-2.5 transition-all">
+                    Boshlash <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
               </CardContent>
@@ -214,6 +212,7 @@ export const GuestDashboard = () => {
           ))}
         </div>
       </div>
+
 
       {/* 🎮 GAMIFICATION PREVIEW - Why it works */}
       <Card className="p-4 sm:p-6 border-border/40 bg-gradient-to-br from-kid-purple/5 to-kid-yellow/5">
