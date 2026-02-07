@@ -97,22 +97,23 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       gradientOverlay: 'from-blue-900/60 via-blue-900/20 to-transparent',
       badge: {
         icon: Eye,
-        text: 'Ota-onalar uchun',
+        text: 'Ota-onalar nazorati',
         bgColor: 'bg-blue-500 text-white',
       },
       title: (
         <>
-          👨‍👩‍👧 Farzandingiz <span className="text-kid-yellow">rivojini</span> kuzating 📊
+          <span className="block">Farzandingiz qanday</span>
+          <span className="block text-kid-yellow">rivojlanayotganini kuzating 📊</span>
         </>
       ),
       description: (
         <>
-          📈 Real vaqtda statistika, 📋 kunlik hisobot va 💡 shaxsiy tavsiyalar oling!
+          📊 Real vaqtda natijalarni ko'ring · 📋 Har kuni aniq hisobot oling · 💡 Farzandingizga mos tavsiyalarni oling
         </>
       ),
       cta: {
         icon: BarChart3,
-        text: 'Kuzatuv paneli',
+        text: "Farzandim natijalari",
         className: 'bg-blue-500 text-white hover:bg-blue-600',
       },
     },
