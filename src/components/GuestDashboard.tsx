@@ -40,6 +40,7 @@ import {
 import { HeroCarousel3D } from './HeroCarousel3D';
 import { TractionStats } from './TractionStats';
 import { InvestorHighlights } from './InvestorHighlights';
+import { TestimonialForm } from './TestimonialForm';
 
 interface Testimonial {
   id: string;
@@ -411,8 +412,8 @@ export const GuestDashboard = () => {
       </Card>
 
       {/* 💬 TESTIMONIALS */}
-      {testimonials.length > 0 && (
-        <div className="space-y-4">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-md">
               <Quote className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -422,7 +423,14 @@ export const GuestDashboard = () => {
               <p className="text-[10px] sm:text-xs text-muted-foreground">Ota-onalar va o'qituvchilar</p>
             </div>
           </div>
+          <TestimonialForm onSuccess={() => {
+            supabase.from('testimonials').select('*').eq('is_active', true).order('order_index', { ascending: true }).limit(6).then(({ data }) => {
+              if (data) setTestimonials(data);
+            });
+          }} />
+        </div>
 
+        {testimonials.length > 0 ? (
           <Carousel
             opts={{ align: "start", loop: true }}
             plugins={[Autoplay({ delay: 4000, stopOnInteraction: true })]}
@@ -454,37 +462,32 @@ export const GuestDashboard = () => {
               ))}
             </CarouselContent>
           </Carousel>
-        </div>
-      )}
+        ) : (
+          <Card className="p-6 text-center border-border/40">
+            <p className="text-sm text-muted-foreground">Hozircha fikrlar yo'q. Birinchi bo'lib sharh qoldiring!</p>
+          </Card>
+        )}
+      </div>
 
-      {/* 🟢 FINAL CTA */}
-      <Card className="p-5 sm:p-8 text-center bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10 border border-primary/20">
-        <h3 className="text-lg sm:text-xl font-display font-bold mb-3">
-          🟢 Bitta platforma — ikki yo'nalish
+      {/* 🚀 FINAL CTA */}
+      <Card className="p-5 sm:p-8 text-center bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/30 dark:to-card border border-emerald-200/60 dark:border-emerald-800/30">
+        <div className="flex justify-center mb-4">
+          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg">
+            <Rocket className="h-7 w-7 text-white" />
+          </div>
+        </div>
+        <h3 className="text-lg sm:text-xl font-display font-bold mb-2">
+          🚀 Hoziroq boshlang!
         </h3>
-        
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-5 max-w-sm mx-auto">
-          <div className="text-center p-4 rounded-xl bg-card border border-border/40">
-            <div className="text-3xl mb-2">🎮</div>
-            <p className="text-sm sm:text-base font-bold">Bola</p>
-            <p className="text-xs text-muted-foreground">o'rganadi</p>
-          </div>
-          <div className="text-center p-4 rounded-xl bg-card border border-border/40">
-            <div className="text-3xl mb-2">👩‍🏫</div>
-            <p className="text-sm sm:text-base font-bold">O'qituvchi</p>
-            <p className="text-xs text-muted-foreground">rivojlanadi</p>
-          </div>
-        </div>
-
-        <p className="text-muted-foreground mb-4 sm:mb-5 max-w-md mx-auto text-xs sm:text-sm">
-          👉 Hoziroq boshlang va farqni ko'ring.
+        <p className="text-muted-foreground mb-5 max-w-sm mx-auto text-xs sm:text-sm leading-relaxed">
+          Bepul ro'yxatdan o'ting. Ertaroq boshlash va ko'proq mashq qilish muvaffaqiyat asosi.
         </p>
-        <div className="flex flex-col xs:flex-row justify-center gap-2 sm:gap-3">
-          <Button size="lg" onClick={() => navigate('/auth')} className="gap-2 h-10 sm:h-11 px-5 sm:px-6 text-sm">
+        <div className="flex flex-col gap-2 sm:gap-3 max-w-xs mx-auto">
+          <Button size="lg" onClick={() => navigate('/auth')} className="gap-2 h-11 sm:h-12 text-sm sm:text-base w-full bg-emerald-500 hover:bg-emerald-600">
             <Play className="h-4 w-4" />
             Bepul boshlash
           </Button>
-          <Button size="lg" variant="outline" onClick={() => navigate('/pricing')} className="gap-2 h-10 sm:h-11 px-5 sm:px-6 text-sm">
+          <Button size="lg" variant="outline" onClick={() => navigate('/pricing')} className="gap-2 h-11 sm:h-12 text-sm sm:text-base w-full border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/30">
             <Crown className="h-4 w-4" />
             Tariflar
           </Button>
