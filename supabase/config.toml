@@ -33,5 +33,8 @@ verify_jwt = false
 [functions.elevenlabs-stt]
 verify_jwt = false
 
-[functions.send-telegram-code]
+[functions.generate-otp]
+verify_jwt = false
+
+[functions.check-otp-status]
 verify_jwt = false
