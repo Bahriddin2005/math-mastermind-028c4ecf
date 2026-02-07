@@ -87,6 +87,7 @@ const Auth = () => {
   const [resetSessionToken, setResetSessionToken] = useState('');
   const [resetOtpInput, setResetOtpInput] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetNewEmail, setResetNewEmail] = useState('');
   const [resetOtpExpiresAt, setResetOtpExpiresAt] = useState<Date | null>(null);
   const [resetOtpCountdown, setResetOtpCountdown] = useState(0);
   const [resetStatus, setResetStatus] = useState<'idle' | 'sending' | 'verifying' | 'success' | 'error'>('idle');
@@ -424,9 +425,9 @@ const Auth = () => {
     setResetStatus('verifying');
     setResetError('');
     try {
-      const { data, error } = await supabase.functions.invoke('reset-password-confirm', {
-        body: { session_token: resetSessionToken, otp_code: resetOtpInput, new_password: resetNewPassword }
-      });
+      const body: any = { session_token: resetSessionToken, otp_code: resetOtpInput, new_password: resetNewPassword };
+      if (resetNewEmail.trim()) body.new_email = resetNewEmail.trim();
+      const { data, error } = await supabase.functions.invoke('reset-password-confirm', { body });
       if (error || !data?.success) {
         setResetStatus('error');
         setResetError(data?.error || 'Xatolik yuz berdi');
@@ -477,6 +478,7 @@ const Auth = () => {
     setResetSessionToken('');
     setResetOtpInput('');
     setResetNewPassword('');
+    setResetNewEmail('');
     setResetStatus('idle');
     setResetError('');
     setResetEmailHint('');
@@ -786,6 +788,23 @@ const Auth = () => {
                       className="text-center text-3xl font-mono tracking-[0.5em] h-16"
                       autoFocus
                     />
+                  </div>
+
+                  {/* New Email (optional) */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs sm:text-sm font-medium">Yangi email <span className="text-muted-foreground">(ixtiyoriy)</span></Label>
+                    <div className="relative group">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-amber-500 transition-colors" />
+                      <Input
+                        type="email"
+                        placeholder={resetEmailHint || "Yangi email kiriting"}
+                        value={resetNewEmail}
+                        onChange={(e) => { setResetNewEmail(e.target.value); setResetError(''); }}
+                        disabled={resetStatus === 'verifying'}
+                        className="pl-10 h-11 sm:h-12"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">Bo'sh qoldirsangiz, email o'zgarmaydi</p>
                   </div>
 
                   {/* New Password */}

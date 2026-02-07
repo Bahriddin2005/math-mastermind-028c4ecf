@@ -13,7 +13,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { session_token, otp_code, new_password } = await req.json();
+    const { session_token, otp_code, new_password, new_email } = await req.json();
 
     if (!session_token || !otp_code || !new_password) {
       return new Response(
@@ -87,16 +87,41 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Update password
+    // Build update payload
+    const updatePayload: { password: string; email?: string } = { password: new_password };
+    
+    if (new_email && new_email.trim()) {
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(new_email.trim())) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      // Check if email is already taken by another user
+      const otherUser = existingUsers?.users?.find(u => u.email === new_email.trim() && u.id !== targetUser.id);
+      if (otherUser) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Bu email allaqachon boshqa akkauntga tegishli" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      updatePayload.email = new_email.trim();
+    }
+
+    // Update password (and optionally email)
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
       targetUser.id,
-      { password: new_password }
+      updatePayload
     );
 
     if (updateError) {
       console.error("Password update error:", updateError);
       return new Response(
-        JSON.stringify({ success: false, error: "Parolni yangilashda xatolik" }),
+        JSON.stringify({ success: false, error: "Ma'lumotlarni yangilashda xatolik" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -107,12 +132,16 @@ const handler = async (req: Request): Promise<Response> => {
       .update({ is_used: true, is_verified: true })
       .eq("id", row.id);
 
-    console.log(`Password reset successful for ${row.email}`);
+    const emailChanged = updatePayload.email ? ` Email: ${updatePayload.email}` : '';
+    console.log(`Password reset successful for ${row.email}.${emailChanged}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Parol muvaffaqiyatli yangilandi!",
+        message: updatePayload.email 
+          ? "Parol va email muvaffaqiyatli yangilandi!" 
+          : "Parol muvaffaqiyatli yangilandi!",
+        email_changed: !!updatePayload.email,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
