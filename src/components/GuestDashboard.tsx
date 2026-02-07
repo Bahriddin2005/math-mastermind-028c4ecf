@@ -107,39 +107,39 @@ export const GuestDashboard = () => {
     {
       id: 'kids',
       emoji: '🟢',
-      emojiSize: 'text-3xl',
       title: "Bolalar",
       subtitle: "O'yin orqali tez hisoblashni o'rganing",
       features: ["XP va Level tizimi", "Global reyting", "Badges to'plash"],
       gradient: "from-emerald-500 to-green-600",
       borderColor: "border-emerald-200 dark:border-emerald-800/40",
-      bgTint: "from-emerald-50/80 to-white dark:from-emerald-950/20 dark:to-card",
+      bgTint: "from-emerald-50/60 to-white dark:from-emerald-950/20 dark:to-card",
+      ctaColor: "text-emerald-600 dark:text-emerald-400",
       href: "/auth"
     },
     {
       id: 'parents',
       emoji: '👨‍👩‍👧',
-      emojiSize: 'text-3xl',
       title: "Ota-onalar",
       badge: "Kuzatuv paneli",
       subtitle: "Farzandingiz rivojini real vaqtda kuzating",
       features: ["Kunlik hisobot", "Progress statistika", "Tavsiyalar"],
       gradient: "from-blue-500 to-cyan-600",
       borderColor: "border-blue-200 dark:border-blue-800/40",
-      bgTint: "from-blue-50/80 to-white dark:from-blue-950/20 dark:to-card",
+      bgTint: "from-blue-50/60 to-white dark:from-blue-950/20 dark:to-card",
+      ctaColor: "text-blue-600 dark:text-blue-400",
       href: "/auth"
     },
     {
       id: 'teachers',
       emoji: '👩‍🏫',
-      emojiSize: 'text-3xl',
       title: "O'qituvchilar",
       badge: "Beta",
       subtitle: "Sinf natijalarini oson boshqaring",
       features: ["Guruh statistikasi", "PDF/Excel eksport", "Sertifikatlar"],
       gradient: "from-amber-500 to-orange-600",
       borderColor: "border-amber-200 dark:border-amber-800/40",
-      bgTint: "from-amber-50/80 to-white dark:from-amber-950/20 dark:to-card",
+      bgTint: "from-amber-50/60 to-white dark:from-amber-950/20 dark:to-card",
+      ctaColor: "text-amber-600 dark:text-amber-400",
       href: "/auth"
     }
   ];
@@ -176,8 +176,8 @@ export const GuestDashboard = () => {
             >
               <CardContent className="relative p-5 sm:p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`h-12 w-12 rounded-2xl bg-gradient-to-br ${segment.gradient} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
-                    <span className={segment.emojiSize}>{segment.emoji}</span>
+                  <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${segment.gradient} flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                    <span className="text-3xl">{segment.emoji}</span>
                   </div>
                   {segment.badge && (
                     <span className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold ${
@@ -203,7 +203,7 @@ export const GuestDashboard = () => {
                 </ul>
 
                 <div className="mt-4 pt-4 border-t border-border/30">
-                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary group-hover:gap-2.5 transition-all">
+                  <span className={`inline-flex items-center gap-1.5 text-sm font-bold ${segment.ctaColor} group-hover:gap-2.5 transition-all`}>
                     Boshlash <ArrowRight className="h-4 w-4" />
                   </span>
                 </div>
@@ -215,10 +215,10 @@ export const GuestDashboard = () => {
 
 
       {/* 🎮 GAMIFICATION PREVIEW - Why it works */}
-      <Card className="p-4 sm:p-6 border-border/40 bg-gradient-to-br from-kid-purple/5 to-kid-yellow/5">
+      <Card className="p-4 sm:p-6 border-border/40 bg-gradient-to-br from-card to-secondary/30">
         <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-kid-purple to-purple-600 flex items-center justify-center shadow-md">
-            <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+          <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+            <span className="text-2xl">🎮</span>
           </div>
           <div>
             <h2 className="text-base sm:text-lg font-display font-bold text-foreground">O'yin elementlari</h2>
@@ -227,26 +227,18 @@ export const GuestDashboard = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-2 sm:gap-3">
-          <div className="p-3 sm:p-4 text-center rounded-xl bg-gradient-to-br from-kid-yellow/20 to-transparent border border-kid-yellow/20">
-            <div className="text-2xl sm:text-3xl mb-1">⚡</div>
-            <div className="text-sm sm:text-base font-display font-bold">XP</div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Tajriba</p>
-          </div>
-          <div className="p-3 sm:p-4 text-center rounded-xl bg-gradient-to-br from-kid-green/20 to-transparent border border-kid-green/20">
-            <div className="text-2xl sm:text-3xl mb-1">🏆</div>
-            <div className="text-sm sm:text-base font-display font-bold">Level</div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Daraja</p>
-          </div>
-          <div className="p-3 sm:p-4 text-center rounded-xl bg-gradient-to-br from-kid-orange/20 to-transparent border border-kid-orange/20">
-            <div className="text-2xl sm:text-3xl mb-1">🔥</div>
-            <div className="text-sm sm:text-base font-display font-bold">Streak</div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Ketma-ket</p>
-          </div>
-          <div className="p-3 sm:p-4 text-center rounded-xl bg-gradient-to-br from-kid-pink/20 to-transparent border border-kid-pink/20">
-            <div className="text-2xl sm:text-3xl mb-1">🎖️</div>
-            <div className="text-sm sm:text-base font-display font-bold">Badges</div>
-            <p className="text-[10px] sm:text-xs text-muted-foreground">Nishonlar</p>
-          </div>
+          {[
+            { emoji: '⚡', title: 'XP', desc: 'Tajriba' },
+            { emoji: '🏆', title: 'Level', desc: 'Daraja' },
+            { emoji: '🔥', title: 'Streak', desc: 'Ketma-ket' },
+            { emoji: '🎖️', title: 'Badges', desc: 'Nishonlar' },
+          ].map((item, i) => (
+            <div key={i} className="p-3 sm:p-4 text-center rounded-2xl bg-card border border-border/50 hover:shadow-md transition-all">
+              <div className="text-3xl sm:text-4xl mb-2">{item.emoji}</div>
+              <div className="text-sm sm:text-base font-display font-bold">{item.title}</div>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">{item.desc}</p>
+            </div>
+          ))}
         </div>
       </Card>
 
