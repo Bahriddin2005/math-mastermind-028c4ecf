@@ -246,10 +246,10 @@ export const HelpChatWidget = () => {
 
   // Show greeting bubble after 2 seconds on page load
   useEffect(() => {
-    if (isOpen || greetingDismissed || !isAllowedPage || !isLoggedIn) return;
+    if (isOpen || greetingDismissed) return;
     const timer = setTimeout(() => setShowGreeting(true), 2000);
     return () => clearTimeout(timer);
-  }, [isOpen, greetingDismissed, isAllowedPage, isLoggedIn]);
+  }, [isOpen, greetingDismissed]);
 
   // Auto-hide greeting after 8 seconds
   useEffect(() => {
@@ -266,10 +266,8 @@ export const HelpChatWidget = () => {
     }
   }, [isAllowedPage, isLoggedIn]);
 
-  // Agar ruxsat berilgan sahifa bo'lmasa yoki foydalanuvchi tizimga kirmagan bo'lsa, hech narsa ko'rsatma
-  if (!isAllowedPage || !isLoggedIn) {
-    return null;
-  }
+  // Show floating button for everyone, but full widget only for logged-in users on allowed pages
+  const showFullWidget = isAllowedPage && isLoggedIn;
 
   const fetchFAQs = async () => {
     const { data } = await supabase
@@ -832,7 +830,10 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
           <div className="absolute bottom-16 md:bottom-[4.5rem] right-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div 
               className="bg-card border border-border shadow-xl rounded-2xl px-4 py-3 max-w-[200px] cursor-pointer relative"
-              onClick={() => { setShowGreeting(false); setGreetingDismissed(true); setIsOpen(true); }}
+              onClick={() => { 
+                setShowGreeting(false); setGreetingDismissed(true); 
+                if (showFullWidget) { setIsOpen(true); } else { window.location.href = '/auth'; }
+              }}
             >
               <button 
                 onClick={(e) => { e.stopPropagation(); setShowGreeting(false); setGreetingDismissed(true); }}
@@ -849,7 +850,10 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
         )}
 
         <Button
-          onClick={() => { setIsOpen(true); setShowGreeting(false); setGreetingDismissed(true); }}
+          onClick={() => { 
+            setShowGreeting(false); setGreetingDismissed(true);
+            if (showFullWidget) { setIsOpen(true); } else { window.location.href = '/auth'; }
+          }}
           size="lg"
           className={`rounded-full h-12 w-12 md:h-14 md:w-14 shadow-lg hover:shadow-xl transition-all duration-300 ${
             isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
@@ -860,6 +864,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
       </div>
 
       {/* Chat Widget - mobile responsive */}
+      {showFullWidget && (
       <div 
         className={`fixed z-50 transition-all duration-300 ${
           isOpen 
@@ -1293,6 +1298,7 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
           </CardContent>
         </Card>
       </div>
+      )}
 
       {/* Backdrop */}
       {isOpen && (
