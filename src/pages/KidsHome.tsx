@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/card';
 import { Play, Trophy, Zap, Flame, Star, Target, BarChart3, FileText, Users, GraduationCap, Calculator } from 'lucide-react';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { SectionCarousel, kidsSection, parentsSection, teachersSection } from '@/components/SectionCarousel';
+import { TeacherDashboard } from '@/components/TeacherDashboard';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { PageSkeleton } from '@/components/PageSkeleton';
@@ -253,40 +254,8 @@ const KidsHome = () => {
           </div>
         ) : isTeacher ? (
           /* TEACHER HOME - Boshqaruv & Rivojlanish */
-          <div className="container px-3 xs:px-4 space-y-3 py-2">
-            <h2 className="text-lg font-bold px-1">👩‍🏫 O'qituvchi paneli</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => navigate('/abacus-simulator')} className="p-4 rounded-2xl bg-gradient-to-br from-violet-500/10 to-violet-600/5 border border-violet-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">🧮</div>
-                <p className="text-sm font-bold">Abakus simulyator</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Darsda ko'rsatish</p>
-              </button>
-              <button onClick={() => navigate('/train')} className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">🎯</div>
-                <p className="text-sm font-bold">Trenajor</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Mashq qilish</p>
-              </button>
-              <button onClick={() => navigate('/courses')} className="p-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">📚</div>
-                <p className="text-sm font-bold">Kurslar</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">O'quv materiallari</p>
-              </button>
-              <button onClick={() => navigate('/lesson-stats')} className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-600/5 border border-amber-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">📋</div>
-                <p className="text-sm font-bold">Hisobotlar</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">O'quvchi natijalari</p>
-              </button>
-              <button onClick={() => navigate('/problem-sheet')} className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-600/5 border border-rose-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">📝</div>
-                <p className="text-sm font-bold">Misol varaqlar</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Misol yaratish</p>
-              </button>
-              <button onClick={() => navigate('/leaderboard')} className="p-4 rounded-2xl bg-gradient-to-br from-teal-500/10 to-teal-600/5 border border-teal-500/20 text-center active:scale-95 transition-all">
-                <div className="text-3xl mb-2">🏆</div>
-                <p className="text-sm font-bold">Reyting</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Guruh natijalari</p>
-              </button>
-            </div>
+          <div className="container px-3 xs:px-4 py-2">
+            <TeacherDashboard />
           </div>
         ) : (
           /* STUDENT HOME - O'rganish & Qiziqish */
