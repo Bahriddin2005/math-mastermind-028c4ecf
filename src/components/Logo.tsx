@@ -18,10 +18,9 @@ export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
       <img 
         src={iqromaxLogo} 
         alt="IQROMAX - Mental Matematika" 
-        className={`
+          className={`
           ${sizes[size]} 
-          object-cover
-          rounded-full
+          object-contain
           transition-all duration-300 
           drop-shadow-sm 
           hover:drop-shadow-md
