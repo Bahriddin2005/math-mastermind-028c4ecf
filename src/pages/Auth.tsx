@@ -988,6 +988,7 @@ const Auth = () => {
           <div className="text-center mb-6 sm:mb-8 lg:hidden">
             <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
             <p className="text-muted-foreground text-xs sm:text-sm">O'yinlashtirilgan ta'lim platformasi</p>
+            <p className="text-muted-foreground/70 text-[10px] sm:text-xs mt-1">O'rganing. Rivojlaning. Natijani ko'ring.</p>
           </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
