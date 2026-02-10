@@ -241,6 +241,23 @@ export const HelpChatWidget = () => {
     startChatMode();
   };
 
+  const [showGreeting, setShowGreeting] = useState(false);
+  const [greetingDismissed, setGreetingDismissed] = useState(false);
+
+  // Show greeting bubble after 2 seconds on page load
+  useEffect(() => {
+    if (isOpen || greetingDismissed || !isAllowedPage || !isLoggedIn) return;
+    const timer = setTimeout(() => setShowGreeting(true), 2000);
+    return () => clearTimeout(timer);
+  }, [isOpen, greetingDismissed, isAllowedPage, isLoggedIn]);
+
+  // Auto-hide greeting after 8 seconds
+  useEffect(() => {
+    if (!showGreeting) return;
+    const timer = setTimeout(() => setShowGreeting(false), 8000);
+    return () => clearTimeout(timer);
+  }, [showGreeting]);
+
   useEffect(() => {
     if (isAllowedPage && isLoggedIn) {
       fetchFAQs();
@@ -805,16 +822,38 @@ Kunlik maqsad: ${userProgress.daily_goal} masala`
     }
   };
 
+
   return (
     <>
-      {/* Floating Button - mobile da yuqoriroqda */}
+      {/* Floating Button + Greeting bubble */}
       <div className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-50">
+        {/* Greeting bubble */}
+        {showGreeting && !isOpen && (
+          <div className="absolute bottom-16 md:bottom-[4.5rem] right-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div 
+              className="bg-card border border-border shadow-xl rounded-2xl px-4 py-3 max-w-[200px] cursor-pointer relative"
+              onClick={() => { setShowGreeting(false); setGreetingDismissed(true); setIsOpen(true); }}
+            >
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowGreeting(false); setGreetingDismissed(true); }}
+                className="absolute -top-2 -right-2 w-5 h-5 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors"
+              >
+                <X className="h-3 w-3" />
+              </button>
+              <p className="text-sm font-medium text-foreground">👋 Salom!</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Yordam kerakmi? Yozing!</p>
+              {/* Triangle pointer */}
+              <div className="absolute -bottom-2 right-5 w-4 h-4 bg-card border-b border-r border-border rotate-45" />
+            </div>
+          </div>
+        )}
+
         <Button
-          onClick={() => setIsOpen(true)}
+          onClick={() => { setIsOpen(true); setShowGreeting(false); setGreetingDismissed(true); }}
           size="lg"
           className={`rounded-full h-12 w-12 md:h-14 md:w-14 shadow-lg hover:shadow-xl transition-all duration-300 ${
             isOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
-          }`}
+          } ${showGreeting ? 'animate-bounce' : ''}`}
         >
           <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
         </Button>
