@@ -61,7 +61,7 @@ export const PageLoader = () => {
             <img 
               src={loadingLogo} 
               alt="IQROMAX" 
-              className="w-full h-full object-contain"
+              className="w-full h-full object-cover rounded-full"
               loading="eager"
             />
           </div>
