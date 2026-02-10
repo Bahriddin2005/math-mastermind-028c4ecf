@@ -16,7 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   Loader2, LogIn, UserPlus, Mail, ArrowLeft, Check, Sparkles,
   Brain, Target, Trophy, Lock, User, Zap, Star, ChevronRight,
-  GraduationCap, Send, ExternalLink, ShieldCheck, RefreshCw, AtSign
+  GraduationCap, Send, ExternalLink, ShieldCheck, RefreshCw, Phone
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -29,7 +29,7 @@ const signupSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
   password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
   username: z.string().min(2, "Ism kamida 2 ta belgidan iborat bo'lishi kerak"),
-  telegramUsername: z.string().min(3, "Telegram username kamida 3 ta belgidan iborat bo'lishi kerak"),
+  phoneNumber: z.string().min(9, "Telefon raqam kamida 9 ta raqamdan iborat bo'lishi kerak"),
 });
 
 const emailSchema = z.object({
@@ -56,7 +56,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [telegramUsername, setTelegramUsername] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [userType, setUserType] = useState<'student' | 'parent' | 'teacher'>('student');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -83,7 +83,7 @@ const Auth = () => {
   const [verifyError, setVerifyError] = useState('');
   
   // Reset via Telegram states
-  const [resetTelegramUsername, setResetTelegramUsername] = useState('');
+  const [resetPhoneNumber, setResetPhoneNumber] = useState('');
   const [resetSessionToken, setResetSessionToken] = useState('');
   const [resetOtpInput, setResetOtpInput] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
@@ -99,7 +99,7 @@ const Auth = () => {
     password: string;
     username: string;
     userType: string;
-    telegramUsername: string;
+    phoneNumber: string;
   } | null>(null);
   
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
@@ -169,7 +169,7 @@ const Auth = () => {
       if (mode === 'login') {
         loginSchema.parse({ email, password });
       } else if (mode === 'signup') {
-        signupSchema.parse({ email, password, username, telegramUsername: telegramUsername.replace(/^@/, '') });
+        signupSchema.parse({ email, password, username, phoneNumber: phoneNumber.replace(/[^\d]/g, '') });
       } else if (mode === 'forgot-password') {
         emailSchema.parse({ email });
       }
@@ -193,7 +193,7 @@ const Auth = () => {
     
     setVerifyStatus('creating');
     try {
-      const { error } = await signUp(data.email, data.password, data.username, undefined, data.userType);
+      const { error } = await signUp(data.email, data.password, data.username, data.phoneNumber, data.userType);
       
       if (error) {
         const msg = error.message.includes('already registered')
@@ -305,11 +305,9 @@ const Auth = () => {
           toastHook({ title: 'Muvaffaqiyat!', description: 'Tizimga kirdingiz' });
         }
       } else if (mode === 'signup') {
-        // Send OTP to user's Telegram
-        const cleanTgUsername = telegramUsername.replace(/^@/, '').trim();
-        
+        // Send OTP to user's Telegram via phone number
         const { data, error } = await supabase.functions.invoke('generate-otp', {
-          body: { email, telegram_username: cleanTgUsername }
+          body: { email, phone_number: phoneNumber }
         });
         
         if (error) {
@@ -323,7 +321,7 @@ const Auth = () => {
         }
 
         // Store pending signup data
-        pendingSignupDataRef.current = { email, password, username, userType, telegramUsername: cleanTgUsername };
+        pendingSignupDataRef.current = { email, password, username, userType, phoneNumber };
 
         // Show OTP entry screen
         setSessionToken(data.session_token);
@@ -358,7 +356,7 @@ const Auth = () => {
       const { data, error } = await supabase.functions.invoke('generate-otp', {
         body: { 
           email: pendingSignupDataRef.current.email, 
-          telegram_username: pendingSignupDataRef.current.telegramUsername 
+          phone_number: pendingSignupDataRef.current.phoneNumber 
         }
       });
       
@@ -381,16 +379,16 @@ const Auth = () => {
 
   // Handle sending reset OTP via Telegram
   const handleSendResetOtp = async () => {
-    const cleanTg = resetTelegramUsername.replace(/^@/, '').trim();
-    if (!cleanTg || cleanTg.length < 3) {
-      setResetError("Telegram username kiriting");
+    const cleanPhone = resetPhoneNumber.replace(/[^\d]/g, '').trim();
+    if (!cleanPhone || cleanPhone.length < 9) {
+      setResetError("Telefon raqamni kiriting");
       return;
     }
     setResetStatus('sending');
     setResetError('');
     try {
       const { data, error } = await supabase.functions.invoke('reset-password-otp', {
-        body: { telegram_username: cleanTg }
+        body: { phone_number: resetPhoneNumber }
       });
       if (error || !data?.success) {
         setResetStatus('error');
@@ -443,11 +441,10 @@ const Auth = () => {
 
   // Handle resending reset OTP
   const handleResendResetOtp = async () => {
-    const cleanTg = resetTelegramUsername.replace(/^@/, '').trim();
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('reset-password-otp', {
-        body: { telegram_username: cleanTg }
+        body: { phone_number: resetPhoneNumber }
       });
       if (error || !data?.success) {
         toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Yangi kod yuborishda xatolik' });
@@ -474,7 +471,7 @@ const Auth = () => {
     setVerifyStatus('idle');
     setVerifiedTelegramData(null);
     setVerifyError('');
-    setResetTelegramUsername('');
+    setResetPhoneNumber('');
     setResetSessionToken('');
     setResetOtpInput('');
     setResetNewPassword('');
@@ -667,20 +664,21 @@ const Auth = () => {
               </div>
               <CardTitle className="text-xl sm:text-2xl font-display">Parolni tiklash</CardTitle>
               <CardDescription className="mt-1.5 text-sm">
-                Telegram username'ingizni kiriting — sizga OTP kod yuboramiz
+                Telefon raqamingizni kiriting — sizga OTP kod yuboramiz
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-1 pb-5 px-4 sm:px-6">
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="reset-tg" className="text-xs sm:text-sm font-medium">Telegram username</Label>
+                  <Label htmlFor="reset-phone" className="text-xs sm:text-sm font-medium">Telefon raqam</Label>
                   <div className="relative group">
-                    <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-amber-500 transition-colors" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-amber-500 transition-colors" />
                     <Input
-                      id="reset-tg"
-                      placeholder="username"
-                      value={resetTelegramUsername}
-                      onChange={(e) => { setResetTelegramUsername(e.target.value); setResetError(''); }}
+                      id="reset-phone"
+                      type="tel"
+                      placeholder="+998 XX XXX XX XX"
+                      value={resetPhoneNumber}
+                      onChange={(e) => { setResetPhoneNumber(e.target.value); setResetError(''); }}
                       disabled={resetStatus === 'sending'}
                       className="pl-10 h-11 sm:h-12"
                       autoFocus
@@ -695,7 +693,7 @@ const Auth = () => {
                 </div>
                 <Button
                   onClick={handleSendResetOtp}
-                  disabled={!resetTelegramUsername.trim() || resetStatus === 'sending'}
+                  disabled={!resetPhoneNumber.trim() || resetStatus === 'sending'}
                   className="w-full h-12 text-base font-semibold gap-2 rounded-full bg-amber-500 hover:bg-amber-600 shadow-lg shadow-amber-500/20"
                 >
                   {resetStatus === 'sending' ? (
@@ -759,8 +757,8 @@ const Auth = () => {
                   <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
                     <div className="flex items-center gap-2 text-sm">
                       <Send className="h-4 w-4 text-amber-500 shrink-0" />
-                      <span className="text-amber-700 dark:text-amber-300 font-medium">
-                        @{resetTelegramUsername.replace(/^@/, '')} ga kod yuborildi
+                        <span className="text-amber-700 dark:text-amber-300 font-medium">
+                          Telegram ga kod yuborildi
                       </span>
                     </div>
                     {resetOtpCountdown > 0 && (
@@ -1142,7 +1140,7 @@ const Auth = () => {
                   </div>
                 )}
 
-                {/* Telegram setup instruction + username field - only for signup */}
+                {/* Telegram setup instruction + phone number field - only for signup */}
                 {mode === 'signup' && (
                   <div className="space-y-3">
                     {/* Instruction banner */}
@@ -1160,30 +1158,30 @@ const Auth = () => {
                             <li><span className="font-mono bg-sky-100 dark:bg-sky-900/50 px-1 rounded">/start</span> buyrug'ini yuboring</li>
                             <li>📱 <strong>Telefon raqamni yuborish</strong> tugmasini bosing</li>
                           </ol>
-                          <p className="text-sky-500 dark:text-sky-500 mt-1">✅ Shundan keyin username'ingizni pastga kiriting</p>
+                          <p className="text-sky-500 dark:text-sky-500 mt-1">✅ Shundan keyin telefon raqamingizni pastga kiriting</p>
                         </div>
                       </div>
                     </div>
 
-                    {/* Username input */}
+                    {/* Phone number input */}
                     <div className="space-y-1.5 sm:space-y-2">
-                      <Label htmlFor="telegram-username" className="text-xs sm:text-sm font-medium">Telegram username</Label>
+                      <Label htmlFor="phone-number" className="text-xs sm:text-sm font-medium">Telefon raqam</Label>
                       <div className="relative group">
-                        <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-sky-500 transition-colors" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-sky-500 transition-colors" />
                         <Input
-                          id="telegram-username"
-                          type="text"
-                          placeholder="username"
-                          value={telegramUsername}
-                          onChange={(e) => setTelegramUsername(e.target.value)}
+                          id="phone-number"
+                          type="tel"
+                          placeholder="+998 XX XXX XX XX"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value)}
                           disabled={loading}
-                          className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.telegramUsername ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                          className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                         />
                       </div>
-                      {errors.telegramUsername && (
+                      {errors.phoneNumber && (
                         <p className="text-xs sm:text-sm text-destructive flex items-center gap-1.5 animate-shake">
                           <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                          {errors.telegramUsername}
+                          {errors.phoneNumber}
                         </p>
                       )}
                     </div>
