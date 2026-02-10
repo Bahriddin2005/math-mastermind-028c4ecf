@@ -196,7 +196,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
             <CarouselItem key={slide.id} className="touch-manipulation cursor-grab active:cursor-grabbing pl-0">
               {/* Mobile-optimized height - simplified for performance */}
               <div 
-                className="relative h-[380px] xs:h-[420px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden"
+                className="relative h-[320px] xs:h-[360px] sm:h-[480px] md:h-[560px] lg:h-[640px] overflow-hidden"
               >
                 {/* Image Background - no parallax on mobile for performance */}
                 <img 
@@ -248,8 +248,8 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                   }`}
                 >
                   {/* Badge Row - Simplified for mobile performance */}
-                  <div 
-                    className={`flex flex-wrap items-center justify-center gap-2 xs:gap-2.5 sm:gap-3 mb-3 xs:mb-4 sm:mb-5 ${
+                <div 
+                  className={`flex flex-wrap items-center justify-center gap-1.5 xs:gap-2 sm:gap-3 mb-2 xs:mb-3 sm:mb-5 ${
                       current === index ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
@@ -273,7 +273,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* Title - Simplified for mobile performance */}
                   <h1 
-                    className={`text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-3 xs:mb-4 sm:mb-5 md:mb-6 ${
+                    className={`text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-black leading-[1.05] mb-2 xs:mb-3 sm:mb-5 md:mb-6 ${
                       current === index ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
@@ -284,13 +284,13 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
 
                   {/* Description - Simplified glass card */}
                   <div 
-                    className={`mb-5 xs:mb-6 sm:mb-7 md:mb-8 flex justify-center ${
+                    className={`mb-3 xs:mb-4 sm:mb-7 md:mb-8 flex justify-center ${
                       current === index ? 'opacity-100' : 'opacity-0'
                     }`}
                   >
                     <div className="relative">
                       <p 
-                        className="relative text-center text-sm xs:text-base sm:text-xl md:text-2xl lg:text-3xl text-white max-w-sm xs:max-w-md sm:max-w-xl md:max-w-2xl leading-snug xs:leading-relaxed sm:leading-loose font-semibold tracking-wide px-3 py-2 xs:px-4 xs:py-3 sm:px-6 sm:py-4 bg-black/30 rounded-xl sm:rounded-2xl border border-white/20"
+                        className="relative text-center text-xs xs:text-sm sm:text-xl md:text-2xl lg:text-3xl text-white max-w-xs xs:max-w-sm sm:max-w-xl md:max-w-2xl leading-snug xs:leading-relaxed sm:leading-loose font-semibold tracking-wide px-2.5 py-1.5 xs:px-3 xs:py-2 sm:px-6 sm:py-4 bg-black/30 rounded-xl sm:rounded-2xl border border-white/20"
                         style={{ 
                           textShadow: '0 2px 4px rgba(0,0,0,1), 0 4px 20px rgba(0,0,0,0.9)'
                         }}
@@ -311,9 +311,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                     <Button 
                       size="lg"
                       onClick={() => navigate('/auth')}
-                      className={`gap-2.5 xs:gap-3 sm:gap-4 ${slide.cta.className} font-black active:scale-95 h-12 xs:h-14 sm:h-16 md:h-[72px] text-base xs:text-lg sm:text-xl md:text-2xl px-6 xs:px-8 sm:px-10 md:px-14 rounded-2xl sm:rounded-3xl border-2 border-white/40 shadow-xl`}
+                      className={`gap-2 xs:gap-2.5 sm:gap-4 ${slide.cta.className} font-black active:scale-95 h-10 xs:h-12 sm:h-16 md:h-[72px] text-sm xs:text-base sm:text-xl md:text-2xl px-5 xs:px-6 sm:px-10 md:px-14 rounded-xl sm:rounded-3xl border-2 border-white/40 shadow-xl`}
                     >
-                      <slide.cta.icon className="h-6 w-6 xs:h-7 xs:w-7 sm:h-8 sm:w-8" />
+                      <slide.cta.icon className="h-4 w-4 xs:h-5 xs:w-5 sm:h-8 sm:w-8" />
                       <span className="truncate font-black tracking-wide">{slide.cta.text}</span>
                     </Button>
                     {slide.showLogo && (
@@ -341,7 +341,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       </Carousel>
 
       {/* Dot Indicators - Simplified */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-black/30 rounded-full">
+      <div className="absolute bottom-3 xs:bottom-4 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-black/30 rounded-full">
         {slides.map((slide, index) => (
           <button
             key={slide.id}
