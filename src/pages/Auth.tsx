@@ -312,7 +312,9 @@ const Auth = () => {
         });
         
         if (error) {
-          toastHook({ variant: 'destructive', title: 'Xatolik', description: 'OTP yuborishda xatolik yuz berdi' });
+          // When edge function returns 4xx/5xx, the error message may be in data or error
+          const errMsg = data?.error || error?.message || 'OTP yuborishda xatolik yuz berdi';
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
           return;
         }
         
