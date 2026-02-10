@@ -76,7 +76,36 @@ const handler = async (req: Request): Promise<Response> => {
       .select("user_id, username, telegram_id, telegram_username, phone_number")
       .in("phone_number", phoneCandidates);
 
-    const profile = profiles?.[0] || null;
+    let profile = profiles?.[0] || null;
+
+    // If not found by phone in profiles, try finding via telegram_users table first
+    if (!profile) {
+      const { data: tgUser } = await supabaseAdmin
+        .from("telegram_users")
+        .select("chat_id, phone_number, username")
+        .eq("is_active", true)
+        .in("phone_number", phoneCandidates)
+        .maybeSingle();
+
+      if (tgUser) {
+        // Find profile by telegram_id (chat_id)
+        const { data: profileByTg } = await supabaseAdmin
+          .from("profiles")
+          .select("user_id, username, telegram_id, telegram_username, phone_number")
+          .eq("telegram_id", tgUser.chat_id)
+          .maybeSingle();
+
+        if (profileByTg) {
+          profile = profileByTg;
+          // Also update the profile's phone_number for future lookups
+          await supabaseAdmin
+            .from("profiles")
+            .update({ phone_number: tgUser.phone_number })
+            .eq("user_id", profileByTg.user_id);
+          console.log(`Profile found via telegram_id, updated phone_number for user ${profileByTg.user_id}`);
+        }
+      }
+    }
 
     if (!profile) {
       console.log(`Profile not found for phone: ${inputDigits}`);
