@@ -464,7 +464,19 @@ const Auth = () => {
       const body: any = { session_token: resetSessionToken, otp_code: resetOtpInput, new_password: resetNewPassword };
       if (resetNewEmail.trim()) body.new_email = resetNewEmail.trim();
       const { data, error } = await supabase.functions.invoke('reset-password-confirm', { body });
-      if (error || !data?.success) {
+      if (error) {
+        let errMsg = 'Xatolik yuz berdi';
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const eb = await error.context.json();
+            errMsg = eb?.error || errMsg;
+          } else if (error.message) errMsg = error.message;
+        } catch { /* default */ }
+        setResetStatus('error');
+        setResetError(errMsg);
+        return;
+      }
+      if (!data?.success) {
         setResetStatus('error');
         setResetError(data?.error || 'Xatolik yuz berdi');
         return;
@@ -484,8 +496,21 @@ const Auth = () => {
       const { data, error } = await supabase.functions.invoke('reset-password-otp', {
         body: { phone_number: resetPhoneNumber }
       });
-      if (error || !data?.success) {
+      if (error) {
+        let errMsg = 'Yangi kod yuborishda xatolik';
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const eb = await error.context.json();
+            errMsg = eb?.error || errMsg;
+          } else if (error.message) errMsg = error.message;
+        } catch { /* default */ }
+        toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+        setLoading(false);
+        return;
+      }
+      if (!data?.success) {
         toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Yangi kod yuborishda xatolik' });
+        setLoading(false);
         return;
       }
       setResetSessionToken(data.session_token);
