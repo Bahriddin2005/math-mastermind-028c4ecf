@@ -32,14 +32,22 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, telegram_username } = await req.json();
 
-    if (!email) {
+    if (!email || typeof email !== "string") {
       return new Response(
         JSON.stringify({ success: false, error: "Email talab qilinadi" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    if (!telegram_username) {
+    // Email format validation
+    if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!telegram_username || typeof telegram_username !== "string") {
       return new Response(
         JSON.stringify({ success: false, error: "Telegram username talab qilinadi" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -49,9 +57,17 @@ const handler = async (req: Request): Promise<Response> => {
     // Clean the username (remove @ if present)
     const cleanUsername = telegram_username.replace(/^@/, "").trim().toLowerCase();
 
-    if (!cleanUsername || cleanUsername.length < 3) {
+    if (!cleanUsername || cleanUsername.length < 3 || cleanUsername.length > 32) {
       return new Response(
-        JSON.stringify({ success: false, error: "Telegram username noto'g'ri" }),
+        JSON.stringify({ success: false, error: "Telegram username noto'g'ri (3-32 belgi)" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate username format (alphanumeric + underscores only)
+    if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Telegram username faqat harf, raqam va _ bo'lishi mumkin" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -181,7 +197,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`OTP sent to @${cleanUsername} (chat_id: ${telegramUser.chat_id}), code: ${code}`);
+    console.log(`OTP sent to @${cleanUsername} (chat_id: ${telegramUser.chat_id})`);
 
     return new Response(
       JSON.stringify({

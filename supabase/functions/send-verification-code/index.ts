@@ -27,8 +27,17 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, phone_number }: VerificationRequest = await req.json();
 
-    if (!email) {
+    if (!email || typeof email !== "string") {
       throw new Error("Email is required");
+    }
+
+    // Input validation
+    if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("Email formati noto'g'ri");
+    }
+
+    if (phone_number && typeof phone_number === "string" && phone_number.length > 20) {
+      throw new Error("Telefon raqam juda uzun");
     }
 
     // Create Supabase client with service role
