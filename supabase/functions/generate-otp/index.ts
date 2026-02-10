@@ -30,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, telegram_username } = await req.json();
+    const { email, phone_number } = await req.json();
 
     if (!email || typeof email !== "string") {
       return new Response(
@@ -39,7 +39,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Email format validation
     if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return new Response(
         JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
@@ -47,27 +46,19 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (!telegram_username || typeof telegram_username !== "string") {
+    if (!phone_number || typeof phone_number !== "string") {
       return new Response(
-        JSON.stringify({ success: false, error: "Telegram username talab qilinadi" }),
+        JSON.stringify({ success: false, error: "Telefon raqam talab qilinadi" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Clean the username (remove @ if present)
-    const cleanUsername = telegram_username.replace(/^@/, "").trim().toLowerCase();
+    // Normalize phone number - strip everything except digits
+    const inputDigits = phone_number.replace(/[^\d]/g, "");
 
-    if (!cleanUsername || cleanUsername.length < 3 || cleanUsername.length > 32) {
+    if (inputDigits.length < 9 || inputDigits.length > 15) {
       return new Response(
-        JSON.stringify({ success: false, error: "Telegram username noto'g'ri (3-32 belgi)" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    // Validate username format (alphanumeric + underscores only)
-    if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Telegram username faqat harf, raqam va _ bo'lishi mumkin" }),
+        JSON.stringify({ success: false, error: "Telefon raqam noto'g'ri" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
@@ -96,39 +87,49 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Check if telegram username is already registered in profiles
-    const { data: existingProfile } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("telegram_username", cleanUsername)
-      .maybeSingle();
+    // Build phone number candidates for matching
+    const phoneCandidates = Array.from(new Set([
+      inputDigits,
+      `+${inputDigits}`,
+      inputDigits.startsWith("998") ? inputDigits : `998${inputDigits}`,
+      inputDigits.startsWith("998") ? `+${inputDigits}` : `+998${inputDigits}`,
+    ].filter(Boolean)));
 
-    if (existingProfile) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Bu Telegram akkaunt allaqachon ro'yxatdan o'tgan" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    // Look up the user's chat_id from telegram_users table
-    // They must have started the bot first (/start)
+    // Look up the user's chat_id from telegram_users table by phone number
     const { data: telegramUser, error: lookupError } = await supabaseAdmin
       .from("telegram_users")
-      .select("chat_id, username, first_name")
-      .ilike("username", cleanUsername)
+      .select("chat_id, username, first_name, phone_number")
       .eq("is_active", true)
+      .in("phone_number", phoneCandidates)
       .maybeSingle();
 
     if (lookupError || !telegramUser) {
-      console.log(`Telegram user not found: @${cleanUsername}`);
+      console.log(`Telegram user not found by phone: ${inputDigits}`);
       return new Response(
         JSON.stringify({
           success: false,
-          error: `@${cleanUsername} topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
+          error: `Bu telefon raqam bilan Telegram foydalanuvchi topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
           error_code: "telegram_user_not_found",
         }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Check if this telegram account is already registered in profiles
+    if (telegramUser.username) {
+      const cleanUsername = telegramUser.username.replace(/^@/, "").toLowerCase();
+      const { data: existingProfile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("telegram_username", cleanUsername)
+        .maybeSingle();
+
+      if (existingProfile) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Bu Telegram akkaunt allaqachon ro'yxatdan o'tgan" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     // Generate OTP and session token
@@ -143,19 +144,19 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("email", email)
       .eq("is_used", false);
 
-    // Insert new verification code with telegram data from telegram_users
+    // Insert new verification code
     const { error: insertError } = await supabaseAdmin
       .from("verification_codes")
       .insert({
         email,
-        phone_number: "",
+        phone_number: phone_number,
         code,
         session_token: sessionToken,
         expires_at: expiresAt.toISOString(),
         is_used: false,
         is_verified: false,
-        telegram_id: telegramUser.chat_id, // Real chat_id from telegram_users
-        telegram_username: telegramUser.username || cleanUsername,
+        telegram_id: telegramUser.chat_id,
+        telegram_username: telegramUser.username || "",
         telegram_first_name: telegramUser.first_name || null,
       });
 
@@ -197,13 +198,13 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`OTP sent to @${cleanUsername} (chat_id: ${telegramUser.chat_id})`);
+    console.log(`OTP sent to phone ${inputDigits} (chat_id: ${telegramUser.chat_id})`);
 
     return new Response(
       JSON.stringify({
         success: true,
         session_token: sessionToken,
-        expires_in: 180, // 3 minutes
+        expires_in: 180,
         message: "OTP kod Telegram ga yuborildi",
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
