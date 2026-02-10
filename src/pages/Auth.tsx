@@ -307,36 +307,55 @@ const Auth = () => {
         }
       } else if (mode === 'signup') {
         // Send OTP to user's Telegram via phone number
-        const { data, error } = await supabase.functions.invoke('generate-otp', {
-          body: { email, phone_number: phoneNumber }
-        });
-        
-        if (error) {
-          // When edge function returns 4xx/5xx, the error message may be in data or error
-          const errMsg = data?.error || error?.message || 'OTP yuborishda xatolik yuz berdi';
-          toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+        try {
+          const { data, error } = await supabase.functions.invoke('generate-otp', {
+            body: { email, phone_number: phoneNumber }
+          });
+          
+          if (error) {
+            // Parse error body if available
+            let errMsg = 'OTP yuborishda xatolik yuz berdi';
+            try {
+              if (error.context && typeof error.context.json === 'function') {
+                const errorBody = await error.context.json();
+                errMsg = errorBody?.error || errMsg;
+              } else if (data?.error) {
+                errMsg = data.error;
+              } else if (error.message) {
+                errMsg = error.message;
+              }
+            } catch { /* use default message */ }
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+            setLoading(false);
+            return;
+          }
+          
+          if (data && !data.success) {
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: data.error || 'OTP yaratishda xatolik' });
+            setLoading(false);
+            return;
+          }
+
+          // Store pending signup data
+          pendingSignupDataRef.current = { email, password, username, userType, phoneNumber };
+
+          // Show OTP entry screen
+          setSessionToken(data?.session_token || '');
+          setOtpExpiresAt(new Date(Date.now() + (data?.expires_in || 180) * 1000));
+          setOtpCountdown(data?.expires_in || 180);
+          setOtpInput('');
+          setVerifyStatus('idle');
+          setVerifiedTelegramData(null);
+          setVerifyError('');
+          setMode('verify-otp');
+          
+          toastHook({ title: 'OTP yuborildi!', description: 'Telegram ga kelgan kodni kiriting' });
+        } catch (otpErr: any) {
+          console.error('OTP error:', otpErr);
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: otpErr?.message || 'OTP yuborishda xatolik yuz berdi' });
+          setLoading(false);
           return;
         }
-        
-        if (data && !data.success) {
-          toastHook({ variant: 'destructive', title: 'Xatolik', description: data.error || 'OTP yaratishda xatolik' });
-          return;
-        }
-
-        // Store pending signup data
-        pendingSignupDataRef.current = { email, password, username, userType, phoneNumber };
-
-        // Show OTP entry screen
-        setSessionToken(data.session_token);
-        setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 180) * 1000));
-        setOtpCountdown(data.expires_in || 180);
-        setOtpInput('');
-        setVerifyStatus('idle');
-        setVerifiedTelegramData(null);
-        setVerifyError('');
-        setMode('verify-otp');
-        
-        toastHook({ title: 'OTP yuborildi!', description: 'Telegram ga kelgan kodni kiriting' });
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
         if (error) {
