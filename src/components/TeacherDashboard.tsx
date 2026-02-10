@@ -27,6 +27,17 @@ interface BlogPost {
   category: string;
 }
 
+type RecommendationType = 'completed' | 'almost_done' | 'inactive' | 'active' | 'certified' | 'new_user';
+
+interface SmartRecommendation {
+  type: RecommendationType;
+  course: CourseProgress;
+  reason: string;
+  headline: string;
+  matchScore: number;
+  icon: string;
+}
+
 export const TeacherDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -114,6 +125,95 @@ export const TeacherDashboard = () => {
 
   // Recommended courses (ones not started yet)
   const recommendedCourses = courseProgress.filter(c => c.completedLessons === 0 && c.totalLessons > 0);
+
+  // AI-based Smart Recommendations
+  const getSmartRecommendations = (): SmartRecommendation[] => {
+    const recommendations: SmartRecommendation[] = [];
+    const notStarted = courseProgress.filter(c => c.completedLessons === 0 && c.totalLessons > 0);
+    const inProgress = courseProgress.filter(c => c.completedLessons > 0 && c.completedLessons < c.totalLessons);
+    const totalWatchedAll = courseProgress.reduce((s, c) => s + c.totalWatchedMinutes, 0);
+
+    // Case 1: Almost done with current course
+    inProgress.forEach(course => {
+      const progress = (course.completedLessons / course.totalLessons) * 100;
+      if (progress >= 75) {
+        const nextCourse = notStarted[0];
+        if (nextCourse) {
+          recommendations.push({
+            type: 'almost_done',
+            course: nextCourse,
+            headline: '🎉 Siz kursni deyarli yakunladingiz!',
+            reason: `Bilimingizni kengaytirish uchun keyingi bosqichni tavsiya qilamiz.`,
+            matchScore: 95,
+            icon: '🎯',
+          });
+        }
+      }
+    });
+
+    // Case 2: Completed a course → recommend next
+    if (completedCourses.length > 0 && notStarted.length > 0) {
+      const lastCompleted = courseProgress.find(c => completedCourses.includes(c.id));
+      const next = notStarted[0];
+      recommendations.push({
+        type: 'completed',
+        course: next,
+        headline: `✅ Siz ${lastCompleted?.title || 'kursni'} tugatdingiz.`,
+        reason: `Endi ${next.title} kursi darslaringizni yanada kuchaytiradi.`,
+        matchScore: 92,
+        icon: '🌟',
+      });
+    }
+
+    // Case 3: Certified user → advanced recommendation
+    if (completedCourses.length >= 2 && notStarted.length > 0) {
+      recommendations.push({
+        type: 'certified',
+        course: notStarted[notStarted.length - 1], // suggest last/advanced one
+        headline: '🏅 Tabriklaymiz! Siz trenerlik sertifikatiga ega bo\'ldingiz.',
+        reason: `Endi ${notStarted[notStarted.length - 1].title} kursi bilan malakangizni oshiring.`,
+        matchScore: 90,
+        icon: '🚀',
+      });
+    }
+
+    // Case 4: Very active user
+    if (totalWatchedAll > 120 && notStarted.length > 0) {
+      recommendations.push({
+        type: 'active',
+        course: notStarted[0],
+        headline: '🔥 Siz juda faol o\'rganmoqdasiz!',
+        reason: `${notStarted[0].title} kursi siz uchun ayni muddao.`,
+        matchScore: 88,
+        icon: '🚀',
+      });
+    }
+
+    // Case 5: New user / nothing started
+    if (completedCourses.length === 0 && inProgress.length === 0 && notStarted.length > 0) {
+      recommendations.push({
+        type: 'new_user',
+        course: notStarted[0],
+        headline: '🧠 Siz uchun tavsiya qilamiz',
+        reason: `${notStarted[0].title} — o'qituvchilar uchun eng mos boshlang'ich kurs.`,
+        matchScore: 85,
+        icon: '📘',
+      });
+    }
+
+    // Deduplicate by course id, keep highest score
+    const seen = new Set<string>();
+    return recommendations
+      .sort((a, b) => b.matchScore - a.matchScore)
+      .filter(r => {
+        if (seen.has(r.course.id)) return false;
+        seen.add(r.course.id);
+        return true;
+      })
+      .slice(0, 2);
+  };
+
+  const smartRecommendations = getSmartRecommendations();
 
   return (
     <div className="space-y-4">
@@ -302,48 +402,88 @@ export const TeacherDashboard = () => {
         </CardContent>
       </Card>
 
-      {/* 7. Course Recommendations */}
-      {recommendedCourses.length > 0 && (
-        <Card className="border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-cyan-500/5">
+      {/* 7. AI Smart Recommendations */}
+      {smartRecommendations.length > 0 && (
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 relative overflow-hidden">
+          {/* AI badge */}
+          <div className="absolute top-3 right-3">
+            <Badge variant="secondary" className="text-[9px] px-1.5 py-0.5 bg-primary/10 border-primary/20">
+              🤖 AI tavsiya
+            </Badge>
+          </div>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              <CardTitle className="text-base">🎯 Keyingi qadam</CardTitle>
+              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-base">🧠 Siz uchun tavsiya qilamiz</CardTitle>
+                <p className="text-[10px] text-muted-foreground">
+                  Sizning o'qish jarayoningizga qarab tanlandi
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Sizning tajribangizga mos kurslar:
-            </p>
           </CardHeader>
           <CardContent className="space-y-3">
-            {recommendedCourses.slice(0, 3).map(course => (
-              <div key={course.id} className="p-3 rounded-xl bg-background/60 border border-blue-500/10">
-                <div className="flex items-start gap-2">
-                  <span className="text-lg">🌟</span>
+            {smartRecommendations.map((rec, i) => (
+              <div key={rec.course.id} className="p-3 rounded-xl bg-background/60 border border-primary/10 space-y-2">
+                {/* Headline */}
+                <p className="text-sm font-bold">{rec.headline}</p>
+                
+                {/* Reason */}
+                <p className="text-xs text-muted-foreground">{rec.reason}</p>
+                
+                {/* Course card */}
+                <div className="flex items-start gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10">
+                  <span className="text-2xl">{rec.icon}</span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold">{course.title}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {course.totalLessons} ta dars
+                    <p className="text-sm font-semibold">{rec.course.title}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {rec.course.totalLessons} ta dars
                     </p>
-                    <div className="flex gap-2 mt-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-blue-600 dark:text-blue-400 p-0 h-auto"
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                      >
-                        🟢 Kurs haqida batafsil
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-emerald-600 dark:text-emerald-400 p-0 h-auto"
-                        onClick={() => navigate(`/courses/${course.id}`)}
-                      >
-                        🟢 O'qishni boshlash
-                      </Button>
-                    </div>
+                  </div>
+                  {/* Match score */}
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-primary">{rec.matchScore}%</p>
+                    <p className="text-[9px] text-muted-foreground">moslik</p>
                   </div>
                 </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs flex-1"
+                    onClick={() => navigate(`/courses/${rec.course.id}`)}
+                  >
+                    🟢 Kurs haqida
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="text-xs flex-1"
+                    onClick={() => navigate(`/courses/${rec.course.id}`)}
+                  >
+                    🟢 Boshlash
+                    <ArrowRight className="w-3 h-3 ml-1" />
+                  </Button>
+                </div>
+
+                {/* Why this recommendation */}
+                {i === 0 && (
+                  <details className="text-[10px] text-muted-foreground">
+                    <summary className="cursor-pointer hover:text-foreground transition-colors">
+                      ⭐ Nega aynan siz uchun?
+                    </summary>
+                    <p className="mt-1 pl-4">
+                      {rec.type === 'almost_done' && 'Siz joriy kursni deyarli yakunladingiz. Keyingi kursga o\'tish bilimingizni mustahkamlaydi.'}
+                      {rec.type === 'completed' && 'Oldingi kursni muvaffaqiyatli yakunlaganingiz uchun bu kurs sizning tajribangizga mos keladi.'}
+                      {rec.type === 'certified' && 'Sertifikat olganingiz uchun murakkab kurslarga tayyor ekansiz.'}
+                      {rec.type === 'active' && 'Faol o\'rganish tezligingiz ushbu kursni osonroq o\'zlashtirishga yordam beradi.'}
+                      {rec.type === 'new_user' && 'Bu kurs yangi o\'qituvchilar uchun eng mos boshlang\'ich dastur.'}
+                    </p>
+                  </details>
+                )}
               </div>
             ))}
           </CardContent>
