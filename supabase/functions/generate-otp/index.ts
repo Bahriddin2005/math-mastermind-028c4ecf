@@ -124,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: `@${cleanUsername} topilmadi. Avval @iqromaxuzbot ga /start yuboring va 📱 tugmasini bosing.`,
+          error: `@${cleanUsername} topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
           error_code: "telegram_user_not_found",
         }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
