@@ -987,7 +987,7 @@ const Auth = () => {
         <div className="w-full max-w-md relative z-10 px-1 sm:px-0">
           <div className="text-center mb-6 sm:mb-8 lg:hidden">
             <Logo size="lg" className="mx-auto mb-2 sm:mb-3" />
-            <p className="text-muted-foreground text-xs sm:text-sm">Mental Matematika Platformasi</p>
+            <p className="text-muted-foreground text-xs sm:text-sm">O'yinlashtirilgan ta'lim platformasi</p>
           </div>
 
           <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
