@@ -25,18 +25,23 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
   // Determine result message based on accuracy
   let resultMessage = '';
   let resultEmoji = '';
+  let resultSubtext = '';
   if (accuracy >= 90) {
-    resultMessage = "Zo'r natija!";
+    resultMessage = "🎉 Ajoyib!";
     resultEmoji = '🏆';
+    resultSubtext = "Siz topshiriqni muvaffaqiyatli bajardingiz.";
   } else if (accuracy >= 70) {
-    resultMessage = "Yaxshi ish!";
+    resultMessage = "⭐ Yaxshi natija!";
     resultEmoji = '⭐';
+    resultSubtext = "🔥 Davom eting!";
   } else if (accuracy >= 50) {
-    resultMessage = "Yaxshi harakat!";
+    resultMessage = "💪 Yaxshi harakat!";
     resultEmoji = '💪';
+    resultSubtext = "🔥 Davom eting!";
   } else {
-    resultMessage = "Mashq qiling!";
+    resultMessage = "🤔 Hechqisi yo'q!";
     resultEmoji = '📚';
+    resultSubtext = "Xato qilish — o'rganishning bir qismi.";
   }
 
   return (
@@ -44,9 +49,10 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
       <CardHeader className="text-center pb-2">
         <div className="text-6xl mb-4">{resultEmoji}</div>
         <CardTitle className="text-3xl">{resultMessage}</CardTitle>
+        <p className="text-sm text-muted-foreground mt-1">{resultSubtext}</p>
         {isLoggedIn && (
           <p className="text-2xl font-display font-bold text-primary mt-2">
-            +{score} ball
+            ⭐ +{score} ball
           </p>
         )}
       </CardHeader>
@@ -117,7 +123,7 @@ export const GameResults = ({ stats, onPlayAgain, onGoHome, isLoggedIn }: GameRe
           </Button>
           <Button variant="game" size="lg" onClick={onPlayAgain} className="flex-1">
             <RotateCcw className="h-5 w-5 mr-2" />
-            Qayta o'ynash
+            {accuracy < 50 ? "Yana urinib ko'ring" : "Keyingi topshiriq"}
           </Button>
         </div>
       </CardContent>

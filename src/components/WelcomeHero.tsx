@@ -70,8 +70,8 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-3 sm:gap-4 drop-shadow-lg">
-                  Xush kelibsiz!
-                  <span className="text-3xl sm:text-5xl animate-bounce-soft">🎉</span>
+                  Salom!
+                  <span className="text-3xl sm:text-5xl animate-wave">👋</span>
                 </span>
               )}
             </h1>
@@ -110,7 +110,7 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
             </div>
             <div className="flex flex-col items-start">
               <span className="text-lg sm:text-xl font-bold text-white tracking-wide">{timeInfo.greeting}</span>
-              <span className="text-xs sm:text-sm text-white/70 font-medium">Bugun ham mashq qilaylik!</span>
+              <span className="text-xs sm:text-sm text-white/70 font-medium">Bugungi topshiriqni bajaring!</span>
             </div>
             <span className="text-2xl sm:text-3xl animate-bounce-soft">{timeInfo.emoji}</span>
           </div>
@@ -130,7 +130,7 @@ export const WelcomeHero = ({ username }: WelcomeHeroProps) => {
           {/* Description with glass effect */}
           <div className="relative max-w-2xl">
             <p className="text-base sm:text-xl md:text-2xl font-medium text-white/90 leading-relaxed drop-shadow-lg">
-              Mental arifmetika bo'yicha treninglarni davom ettiring va o'z natijalaringizni kuzating.
+              🎯 Bugungi topshiriq: Tez va aniq hisoblash mashqlari
             </p>
           </div>
         </div>
