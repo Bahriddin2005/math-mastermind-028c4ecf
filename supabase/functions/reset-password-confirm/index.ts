@@ -112,18 +112,44 @@ const handler = async (req: Request): Promise<Response> => {
       updatePayload.email = new_email.trim();
     }
 
-    // Update password (and optionally email)
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+    // Update password first
+    const { error: pwError } = await supabaseAdmin.auth.admin.updateUserById(
       targetUser.id,
-      updatePayload
+      { password: new_password }
     );
 
-    if (updateError) {
-      console.error("Password update error:", updateError);
+    if (pwError) {
+      console.error("Password update error:", pwError);
       return new Response(
-        JSON.stringify({ success: false, error: "Ma'lumotlarni yangilashda xatolik" }),
+        JSON.stringify({ success: false, error: "Parolni yangilashda xatolik: " + pwError.message }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Update email separately if requested
+    let emailChanged = false;
+    if (updatePayload.email) {
+      const { error: emailError } = await supabaseAdmin.auth.admin.updateUserById(
+        targetUser.id,
+        { email: updatePayload.email, email_confirm: true }
+      );
+      if (emailError) {
+        console.error("Email update error:", emailError);
+        // Password was updated successfully, inform about email failure
+        await supabaseAdmin
+          .from("verification_codes")
+          .update({ is_used: true, is_verified: true })
+          .eq("id", row.id);
+        return new Response(
+          JSON.stringify({
+            success: true,
+            message: "Parol yangilandi, lekin emailni o'zgartirib bo'lmadi: " + emailError.message,
+            email_changed: false,
+          }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      emailChanged = true;
     }
 
     // Mark OTP as used
@@ -132,16 +158,16 @@ const handler = async (req: Request): Promise<Response> => {
       .update({ is_used: true, is_verified: true })
       .eq("id", row.id);
 
-    const emailChanged = updatePayload.email ? ` Email: ${updatePayload.email}` : '';
-    console.log(`Password reset successful for ${row.email}.${emailChanged}`);
+    const emailLog = emailChanged ? ` Email: ${updatePayload.email}` : '';
+    console.log(`Password reset successful for ${row.email}.${emailLog}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: updatePayload.email 
+        message: emailChanged
           ? "Parol va email muvaffaqiyatli yangilandi!" 
           : "Parol muvaffaqiyatli yangilandi!",
-        email_changed: !!updatePayload.email,
+        email_changed: emailChanged,
       }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
