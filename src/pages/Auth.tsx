@@ -1032,7 +1032,7 @@ const Auth = () => {
               <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 {mode === 'signup' && (
                   <div className="space-y-2">
-                    <Label className="text-xs sm:text-sm font-medium">Kim sifatida ro'yxatdan o'tasiz?</Label>
+                    <Label className="text-xs sm:text-sm font-medium">Platformadan kim sifatida foydalanasiz?</Label>
                     <div className="grid grid-cols-3 gap-2">
                       {[
                         { value: 'student' as const, emoji: '🧒', label: "O'quvchi", desc: "O'yinlar va mashqlar" },
