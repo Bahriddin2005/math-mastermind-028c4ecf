@@ -7,10 +7,10 @@ interface LogoProps {
 
 export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
   const sizes = {
-    sm: 'h-7 sm:h-8 w-auto',
-    md: 'h-9 sm:h-10 w-auto',
-    lg: 'h-12 sm:h-14 w-auto',
-    xl: 'h-16 sm:h-20 w-auto',
+    sm: 'h-9 w-9 sm:h-10 sm:w-10',
+    md: 'h-11 w-11 sm:h-12 sm:w-12',
+    lg: 'h-14 w-14 sm:h-16 sm:w-16',
+    xl: 'h-20 w-20 sm:h-24 sm:w-24',
   };
 
   return (
@@ -20,7 +20,8 @@ export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
         alt="IQROMAX - Mental Matematika" 
         className={`
           ${sizes[size]} 
-          object-contain 
+          object-cover
+          rounded-full
           transition-all duration-300 
           drop-shadow-sm 
           hover:drop-shadow-md
