@@ -341,15 +341,15 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       </Carousel>
 
       {/* Dot Indicators - Simplified */}
-      <div className="absolute bottom-3 xs:bottom-4 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2 xs:gap-2.5 sm:gap-2 px-3 xs:px-4 sm:px-3 py-2 xs:py-2.5 sm:py-2 bg-black/40 backdrop-blur-sm rounded-full">
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-1.5 px-2 py-1 bg-black/30 rounded-full">
         {slides.map((slide, index) => (
           <button
             key={slide.id}
             onClick={() => scrollTo(index)}
             className={`relative transition-all duration-300 rounded-full overflow-hidden ${
               current === index 
-                ? 'w-7 xs:w-8 sm:w-6 h-2.5 xs:h-3 sm:h-2' 
-                : 'w-2.5 xs:w-3 sm:w-2 h-2.5 xs:h-3 sm:h-2 hover:bg-white/60 active:scale-110'
+                ? 'w-5 h-1.5' 
+                : 'w-1.5 h-1.5 hover:bg-white/60 active:scale-110'
             }`}
             aria-label={`Slayd ${index + 1}`}
           >
