@@ -115,21 +115,18 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Check if this telegram account is already registered in profiles
-    if (telegramUser.username) {
-      const cleanUsername = telegramUser.username.replace(/^@/, "").toLowerCase();
-      const { data: existingProfile } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .eq("telegram_username", cleanUsername)
-        .maybeSingle();
+    // Check if this phone number is already registered in profiles
+    const { data: existingProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .in("phone_number", phoneCandidates)
+      .maybeSingle();
 
-      if (existingProfile) {
-        return new Response(
-          JSON.stringify({ success: false, error: "Bu Telegram akkaunt allaqachon ro'yxatdan o'tgan" }),
-          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
-      }
+    if (existingProfile) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Bu telefon raqam allaqachon ro'yxatdan o'tgan" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Generate OTP and session token
