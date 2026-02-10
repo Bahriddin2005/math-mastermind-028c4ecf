@@ -536,7 +536,7 @@ const Auth = () => {
                     <Send className="h-5 w-5 text-sky-500 mt-0.5 shrink-0" />
                     <div className="text-sm">
                       <p className="font-medium text-sky-700 dark:text-sky-300">
-                        OTP kod <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">@iqromaxuzbot <ExternalLink className="h-3 w-3" /></a> ga yuborildi
+                        OTP kod <a href="https://t.me/iqromaxbot" target="_blank" rel="noopener noreferrer" className="underline inline-flex items-center gap-1">@iqromaxbot <ExternalLink className="h-3 w-3" /></a> ga yuborildi
                       </p>
                       {otpCountdown > 0 && (
                         <p className="text-xs text-sky-600 dark:text-sky-400 mt-1">
@@ -1153,8 +1153,8 @@ const Auth = () => {
                           <p className="font-semibold text-sky-700 dark:text-sky-300">Avval Telegram botni sozlang:</p>
                           <ol className="list-decimal list-inside space-y-1 text-sky-600 dark:text-sky-400">
                             <li>
-                              <a href="https://t.me/iqromaxuzbot" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
-                                @iqromaxuzbot <ExternalLink className="h-2.5 w-2.5" />
+                              <a href="https://t.me/iqromaxbot" target="_blank" rel="noopener noreferrer" className="underline font-medium inline-flex items-center gap-0.5">
+                                @iqromaxbot <ExternalLink className="h-2.5 w-2.5" />
                               </a> ni oching
                             </li>
                             <li><span className="font-mono bg-sky-100 dark:bg-sky-900/50 px-1 rounded">/start</span> buyrug'ini yuboring</li>

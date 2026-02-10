@@ -135,7 +135,7 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({
           success: false,
           error:
-            "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxuzbot ga /start yuboring va botga telefon raqamingizni (Contact) yuboring.",
+            "Telegram foydalanuvchisi topilmadi. Iltimos, avval @iqromaxbot ga /start yuboring va botga telefon raqamingizni (Contact) yuboring.",
         }),
         {
           status: 400,
@@ -153,7 +153,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: "Telegram botga telefon raqamingizni (Contact) yubormadingiz. Iltimos, @iqromaxuzbot ga kirib 📱 tugmasini bosing.",
+          error: "Telegram botga telefon raqamingizni (Contact) yubormadingiz. Iltimos, @iqromaxbot ga kirib 📱 tugmasini bosing.",
         }),
         {
           status: 400,
