@@ -65,12 +65,21 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { telegram_username, email, phone_number }: TelegramVerificationRequest = await req.json();
 
-    if (!telegram_username || !email) {
+    if (!telegram_username || typeof telegram_username !== "string" || !email || typeof email !== "string") {
       throw new Error("Telegram username va email talab qilinadi");
+    }
+
+    // Input validation
+    if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("Email formati noto'g'ri");
     }
 
     // Clean up telegram username
     const cleanUsername = telegram_username.replace(/^@/, '').trim().toLowerCase();
+
+    if (cleanUsername.length > 32 || !/^[a-z0-9_]+$/.test(cleanUsername)) {
+      throw new Error("Telegram username noto'g'ri");
+    }
 
     // Create Supabase client with service role
     const supabaseAdmin = createClient(

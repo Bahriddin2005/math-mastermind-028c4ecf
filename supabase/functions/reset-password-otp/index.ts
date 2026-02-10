@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { telegram_username } = await req.json();
 
-    if (!telegram_username) {
+    if (!telegram_username || typeof telegram_username !== "string") {
       return new Response(
         JSON.stringify({ success: false, error: "Telegram username talab qilinadi" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -41,9 +41,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     const cleanUsername = telegram_username.replace(/^@/, "").trim().toLowerCase();
 
-    if (!cleanUsername || cleanUsername.length < 3) {
+    if (!cleanUsername || cleanUsername.length < 3 || cleanUsername.length > 32) {
       return new Response(
-        JSON.stringify({ success: false, error: "Telegram username noto'g'ri" }),
+        JSON.stringify({ success: false, error: "Telegram username noto'g'ri (3-32 belgi)" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Telegram username faqat harf, raqam va _ bo'lishi mumkin" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }

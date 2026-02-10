@@ -26,13 +26,28 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, code, consume = true }: VerifyRequest = await req.json();
 
-    if (!email || !code) {
+    if (!email || typeof email !== "string" || !code || typeof code !== "string") {
       return new Response(
         JSON.stringify({ success: false, error: "Email va kod talab qilinadi" }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
+      );
+    }
+
+    // Input validation
+    if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    if (!/^\d{6}$/.test(code)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Kod 6 raqamdan iborat bo'lishi kerak" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 

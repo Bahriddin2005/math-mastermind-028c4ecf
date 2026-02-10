@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,9 +12,63 @@ serve(async (req) => {
   }
 
   try {
+    // --- Authentication: require a valid user ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { message, faqContext, coursesContext, lessonsContext, userProgressContext, imageBase64, pdfBase64, pdfFileName } = await req.json();
+
+    // --- Input validation ---
+    if (!message && !imageBase64 && !pdfBase64) {
+      return new Response(JSON.stringify({ error: "Xabar yoki fayl talab qilinadi" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (message && typeof message === "string" && message.length > 10000) {
+      return new Response(JSON.stringify({ error: "Xabar juda uzun (max 10000 belgi)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate base64 sizes (max 5MB each)
+    const MAX_BASE64_SIZE = 5 * 1024 * 1024 * 1.37; // ~5MB in base64
+    if (imageBase64 && typeof imageBase64 === "string" && imageBase64.length > MAX_BASE64_SIZE) {
+      return new Response(JSON.stringify({ error: "Rasm hajmi juda katta (max 5MB)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (pdfBase64 && typeof pdfBase64 === "string" && pdfBase64.length > MAX_BASE64_SIZE) {
+      return new Response(JSON.stringify({ error: "PDF hajmi juda katta (max 5MB)" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
@@ -95,7 +150,6 @@ INSTRUCTIONS:
       }
 
       if (pdfBase64) {
-        // For PDF, we include it as a file for the model to process
         contentParts.push({ 
           type: "file",
           file: {

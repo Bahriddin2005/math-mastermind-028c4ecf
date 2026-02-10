@@ -68,7 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Check if OTP matches
     if (row.code !== otp_code) {
-      console.log(`OTP mismatch: expected ${row.code}, got ${otp_code}`);
+      console.log(`OTP mismatch for session: ${session_token}`);
       return new Response(
         JSON.stringify({ success: false, error: "Noto'g'ri kod. Qaytadan kiriting." }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
