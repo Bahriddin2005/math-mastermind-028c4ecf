@@ -19,6 +19,7 @@ import {
   GraduationCap, Send, ExternalLink, ShieldCheck, RefreshCw, Phone
 } from 'lucide-react';
 import { z } from 'zod';
+import { formatPhoneNumber } from '@/lib/phoneFormatter';
 
 const loginSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
@@ -56,7 +57,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('+998 ');
   const [userType, setUserType] = useState<'student' | 'parent' | 'teacher'>('student');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -83,7 +84,7 @@ const Auth = () => {
   const [verifyError, setVerifyError] = useState('');
   
   // Reset via Telegram states
-  const [resetPhoneNumber, setResetPhoneNumber] = useState('');
+  const [resetPhoneNumber, setResetPhoneNumber] = useState('+998 ');
   const [resetSessionToken, setResetSessionToken] = useState('');
   const [resetOtpInput, setResetOtpInput] = useState('');
   const [resetNewPassword, setResetNewPassword] = useState('');
@@ -678,7 +679,7 @@ const Auth = () => {
                       type="tel"
                       placeholder="+998 XX XXX XX XX"
                       value={resetPhoneNumber}
-                      onChange={(e) => { setResetPhoneNumber(e.target.value); setResetError(''); }}
+                      onChange={(e) => { setResetPhoneNumber(formatPhoneNumber(e.target.value)); setResetError(''); }}
                       disabled={resetStatus === 'sending'}
                       className="pl-10 h-11 sm:h-12"
                       autoFocus
@@ -1173,7 +1174,7 @@ const Auth = () => {
                           type="tel"
                           placeholder="+998 XX XXX XX XX"
                           value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
+                          onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
                           disabled={loading}
                           className={`pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-sky-500/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base ${errors.phoneNumber ? 'border-destructive focus-visible:ring-destructive' : ''}`}
                         />
