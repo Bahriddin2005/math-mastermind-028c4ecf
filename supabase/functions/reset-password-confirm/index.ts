@@ -18,14 +18,14 @@ const handler = async (req: Request): Promise<Response> => {
     if (!session_token || !otp_code || !new_password) {
       return new Response(
         JSON.stringify({ success: false, error: "Session token, OTP kod va yangi parol talab qilinadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
     if (!/^\d{6}$/.test(otp_code)) {
       return new Response(
         JSON.stringify({ success: false, error: "OTP kod 6 raqamdan iborat bo'lishi kerak" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -51,7 +51,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (error || !row) {
       return new Response(
         JSON.stringify({ success: false, error: "Session topilmadi" }),
-        { status: 404, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -83,7 +83,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (!targetUser) {
       return new Response(
         JSON.stringify({ success: false, error: "Foydalanuvchi topilmadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (!emailRegex.test(new_email.trim())) {
         return new Response(
           JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
-          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
       
@@ -105,7 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (otherUser) {
         return new Response(
           JSON.stringify({ success: false, error: "Bu email allaqachon boshqa akkauntga tegishli" }),
-          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
         );
       }
       
@@ -122,7 +122,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Password update error:", updateError);
       return new Response(
         JSON.stringify({ success: false, error: "Ma'lumotlarni yangilashda xatolik" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -149,7 +149,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("Error in reset-password-confirm:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };
