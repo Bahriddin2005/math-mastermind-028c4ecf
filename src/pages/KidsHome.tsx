@@ -296,6 +296,31 @@ const KidsHome = () => {
               <HeroCarousel />
             </div>
 
+            {/* Daily Task Card */}
+            <div className="container px-3 xs:px-4 py-2">
+              <Card className="p-4 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                    <Target className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">🎯 Bugungi topshiriq</p>
+                    <p className="text-xs text-muted-foreground">Tez va aniq hisoblash mashqlari</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="text-center p-2 rounded-xl bg-background/60">
+                    <p className="text-xs text-muted-foreground">⭐ Yig'ilgan ballar</p>
+                    <p className="text-lg font-bold text-primary">{profile?.total_score || 0}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-xl bg-background/60">
+                    <p className="text-xs text-muted-foreground">🏆 Bosqich</p>
+                    <p className="text-lg font-bold text-accent">{level}</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
             {/* Main Action Button */}
             <div className="container px-3 xs:px-4 py-2 sm:py-3">
               <button
@@ -303,8 +328,8 @@ const KidsHome = () => {
                 className="w-full h-14 xs:h-16 sm:h-18 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 shadow-xl hover:shadow-green-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group touch-target"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-                <span className="text-2xl sm:text-3xl">🎮</span>
-                <span className="text-base sm:text-lg font-bold text-white">O'ynab o'rgan</span>
+                <span className="text-2xl sm:text-3xl">🟢</span>
+                <span className="text-base sm:text-lg font-bold text-white">Boshlash</span>
                 <Play className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </button>
             </div>
