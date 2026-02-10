@@ -412,9 +412,25 @@ const Auth = () => {
       const { data, error } = await supabase.functions.invoke('reset-password-otp', {
         body: { phone_number: resetPhoneNumber }
       });
-      if (error || !data?.success) {
+      if (error) {
+        let errMsg = 'Xatolik yuz berdi';
+        try {
+          if (error.context && typeof error.context.json === 'function') {
+            const errorBody = await error.context.json();
+            errMsg = errorBody?.error || errMsg;
+          } else if (data?.error) {
+            errMsg = data.error;
+          } else if (error.message) {
+            errMsg = error.message;
+          }
+        } catch { /* use default */ }
         setResetStatus('error');
-        setResetError(data?.error || 'Xatolik yuz berdi');
+        setResetError(errMsg);
+        return;
+      }
+      if (data && !data.success) {
+        setResetStatus('error');
+        setResetError(data.error || 'Xatolik yuz berdi');
         return;
       }
       setResetSessionToken(data.session_token);
