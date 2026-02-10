@@ -493,7 +493,7 @@ const Auth = () => {
     setVerifyStatus('idle');
     setVerifiedTelegramData(null);
     setVerifyError('');
-    setResetPhoneNumber('');
+    setResetPhoneNumber('+998 ');
     setResetSessionToken('');
     setResetOtpInput('');
     setResetNewPassword('');
