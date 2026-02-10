@@ -118,7 +118,8 @@ const ResetPassword = () => {
       <div className="w-full max-w-md space-y-6 sm:space-y-8 relative z-10 px-1 sm:px-0">
         <div className="text-center">
           <Logo size="lg" className="mx-auto" />
-          <p className="text-muted-foreground text-xs sm:text-sm mt-2">O'yinlashtirilgan ta'lim platformasi</p>
+           <p className="text-muted-foreground text-xs sm:text-sm mt-2">O'yinlashtirilgan ta'lim platformasi</p>
+           <p className="text-muted-foreground/70 text-[10px] sm:text-xs mt-1">O'rganing. Rivojlaning. Natijani ko'ring.</p>
         </div>
 
         <Card className="animate-fade-in border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 bg-card/80 dark:bg-card/90 backdrop-blur-sm overflow-hidden">
