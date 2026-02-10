@@ -24,6 +24,12 @@ function escapeMarkdownV2(text: string): string {
   return text.replace(/[_*\[\]()~`>#+=|{}.!\\-]/g, "\\$&");
 }
 
+const okJson = (body: Record<string, unknown>) =>
+  new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -33,34 +39,21 @@ const handler = async (req: Request): Promise<Response> => {
     const { email, phone_number } = await req.json();
 
     if (!email || typeof email !== "string") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Email talab qilinadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Email talab qilinadi" });
     }
 
     if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Email formati noto'g'ri" });
     }
 
     if (!phone_number || typeof phone_number !== "string") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Telefon raqam talab qilinadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Telefon raqam talab qilinadi" });
     }
 
-    // Normalize phone number - strip everything except digits
     const inputDigits = phone_number.replace(/[^\d]/g, "");
 
     if (inputDigits.length < 9 || inputDigits.length > 15) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Telefon raqam noto'g'ri" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Telefon raqam noto'g'ri" });
     }
 
     const supabaseAdmin = createClient(
@@ -71,24 +64,19 @@ const handler = async (req: Request): Promise<Response> => {
     const botToken = Deno.env.get("TELEGRAM_BOT_TOKEN");
     if (!botToken) {
       console.error("TELEGRAM_BOT_TOKEN not configured");
-      return new Response(
-        JSON.stringify({ success: false, error: "Bot sozlanmagan" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Bot sozlanmagan" });
     }
 
     // Check if email is already registered
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
     const emailExists = existingUsers?.users?.some(u => u.email === email);
     if (emailExists) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Bu email allaqachon ro'yxatdan o'tgan" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Bu email allaqachon ro'yxatdan o'tgan" });
     }
 
-    // Build phone number candidates for matching
+    // Build phone number candidates (with and without spaces/formatting)
     const phoneCandidates = Array.from(new Set([
+      phone_number.trim(),
       inputDigits,
       `+${inputDigits}`,
       inputDigits.startsWith("998") ? inputDigits : `998${inputDigits}`,
@@ -105,14 +93,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (lookupError || !telegramUser) {
       console.log(`Telegram user not found by phone: ${inputDigits}`);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: `Bu telefon raqam bilan Telegram foydalanuvchi topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
-          error_code: "telegram_user_not_found",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({
+        success: false,
+        error: `Bu telefon raqam bilan Telegram foydalanuvchi topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
+        error_code: "telegram_user_not_found",
+      });
     }
 
     // Check if this phone number is already registered in profiles
@@ -123,16 +108,13 @@ const handler = async (req: Request): Promise<Response> => {
       .maybeSingle();
 
     if (existingProfile) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Bu telefon raqam allaqachon ro'yxatdan o'tgan" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "Bu telefon raqam allaqachon ro'yxatdan o'tgan" });
     }
 
     // Generate OTP and session token
     const code = generateCode();
     const sessionToken = generateSessionToken();
-    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
+    const expiresAt = new Date(Date.now() + 3 * 60 * 1000);
 
     // Delete any existing unused codes for this email
     await supabaseAdmin
@@ -159,10 +141,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      return new Response(
-        JSON.stringify({ success: false, error: "OTP yaratishda xatolik" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({ success: false, error: "OTP yaratishda xatolik" });
     }
 
     // Send OTP to user via Telegram Bot API
@@ -186,32 +165,23 @@ const handler = async (req: Request): Promise<Response> => {
     if (!telegramRes.ok) {
       const errText = await telegramRes.text();
       console.error("Telegram send error:", errText);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Telegram ga xabar yuborishda xatolik. Botga /start yuborganingizga ishonch hosil qiling.",
-        }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return okJson({
+        success: false,
+        error: "Telegram ga xabar yuborishda xatolik. Botga /start yuborganingizga ishonch hosil qiling.",
+      });
     }
 
     console.log(`OTP sent to phone ${inputDigits} (chat_id: ${telegramUser.chat_id})`);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        session_token: sessionToken,
-        expires_in: 180,
-        message: "OTP kod Telegram ga yuborildi",
-      }),
-      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return okJson({
+      success: true,
+      session_token: sessionToken,
+      expires_in: 180,
+      message: "OTP kod Telegram ga yuborildi",
+    });
   } catch (error: any) {
     console.error("Error in generate-otp:", error);
-    return new Response(
-      JSON.stringify({ success: false, error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-    );
+    return okJson({ success: false, error: error.message });
   }
 };
 

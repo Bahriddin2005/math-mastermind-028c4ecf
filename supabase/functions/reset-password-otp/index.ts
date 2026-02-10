@@ -35,7 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (!phone_number || typeof phone_number !== "string") {
       return new Response(
         JSON.stringify({ success: false, error: "Telefon raqam talab qilinadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -44,7 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (inputDigits.length < 9 || inputDigits.length > 15) {
       return new Response(
         JSON.stringify({ success: false, error: "Telefon raqam noto'g'ri" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -57,12 +57,13 @@ const handler = async (req: Request): Promise<Response> => {
     if (!botToken) {
       return new Response(
         JSON.stringify({ success: false, error: "Bot sozlanmagan" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Build phone number candidates
+    // Build phone number candidates (with and without spaces/formatting)
     const phoneCandidates = Array.from(new Set([
+      phone_number.trim(),
       inputDigits,
       `+${inputDigits}`,
       inputDigits.startsWith("998") ? inputDigits : `998${inputDigits}`,
@@ -84,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
           success: false,
           error: `Bu telefon raqam bilan ro'yxatdan o'tgan akkaunt topilmadi`,
         }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -93,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (userError || !userData?.user?.email) {
       return new Response(
         JSON.stringify({ success: false, error: "Foydalanuvchi ma'lumotlari topilmadi" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -111,7 +112,7 @@ const handler = async (req: Request): Promise<Response> => {
           success: false,
           error: `Telegram akkaunt topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
         }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -146,7 +147,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Insert error:", insertError);
       return new Response(
         JSON.stringify({ success: false, error: "OTP yaratishda xatolik" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -173,7 +174,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Telegram send error:", errText);
       return new Response(
         JSON.stringify({ success: false, error: "Telegram ga xabar yuborishda xatolik" }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -193,7 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("Error in reset-password-otp:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };
