@@ -215,10 +215,10 @@ const LessonStats = () => {
           {/* Header */}
           <div>
             <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">
-              Dars statistikasi
+              📋 Kunlik hisobot
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Video darslar va kurslar bo'yicha progress
+              Bugun farzandingiz: ✔️ Mashqlar bajardi · ✔️ Ball to'pladi · ✔️ Faol qatnashdi
             </p>
           </div>
 

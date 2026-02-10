@@ -383,10 +383,10 @@ const ParentDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl sm:text-2xl font-display font-bold text-foreground">
-                Ota-ona paneli
+                Xush kelibsiz! 👋
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                {childStats.username} ning statistikasi
+                Farzandingiz rivojini shu yerda kuzatishingiz mumkin
               </p>
             </div>
             <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
@@ -398,12 +398,31 @@ const ParentDashboard = () => {
             </div>
           </div>
 
+          {/* Child Info Card */}
+          <Card className="border-blue-200 dark:border-blue-800/40 bg-gradient-to-br from-blue-50/60 to-white dark:from-blue-950/20 dark:to-card">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-md">
+                  <span className="text-2xl">👶</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground">Farzand</p>
+                  <p className="font-display font-bold text-base sm:text-lg">{childStats.username}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Daraja</p>
+                  <p className="font-display font-bold text-lg sm:text-xl text-primary">{level}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Today's Progress Card */}
           <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                Bugungi natija
+                📊 Bugungi mashg'ulotlar
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -451,8 +470,9 @@ const ParentDashboard = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-kid-yellow" />
-                  Tavsiyalar
+                  💡 Tavsiyalar
                 </CardTitle>
+                <p className="text-xs text-muted-foreground">📌 Bugun foydali bo'ladi</p>
               </CardHeader>
               <CardContent className="space-y-2">
                 {recommendations.map((rec, index) => (
@@ -482,7 +502,7 @@ const ParentDashboard = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  Haftalik taqqoslash
+                  📈 Rivojlanish ko'rsatkichlari
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -531,8 +551,9 @@ const ParentDashboard = () => {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                Oxirgi 7 kun
+                📅 Kunlik hisobot
               </CardTitle>
+              <p className="text-xs text-muted-foreground">Oxirgi 7 kunlik mashg'ulotlar</p>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
