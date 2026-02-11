@@ -53,6 +53,8 @@ const Terms = lazy(() => import("@/pages/Terms"));
 const About = lazy(() => import("@/pages/About"));
 const AbacusSimulator = lazy(() => import("@/pages/AbacusSimulator"));
 const AbacusPractice = lazy(() => import("@/pages/AbacusPractice"));
+const LiveSessions = lazy(() => import("@/pages/LiveSessions"));
+const LiveClassroom = lazy(() => import("@/pages/LiveClassroom"));
 
 // Lazy load heavy widgets
 const HelpChatWidget = lazy(() => import("@/components/HelpChatWidget").then(m => ({ default: m.HelpChatWidget })));
@@ -134,6 +136,8 @@ const App = () => (
                       <Route path="/about" element={<About />} />
                       <Route path="/abacus-simulator" element={<AbacusSimulator />} />
                       <Route path="/abacus-practice" element={<ProtectedRoute><AbacusPractice /></ProtectedRoute>} />
+                      <Route path="/live-sessions" element={<ProtectedRoute><LiveSessions /></ProtectedRoute>} />
+                      <Route path="/live/:sessionId" element={<ProtectedRoute><LiveClassroom /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>

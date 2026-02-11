@@ -776,6 +776,101 @@ export type Database = {
           },
         ]
       }
+      live_session_participants: {
+        Row: {
+          created_at: string
+          id: string
+          is_hand_raised: boolean | null
+          is_muted: boolean | null
+          joined_at: string | null
+          left_at: string | null
+          role: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_hand_raised?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string | null
+          left_at?: string | null
+          role?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_hand_raised?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string | null
+          left_at?: string | null
+          role?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_session_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_sessions: {
+        Row: {
+          created_at: string
+          description: string | null
+          ended_at: string | null
+          id: string
+          is_recurring: boolean | null
+          max_participants: number | null
+          recurrence_rule: string | null
+          room_name: string
+          scheduled_at: string | null
+          started_at: string | null
+          status: string
+          teacher_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          ended_at?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          max_participants?: number | null
+          recurrence_rule?: string | null
+          room_name: string
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          teacher_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          ended_at?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          max_participants?: number | null
+          recurrence_rule?: string | null
+          room_name?: string
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          teacher_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       math_examples: {
         Row: {
           answer: number

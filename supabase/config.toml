@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.reset-password-confirm]
 verify_jwt = false
+
+[functions.livekit-token]
+verify_jwt = false
