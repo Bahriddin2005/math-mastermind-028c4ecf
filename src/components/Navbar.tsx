@@ -121,10 +121,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
     // Student (default)
     return [
       { path: '/', icon: Home, label: "Uy", emoji: "🏠" },
-      { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
+      { path: '/subjects', icon: BookOpen, label: "Fanlar", emoji: "📚" },
       { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
       { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
-      { path: '/courses', icon: GraduationCap, label: "Darslar", emoji: "📚" },
+      { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
     ];
   };
 
