@@ -425,6 +425,7 @@ export const NumberTrainer = () => {
   }, [voiceEnabled]);
 
   // O'yin holati
+  const [countdown, setCountdown] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
@@ -852,8 +853,8 @@ export const NumberTrainer = () => {
     return { num: finalNumber, isAdd: randomOp.isAdd };
   }, [formulaType, digitCount]);
 
-  // O'yinni boshlash
-  const startGame = useCallback(() => {
+  // Haqiqiy o'yinni boshlash (countdown tugagandan keyin)
+  const startGameActual = useCallback(() => {
     // Ko'paytirish yoki Bo'lish rejimida boshqacha boshlanadi
     if (formulaType === 'kopaytirish' || formulaType === 'bolish') {
       runningResultRef.current = 0;
@@ -961,6 +962,25 @@ export const NumberTrainer = () => {
       }
     }, speedMs);
   }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
+
+  // O'yinni boshlash - countdown bilan
+  const startGame = useCallback(() => {
+    const steps = ['Tayyormisiz?', '3', '2', '1', 'Boshladik!'];
+    let i = 0;
+    setCountdown(steps[i]);
+    playSound('tick');
+    const countdownInterval = setInterval(() => {
+      i++;
+      if (i < steps.length) {
+        setCountdown(steps[i]);
+        playSound('tick');
+      } else {
+        clearInterval(countdownInterval);
+        setCountdown(null);
+        startGameActual();
+      }
+    }, 800);
+  }, [startGameActual, playSound]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
@@ -1088,6 +1108,27 @@ export const NumberTrainer = () => {
     ? Math.round((stats.correctAnswers / stats.totalProblems) * 100) 
     : 0;
 
+
+  // Countdown ekrani
+  if (countdown !== null) {
+    const isNumber = ['3', '2', '1'].includes(countdown);
+    return (
+      <div className="fixed inset-0 bg-gradient-to-b from-background via-primary/10 to-primary/20 dark:from-slate-950 dark:via-primary/20 dark:to-primary/30 flex items-center justify-center z-50">
+        <div className="text-center animate-in fade-in-0 zoom-in-75 duration-300" key={countdown}>
+          <span 
+            className={`font-black leading-none text-primary drop-shadow-2xl block ${
+              isNumber 
+                ? 'text-[200px] sm:text-[300px] md:text-[400px]' 
+                : 'text-4xl sm:text-6xl md:text-7xl'
+            }`}
+            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+          >
+            {countdown}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   // O'yin davomida - yangi dizayn, pastroqda ko'rsatish
   if (isRunning && currentDisplay !== null) {
