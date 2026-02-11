@@ -343,31 +343,40 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
 
       {/* Participants sidebar */}
       {showParticipants && (
-        <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-b from-card via-card to-card/90 backdrop-blur-2xl border-l border-border/30 shadow-[-8px_0_30px_-10px_rgba(0,0,0,0.15)] z-10 overflow-y-auto">
-          <div className="p-5">
+        <div className="absolute right-0 top-0 bottom-0 w-80 bg-card backdrop-blur-2xl border-l border-border/30 shadow-[-8px_0_30px_-10px_rgba(0,0,0,0.2)] z-10 overflow-hidden flex flex-col">
+          {/* Decorative top accent */}
+          <div className="h-1 w-full bg-gradient-to-r from-primary/60 via-primary to-primary/60 shrink-0" />
+
+          <div className="p-5 flex flex-col flex-1 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/30">
+            <div className="flex items-center justify-between mb-5 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shadow-sm">
-                  <Users className="w-5 h-5 text-primary" />
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Users className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <div className="space-y-0.5">
-                  <h3 className="font-extrabold text-sm tracking-tight">Ishtirokchilar</h3>
-                  <p className="text-[11px] text-muted-foreground font-medium">{participants.length} nafar onlayn</p>
+                <div className="space-y-1">
+                  <h3 className="font-extrabold text-[15px] tracking-tight leading-none">Ishtirokchilar</h3>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
+                    <p className="text-[11px] text-muted-foreground font-semibold">{participants.length} nafar onlayn</p>
+                  </div>
                 </div>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+                className="h-9 w-9 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                 onClick={() => setShowParticipants(false)}
               >
                 <X className="w-4 h-4" />
               </Button>
             </div>
 
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-border/60 to-transparent mb-4 shrink-0" />
+
             {/* Participants list */}
-            <div className="space-y-1.5">
+            <div className="space-y-1 overflow-y-auto flex-1 pr-1 -mr-1">
               {participants.map((p, idx) => {
                 const initial = (p.name || p.identity).charAt(0).toUpperCase();
                 const colors = [
@@ -382,26 +391,26 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
                 return (
                   <div 
                     key={p.identity} 
-                    className="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted/50 transition-all duration-300 group cursor-default border border-transparent hover:border-border/40 hover:shadow-sm"
+                    className="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted/50 transition-all duration-300 group cursor-default border border-transparent hover:border-border/40 hover:shadow-md"
                   >
-                    <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-sm font-extrabold shadow-md shrink-0 ring-2 ring-white/10`}>
-                      {initial}
+                    <div className="relative shrink-0">
+                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-sm font-extrabold shadow-lg ring-2 ring-background`}>
+                        {initial}
+                      </div>
+                      <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card ${p.isMicrophoneEnabled ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]' : 'bg-muted-foreground/40'}`} />
                     </div>
-                    <div className="flex-1 min-w-0 space-y-0.5">
+                    <div className="flex-1 min-w-0 space-y-1">
                       <p className="text-[13px] font-bold tracking-tight truncate text-foreground leading-none">
                         {p.name || p.identity}
                       </p>
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-1.5 h-1.5 rounded-full ${p.isMicrophoneEnabled ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/40'}`} />
-                        <p className="text-[11px] font-medium text-muted-foreground leading-none">
-                          {p.isMicrophoneEnabled ? 'Mikrofon yoqiq' : 'Ovozi o\'chiq'}
-                        </p>
-                      </div>
+                      <p className="text-[11px] font-medium text-muted-foreground leading-none">
+                        {p.isMicrophoneEnabled ? '🎙️ Mikrofon yoqiq' : '🔇 Ovozi o\'chiq'}
+                      </p>
                     </div>
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 ${
                       p.isMicrophoneEnabled 
-                        ? 'bg-emerald-500/15 text-emerald-500' 
-                        : 'bg-muted/80 text-muted-foreground/60'
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 shadow-sm' 
+                        : 'bg-muted/60 text-muted-foreground/50'
                     }`}>
                       {p.isMicrophoneEnabled 
                         ? <Mic className="w-4 h-4" /> 
@@ -415,9 +424,12 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
 
             {/* Empty state */}
             {participants.length === 0 && (
-              <div className="text-center py-10">
-                <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Hali hech kim qo'shilmadi</p>
+              <div className="text-center py-14 flex-1 flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-3xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-muted-foreground/30" />
+                </div>
+                <p className="text-sm font-semibold text-muted-foreground">Hali hech kim qo'shilmadi</p>
+                <p className="text-[11px] text-muted-foreground/60 mt-1">Ishtirokchilar bu yerda ko'rinadi</p>
               </div>
             )}
           </div>
