@@ -115,6 +115,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
         { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
         { path: '/courses', icon: GraduationCap, label: "Kurslar", emoji: "📚" },
+        { path: '/wallet', icon: Wallet, label: "Hamyon", emoji: "💰" },
         { path: '/lesson-stats', icon: FileText, label: "Hisobot", emoji: "📋" },
       ];
     }
