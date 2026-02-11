@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Video, Calendar, Users, Clock, ArrowRight } from 'lucide-react';
+import { Plus, Video, Calendar, Users, Clock, ArrowRight, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 const LiveSessions = () => {
@@ -105,6 +105,29 @@ const LiveSessions = () => {
 
   const handleJoinSession = (session: any) => {
     navigate(`/live/${session.id}`);
+  };
+
+  const handleDeleteSession = async (sessionId: string) => {
+    if (!confirm("Bu sessiyani o'chirishni xohlaysizmi?")) return;
+
+    // Delete participants first
+    await supabase
+      .from('live_session_participants')
+      .delete()
+      .eq('session_id', sessionId);
+
+    const { error } = await supabase
+      .from('live_sessions')
+      .delete()
+      .eq('id', sessionId);
+
+    if (error) {
+      toast.error("O'chirishda xatolik yuz berdi");
+      console.error(error);
+    } else {
+      toast.success("Sessiya o'chirildi");
+      fetchSessions();
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -226,7 +249,7 @@ const LiveSessions = () => {
                       </div>
                     </div>
 
-                    <div>
+                    <div className="flex items-center gap-2">
                       {session.status === 'live' ? (
                         <Button onClick={() => handleJoinSession(session)} className="gap-1">
                           <ArrowRight className="w-4 h-4" /> Kirish
@@ -237,6 +260,16 @@ const LiveSessions = () => {
                         </Button>
                       ) : (
                         <Badge variant="outline">Kutilmoqda</Badge>
+                      )}
+                      {(session.teacher_id === user?.id || isAdmin) && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          onClick={() => handleDeleteSession(session.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       )}
                     </div>
                   </div>
