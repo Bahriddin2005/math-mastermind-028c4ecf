@@ -84,7 +84,8 @@ const LiveClassroom = () => {
         .eq('session_id', sessionId)
         .eq('user_id', user.id);
     }
-    navigate(-1);
+    // Use replace to prevent going back to the live room
+    navigate('/live-sessions', { replace: true });
   }, [sessionId, user, navigate]);
 
   if (loading) {
