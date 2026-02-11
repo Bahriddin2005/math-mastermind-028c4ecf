@@ -90,9 +90,15 @@ const LiveClassroom = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Xonaga ulanmoqda...</p>
+        <div className="text-center space-y-5">
+          <div className="relative w-16 h-16 mx-auto">
+            <div className="w-16 h-16 border-4 border-primary/10 rounded-full" />
+            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-primary rounded-full animate-spin" />
+          </div>
+          <div>
+            <p className="text-base font-semibold text-foreground">Xonaga ulanmoqda</p>
+            <p className="text-sm text-muted-foreground mt-1">Iltimos, kuting...</p>
+          </div>
         </div>
       </div>
     );
@@ -101,12 +107,17 @@ const LiveClassroom = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center space-y-4">
-            <div className="text-4xl">❌</div>
-            <h2 className="text-xl font-bold">{error}</h2>
-            <Button onClick={() => navigate(-1)} variant="outline">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Orqaga
+        <Card className="max-w-md w-full border-destructive/20 shadow-lg">
+          <CardContent className="pt-8 pb-8 text-center space-y-5">
+            <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center mx-auto">
+              <X className="w-8 h-8 text-destructive" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">{error}</h2>
+              <p className="text-sm text-muted-foreground mt-1.5">Sessiyaga ulanishda muammo yuz berdi</p>
+            </div>
+            <Button onClick={() => navigate(-1)} variant="outline" className="gap-2">
+              <ArrowLeft className="w-4 h-4" /> Orqaga qaytish
             </Button>
           </CardContent>
         </Card>
@@ -119,22 +130,26 @@ const LiveClassroom = () => {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-card">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b bg-card/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={handleDisconnect}>
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl hover:bg-muted" onClick={handleDisconnect}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <div>
-            <h1 className="font-bold text-sm md:text-base truncate max-w-[200px] md:max-w-none">
+          <div className="space-y-0.5">
+            <h1 className="font-bold text-sm md:text-base truncate max-w-[200px] md:max-w-none leading-tight">
               {sessionInfo?.title}
             </h1>
-            <div className="flex items-center gap-2">
-              <Badge variant={isTeacher ? "default" : "secondary"} className="text-xs">
-                {isTeacher ? "O'qituvchi" : "O'quvchi"}
+            <div className="flex items-center gap-1.5">
+              <Badge 
+                variant={isTeacher ? "default" : "secondary"} 
+                className="text-[10px] px-2 py-0 h-5 font-semibold rounded-md"
+              >
+                {isTeacher ? "👨‍🏫 O'qituvchi" : "📖 O'quvchi"}
               </Badge>
-              <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600">
-                🔴 Jonli
-              </Badge>
+              <div className="flex items-center gap-1 px-2 py-0 h-5 rounded-md bg-destructive/10 text-destructive text-[10px] font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" />
+                Jonli
+              </div>
             </div>
           </div>
         </div>
@@ -258,13 +273,13 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
       </div>
 
       {/* Custom controls bar */}
-      <div className="flex items-center justify-center gap-2 p-3 bg-card border-t">
+      <div className="flex items-center justify-center gap-2 p-3 bg-card/80 backdrop-blur-sm border-t">
         {!isTeacher && (
           <Button
             variant="outline"
             size="sm"
             onClick={handleRaiseHand}
-            className="gap-1"
+            className="gap-1.5 rounded-xl h-9 px-4 text-xs font-semibold"
           >
             <Hand className="w-4 h-4" />
             <span className="hidden md:inline">Qo'l ko'tarish</span>
@@ -275,10 +290,10 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
           variant="outline"
           size="sm"
           onClick={() => setShowParticipants(!showParticipants)}
-          className="gap-1"
+          className="gap-1.5 rounded-xl h-9 px-4 text-xs font-semibold"
         >
           <Users className="w-4 h-4" />
-          <span>{participants.length}</span>
+          <span className="font-bold">{participants.length}</span>
         </Button>
 
         {isTeacher && (
@@ -287,14 +302,15 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
               variant={showAbacus ? "default" : "outline"}
               size="sm"
               onClick={() => toggleAbacusForAll(!showAbacus)}
-              className="gap-1"
+              className="gap-1.5 rounded-xl h-9 px-4 text-xs font-semibold"
             >
               <Calculator className="w-4 h-4" />
               <span className="hidden md:inline">Abakus</span>
             </Button>
-            <Badge variant="outline" className="gap-1 text-xs">
-              <Shield className="w-3 h-3" /> Moderator
-            </Badge>
+            <div className="flex items-center gap-1.5 px-3 h-8 rounded-xl bg-primary/5 border border-primary/10 text-primary text-[11px] font-semibold">
+              <Shield className="w-3.5 h-3.5" />
+              Moderator
+            </div>
           </>
         )}
 
@@ -304,7 +320,7 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
             variant="outline"
             size="sm"
             onClick={() => setShowAbacus(true)}
-            className="gap-1"
+            className="gap-1.5 rounded-xl h-9 px-4 text-xs font-semibold"
           >
             <Calculator className="w-4 h-4" />
             <span className="hidden md:inline">Abakus</span>
