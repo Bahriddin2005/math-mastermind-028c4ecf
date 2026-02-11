@@ -369,25 +369,30 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
                 return (
                   <div 
                     key={p.identity} 
-                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted/60 transition-all duration-200 group cursor-default"
+                    className="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted/50 transition-all duration-300 group cursor-default border border-transparent hover:border-border/40 hover:shadow-sm"
                   >
-                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0`}>
+                    <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-sm font-extrabold shadow-md shrink-0 ring-2 ring-white/10`}>
                       {initial}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate">{p.name || p.identity}</p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {p.isMicrophoneEnabled ? 'Mikrofon yoqiq' : 'Ovozi o\'chiq'}
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      <p className="text-[13px] font-bold tracking-tight truncate text-foreground leading-none">
+                        {p.name || p.identity}
                       </p>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${p.isMicrophoneEnabled ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/40'}`} />
+                        <p className="text-[11px] font-medium text-muted-foreground leading-none">
+                          {p.isMicrophoneEnabled ? 'Mikrofon yoqiq' : 'Ovozi o\'chiq'}
+                        </p>
+                      </div>
                     </div>
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
                       p.isMicrophoneEnabled 
-                        ? 'bg-emerald-500/10 text-emerald-500' 
-                        : 'bg-muted text-muted-foreground'
+                        ? 'bg-emerald-500/15 text-emerald-500' 
+                        : 'bg-muted/80 text-muted-foreground/60'
                     }`}>
                       {p.isMicrophoneEnabled 
-                        ? <Mic className="w-3.5 h-3.5" /> 
-                        : <MicOff className="w-3.5 h-3.5" />
+                        ? <Mic className="w-4 h-4" /> 
+                        : <MicOff className="w-4 h-4" />
                       }
                     </div>
                   </div>
