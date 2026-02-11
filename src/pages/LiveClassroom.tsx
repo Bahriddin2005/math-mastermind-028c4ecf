@@ -360,7 +360,7 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <h3 className="font-extrabold text-base tracking-tight leading-none">Ishtirokchilar</h3>
+                  <h3 className="font-extrabold text-base tracking-tight leading-none text-foreground">Ishtirokchilar</h3>
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2.5 w-2.5">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
