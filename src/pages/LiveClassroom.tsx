@@ -292,7 +292,11 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
         <Button
           variant={showParticipants ? "default" : "outline"}
           size="sm"
-          onClick={() => setShowParticipants(!showParticipants)}
+          onClick={() => {
+            const next = !showParticipants;
+            setShowParticipants(next);
+            if (next) setShowAbacus(false);
+          }}
           className="gap-2 rounded-2xl h-10 px-5 text-xs font-bold transition-all duration-300"
         >
           <Users className="w-4 h-4" />
@@ -304,7 +308,11 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
             <Button
               variant={showAbacus ? "default" : "outline"}
               size="sm"
-              onClick={() => toggleAbacusForAll(!showAbacus)}
+              onClick={() => {
+                const next = !showAbacus;
+                toggleAbacusForAll(next);
+                if (next) setShowParticipants(false);
+              }}
               className="gap-2 rounded-2xl h-10 px-5 text-xs font-bold transition-all duration-300"
             >
               <Calculator className="w-4 h-4" />
@@ -321,7 +329,10 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowAbacus(true)}
+            onClick={() => {
+              setShowAbacus(true);
+              setShowParticipants(false);
+            }}
             className="gap-2 rounded-2xl h-10 px-5 text-xs font-bold transition-all duration-300"
           >
             <Calculator className="w-4 h-4" />
