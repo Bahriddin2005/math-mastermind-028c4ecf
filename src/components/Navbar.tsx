@@ -111,12 +111,12 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
     }
     if (isTeacher) {
       return [
-        { path: '/', icon: Home, label: "Bosh sahifa", emoji: "🏠" },
-        { path: '/live-sessions', icon: Video, label: "Live dars", emoji: "📹" },
+        { path: '/', icon: Home, label: "Uy", emoji: "🏠" },
+        { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
         { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
-        { path: '/courses', icon: GraduationCap, label: "Kurslar", emoji: "📚" },
+        { path: '/courses', icon: GraduationCap, label: "Kurs", emoji: "📚" },
         { path: '/wallet', icon: Wallet, label: "Hamyon", emoji: "💰" },
-        { path: '/lesson-stats', icon: FileText, label: "Hisobotlar", emoji: "📋" },
+        { path: '/lesson-stats', icon: FileText, label: "Hisobot", emoji: "📋" },
       ];
     }
     // Student (default)
