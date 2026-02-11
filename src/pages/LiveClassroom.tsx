@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Video, VideoOff, Mic, MicOff, Hand, Users, LogOut, Shield, Calculator } from 'lucide-react';
+import { ArrowLeft, Video, VideoOff, Mic, MicOff, Hand, Users, LogOut, Shield, Calculator, X } from 'lucide-react';
 import { LiveAbacus } from '@/components/LiveAbacus';
 import {
   LiveKitRoom,
@@ -314,26 +314,78 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
 
       {/* Participants sidebar */}
       {showParticipants && (
-        <div className="absolute right-0 top-0 bottom-0 w-72 bg-card border-l shadow-xl z-10 overflow-y-auto">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold">Ishtirokchilar ({participants.length})</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowParticipants(false)}>✕</Button>
-            </div>
-            <div className="space-y-2">
-              {participants.map((p) => (
-                <div key={p.identity} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold">
-                    {(p.name || p.identity).charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{p.name || p.identity}</p>
-                  </div>
-                  {p.isMicrophoneEnabled && <Mic className="w-3 h-3 text-green-500" />}
-                  {!p.isMicrophoneEnabled && <MicOff className="w-3 h-3 text-muted-foreground" />}
+        <div className="absolute right-0 top-0 bottom-0 w-80 bg-gradient-to-b from-card to-card/95 backdrop-blur-xl border-l border-border/50 shadow-2xl z-10 overflow-y-auto">
+          <div className="p-5">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="w-4 h-4 text-primary" />
                 </div>
-              ))}
+                <div>
+                  <h3 className="font-bold text-sm">Ishtirokchilar</h3>
+                  <p className="text-[11px] text-muted-foreground">{participants.length} nafar onlayn</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors"
+                onClick={() => setShowParticipants(false)}
+              >
+                <X className="w-3.5 h-3.5" />
+              </Button>
             </div>
+
+            {/* Participants list */}
+            <div className="space-y-1.5">
+              {participants.map((p, idx) => {
+                const initial = (p.name || p.identity).charAt(0).toUpperCase();
+                const colors = [
+                  'from-blue-500 to-cyan-400',
+                  'from-violet-500 to-purple-400',
+                  'from-amber-500 to-orange-400',
+                  'from-emerald-500 to-teal-400',
+                  'from-rose-500 to-pink-400',
+                ];
+                const gradientClass = colors[idx % colors.length];
+
+                return (
+                  <div 
+                    key={p.identity} 
+                    className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted/60 transition-all duration-200 group cursor-default"
+                  >
+                    <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white text-sm font-bold shadow-sm shrink-0`}>
+                      {initial}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{p.name || p.identity}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {p.isMicrophoneEnabled ? 'Mikrofon yoqiq' : 'Ovozi o\'chiq'}
+                      </p>
+                    </div>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                      p.isMicrophoneEnabled 
+                        ? 'bg-emerald-500/10 text-emerald-500' 
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {p.isMicrophoneEnabled 
+                        ? <Mic className="w-3.5 h-3.5" /> 
+                        : <MicOff className="w-3.5 h-3.5" />
+                      }
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Empty state */}
+            {participants.length === 0 && (
+              <div className="text-center py-10">
+                <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground">Hali hech kim qo'shilmadi</p>
+              </div>
+            )}
           </div>
         </div>
       )}
