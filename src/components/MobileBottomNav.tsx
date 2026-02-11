@@ -24,10 +24,10 @@ const getNavItems = (role: string | null) => {
   // Student (default)
   return [
     { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
-    { icon: Video, label: "Live", path: "/live-sessions", emoji: "📹" },
+    { icon: BookOpen, label: "Fanlar", path: "/subjects", emoji: "📚" },
     { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
     { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
-    { icon: BookOpen, label: "Darslar", path: "/courses", emoji: "📚" },
+    { icon: Video, label: "Live", path: "/live-sessions", emoji: "📹" },
   ];
 };
 
