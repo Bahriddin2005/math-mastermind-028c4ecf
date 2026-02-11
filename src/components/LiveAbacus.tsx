@@ -88,11 +88,11 @@ export const LiveAbacus = ({ sessionId, isTeacher, onClose }: LiveAbacusProps) =
               {isTeacher ? "Boshqaruvchi" : "Kuzatuvchi"}
             </Badge>
           </div>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpanded(e => !e)}>
+          <div className="flex items-center gap-1.5">
+            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/50 bg-muted/50 text-foreground hover:bg-muted" onClick={() => setExpanded(e => !e)}>
               {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
+            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/50 bg-muted/50 text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
           </div>
