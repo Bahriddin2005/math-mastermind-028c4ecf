@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Video, VideoOff, Mic, MicOff, Hand, Users, LogOut, Shield } from 'lucide-react';
+import { ArrowLeft, Video, VideoOff, Mic, MicOff, Hand, Users, LogOut, Shield, Calculator } from 'lucide-react';
+import { LiveAbacus } from '@/components/LiveAbacus';
 import {
   LiveKitRoom,
   VideoConference,
@@ -162,6 +163,7 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
   const room = useRoomContext();
   const participants = useParticipants();
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showAbacus, setShowAbacus] = useState(false);
 
   // Subscribe to realtime participant updates (hand raise, mute)
   useEffect(() => {
@@ -206,11 +208,53 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
     toast.success(current?.is_hand_raised ? "Qo'l tushirildi" : "Qo'l ko'tarildi");
   };
 
+  // Listen for teacher opening abacus via broadcast
+  useEffect(() => {
+    const channel = supabase.channel(`live-abacus-ctrl-${sessionId}`, {
+      config: { broadcast: { self: false } },
+    });
+    channel.on('broadcast', { event: 'abacus-toggle' }, (payload) => {
+      if (payload.payload?.open !== undefined) {
+        setShowAbacus(payload.payload.open);
+      }
+    });
+    channel.subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [sessionId]);
+
+  // Teacher broadcasts abacus open/close
+  const toggleAbacusForAll = useCallback((open: boolean) => {
+    setShowAbacus(open);
+    const channel = supabase.channel(`live-abacus-ctrl-${sessionId}`);
+    channel.subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        channel.send({
+          type: 'broadcast',
+          event: 'abacus-toggle',
+          payload: { open },
+        });
+        setTimeout(() => supabase.removeChannel(channel), 500);
+      }
+    });
+  }, [sessionId]);
+
   return (
     <div className="h-full flex flex-col">
       {/* Video area */}
       <div className="flex-1 relative">
         <VideoConference />
+
+        {/* Live Abacus overlay */}
+        {showAbacus && (
+          <LiveAbacus
+            sessionId={sessionId}
+            isTeacher={isTeacher}
+            onClose={() => {
+              if (isTeacher) toggleAbacusForAll(false);
+              else setShowAbacus(false);
+            }}
+          />
+        )}
       </div>
 
       {/* Custom controls bar */}
@@ -238,9 +282,33 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
         </Button>
 
         {isTeacher && (
-          <Badge variant="outline" className="gap-1 text-xs">
-            <Shield className="w-3 h-3" /> Moderator
-          </Badge>
+          <>
+            <Button
+              variant={showAbacus ? "default" : "outline"}
+              size="sm"
+              onClick={() => toggleAbacusForAll(!showAbacus)}
+              className="gap-1"
+            >
+              <Calculator className="w-4 h-4" />
+              <span className="hidden md:inline">Abakus</span>
+            </Button>
+            <Badge variant="outline" className="gap-1 text-xs">
+              <Shield className="w-3 h-3" /> Moderator
+            </Badge>
+          </>
+        )}
+
+        {/* Student also sees abacus button (read-only) */}
+        {!isTeacher && showAbacus === false && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAbacus(true)}
+            className="gap-1"
+          >
+            <Calculator className="w-4 h-4" />
+            <span className="hidden md:inline">Abakus</span>
+          </Button>
         )}
       </div>
 
