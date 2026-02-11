@@ -146,10 +146,9 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '40px 56px' : '52px 72px',
-          // Thick frame border matching reference
-          border: `${compact ? 12 : 16}px solid #0D0704`,
-          borderRadius: compact ? 18 : 24,
+          padding: compact ? '24px 32px' : '32px 44px',
+          border: `${compact ? 8 : 10}px solid #0D0704`,
+          borderRadius: compact ? 14 : 18,
           boxShadow: `
             0 20px 60px -15px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
@@ -191,8 +190,8 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '12px 28px' : '64px 68px',
-            minHeight: compact ? 460 : 680,
+            padding: compact ? '8px 16px' : '32px 36px',
+            minHeight: compact ? 340 : 480,
           }}
         >
           {[...Array(columns)].map((_, i) => {
