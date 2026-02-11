@@ -371,12 +371,12 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
                 </div>
               </div>
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="icon" 
-                className="h-9 w-9 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+                className="h-10 w-10 rounded-xl border-border/50 bg-muted/50 hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive transition-all duration-200 shadow-sm"
                 onClick={() => setShowParticipants(false)}
               >
-                <X className="w-4 h-4" />
+                <X className="w-4.5 h-4.5" />
               </Button>
             </div>
 
