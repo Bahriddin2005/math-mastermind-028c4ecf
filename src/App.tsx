@@ -57,6 +57,7 @@ const LiveSessions = lazy(() => import("@/pages/LiveSessions"));
 const LiveClassroom = lazy(() => import("@/pages/LiveClassroom"));
 const Subjects = lazy(() => import("@/pages/Subjects"));
 const SubjectPractice = lazy(() => import("@/pages/SubjectPractice"));
+const Wallet = lazy(() => import("@/pages/Wallet"));
 
 // Lazy load heavy widgets
 const HelpChatWidget = lazy(() => import("@/components/HelpChatWidget").then(m => ({ default: m.HelpChatWidget })));
@@ -148,6 +149,7 @@ const App = () => (
                       <Route path="/live/:sessionId" element={<ProtectedRoute><LiveClassroom /></ProtectedRoute>} />
                       <Route path="/subjects" element={<ProtectedRoute><Subjects /></ProtectedRoute>} />
                       <Route path="/subjects/:subjectId" element={<ProtectedRoute><SubjectPractice /></ProtectedRoute>} />
+                      <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
