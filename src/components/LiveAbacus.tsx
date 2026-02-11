@@ -83,7 +83,7 @@ export const LiveAbacus = ({ sessionId, isTeacher, onClose }: LiveAbacusProps) =
         <div className="flex items-center justify-between px-4 py-2.5 border-b bg-card shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xl">🧮</span>
-            <h3 className="font-bold text-sm">Live Abakus</h3>
+            <h3 className="font-bold text-sm text-foreground">Live Abakus</h3>
             <Badge variant={isTeacher ? 'default' : 'secondary'} className="text-[10px]">
               {isTeacher ? "Boshqaruvchi" : "Kuzatuvchi"}
             </Badge>
