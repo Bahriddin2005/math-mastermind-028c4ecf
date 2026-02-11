@@ -136,7 +136,7 @@ const LiveClassroom = () => {
       <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-gradient-to-r from-card/95 to-card/80 backdrop-blur-xl shadow-sm">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl hover:bg-destructive/10 hover:text-destructive transition-colors" onClick={handleDisconnect}>
-            <LogOut className="w-4.5 h-4.5" />
+            <LogOut className="w-5 h-5" />
           </Button>
           <div className="space-y-1">
             <h1 className="font-extrabold text-sm md:text-base truncate max-w-[200px] md:max-w-none leading-none tracking-tight">
