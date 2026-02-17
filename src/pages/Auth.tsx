@@ -55,6 +55,8 @@ const formatStatNumber = (num: number) => {
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
   const [telegramLoading, setTelegramLoading] = useState(false);
+  const [telegramRole, setTelegramRole] = useState<'student' | 'teacher'>('student');
+  const [showTelegramRolePicker, setShowTelegramRolePicker] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -555,11 +557,11 @@ const Auth = () => {
   // ============================
   const telegramWidgetRef = useRef<HTMLDivElement>(null);
 
-  const processTelegramAuth = async (tgUser: any) => {
+  const processTelegramAuth = async (tgUser: any, role: string = 'student') => {
     setTelegramLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('telegram-auth', {
-        body: tgUser
+        body: { ...tgUser, selected_role: role }
       });
 
       if (error || !data?.success) {
@@ -579,7 +581,17 @@ const Auth = () => {
           return;
         }
 
-        toastHook({ title: 'Muvaffaqiyat!', description: 'Telegram orqali kirdingiz! 🎉' });
+        // Handle teacher pending approval
+        if (data.user?.teacher_status === 'pending') {
+          toastHook({ title: 'Ro\'yxatdan o\'tdingiz!', description: 'O\'qituvchi sifatida tasdiqlash kutilmoqda ⏳' });
+          navigate('/');
+          return;
+        }
+
+        const msg = data.is_new_user 
+          ? 'Ro\'yxatdan muvaffaqiyatli o\'tdingiz! 🎉' 
+          : 'Telegram orqali kirdingiz! 🎉';
+        toastHook({ title: 'Muvaffaqiyat!', description: msg });
         navigate('/');
       } else {
         toastHook({ variant: 'destructive', title: 'Xatolik', description: 'Token olinmadi' });
@@ -588,6 +600,7 @@ const Auth = () => {
       toastHook({ variant: 'destructive', title: 'Xatolik', description: err.message });
     } finally {
       setTelegramLoading(false);
+      setShowTelegramRolePicker(false);
     }
   };
 
@@ -595,9 +608,9 @@ const Auth = () => {
   useEffect(() => {
     if (mode !== 'login' || !telegramWidgetRef.current) return;
 
-    // Set global callback
+    // Set global callback — passes telegramRole via closure
     (window as any).onTelegramAuth = (user: any) => {
-      processTelegramAuth(user);
+      processTelegramAuth(user, telegramRole);
     };
 
     // Clean previous widget
@@ -617,7 +630,7 @@ const Auth = () => {
     return () => {
       delete (window as any).onTelegramAuth;
     };
-  }, [mode]);
+  }, [mode, telegramRole]);
 
   // Check for Telegram auth callback in URL params
   useEffect(() => {
@@ -1414,13 +1427,46 @@ const Auth = () => {
                         <div className="w-full border-t border-border/50" />
                       </div>
                       <div className="relative flex justify-center text-xs">
-                        <span className="bg-card px-3 text-muted-foreground">yoki</span>
+                        <span className="bg-card px-3 text-muted-foreground">yoki Telegram orqali</span>
                       </div>
                     </div>
 
+                    {/* Role picker for Telegram registration */}
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <span className="text-xs text-muted-foreground">Ro'yxatdan o'tish sifatida:</span>
+                      <button
+                        type="button"
+                        onClick={() => setTelegramRole('student')}
+                        className={`px-3 py-1 text-xs rounded-full border transition-all ${
+                          telegramRole === 'student'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        🎓 O'quvchi
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTelegramRole('teacher')}
+                        className={`px-3 py-1 text-xs rounded-full border transition-all ${
+                          telegramRole === 'teacher'
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-muted-foreground hover:border-primary/50'
+                        }`}
+                      >
+                        👨‍🏫 O'qituvchi
+                      </button>
+                    </div>
+
+                    {telegramRole === 'teacher' && (
+                      <p className="text-xs text-center text-amber-600 dark:text-amber-400 mb-2">
+                        ⚠️ O'qituvchi sifatida admin tasdiqlashi kerak bo'ladi
+                      </p>
+                    )}
+
                     {telegramLoading ? (
                       <div className="flex items-center justify-center gap-2 py-3">
-                        <Loader2 className="h-5 w-5 animate-spin text-sky-500" />
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
                         <span className="text-sm text-muted-foreground">Telegram orqali kirilmoqda...</span>
                       </div>
                     ) : (

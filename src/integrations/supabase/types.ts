@@ -1189,6 +1189,7 @@ export type Database = {
           last_active_date: string | null
           phone_number: string | null
           selected_frame: string | null
+          teacher_status: string | null
           telegram_id: string | null
           telegram_username: string | null
           total_problems_solved: number | null
@@ -1208,6 +1209,7 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          teacher_status?: string | null
           telegram_id?: string | null
           telegram_username?: string | null
           total_problems_solved?: number | null
@@ -1227,6 +1229,7 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          teacher_status?: string | null
           telegram_id?: string | null
           telegram_username?: string | null
           total_problems_solved?: number | null
