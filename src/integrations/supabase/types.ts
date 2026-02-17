@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       blog_comments: {
         Row: {
           content: string
@@ -1159,6 +1189,7 @@ export type Database = {
           last_active_date: string | null
           phone_number: string | null
           selected_frame: string | null
+          teacher_status: string | null
           telegram_id: string | null
           telegram_username: string | null
           total_problems_solved: number | null
@@ -1178,6 +1209,7 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          teacher_status?: string | null
           telegram_id?: string | null
           telegram_username?: string | null
           total_problems_solved?: number | null
@@ -1197,6 +1229,7 @@ export type Database = {
           last_active_date?: string | null
           phone_number?: string | null
           selected_frame?: string | null
+          teacher_status?: string | null
           telegram_id?: string | null
           telegram_username?: string | null
           total_problems_solved?: number | null
@@ -1964,6 +1997,95 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          reference_id: string | null
+          status: Database["public"]["Enums"]["wallet_tx_status"]
+          tx_type: Database["public"]["Enums"]["wallet_tx_type"]
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          status?: Database["public"]["Enums"]["wallet_tx_status"]
+          tx_type: Database["public"]["Enums"]["wallet_tx_type"]
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          reference_id?: string | null
+          status?: Database["public"]["Enums"]["wallet_tx_status"]
+          tx_type?: Database["public"]["Enums"]["wallet_tx_type"]
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          is_frozen: boolean
+          total_bonus: number
+          total_payout: number
+          total_spent: number
+          total_topup: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          is_frozen?: boolean
+          total_bonus?: number
+          total_payout?: number
+          total_spent?: number
+          total_topup?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          is_frozen?: boolean
+          total_bonus?: number
+          total_payout?: number
+          total_spent?: number
+          total_topup?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       weekly_challenge_results: {
         Row: {
           avatar_url: string | null
@@ -2103,6 +2225,8 @@ export type Database = {
         | "student"
         | "parent"
         | "teacher"
+      wallet_tx_status: "pending" | "completed" | "failed" | "cancelled"
+      wallet_tx_type: "topup" | "spend" | "bonus" | "payout" | "refund"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2231,6 +2355,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user", "student", "parent", "teacher"],
+      wallet_tx_status: ["pending", "completed", "failed", "cancelled"],
+      wallet_tx_type: ["topup", "spend", "bonus", "payout", "refund"],
     },
   },
 } as const

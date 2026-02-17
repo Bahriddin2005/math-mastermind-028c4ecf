@@ -312,19 +312,27 @@ const Auth = () => {
             body: { email, phone_number: phoneNumber }
           });
           
+          // Handle invoke-level errors (network, non-2xx, etc.)
           if (error) {
-            // Parse error body if available
             let errMsg = 'OTP yuborishda xatolik yuz berdi';
             try {
-              if (error.context && typeof error.context.json === 'function') {
-                const errorBody = await error.context.json();
-                errMsg = errorBody?.error || errMsg;
-              } else if (data?.error) {
+              // Try to get the actual error from response context
+              if (error.context) {
+                const resp = error.context as Response;
+                if (resp.json) {
+                  const errorBody = await resp.json();
+                  errMsg = errorBody?.error || errorBody?.message || errMsg;
+                }
+              }
+            } catch {
+              // If parsing fails, try data or error.message
+              if (data?.error) {
                 errMsg = data.error;
-              } else if (error.message) {
+              } else if (error.message && error.message !== 'FunctionsHttpError') {
                 errMsg = error.message;
               }
-            } catch { /* use default message */ }
+            }
+            console.error('generate-otp error:', error, 'data:', data);
             toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
             setLoading(false);
             return;
@@ -382,7 +390,23 @@ const Auth = () => {
         }
       });
       
-      if (error || !data?.success) {
+      if (error) {
+        let errMsg = data?.error || 'Yangi kod yuborishda xatolik';
+        try {
+          if (error.context) {
+            const resp = error.context as Response;
+            if (resp.json) {
+              const errorBody = await resp.json();
+              errMsg = errorBody?.error || errMsg;
+            }
+          }
+        } catch {}
+        console.error('resend-otp error:', error);
+        toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+        return;
+      }
+      
+      if (!data?.success) {
         toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Yangi kod yuborishda xatolik' });
         return;
       }
