@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Calculator, Users, FileText, Video, Wallet } from 'lucide-react';
+import { Volume2, VolumeX, User, LogOut, Play, Home, Settings, Moon, Sun, ShieldCheck, GraduationCap, Sparkles, ChevronDown, Trophy, Menu, X, BookOpen, Calendar, MessageCircle, BarChart3, Calculator, Users, FileText, Video } from 'lucide-react';
 import { Logo } from './Logo';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -114,7 +114,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         { path: '/', icon: Home, label: "Uy", emoji: "🏠" },
         { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
         { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
-        { path: '/courses', icon: GraduationCap, label: "Kurs", emoji: "📚" },
+        { path: '/courses', icon: GraduationCap, label: "Kurslar", emoji: "📚" },
         { path: '/lesson-stats', icon: FileText, label: "Hisobot", emoji: "📋" },
       ];
     }
@@ -124,7 +124,6 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
       { path: '/subjects', icon: BookOpen, label: "Fanlar", emoji: "📚" },
       { path: '/abacus-simulator', icon: Calculator, label: "Abakus", emoji: "🧮" },
       { path: '/weekly-game', icon: Trophy, label: "Musobaqa", emoji: "🏆" },
-      { path: '/wallet', icon: Wallet, label: "Hamyon", emoji: "💰" },
       { path: '/live-sessions', icon: Video, label: "Live", emoji: "📹" },
     ];
   };
@@ -258,11 +257,6 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuGroup>
-                  
-                  <DropdownMenuItem onClick={() => navigate('/wallet')} className="gap-2.5 py-2 px-2.5 rounded-lg cursor-pointer">
-                    <Wallet className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Hamyon</span>
-                  </DropdownMenuItem>
                   
                   <DropdownMenuSeparator className="my-1.5" />
                   

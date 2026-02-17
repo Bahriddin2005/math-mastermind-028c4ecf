@@ -83,16 +83,16 @@ export const LiveAbacus = ({ sessionId, isTeacher, onClose }: LiveAbacusProps) =
         <div className="flex items-center justify-between px-4 py-2.5 border-b bg-card shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xl">🧮</span>
-            <h3 className="font-bold text-sm text-foreground">Live Abakus</h3>
+            <h3 className="font-bold text-sm">Live Abakus</h3>
             <Badge variant={isTeacher ? 'default' : 'secondary'} className="text-[10px]">
               {isTeacher ? "Boshqaruvchi" : "Kuzatuvchi"}
             </Badge>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/50 bg-muted/50 text-foreground hover:bg-muted" onClick={() => setExpanded(e => !e)}>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpanded(e => !e)}>
               {expanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg border-border/50 bg-muted/50 text-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30" onClick={onClose}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
           </div>

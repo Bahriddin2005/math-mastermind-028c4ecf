@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -57,17 +57,10 @@ const LiveSessions = lazy(() => import("@/pages/LiveSessions"));
 const LiveClassroom = lazy(() => import("@/pages/LiveClassroom"));
 const Subjects = lazy(() => import("@/pages/Subjects"));
 const SubjectPractice = lazy(() => import("@/pages/SubjectPractice"));
-const Wallet = lazy(() => import("@/pages/Wallet"));
 
 // Lazy load heavy widgets
 const HelpChatWidget = lazy(() => import("@/components/HelpChatWidget").then(m => ({ default: m.HelpChatWidget })));
 
-// Only show HelpChatWidget on home page
-const HomeHelpChat = () => {
-  const location = useLocation();
-  if (location.pathname !== '/') return null;
-  return <Suspense fallback={null}><HelpChatWidget /></Suspense>;
-};
 // Optimized QueryClient with stale-while-revalidate
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -149,7 +142,6 @@ const App = () => (
                       <Route path="/live/:sessionId" element={<ProtectedRoute><LiveClassroom /></ProtectedRoute>} />
                       <Route path="/subjects" element={<ProtectedRoute><Subjects /></ProtectedRoute>} />
                       <Route path="/subjects/:subjectId" element={<ProtectedRoute><SubjectPractice /></ProtectedRoute>} />
-                      <Route path="/wallet" element={<ProtectedRoute><Wallet /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
@@ -158,7 +150,9 @@ const App = () => (
             </PullToRefresh>
             <MobileBottomNav />
             <PWAInstallBanner />
-            <HomeHelpChat />
+            <Suspense fallback={null}>
+              <HelpChatWidget />
+            </Suspense>
           </BrowserRouter>
           </SessionTimeoutProvider>
         </AuthProvider>
