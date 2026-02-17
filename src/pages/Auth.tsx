@@ -54,6 +54,7 @@ const formatStatNumber = (num: number) => {
 
 const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [telegramLoading, setTelegramLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -548,6 +549,153 @@ const Auth = () => {
     await signOut();
     setShowMFAVerify(false);
   };
+
+  // ============================
+  // Telegram Login Widget handler
+  // ============================
+  const handleTelegramLogin = async () => {
+    setTelegramLoading(true);
+    try {
+      // Open Telegram Login Widget in popup
+      const botName = 'iqromaxbot';
+      const callbackUrl = `${window.location.origin}/auth`;
+      
+      // Use Telegram's official widget approach via window callback
+      (window as any).onTelegramAuth = async (tgUser: any) => {
+        try {
+          const { data, error } = await supabase.functions.invoke('telegram-auth', {
+            body: tgUser
+          });
+
+          if (error || !data?.success) {
+            const errMsg = data?.error || 'Telegram orqali kirishda xatolik';
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+            setTelegramLoading(false);
+            return;
+          }
+
+          // Set session with the returned tokens
+          if (data.access_token && data.refresh_token) {
+            const { error: sessionError } = await supabase.auth.setSession({
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
+            });
+
+            if (sessionError) {
+              toastHook({ variant: 'destructive', title: 'Xatolik', description: 'Sessiya yaratishda xatolik' });
+              setTelegramLoading(false);
+              return;
+            }
+
+            toastHook({ title: 'Muvaffaqiyat!', description: `Telegram orqali kirdingiz! 🎉` });
+            navigate('/');
+          } else {
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: 'Token olinmadi' });
+          }
+        } catch (err: any) {
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: err.message });
+        } finally {
+          setTelegramLoading(false);
+        }
+      };
+
+      // Load Telegram widget script dynamically
+      const existingScript = document.getElementById('telegram-login-script');
+      if (existingScript) existingScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'telegram-login-script';
+      script.src = 'https://telegram.org/js/telegram-widget.js?22';
+      script.setAttribute('data-telegram-login', botName);
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      script.setAttribute('data-request-access', 'write');
+      script.async = true;
+
+      // Create a hidden container for the widget
+      let container = document.getElementById('telegram-widget-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'telegram-widget-container';
+        container.style.position = 'fixed';
+        container.style.top = '-9999px';
+        container.style.left = '-9999px';
+        document.body.appendChild(container);
+      }
+      container.innerHTML = '';
+      container.appendChild(script);
+
+      // The widget will render an iframe; we simulate a click on it
+      // Actually, the widget creates a button — let's wait and click it
+      setTimeout(() => {
+        const iframe = container?.querySelector('iframe');
+        if (iframe) {
+          // Telegram widget opens a popup when clicked
+          iframe.click();
+        } else {
+          // Fallback: open Telegram OAuth URL directly
+          const authUrl = `https://oauth.telegram.org/auth?bot_id=${botName}&origin=${encodeURIComponent(window.location.origin)}&embed=1&return_to=${encodeURIComponent(callbackUrl)}`;
+          window.open(authUrl, 'telegram_auth', 'width=550,height=470');
+        }
+        setTelegramLoading(false);
+      }, 1500);
+    } catch (err: any) {
+      toastHook({ variant: 'destructive', title: 'Xatolik', description: err.message });
+      setTelegramLoading(false);
+    }
+  };
+
+  // Check for Telegram auth callback in URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tgId = params.get('id');
+    const tgHash = params.get('hash');
+    const tgAuthDate = params.get('auth_date');
+    
+    if (tgId && tgHash && tgAuthDate) {
+      const tgData: Record<string, string> = {};
+      params.forEach((value, key) => {
+        tgData[key] = value;
+      });
+      // Convert numeric fields
+      const authData = {
+        ...tgData,
+        id: parseInt(tgData.id),
+        auth_date: parseInt(tgData.auth_date),
+      };
+      
+      // Clean URL
+      window.history.replaceState({}, '', '/auth');
+      
+      // Process auth
+      (async () => {
+        setTelegramLoading(true);
+        try {
+          const { data, error } = await supabase.functions.invoke('telegram-auth', {
+            body: authData
+          });
+
+          if (error || !data?.success) {
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Telegram auth xatolik' });
+            return;
+          }
+
+          if (data.access_token && data.refresh_token) {
+            await supabase.auth.setSession({
+              access_token: data.access_token,
+              refresh_token: data.refresh_token,
+            });
+            toastHook({ title: 'Muvaffaqiyat!', description: 'Telegram orqali kirdingiz! 🎉' });
+            navigate('/');
+          }
+        } catch (err: any) {
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: err.message });
+        } finally {
+          setTelegramLoading(false);
+        }
+      })();
+    }
+  }, []);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -1283,6 +1431,35 @@ const Auth = () => {
                     <>Havola yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   )}
                 </Button>
+
+                {/* Telegram Login Widget — only on login mode */}
+                {mode === 'login' && (
+                  <>
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border/50" />
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-card px-3 text-muted-foreground">yoki</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleTelegramLogin}
+                      disabled={telegramLoading || loading}
+                      className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold gap-2.5 rounded-full border-sky-200 dark:border-sky-800 hover:bg-sky-50 dark:hover:bg-sky-950/30 transition-all touch-target"
+                    >
+                      {telegramLoading ? (
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                      ) : (
+                        <Send className="h-5 w-5 text-sky-500" />
+                      )}
+                      <span className="text-sky-600 dark:text-sky-400">Telegram orqali kirish</span>
+                    </Button>
+                  </>
+                )}
               </form>
 
               <div className="text-center mt-4">
