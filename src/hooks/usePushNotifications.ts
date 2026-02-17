@@ -27,7 +27,7 @@ export const usePushNotifications = () => {
     // Check if already subscribed
     if (isSupported && 'PushManager' in window) {
       navigator.serviceWorker.ready.then(registration => {
-        registration.pushManager.getSubscription().then(subscription => {
+        (registration as any).pushManager.getSubscription().then((subscription: PushSubscription | null) => {
           setState(prev => ({
             ...prev,
             isSubscribed: !!subscription,
