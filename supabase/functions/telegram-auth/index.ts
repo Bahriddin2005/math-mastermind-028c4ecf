@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { encode as hexEncode } from "https://deno.land/std@0.190.0/encoding/hex.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,20 +44,21 @@ interface TelegramAuthData {
   photo_url?: string;
   auth_date: number;
   hash: string;
+  selected_role?: string; // 'student' | 'teacher' — only used for new users
 }
 
 async function verifyTelegramAuth(data: TelegramAuthData, botToken: string): Promise<boolean> {
-  const { hash, ...rest } = data;
+  const { hash, selected_role, ...rest } = data;
   if (!hash) return false;
 
-  // 1. Check auth_date expiry (24 hours max — replay attack prevention)
+  // 1. Check auth_date expiry (24 hours)
   const now = Math.floor(Date.now() / 1000);
   if (now - data.auth_date > 86400) {
     console.warn("Telegram auth_date expired:", { auth_date: data.auth_date, now });
     return false;
   }
 
-  // 2. Build data-check string (sorted alphabetically)
+  // 2. Build data-check string (sorted alphabetically, excluding hash and selected_role)
   const checkEntries = Object.entries(rest)
     .filter(([_, v]) => v !== undefined && v !== null)
     .sort(([a], [b]) => a.localeCompare(b));
@@ -72,7 +72,7 @@ async function verifyTelegramAuth(data: TelegramAuthData, botToken: string): Pro
   const computedHash = await hmacSha256(secretKey, encoder.encode(dataCheckString));
   const computedHex = uint8ToHex(computedHash);
 
-  // 5. Constant-time comparison (timing attack prevention)
+  // 5. Constant-time comparison
   return constantTimeEqual(computedHex, hash.toLowerCase());
 }
 
@@ -99,6 +99,9 @@ async function logAudit(
     console.error("Audit log error:", e);
   }
 }
+
+// Valid roles that can be selected during registration
+const VALID_ROLES = ["student", "teacher"];
 
 // ============================
 // Main handler
@@ -159,7 +162,7 @@ serve(async (req: Request) => {
   }
 
   // ============================
-  // 2. Check for replay attack (same auth_date used before)
+  // 2. Check for replay attack
   // ============================
   const { data: replayCheck } = await supabase
     .from("audit_logs")
@@ -174,7 +177,6 @@ serve(async (req: Request) => {
       telegram_id: body.id,
       auth_date: body.auth_date,
     });
-    console.warn("Replay attack detected for telegram_id:", body.id);
     return new Response(JSON.stringify({ success: false, error: "Autentifikatsiya muddati o'tgan" }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -189,14 +191,20 @@ serve(async (req: Request) => {
   const lastName = body.last_name || "";
   const photoUrl = body.photo_url || "";
 
-  // Check if user already exists in profiles by telegram_id
+  // Validate selected_role (server-side enforcement — never trust frontend)
+  const selectedRole = body.selected_role && VALID_ROLES.includes(body.selected_role)
+    ? body.selected_role
+    : "student";
+
+  // Check if user already exists
   const { data: existingProfile } = await supabase
     .from("profiles")
-    .select("user_id, username, telegram_username")
+    .select("user_id, username, telegram_username, teacher_status")
     .eq("telegram_id", telegramId)
     .maybeSingle();
 
   let authUserId: string;
+  let isNewUser = false;
 
   if (existingProfile) {
     // Existing user — update profile if needed
@@ -210,8 +218,9 @@ serve(async (req: Request) => {
     }).eq("user_id", authUserId);
 
   } else {
-    // New user — create auth.users entry via Admin API
-    const email = `tg_${telegramId}@iqromax.uz`; // synthetic email
+    // New user — create auth.users entry
+    isNewUser = true;
+    const email = `tg_${telegramId}@iqromax.uz`;
     const randomPassword = crypto.randomUUID() + crypto.randomUUID();
 
     const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
@@ -221,20 +230,17 @@ serve(async (req: Request) => {
       user_metadata: {
         username: telegramUsername || firstName || `user_${telegramId}`,
         phone_number: null,
-        user_type: "student",
+        user_type: selectedRole,
         telegram_id: telegramId,
       },
     });
 
     if (createError) {
-      // Check if email already exists (edge case)
       if (createError.message?.includes("already been registered") || createError.message?.includes("already exists")) {
-        // Find by email
         const { data: users } = await supabase.auth.admin.listUsers({ filter: `email:${email}` });
-        const found = users?.users?.find(u => u.email === email);
+        const found = users?.users?.find((u: any) => u.email === email);
         if (found) {
           authUserId = found.id;
-          // Update profile with telegram_id
           await supabase.from("profiles").update({
             telegram_id: telegramId,
             telegram_username: telegramUsername,
@@ -261,24 +267,45 @@ serve(async (req: Request) => {
       }
     } else {
       authUserId = newUser.user.id;
-      // Profile and role are auto-created by handle_new_user trigger
-      // Update telegram fields
-      await supabase.from("profiles").update({
+
+      // Update profile with telegram data and teacher_status
+      const profileUpdate: Record<string, any> = {
         telegram_id: telegramId,
         telegram_username: telegramUsername,
         avatar_url: photoUrl || null,
-      }).eq("user_id", authUserId);
+      };
+
+      if (selectedRole === "teacher") {
+        profileUpdate.teacher_status = "pending";
+      }
+
+      await supabase.from("profiles").update(profileUpdate).eq("user_id", authUserId);
+
+      // If teacher role was selected, the handle_new_user trigger already assigned it
+      // But we need to make sure it's correct — override if needed
+      if (selectedRole === "teacher") {
+        // Delete auto-assigned student role and add teacher
+        await supabase.from("user_roles").delete().eq("user_id", authUserId);
+        await supabase.from("user_roles").insert({
+          user_id: authUserId,
+          role: "teacher",
+        });
+      }
+
+      // Log role selection for audit
+      await logAudit(supabase, "role_selected", authUserId, ip, userAgent, {
+        telegram_id: telegramId,
+        selected_role: selectedRole,
+        is_new_user: true,
+      });
     }
   }
 
   // ============================
-  // 4. Generate session (sign in as user)
+  // 4. Generate session
   // ============================
-  // We use admin.generateLink or admin.createSession approach
-  // Since Supabase doesn't have createSession, we sign in with a magic link approach
   const email = `tg_${telegramId}@iqromax.uz`;
 
-  // Generate a one-time sign-in link
   const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
     type: "magiclink",
     email,
@@ -286,7 +313,7 @@ serve(async (req: Request) => {
 
   if (linkError || !linkData) {
     console.error("Generate link error:", linkError);
-    await logAudit(supabase, "login_failed", authUserId, ip, userAgent, {
+    await logAudit(supabase, "login_failed", authUserId!, ip, userAgent, {
       reason: "session_generation_failed",
       telegram_id: telegramId,
     });
@@ -295,7 +322,6 @@ serve(async (req: Request) => {
     });
   }
 
-  // Extract token from the link
   const properties = linkData.properties;
   const accessToken = properties?.access_token;
   const refreshToken = properties?.refresh_token;
@@ -303,32 +329,46 @@ serve(async (req: Request) => {
   // ============================
   // 5. Audit log — successful login
   // ============================
-  await logAudit(supabase, "telegram_login", authUserId, ip, userAgent, {
+  await logAudit(supabase, "telegram_login", authUserId!, ip, userAgent, {
     telegram_id: telegramId,
     telegram_username: telegramUsername,
     auth_date: body.auth_date,
     method: "telegram_widget",
+    is_new_user: isNewUser,
   });
 
   // ============================
-  // 6. Get user roles
+  // 6. Get user roles and teacher_status
   // ============================
   const { data: roleData } = await supabase
     .from("user_roles")
     .select("role")
-    .eq("user_id", authUserId);
+    .eq("user_id", authUserId!);
 
   const roles = roleData?.map((r: any) => r.role) || ["student"];
+
+  // Get teacher_status if teacher
+  let teacherStatus: string | null = null;
+  if (roles.includes("teacher")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("teacher_status")
+      .eq("user_id", authUserId!)
+      .maybeSingle();
+    teacherStatus = profile?.teacher_status || null;
+  }
 
   return new Response(JSON.stringify({
     success: true,
     access_token: accessToken,
     refresh_token: refreshToken,
+    is_new_user: isNewUser,
     user: {
       id: authUserId,
       telegram_id: telegramId,
       username: telegramUsername || firstName,
       roles,
+      teacher_status: teacherStatus,
     },
   }), {
     status: 200,
