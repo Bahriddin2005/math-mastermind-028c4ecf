@@ -1005,7 +1005,7 @@ const Auth = () => {
 
         <div className="relative z-10 flex flex-col justify-between p-8 xl:p-12 text-primary-foreground h-full w-full">
           <div className="flex items-center gap-3">
-            <Logo size="lg" />
+            <Logo size="sm" />
           </div>
 
           <div className="space-y-8">
