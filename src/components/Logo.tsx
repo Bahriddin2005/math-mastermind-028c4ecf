@@ -7,7 +7,7 @@ interface LogoProps {
 
 export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
   const sizes = {
-    xs: 'h-24 w-24 sm:h-28 sm:w-28',
+    xs: 'h-36 w-36 sm:h-40 sm:w-40',
     sm: 'h-56 w-56 sm:h-60 sm:w-60',
     md: 'h-64 w-64 sm:h-72 sm:w-72',
     lg: 'h-72 w-72 sm:h-80 sm:w-80',
@@ -23,10 +23,7 @@ export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
           ${sizes[size]} 
           object-contain
           transition-all duration-300 
-          drop-shadow-sm 
-          hover:drop-shadow-md
           hover:scale-105
-          dark:brightness-110 dark:contrast-110
           ${className}
         `}
       />
