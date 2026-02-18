@@ -139,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: `Telegram akkaunt topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
+          error: `Telegram akkaunt topilmadi. Avval @iqromaxuzbot ga /start yuboring va 📱 tugmasini bosing.`,
         }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );

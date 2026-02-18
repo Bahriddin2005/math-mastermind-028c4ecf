@@ -95,7 +95,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`Telegram user not found by phone: ${inputDigits}`);
       return okJson({
         success: false,
-        error: `Bu telefon raqam bilan Telegram foydalanuvchi topilmadi. Avval @iqromaxbot ga /start yuboring va 📱 tugmasini bosing.`,
+        error: `Bu telefon raqam bilan Telegram foydalanuvchi topilmadi. Avval @iqromaxuzbot ga /start yuboring va 📱 tugmasini bosing.`,
         error_code: "telegram_user_not_found",
       });
     }
