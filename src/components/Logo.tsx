@@ -7,7 +7,7 @@ interface LogoProps {
 
 export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
   const sizes = {
-    xs: 'h-64 w-64 sm:h-72 sm:w-72',
+    xs: 'h-80 w-80 sm:h-96 sm:w-96',
     sm: 'h-56 w-56 sm:h-60 sm:w-60',
     md: 'h-64 w-64 sm:h-72 sm:w-72',
     lg: 'h-72 w-72 sm:h-80 sm:w-80',
