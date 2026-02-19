@@ -197,7 +197,23 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Verification email sent to:", normalizedEmail);
+    // Check Resend response for errors
+    if (emailResponse.error) {
+      console.error("Resend email error:", JSON.stringify(emailResponse.error));
+      
+      // Clean up the verification code since email failed
+      await supabaseAdmin
+        .from("verification_codes")
+        .delete()
+        .eq("session_token", sessionToken);
+
+      return jsonResponse({
+        success: false,
+        error: "Email yuborishda xatolik yuz berdi. Iltimos, qaytadan urinib ko'ring.",
+      }, 200);
+    }
+
+    console.log("Verification email sent to:", normalizedEmail, "id:", emailResponse.data?.id);
 
     return jsonResponse({
       success: true,
