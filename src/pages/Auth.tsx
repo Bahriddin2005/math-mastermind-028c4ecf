@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMFA } from '@/hooks/useMFA';
@@ -15,8 +15,8 @@ import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicato
 import { supabase } from '@/integrations/supabase/client';
 import { 
   Loader2, LogIn, UserPlus, Mail, ArrowLeft, Check, Sparkles,
-  Brain, Target, Trophy, Lock, User, Zap, Star, ChevronRight,
-  GraduationCap, ShieldCheck, RefreshCw
+  Brain, Target, Trophy, Lock, User, Zap, ChevronRight,
+  GraduationCap
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -35,7 +35,7 @@ const emailSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-email-otp';
+type AuthMode = 'login' | 'signup' | 'forgot-password';
 
 const features = [
   { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
@@ -67,22 +67,6 @@ const Auth = () => {
     { value: "0+", label: "Video darslar" },
   ]);
   
-  // Email OTP verification states
-  const [sessionToken, setSessionToken] = useState('');
-  const [otpInput, setOtpInput] = useState('');
-  const [otpExpiresAt, setOtpExpiresAt] = useState<Date | null>(null);
-  const [otpCountdown, setOtpCountdown] = useState(0);
-  const [verifyStatus, setVerifyStatus] = useState<'idle' | 'verifying' | 'verified' | 'error' | 'creating'>('idle');
-  const [verifyError, setVerifyError] = useState('');
-  const [resendCooldown, setResendCooldown] = useState(0);
-  
-  const pendingSignupDataRef = useRef<{
-    email: string;
-    password: string;
-    username: string;
-    userType: string;
-  } | null>(null);
-  
   const { signIn, signUp, resetPassword, signOut, user } = useAuth();
   const mfa = useMFA();
   const navigate = useNavigate();
@@ -110,30 +94,6 @@ const Auth = () => {
     fetchStats();
   }, []);
 
-  // OTP countdown timer
-  useEffect(() => {
-    if (otpExpiresAt) {
-      const timer = setInterval(() => {
-        const remaining = Math.max(0, Math.floor((otpExpiresAt.getTime() - Date.now()) / 1000));
-        setOtpCountdown(remaining);
-        if (remaining <= 0) clearInterval(timer);
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [otpExpiresAt]);
-
-  // Resend cooldown timer
-  useEffect(() => {
-    if (resendCooldown > 0) {
-      const timer = setInterval(() => {
-        setResendCooldown(prev => {
-          if (prev <= 1) { clearInterval(timer); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [resendCooldown]);
 
   // Check MFA status
   useEffect(() => {
@@ -169,87 +129,6 @@ const Auth = () => {
     }
   };
 
-  // ── Create account after OTP verified ─────────────────
-  const handleCreateAccount = async () => {
-    const data = pendingSignupDataRef.current;
-    if (!data) return;
-    
-    setVerifyStatus('creating');
-    try {
-      const { error } = await signUp(data.email, data.password, data.username, undefined, data.userType);
-      
-      if (error) {
-        const msg = error.message.includes('already registered')
-          ? "Bu email allaqachon ro'yxatdan o'tgan"
-          : error.message;
-        toastHook({ variant: 'destructive', title: 'Xatolik', description: msg });
-        setVerifyStatus('error');
-        setVerifyError(msg);
-        return;
-      }
-
-      toastHook({
-        title: 'Muvaffaqiyat! 🎉',
-        description: 'Akkaunt yaratildi!',
-      });
-      navigate('/onboarding');
-    } catch (err: any) {
-      setVerifyStatus('error');
-      setVerifyError(err.message);
-    }
-  };
-
-  // ── Verify OTP code ───────────────────────────────────
-  const handleVerifyOtp = async () => {
-    if (!otpInput || otpInput.length !== 6) {
-      setVerifyError("6 raqamli kodni kiriting");
-      return;
-    }
-
-    setVerifyStatus('verifying');
-    setVerifyError('');
-
-    try {
-      const { data, error } = await supabase.functions.invoke('verify-code', {
-        body: { session_token: sessionToken, code: otpInput, consume: true }
-      });
-
-      if (error) {
-        let errMsg = 'Tekshirishda xatolik yuz berdi';
-        try {
-          if (error.context) {
-            const resp = error.context as Response;
-            if (resp.json) {
-              const errorBody = await resp.json();
-              errMsg = errorBody?.error || errMsg;
-            }
-          }
-        } catch {}
-        setVerifyStatus('error');
-        setVerifyError(errMsg);
-        return;
-      }
-
-      if (!data?.success) {
-        setVerifyStatus('error');
-        setVerifyError(data?.error || "Noto'g'ri kod");
-        return;
-      }
-
-      // OTP verified! Create account
-      setVerifyStatus('verified');
-    } catch (err: any) {
-      setVerifyStatus('error');
-      setVerifyError(err.message);
-    }
-  };
-
-  // Auto-create account after verification
-  useEffect(() => {
-    if (verifyStatus === 'verified' && pendingSignupDataRef.current) {
-      handleCreateAccount();
-    }
-  }, [verifyStatus]);
 
   // ── Form submit ───────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
@@ -298,69 +177,15 @@ const Auth = () => {
     }
   };
 
-  // ── Resend OTP ────────────────────────────────────────
-  const handleResendOtp = async () => {
-    if (!pendingSignupDataRef.current || resendCooldown > 0) return;
-    setLoading(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('send-verification-code', {
-        body: { email: pendingSignupDataRef.current.email }
-      });
-      
-      if (error) {
-        let errMsg = 'Yangi kod yuborishda xatolik';
-        try {
-          if (error.context) {
-            const resp = error.context as Response;
-            if (resp.json) {
-              const errorBody = await resp.json();
-              errMsg = errorBody?.error || errMsg;
-            }
-          }
-        } catch {}
-        toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
-        return;
-      }
-      
-      if (!data?.success) {
-        toastHook({ variant: 'destructive', title: 'Xatolik', description: data?.error || 'Yangi kod yuborishda xatolik' });
-        return;
-      }
-
-      setSessionToken(data.session_token);
-      setOtpExpiresAt(new Date(Date.now() + (data.expires_in || 300) * 1000));
-      setOtpCountdown(data.expires_in || 300);
-      setOtpInput('');
-      setVerifyStatus('idle');
-      setVerifyError('');
-      setResendCooldown(60);
-      toast.success('📧 Yangi kod email ga yuborildi!');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const switchMode = (newMode: AuthMode) => {
     setMode(newMode);
     setErrors({});
     setResetEmailSent(false);
-    setOtpInput('');
-    setSessionToken('');
-    setVerifyStatus('idle');
-    setVerifyError('');
-    setResendCooldown(0);
   };
 
   const handleMFACancel = async () => {
     await signOut();
     setShowMFAVerify(false);
-  };
-
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   // MFA verification screen
@@ -370,149 +195,6 @@ const Auth = () => {
         onSuccess={() => { setShowMFAVerify(false); navigate('/'); }}
         onCancel={handleMFACancel}
       />
-    );
-  }
-
-  // ── Email OTP Verify Screen ───────────────────────────
-  if (mode === 'verify-email-otp') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-72 sm:w-96 h-72 sm:h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-40 -left-40 w-72 sm:w-96 h-72 sm:h-96 bg-accent/10 dark:bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-
-        <div className="w-full max-w-md relative z-10 px-2 sm:px-0">
-          <Card className="border-border/40 dark:border-border/20 shadow-2xl dark:shadow-primary/10 backdrop-blur-sm animate-scale-in bg-card/80 dark:bg-card/90 overflow-hidden">
-            <div className="h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-500" />
-            
-            <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50">
-                <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <CardTitle className="text-xl sm:text-2xl font-display">Email tasdiqlash</CardTitle>
-              <CardDescription className="mt-1.5 sm:mt-2 text-sm">
-                <strong className="text-foreground">{pendingSignupDataRef.current?.email}</strong> ga tasdiqlash kodi yuborildi
-              </CardDescription>
-            </CardHeader>
-            
-            <CardContent className="pt-1 sm:pt-2 pb-5 sm:pb-6 px-4 sm:px-6">
-              <div className="space-y-5">
-                {/* Info banner */}
-                <div className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4">
-                  <div className="flex items-start gap-3">
-                    <ShieldCheck className="h-5 w-5 text-emerald-500 mt-0.5 shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-medium text-emerald-700 dark:text-emerald-300">
-                        📧 Email pochtangizni tekshiring
-                      </p>
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                        Spam papkasini ham ko'rib chiqing
-                      </p>
-                      {otpCountdown > 0 && (
-                        <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                          ⏱️ Kod amal qiladi: <span className="font-mono font-bold">{formatTime(otpCountdown)}</span>
-                        </p>
-                      )}
-                      {otpCountdown <= 0 && (
-                        <p className="text-xs text-destructive mt-1 font-medium">⏰ Kod muddati tugadi</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* OTP Input */}
-                <div className="space-y-2">
-                  <Label htmlFor="otp-input" className="text-sm font-medium">6 raqamli kod</Label>
-                  <Input
-                    id="otp-input"
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    placeholder="000000"
-                    value={otpInput}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-                      setOtpInput(val);
-                      setVerifyError('');
-                    }}
-                    disabled={verifyStatus === 'verifying' || verifyStatus === 'creating' || verifyStatus === 'verified'}
-                    className={`text-center text-3xl font-mono tracking-[0.5em] h-16 ${verifyError ? 'border-destructive' : ''}`}
-                    autoFocus
-                  />
-                  {verifyError && (
-                    <p className="text-xs text-destructive flex items-center gap-1.5 animate-shake">
-                      <span className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                      {verifyError}
-                    </p>
-                  )}
-                </div>
-
-                {/* Verify button */}
-                {verifyStatus !== 'verified' && verifyStatus !== 'creating' && (
-                  <Button
-                    onClick={handleVerifyOtp}
-                    disabled={otpInput.length !== 6 || verifyStatus === 'verifying' || otpCountdown <= 0}
-                    className="w-full h-12 text-base font-semibold gap-2 rounded-full bg-emerald-500 hover:bg-emerald-600 shadow-lg shadow-emerald-500/20"
-                  >
-                    {verifyStatus === 'verifying' ? (
-                      <><Loader2 className="h-5 w-5 animate-spin" /> Tekshirilmoqda...</>
-                    ) : (
-                      <><ShieldCheck className="h-5 w-5" /> Tasdiqlash</>
-                    )}
-                  </Button>
-                )}
-
-                {/* Status: verified */}
-                {verifyStatus === 'verified' && (
-                  <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                        <Check className="h-5 w-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <p className="text-sm font-medium text-green-600 dark:text-green-400">Email tasdiqlandi! ✅</p>
-                    </div>
-                  </div>
-                )}
-
-                {verifyStatus === 'creating' && (
-                  <div className="flex items-center justify-center gap-2 py-2">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                    <span className="text-sm font-medium">Akkaunt yaratilmoqda...</span>
-                  </div>
-                )}
-
-                {/* Resend OTP */}
-                <Button 
-                  onClick={handleResendOtp}
-                  variant="outline"
-                  className="w-full gap-2"
-                  disabled={loading || resendCooldown > 0 || verifyStatus === 'creating' || verifyStatus === 'verified'}
-                >
-                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                  {resendCooldown > 0 
-                    ? `Qayta yuborish (${resendCooldown}s)` 
-                    : 'Yangi kod yuborish'}
-                </Button>
-
-                {/* Back button */}
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={() => switchMode('signup')}
-                    className="text-muted-foreground hover:text-foreground text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-colors group"
-                    disabled={verifyStatus === 'creating'}
-                  >
-                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                    Orqaga qaytish
-                  </button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
     );
   }
 
@@ -821,7 +503,7 @@ const Auth = () => {
                   ) : mode === 'login' ? (
                     <>Kirish <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : mode === 'signup' ? (
-                    <>Kod yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
+                    <>Ro'yxatdan o'tish <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : (
                     <>Havola yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   )}
