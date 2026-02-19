@@ -274,54 +274,15 @@ const Auth = () => {
           toastHook({ title: 'Muvaffaqiyat!', description: 'Tizimga kirdingiz' });
         }
       } else if (mode === 'signup') {
-        // Send OTP to user's email
-        try {
-          const { data, error } = await supabase.functions.invoke('send-verification-code', {
-            body: { email }
-          });
-          
-          if (error) {
-            let errMsg = 'OTP yuborishda xatolik yuz berdi';
-            try {
-              if (error.context) {
-                const resp = error.context as Response;
-                if (resp.json) {
-                  const errorBody = await resp.json();
-                  errMsg = errorBody?.error || errMsg;
-                }
-              }
-            } catch {
-              if (data?.error) errMsg = data.error;
-            }
-            toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
-            setLoading(false);
-            return;
-          }
-          
-          if (data && !data.success) {
-            toastHook({ variant: 'destructive', title: 'Xatolik', description: data.error || 'OTP yaratishda xatolik' });
-            setLoading(false);
-            return;
-          }
-
-          // Store pending signup data
-          pendingSignupDataRef.current = { email, password, username, userType };
-
-          // Show OTP entry screen
-          setSessionToken(data?.session_token || '');
-          setOtpExpiresAt(new Date(Date.now() + (data?.expires_in || 300) * 1000));
-          setOtpCountdown(data?.expires_in || 300);
-          setOtpInput('');
-          setVerifyStatus('idle');
-          setVerifyError('');
-          setResendCooldown(60);
-          setMode('verify-email-otp');
-          
-          toastHook({ title: '📧 Kod yuborildi!', description: 'Email ga kelgan tasdiqlash kodini kiriting' });
-        } catch (otpErr: any) {
-          toastHook({ variant: 'destructive', title: 'Xatolik', description: otpErr?.message || 'OTP yuborishda xatolik' });
-          setLoading(false);
-          return;
+        const { error } = await signUp(email, password, username, undefined, userType);
+        if (error) {
+          const msg = error.message.includes('already registered')
+            ? "Bu email allaqachon ro'yxatdan o'tgan"
+            : error.message;
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: msg });
+        } else {
+          toastHook({ title: 'Muvaffaqiyat! 🎉', description: 'Akkaunt yaratildi!' });
+          navigate('/onboarding');
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
