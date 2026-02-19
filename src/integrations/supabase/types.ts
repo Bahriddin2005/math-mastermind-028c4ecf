@@ -1954,6 +1954,7 @@ export type Database = {
       }
       verification_codes: {
         Row: {
+          attempts: number
           code: string
           created_at: string
           email: string
@@ -1961,6 +1962,7 @@ export type Database = {
           id: string
           is_used: boolean
           is_verified: boolean
+          locked_until: string | null
           phone_number: string
           session_token: string | null
           telegram_first_name: string | null
@@ -1968,6 +1970,7 @@ export type Database = {
           telegram_username: string | null
         }
         Insert: {
+          attempts?: number
           code: string
           created_at?: string
           email: string
@@ -1975,13 +1978,15 @@ export type Database = {
           id?: string
           is_used?: boolean
           is_verified?: boolean
-          phone_number: string
+          locked_until?: string | null
+          phone_number?: string
           session_token?: string | null
           telegram_first_name?: string | null
           telegram_id?: string | null
           telegram_username?: string | null
         }
         Update: {
+          attempts?: number
           code?: string
           created_at?: string
           email?: string
@@ -1989,6 +1994,7 @@ export type Database = {
           id?: string
           is_used?: boolean
           is_verified?: boolean
+          locked_until?: string | null
           phone_number?: string
           session_token?: string | null
           telegram_first_name?: string | null
