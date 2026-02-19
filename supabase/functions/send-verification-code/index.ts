@@ -12,12 +12,31 @@ const corsHeaders = {
 
 interface VerificationRequest {
   email: string;
-  phone_number?: string;
 }
+
+// ── Constants ───────────────────────────────────────────
+const OTP_TTL_SECONDS = 300; // 5 daqiqa
+const RESEND_COOLDOWN_SECONDS = 60; // 60 soniyada 1 marta
+const DAILY_MAX_SENDS = 10; // kuniga max 10 ta
 
 function generateCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
+function generateSessionToken(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 48; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -25,20 +44,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, phone_number }: VerificationRequest = await req.json();
+    const { email }: VerificationRequest = await req.json();
 
     if (!email || typeof email !== "string") {
-      throw new Error("Email is required");
+      return jsonResponse({ success: false, error: "Email talab qilinadi" }, 400);
     }
 
     // Input validation
     if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      throw new Error("Email formati noto'g'ri");
+      return jsonResponse({ success: false, error: "Email formati noto'g'ri" }, 400);
     }
 
-    if (phone_number && typeof phone_number === "string" && phone_number.length > 20) {
-      throw new Error("Telefon raqam juda uzun");
-    }
+    const normalizedEmail = email.toLowerCase().trim();
 
     // Create Supabase client with service role
     const supabaseAdmin = createClient(
@@ -46,38 +63,79 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Generate 6-digit code
+    // ── Rate Limiting: Resend cooldown (60s) ────────────
+    const { data: recentCode } = await supabaseAdmin
+      .from("verification_codes")
+      .select("created_at")
+      .eq("email", normalizedEmail)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (recentCode) {
+      const sinceSeconds = (Date.now() - new Date(recentCode.created_at).getTime()) / 1000;
+      if (sinceSeconds < RESEND_COOLDOWN_SECONDS) {
+        const wait = Math.ceil(RESEND_COOLDOWN_SECONDS - sinceSeconds);
+        return jsonResponse({
+          success: false,
+          error: `Iltimos, ${wait} soniya kutib turing.`,
+          retry_after: wait,
+        }, 429);
+      }
+    }
+
+    // ── Rate Limiting: Daily max sends (10/day) ─────────
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const { count: todayCount } = await supabaseAdmin
+      .from("verification_codes")
+      .select("id", { count: "exact", head: true })
+      .eq("email", normalizedEmail)
+      .gte("created_at", todayStart.toISOString());
+
+    if (todayCount !== null && todayCount >= DAILY_MAX_SENDS) {
+      return jsonResponse({
+        success: false,
+        error: "Bugungi limit tugadi (10 ta). Ertaga qayta urinib ko'ring.",
+      }, 429);
+    }
+
+    // Generate 6-digit code and session token
     const code = generateCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const sessionToken = generateSessionToken();
+    const expiresAt = new Date(Date.now() + OTP_TTL_SECONDS * 1000);
 
     // Delete any existing unused codes for this email
     await supabaseAdmin
       .from("verification_codes")
       .delete()
-      .eq("email", email)
+      .eq("email", normalizedEmail)
       .eq("is_used", false);
 
     // Insert new verification code
     const { error: insertError } = await supabaseAdmin
       .from("verification_codes")
       .insert({
-        email,
-        phone_number: phone_number || "",
+        email: normalizedEmail,
         code,
+        session_token: sessionToken,
         expires_at: expiresAt.toISOString(),
         is_used: false,
+        is_verified: false,
       });
 
     if (insertError) {
       console.error("Insert error:", insertError);
-      throw new Error("Failed to create verification code");
+      return jsonResponse({ success: false, error: "Kod yaratishda xatolik" }, 500);
     }
 
     // Send email with verification code
+    const ttlMinutes = Math.floor(OTP_TTL_SECONDS / 60);
     const emailResponse = await resend.emails.send({
       from: "IQROMAX <noreply@iqromax.uz>",
-      to: [email],
-      subject: "IQROMAX - Tasdiqlash kodi",
+      to: [normalizedEmail],
+      subject: "IQROMAX – Tasdiqlash kodi",
       html: `
         <!DOCTYPE html>
         <html>
@@ -92,7 +150,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <table role="presentation" style="width: 100%; max-width: 480px; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                   <!-- Header -->
                   <tr>
-                    <td style="padding: 32px 32px 24px; text-align: center; background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%); border-radius: 16px 16px 0 0;">
+                    <td style="padding: 32px 32px 24px; text-align: center; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border-radius: 16px 16px 0 0;">
                       <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff;">🧮 IQROMAX</h1>
                       <p style="margin: 8px 0 0; font-size: 14px; color: rgba(255,255,255,0.9);">Mental Matematika Platformasi</p>
                     </td>
@@ -102,19 +160,19 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="padding: 32px;">
                       <h2 style="margin: 0 0 16px; font-size: 20px; font-weight: 600; color: #18181b; text-align: center;">
-                        Email manzilingizni tasdiqlang
+                        Tasdiqlash kodingiz
                       </h2>
                       <p style="margin: 0 0 24px; font-size: 15px; color: #71717a; text-align: center; line-height: 1.6;">
                         Ro'yxatdan o'tishni yakunlash uchun quyidagi kodni kiriting:
                       </p>
                       
                       <!-- Code Box -->
-                      <div style="background: linear-gradient(135deg, #f4f4f5 0%, #e4e4e7 100%); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
-                        <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #8B5CF6; font-family: 'Courier New', monospace;">${code}</span>
+                      <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10B981; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+                        <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #059669; font-family: 'Courier New', monospace;">${code}</span>
                       </div>
                       
                       <p style="margin: 0 0 8px; font-size: 13px; color: #a1a1aa; text-align: center;">
-                        ⏱️ Bu kod 10 daqiqa davomida amal qiladi
+                        ⏱️ Bu kod ${ttlMinutes} daqiqa davomida amal qiladi
                       </p>
                       <p style="margin: 0; font-size: 13px; color: #a1a1aa; text-align: center;">
                         Agar siz ro'yxatdan o'tmagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
@@ -126,7 +184,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="padding: 24px 32px; background-color: #fafafa; border-radius: 0 0 16px 16px; border-top: 1px solid #e4e4e7;">
                       <p style="margin: 0; font-size: 12px; color: #a1a1aa; text-align: center;">
-                        © 2024 IQROMAX. Barcha huquqlar himoyalangan.
+                        © ${new Date().getFullYear()} IQROMAX. Barcha huquqlar himoyalangan.
                       </p>
                     </td>
                   </tr>
@@ -139,24 +197,17 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Verification email sent:", emailResponse);
+    console.log("Verification email sent to:", normalizedEmail);
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Verification code sent" }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return jsonResponse({
+      success: true,
+      session_token: sessionToken,
+      expires_in: OTP_TTL_SECONDS,
+      message: "Tasdiqlash kodi email ga yuborildi",
+    });
   } catch (error: any) {
     console.error("Error in send-verification-code:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return jsonResponse({ success: false, error: error.message }, 500);
   }
 };
 

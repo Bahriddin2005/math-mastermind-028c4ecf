@@ -7,159 +7,153 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// ── Constants ───────────────────────────────────────────
+const MAX_ATTEMPTS = 5;
+const LOCK_MINUTES = 10;
+
 interface VerifyRequest {
-  email: string;
+  session_token: string;
   code: string;
-  /**
-   * If true (default), marks the code as used.
-   * If false, only validates the code without consuming it.
-   */
   consume?: boolean;
 }
 
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...corsHeaders },
+  });
+
 const handler = async (req: Request): Promise<Response> => {
-  // CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { email, code, consume = true }: VerifyRequest = await req.json();
+    const { session_token, code, consume = true }: VerifyRequest = await req.json();
 
-    if (!email || typeof email !== "string" || !code || typeof code !== "string") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Email va kod talab qilinadi" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+    if (!session_token || typeof session_token !== "string") {
+      return jsonResponse({ success: false, error: "Session token talab qilinadi" }, 400);
     }
 
-    // Input validation
-    if (email.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Email formati noto'g'ri" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    if (!code || typeof code !== "string") {
+      return jsonResponse({ success: false, error: "Kod talab qilinadi" }, 400);
     }
 
+    // Validate OTP format
     if (!/^\d{6}$/.test(code)) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Kod 6 raqamdan iborat bo'lishi kerak" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+      return jsonResponse({ success: false, error: "Kod 6 raqamdan iborat bo'lishi kerak" }, 400);
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
     if (!supabaseUrl || !serviceRoleKey) {
-      console.error("Missing Supabase env vars", {
-        hasUrl: !!supabaseUrl,
-        hasServiceRoleKey: !!serviceRoleKey,
-      });
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Server sozlamasida xatolik (credentials yo'q)",
-        }),
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      console.error("Missing Supabase env vars");
+      return jsonResponse({ success: false, error: "Server sozlamasida xatolik" }, 500);
     }
 
-    // Create Supabase client with service role
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    // Fetch the latest matching code (including used/expired) so we can return a clear reason
+    // Fetch the latest matching code by session_token
     const { data: row, error: fetchError } = await supabaseAdmin
       .from("verification_codes")
-      .select("id,email,code,is_used,expires_at")
-      .eq("email", email)
-      .eq("code", code)
-      .order("created_at", { ascending: false })
+      .select("*")
+      .eq("session_token", session_token)
       .maybeSingle();
 
     if (fetchError || !row) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Noto'g'ri kod",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      return jsonResponse({ success: false, error: "Session topilmadi" }, 404);
     }
 
+    // ── Brute-force check: locked? ──────────────────────
+    if (row.locked_until) {
+      const lockExpiry = new Date(row.locked_until);
+      if (new Date() < lockExpiry) {
+        const remainMin = Math.ceil((lockExpiry.getTime() - Date.now()) / 60000);
+        return jsonResponse({
+          success: false,
+          error: `Ko'p urinish. ${remainMin} daqiqa kutib turing.`,
+          locked: true,
+        });
+      }
+      // Lock expired — reset attempts
+      await supabaseAdmin
+        .from("verification_codes")
+        .update({ attempts: 0, locked_until: null })
+        .eq("id", row.id);
+      row.attempts = 0;
+      row.locked_until = null;
+    }
+
+    // ── Check if already used ───────────────────────────
     if (row.is_used) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Bu kod allaqachon ishlatilgan. Yangi kod so'rang.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+      return jsonResponse({
+        success: false,
+        error: "Bu kod allaqachon ishlatilgan. Yangi kod so'rang.",
+      });
     }
 
-    const nowIso = new Date().toISOString();
-    if (row.expires_at <= nowIso) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Kod muddati o'tgan. Yangi kod so'rang.",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
+    // ── Check if expired ────────────────────────────────
+    if (new Date(row.expires_at) < new Date()) {
+      return jsonResponse({
+        success: false,
+        error: "Kod muddati tugagan. Yangi kod so'rang.",
+        expired: true,
+      });
     }
 
+    // ── Check if code matches ───────────────────────────
+    if (row.code !== code) {
+      const newAttempts = (row.attempts || 0) + 1;
+      const updates: Record<string, unknown> = { attempts: newAttempts };
+
+      if (newAttempts >= MAX_ATTEMPTS) {
+        updates.locked_until = new Date(Date.now() + LOCK_MINUTES * 60000).toISOString();
+      }
+
+      await supabaseAdmin
+        .from("verification_codes")
+        .update(updates)
+        .eq("id", row.id);
+
+      const remaining = Math.max(0, MAX_ATTEMPTS - newAttempts);
+
+      if (newAttempts >= MAX_ATTEMPTS) {
+        return jsonResponse({
+          success: false,
+          error: `Ko'p urinish. ${LOCK_MINUTES} daqiqa kutib turing.`,
+          locked: true,
+        });
+      }
+
+      return jsonResponse({
+        success: false,
+        error: `Noto'g'ri kod. ${remaining} ta urinish qoldi.`,
+        remaining_attempts: remaining,
+      });
+    }
+
+    // ── Code is correct! ────────────────────────────────
     if (consume) {
       const { error: updateError } = await supabaseAdmin
         .from("verification_codes")
-        .update({ is_used: true })
+        .update({ is_used: true, is_verified: true })
         .eq("id", row.id);
 
       if (updateError) {
         console.error("Failed to mark code as used:", updateError);
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "Kod holatini yangilashda xatolik",
-          }),
-          {
-            status: 500,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-          }
-        );
+        return jsonResponse({ success: false, error: "Kod holatini yangilashda xatolik" }, 500);
       }
     }
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Code verified" }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return jsonResponse({
+      success: true,
+      message: "Kod tasdiqlandi",
+      email: row.email,
+    });
   } catch (error: any) {
     console.error("Error in verify-code:", error);
-    return new Response(
-      JSON.stringify({ success: false, error: error?.message ?? "Unknown error" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return jsonResponse({ success: false, error: error?.message ?? "Unknown error" }, 500);
   }
 };
 
