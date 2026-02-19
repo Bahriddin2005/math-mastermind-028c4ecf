@@ -53,3 +53,9 @@ verify_jwt = false
 
 [functions.livekit-token]
 verify_jwt = false
+
+[functions.send-sms-otp]
+verify_jwt = false
+
+[functions.verify-sms-otp]
+verify_jwt = false

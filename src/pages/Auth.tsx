@@ -13,10 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 import { toast } from 'sonner';
 import { PasswordStrengthIndicator } from '@/components/PasswordStrengthIndicator';
 import { supabase } from '@/integrations/supabase/client';
+import { formatPhoneNumber, unformatPhoneNumber, isValidPhoneNumber } from '@/lib/phoneFormatter';
 import { 
   Loader2, LogIn, UserPlus, Mail, ArrowLeft, Check, Sparkles,
   Brain, Target, Trophy, Lock, User, Zap, Star, ChevronRight,
-  GraduationCap, ShieldCheck, RefreshCw
+  GraduationCap, ShieldCheck, RefreshCw, Phone, MessageSquare
 } from 'lucide-react';
 import { z } from 'zod';
 
@@ -35,7 +36,7 @@ const emailSchema = z.object({
   email: z.string().email("Noto'g'ri email format"),
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-email-otp';
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'verify-email-otp' | 'verify-sms-otp';
 
 const features = [
   { icon: Brain, text: "Mental arifmetika mashqlari", color: "from-blue-500 to-cyan-500" },
@@ -56,6 +57,7 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
   const [userType, setUserType] = useState<'student' | 'parent' | 'teacher'>('student');
+  const [phoneNumber, setPhoneNumber] = useState('+998 ');
   const [loading, setLoading] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -80,6 +82,7 @@ const Auth = () => {
     email: string;
     password: string;
     username: string;
+    phoneNumber: string;
     userType: string;
   } | null>(null);
   
@@ -176,7 +179,7 @@ const Auth = () => {
     
     setVerifyStatus('creating');
     try {
-      const { error } = await signUp(data.email, data.password, data.username, undefined, data.userType);
+      const { error } = await signUp(data.email, data.password, data.username, data.phoneNumber, data.userType);
       
       if (error) {
         const msg = error.message.includes('already registered')
@@ -210,8 +213,8 @@ const Auth = () => {
     setVerifyError('');
 
     try {
-      const { data, error } = await supabase.functions.invoke('verify-code', {
-        body: { session_token: sessionToken, code: otpInput, consume: true }
+      const { data, error } = await supabase.functions.invoke('verify-sms-otp', {
+        body: { session_token: sessionToken, otp_code: otpInput, consume: true }
       });
 
       if (error) {
@@ -274,15 +277,60 @@ const Auth = () => {
           toastHook({ title: 'Muvaffaqiyat!', description: 'Tizimga kirdingiz' });
         }
       } else if (mode === 'signup') {
-        const { error } = await signUp(email, password, username, undefined, userType);
-        if (error) {
-          const msg = error.message.includes('already registered')
-            ? "Bu email allaqachon ro'yxatdan o'tgan"
-            : error.message;
-          toastHook({ variant: 'destructive', title: 'Xatolik', description: msg });
-        } else {
-          toastHook({ title: 'Muvaffaqiyat! 🎉', description: 'Akkaunt yaratildi!' });
-          navigate('/onboarding');
+        // Validate phone
+        const rawPhone = unformatPhoneNumber(phoneNumber);
+        if (!isValidPhoneNumber(phoneNumber)) {
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: "Telefon raqam noto'g'ri. +998XXXXXXXXX formatda kiriting." });
+          setLoading(false);
+          return;
+        }
+
+        // Send SMS OTP
+        try {
+          const { data, error } = await supabase.functions.invoke('send-sms-otp', {
+            body: { email, phone_number: rawPhone, username }
+          });
+          
+          if (error) {
+            let errMsg = 'SMS yuborishda xatolik';
+            try {
+              if (error.context) {
+                const resp = error.context as Response;
+                if (resp.json) {
+                  const errorBody = await resp.json();
+                  errMsg = errorBody?.error || errMsg;
+                }
+              }
+            } catch {}
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: errMsg });
+            setLoading(false);
+            return;
+          }
+          
+          if (data && !data.success) {
+            toastHook({ variant: 'destructive', title: 'Xatolik', description: data.error || 'SMS yuborishda xatolik' });
+            setLoading(false);
+            return;
+          }
+
+          // Store pending signup data
+          pendingSignupDataRef.current = { email, password, username, phoneNumber: rawPhone, userType };
+
+          // Show SMS OTP screen
+          setSessionToken(data?.session_token || '');
+          setOtpExpiresAt(new Date(Date.now() + (data?.expires_in || 180) * 1000));
+          setOtpCountdown(data?.expires_in || 180);
+          setOtpInput('');
+          setVerifyStatus('idle');
+          setVerifyError('');
+          setResendCooldown(60);
+          setMode('verify-sms-otp');
+          
+          toastHook({ title: '📱 SMS yuborildi!', description: 'Telefon raqamingizga kelgan kodni kiriting' });
+        } catch (otpErr: any) {
+          toastHook({ variant: 'destructive', title: 'Xatolik', description: otpErr?.message || 'SMS yuborishda xatolik' });
+          setLoading(false);
+          return;
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
@@ -304,8 +352,8 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('send-verification-code', {
-        body: { email: pendingSignupDataRef.current.email }
+      const { data, error } = await supabase.functions.invoke('send-sms-otp', {
+        body: { email: pendingSignupDataRef.current.email, phone_number: pendingSignupDataRef.current.phoneNumber }
       });
       
       if (error) {
@@ -335,7 +383,7 @@ const Auth = () => {
       setVerifyStatus('idle');
       setVerifyError('');
       setResendCooldown(60);
-      toast.success('📧 Yangi kod email ga yuborildi!');
+      toast.success('📱 Yangi SMS kod yuborildi!');
     } finally {
       setLoading(false);
     }
@@ -373,8 +421,9 @@ const Auth = () => {
     );
   }
 
-  // ── Email OTP Verify Screen ───────────────────────────
-  if (mode === 'verify-email-otp') {
+  // ── SMS/Email OTP Verify Screen ───────────────────────────
+  if (mode === 'verify-email-otp' || mode === 'verify-sms-otp') {
+    const isSms = mode === 'verify-sms-otp';
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5 dark:from-primary/10 dark:via-background dark:to-accent/10">
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -387,12 +436,12 @@ const Auth = () => {
             <div className="h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-500" />
             
             <CardHeader className="text-center pb-3 sm:pb-4 pt-5 sm:pt-6 px-4 sm:px-6">
-              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50">
-                <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+               <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg shadow-emerald-500/30 dark:shadow-emerald-500/50">
+                {isSms ? <MessageSquare className="h-7 w-7 sm:h-8 sm:w-8 text-white" /> : <Mail className="h-7 w-7 sm:h-8 sm:w-8 text-white" />}
               </div>
-              <CardTitle className="text-xl sm:text-2xl font-display">Email tasdiqlash</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl font-display">{isSms ? 'SMS tasdiqlash' : 'Email tasdiqlash'}</CardTitle>
               <CardDescription className="mt-1.5 sm:mt-2 text-sm">
-                <strong className="text-foreground">{pendingSignupDataRef.current?.email}</strong> ga tasdiqlash kodi yuborildi
+                <strong className="text-foreground">{isSms ? pendingSignupDataRef.current?.phoneNumber : pendingSignupDataRef.current?.email}</strong> ga tasdiqlash kodi yuborildi
               </CardDescription>
             </CardHeader>
             
@@ -404,10 +453,10 @@ const Auth = () => {
                     <ShieldCheck className="h-5 w-5 text-emerald-500 mt-0.5 shrink-0" />
                     <div className="text-sm">
                       <p className="font-medium text-emerald-700 dark:text-emerald-300">
-                        📧 Email pochtangizni tekshiring
+                        {isSms ? '📱 SMS xabarni tekshiring' : '📧 Email pochtangizni tekshiring'}
                       </p>
                       <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                        Spam papkasini ham ko'rib chiqing
+                        {isSms ? 'Telefon raqamingizga SMS yuborildi' : 'Spam papkasini ham ko\'rib chiqing'}
                       </p>
                       {otpCountdown > 0 && (
                         <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
@@ -733,6 +782,25 @@ const Auth = () => {
                     )}
                   </div>
                 )}
+
+                {mode === 'signup' && (
+                  <div className="space-y-1.5 sm:space-y-2">
+                    <Label htmlFor="phone" className="text-xs sm:text-sm font-medium">Telefon raqam</Label>
+                    <div className="relative group">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="+998 90 123 45 67"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                        disabled={loading}
+                        className="pl-10 h-11 sm:h-12 transition-all focus:shadow-md focus:shadow-primary/10 bg-background dark:bg-card/50 border-border/50 dark:border-border/30 text-sm sm:text-base"
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">SMS tasdiqlash kodi ushbu raqamga yuboriladi</p>
+                  </div>
+                )}
                 
                 <div className="space-y-1.5 sm:space-y-2">
                   <Label htmlFor="email" className="text-xs sm:text-sm font-medium">Email</Label>
@@ -821,7 +889,7 @@ const Auth = () => {
                   ) : mode === 'login' ? (
                     <>Kirish <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : mode === 'signup' ? (
-                    <>Kod yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
+                    <>SMS kod yuborish <Phone className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   ) : (
                     <>Havola yuborish <Mail className="h-4 w-4 sm:h-5 sm:w-5" /></>
                   )}
