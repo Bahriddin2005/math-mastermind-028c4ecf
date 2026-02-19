@@ -133,7 +133,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send email with verification code
     const ttlMinutes = Math.floor(OTP_TTL_SECONDS / 60);
     const emailResponse = await resend.emails.send({
-      from: "IQROMAX <onboarding@resend.dev>",
+      from: "IQROMAX <noreply@iqromax.uz>",
       to: [normalizedEmail],
       subject: "IQROMAX – Tasdiqlash kodi",
       html: `
