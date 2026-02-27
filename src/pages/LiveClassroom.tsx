@@ -236,6 +236,63 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
 
   return (
     <div className="h-full flex flex-col">
+      {/* Controls bar - top */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-gradient-to-r from-card via-card to-card border-b border-border/30">
+        <div className="flex items-center gap-2">
+          {!isTeacher && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleRaiseHand}
+              className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium hover:bg-amber-500/10 hover:text-amber-600 transition-colors"
+            >
+              <Hand className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Qo'l</span>
+            </Button>
+          )}
+
+          <Button
+            variant={showParticipants ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setShowParticipants(!showParticipants)}
+            className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium"
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span className="font-semibold">{participants.length}</span>
+          </Button>
+
+          {isTeacher && (
+            <Button
+              variant={showAbacus ? "default" : "ghost"}
+              size="sm"
+              onClick={() => toggleAbacusForAll(!showAbacus)}
+              className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium"
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Abakus</span>
+            </Button>
+          )}
+
+          {!isTeacher && !showAbacus && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAbacus(true)}
+              className="h-8 px-3 rounded-lg gap-1.5 text-xs font-medium"
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Abakus</span>
+            </Button>
+          )}
+        </div>
+
+        {isTeacher && (
+          <Badge variant="secondary" className="h-6 px-2.5 gap-1 text-[10px] font-bold rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+            <Shield className="w-3 h-3" /> Ustoz
+          </Badge>
+        )}
+      </div>
+
       {/* Video area */}
       <div className="flex-1 relative">
         <VideoConference />
@@ -250,60 +307,6 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
               else setShowAbacus(false);
             }}
           />
-        )}
-      </div>
-
-      {/* Custom controls bar */}
-      <div className="flex items-center justify-center gap-3 px-4 py-3 bg-card border-t border-border/50">
-        {!isTeacher && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRaiseHand}
-            className="h-10 px-4 rounded-xl gap-2 text-sm font-medium shadow-sm"
-          >
-            <Hand className="w-4 h-4" />
-            Qo'l ko'tarish
-          </Button>
-        )}
-
-        <Button
-          variant={showParticipants ? "default" : "outline"}
-          size="sm"
-          onClick={() => setShowParticipants(!showParticipants)}
-          className="h-10 px-4 rounded-xl gap-2 text-sm font-medium shadow-sm"
-        >
-          <Users className="w-4 h-4" />
-          <span>{participants.length} nafar</span>
-        </Button>
-
-        {isTeacher && (
-          <>
-            <Button
-              variant={showAbacus ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleAbacusForAll(!showAbacus)}
-              className="h-10 px-4 rounded-xl gap-2 text-sm font-medium shadow-sm"
-            >
-              <Calculator className="w-4 h-4" />
-              Abakus
-            </Button>
-            <Badge variant="secondary" className="h-8 px-3 gap-1.5 text-xs font-semibold rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-              <Shield className="w-3.5 h-3.5" /> Ustoz
-            </Badge>
-          </>
-        )}
-
-        {!isTeacher && showAbacus === false && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAbacus(true)}
-            className="h-10 px-4 rounded-xl gap-2 text-sm font-medium shadow-sm"
-          >
-            <Calculator className="w-4 h-4" />
-            Abakus
-          </Button>
         )}
       </div>
 
