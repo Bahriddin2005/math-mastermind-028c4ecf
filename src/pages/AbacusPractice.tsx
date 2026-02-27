@@ -121,8 +121,8 @@ const AbacusPractice = () => {
       ensurePositiveResult: true,
     });
     setCurrentProblem(problem);
-    setCurrentStep(0);
-    setAbacusValue(problem.startValue);
+    setCurrentStep(-1);
+    setAbacusValue(0);
     setProblemStartTime(Date.now());
     setElapsedTime(0);
     setGameState('playing');
@@ -138,13 +138,23 @@ const AbacusPractice = () => {
   useEffect(() => {
     if (gameState !== 'playing' || !currentProblem) return;
     
-    const expectedValue = currentProblem.startValue + currentProblem.sequence
-      .slice(0, currentStep + 1)
-      .reduce((sum, val) => sum + val, 0);
+    // Step -1 means user must first set the startValue on abacus
+    // Then steps 0..n are the operations
+    let expectedVal: number;
+    if (currentStep === -1) {
+      expectedVal = currentProblem.startValue;
+    } else {
+      expectedVal = currentProblem.startValue + currentProblem.sequence
+        .slice(0, currentStep + 1)
+        .reduce((sum, val) => sum + val, 0);
+    }
     
-    if (abacusValue === expectedValue) {
+    if (abacusValue === expectedVal) {
       playSound('correct');
-      if (currentStep < currentProblem.sequence.length - 1) {
+      if (currentStep === -1) {
+        // Start value set, move to first operation
+        setTimeout(() => setCurrentStep(0), 300);
+      } else if (currentStep < currentProblem.sequence.length - 1) {
         setTimeout(() => setCurrentStep(prev => prev + 1), 300);
       } else {
         setTimeout(() => setGameState('answer'), 500);
@@ -201,11 +211,13 @@ const AbacusPractice = () => {
     }
   };
 
-  const currentOperation = currentProblem?.sequence[currentStep];
+  const currentOperation = currentStep >= 0 ? currentProblem?.sequence[currentStep] : null;
   const expectedValue = currentProblem 
-    ? currentProblem.startValue + currentProblem.sequence
-        .slice(0, currentStep + 1)
-        .reduce((sum, val) => sum + val, 0)
+    ? currentStep === -1 
+      ? currentProblem.startValue
+      : currentProblem.startValue + currentProblem.sequence
+          .slice(0, currentStep + 1)
+          .reduce((sum, val) => sum + val, 0)
     : 0;
 
   const formatTime = (ms: number) => {
@@ -501,7 +513,7 @@ const AbacusPractice = () => {
                       value={abacusValue}
                       onChange={setAbacusValue}
                       mode={abacusMode}
-                      showValue={abacusMode !== 'mental'}
+                      showValue={false}
                       orientation={abacusOrientation}
                       readOnly={gameState === 'answer'}
                     />
@@ -532,23 +544,21 @@ const AbacusPractice = () => {
                       <Card className="border-primary/40 bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
                         <CardContent className="py-3 px-4 space-y-2">
                           <div className="flex justify-between items-center text-xs">
-                            <span className="text-muted-foreground">Boshlang'ich: <strong className="text-accent-foreground">{currentProblem.startValue}</strong></span>
-                            <span className="text-muted-foreground">Qadam {currentStep + 1}/{currentProblem.sequence.length}</span>
+                            <span className="text-muted-foreground">Qadam {currentStep === -1 ? 'Boshlang\'ich' : `${currentStep + 1}/${currentProblem.sequence.length}`}</span>
                           </div>
                           <motion.div
                             key={currentStep}
-                            initial={{ scale: 0.9, opacity: 0 }}
+                            initial={{ scale: 0.8, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
-                            className="text-center"
+                            className="text-center py-2"
                           >
-                            <div className="text-4xl font-bold text-primary">
-                              {currentOperation && currentOperation >= 0 ? '+' : ''}{currentOperation}
+                            <div className="text-6xl sm:text-7xl font-black text-primary">
+                              {currentStep === -1 
+                                ? currentProblem.startValue 
+                                : `${currentOperation && currentOperation >= 0 ? '+' : ''}${currentOperation}`
+                              }
                             </div>
                           </motion.div>
-                          <div className="text-[10px] text-muted-foreground/60 text-center flex items-center justify-center gap-1">
-                            <Target className="w-3 h-3" />
-                            Kutilayotgan: {expectedValue}
-                          </div>
                         </CardContent>
                       </Card>
                       
