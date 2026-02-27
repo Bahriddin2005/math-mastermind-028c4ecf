@@ -254,7 +254,7 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
       </div>
 
       {/* Custom controls bar */}
-      <div className="flex items-center justify-center gap-1.5 px-3 py-1 bg-card/90 backdrop-blur-sm border-t border-border/50">
+      <div className="flex items-center justify-center gap-2 px-3 py-2.5 bg-card/95 backdrop-blur-sm border-t border-border/50">
         {!isTeacher && (
           <Button
             variant="ghost"
