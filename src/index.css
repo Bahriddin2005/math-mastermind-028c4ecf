@@ -204,6 +204,10 @@
     --sidebar-accent-foreground: 145 20% 95%;
     --sidebar-border: 150 15% 20%;
     --sidebar-ring: 145 75% 50%;
+
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(180deg, hsl(150 25% 8%) 0%, hsl(150 20% 10%) 50%, hsl(150 25% 8%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(150 20% 12%) 0%, hsl(150 20% 14%) 100%);
   }
 }
 
@@ -249,7 +253,7 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     background: var(--gradient-hero);
-    background-color: hsl(145 35% 94%);
+    background-color: hsl(var(--background));
     
     /* CRITICAL: Standard document flow - NOT fixed height */
     margin: 0;
