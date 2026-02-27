@@ -258,42 +258,43 @@ const RoomContent = ({ isTeacher, sessionId }: { isTeacher: boolean; sessionId: 
       </div>
 
       {/* Custom controls bar */}
-      <div className="flex items-center justify-center gap-2 p-3 bg-card border-t">
+      <div className="flex items-center justify-center gap-1.5 px-3 py-2 bg-card/90 backdrop-blur-sm border-t border-border/50">
         {!isTeacher && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={handleRaiseHand}
-            className="gap-1"
+            className="h-8 px-2.5 rounded-full hover:bg-secondary/80 gap-1.5 text-xs"
           >
-            <Hand className="w-4 h-4" />
-            <span className="hidden md:inline">Qo'l ko'tarish</span>
+            <Hand className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Qo'l</span>
           </Button>
         )}
 
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={() => setShowParticipants(!showParticipants)}
-          className="gap-1"
+          className={`h-8 px-2.5 rounded-full gap-1.5 text-xs ${showParticipants ? 'bg-primary/10 text-primary' : 'hover:bg-secondary/80'}`}
         >
-          <Users className="w-4 h-4" />
-          <span>{participants.length}</span>
+          <Users className="w-3.5 h-3.5" />
+          <span className="font-semibold">{participants.length}</span>
         </Button>
 
         {isTeacher && (
           <>
             <Button
-              variant={showAbacus ? "default" : "outline"}
+              variant={showAbacus ? "default" : "ghost"}
               size="sm"
               onClick={() => toggleAbacusForAll(!showAbacus)}
-              className="gap-1"
+              className={`h-8 px-2.5 rounded-full gap-1.5 text-xs ${!showAbacus ? 'hover:bg-secondary/80' : ''}`}
             >
-              <Calculator className="w-4 h-4" />
-              <span className="hidden md:inline">Abakus</span>
+              <Calculator className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Abakus</span>
             </Button>
-            <Badge variant="outline" className="gap-1 text-xs">
-              <Shield className="w-3 h-3" /> Moderator
+            <div className="h-4 w-px bg-border/50 mx-0.5" />
+            <Badge variant="secondary" className="h-6 px-2 gap-1 text-[10px] font-semibold rounded-full bg-emerald-500/10 text-emerald-600 border-0">
+              <Shield className="w-3 h-3" /> Ustoz
             </Badge>
           </>
         )}
