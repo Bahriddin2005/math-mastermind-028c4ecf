@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageBackground } from '@/components/layout/PageBackground';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
 import { Navbar } from '@/components/Navbar';
 import { Achievements } from '@/components/Achievements';
@@ -55,6 +56,7 @@ const usernameSchema = z.string()
 
 const Settings = () => {
   const { user } = useAuth();
+  const { role, isStudent, isParent, isTeacher, isAdmin } = useUserRole();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { theme, setTheme } = useTheme();
@@ -462,6 +464,17 @@ const Settings = () => {
                         {formatDate(createdAt)}
                       </span>
                     )}
+                  </div>
+                  {/* User Role Badge */}
+                  <div className="mt-2">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                      isAdmin ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
+                      isTeacher ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' :
+                      isParent ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' :
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+                    }`}>
+                      {isAdmin ? '🛡️ Admin' : isTeacher ? "👩‍🏫 O'qituvchi" : isParent ? '👨‍👩‍👧 Ota-ona' : "🎓 O'quvchi"}
+                    </span>
                   </div>
                 </div>
               </div>
