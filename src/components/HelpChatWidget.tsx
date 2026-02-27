@@ -828,24 +828,24 @@ Kunlik maqsad: ${userProgress.daily_goal} masala` :
         {/* Greeting bubble */}
         {showGreeting && !isOpen &&
         <div className="absolute bottom-16 md:bottom-[4.5rem] right-0 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div
-            className="bg-card border border-border shadow-xl rounded-2xl px-4 py-3 max-w-[200px] cursor-pointer relative"
-            onClick={() => {
-              setShowGreeting(false);setGreetingDismissed(true);
-              if (showFullWidget) {setIsOpen(true);} else {window.location.href = '/auth';}
-            }}>
+            
 
-              <button
-              onClick={(e) => {e.stopPropagation();setShowGreeting(false);setGreetingDismissed(true);}}
-              className="absolute -top-2 -right-2 w-5 h-5 bg-muted rounded-full flex items-center justify-center text-muted-foreground hover:bg-destructive hover:text-destructive-foreground transition-colors">
 
-                
-              </button>
-              <p className="text-sm font-medium text-foreground">👋 Salom!</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Yordam kerakmi? Yozing!</p>
-              {/* Triangle pointer */}
-              <div className="absolute -bottom-2 right-5 w-4 h-4 bg-card border-b border-r border-border rotate-45" />
-            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           </div>
         }
 
