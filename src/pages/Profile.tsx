@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSound } from '@/hooks/useSound';
+import { useUserRole } from '@/hooks/useUserRole';
 import { toast } from 'sonner';
 import { formatPhoneNumber, unformatPhoneNumber } from '@/lib/phoneFormatter';
 import {
@@ -48,6 +49,7 @@ const AVATAR_OPTIONS = [
 
 const Profile = () => {
   const { user, signOut } = useAuth();
+  const { role, isStudent, isParent, isTeacher, isAdmin } = useUserRole();
   const navigate = useNavigate();
   const { soundEnabled, toggleSound } = useSound();
   const { triggerConfetti } = useConfettiEffect();
@@ -293,6 +295,15 @@ const Profile = () => {
   const xpProgress = (stats.xp % 1000) / 10;
   const xpToNextLevel = 1000 - (stats.xp % 1000);
 
+  const getRoleInfo = () => {
+    if (isAdmin) return { label: "Admin", emoji: "🛡️", color: "bg-red-500/20 text-red-200" };
+    if (isTeacher) return { label: "O'qituvchi", emoji: "👩‍🏫", color: "bg-emerald-500/20 text-emerald-200" };
+    if (isParent) return { label: "Ota-ona", emoji: "👨‍👩‍👧", color: "bg-sky-500/20 text-sky-200" };
+    return { label: "O'quvchi", emoji: "🎓", color: "bg-amber-500/20 text-amber-200" };
+  };
+
+  const roleInfo = getRoleInfo();
+
   if (loading) {
     return (
       <PageBackground className="min-h-screen flex items-center justify-center">
@@ -445,6 +456,10 @@ const Profile = () => {
               )}
               
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                <Badge className={`${roleInfo.color} border-0 gap-1.5 px-3 py-1.5 text-sm font-bold`}>
+                  <span>{roleInfo.emoji}</span>
+                  {roleInfo.label}
+                </Badge>
                 <Badge className="bg-white/20 text-white border-0 gap-1.5 px-3 py-1.5">
                   <Crown className="h-4 w-4 text-kids-yellow" />
                   Level {stats.level}
