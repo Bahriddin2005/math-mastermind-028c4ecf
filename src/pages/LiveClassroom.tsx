@@ -117,27 +117,23 @@ const LiveClassroom = () => {
   if (!token || !wsUrl) return null;
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-card">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={handleDisconnect}>
-            <ArrowLeft className="w-5 h-5" />
+    <div className="h-screen flex flex-col bg-black">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={handleDisconnect} className="h-7 w-7 text-white/70 hover:text-white hover:bg-white/10 rounded-full">
+            <ArrowLeft className="w-4 h-4" />
           </Button>
-          <div>
-            <h1 className="font-bold text-sm md:text-base truncate max-w-[200px] md:max-w-none">
-              {sessionInfo?.title}
-            </h1>
-            <div className="flex items-center gap-2">
-              <Badge variant={isTeacher ? "default" : "secondary"} className="text-xs">
-                {isTeacher ? "O'qituvchi" : "O'quvchi"}
-              </Badge>
-              <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600">
-                🔴 Jonli
-              </Badge>
-            </div>
-          </div>
+          <h1 className="font-semibold text-sm text-white truncate max-w-[180px] md:max-w-none">
+            {sessionInfo?.title}
+          </h1>
+          <Badge className="h-5 px-1.5 text-[10px] font-semibold rounded-full bg-red-500/20 text-red-400 border-0 gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" /> LIVE
+          </Badge>
         </div>
+        <Badge variant="secondary" className="h-5 px-2 text-[10px] font-medium rounded-full bg-white/10 text-white/80 border-0">
+          {isTeacher ? "👩‍🏫 Ustoz" : "🎓 O'quvchi"}
+        </Badge>
       </div>
 
       {/* LiveKit Room */}
