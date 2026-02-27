@@ -61,16 +61,61 @@
   color: #888;
 }
 
-/* LiveKit control bar compact override */
+/* ===== Zoom-like LiveKit Theme Override ===== */
+
+/* Hide default LiveKit control bar - we use custom controls */
 .lk-control-bar {
-  padding: 0.25rem 0.5rem !important;
-  min-height: unset !important;
-  gap: 0.25rem !important;
+  display: none !important;
 }
 
-.lk-control-bar .lk-button {
-  height: 2rem !important;
-  min-width: 2rem !important;
-  font-size: 0.75rem !important;
-  padding: 0 0.5rem !important;
+/* Video grid - dark theme */
+.lk-grid-layout {
+  background: #1a1a2e !important;
+  gap: 6px !important;
+  padding: 6px !important;
+}
+
+/* Each video tile */
+.lk-participant-tile {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #242442 !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.lk-participant-tile:hover {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Participant name */
+.lk-participant-metadata {
+  background: linear-gradient(transparent, rgba(0,0,0,0.7)) !important;
+  padding: 8px 12px !important;
+}
+
+.lk-participant-name {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: white !important;
+}
+
+/* Focus layout */
+.lk-focus-layout {
+  background: #1a1a2e !important;
+}
+
+/* Chat */
+.lk-chat {
+  background: #242442 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Connection quality indicator */
+.lk-connection-quality {
+  opacity: 0.6 !important;
+}
+
+/* Placeholder when no video */
+.lk-participant-placeholder {
+  background: linear-gradient(135deg, #242442, #1a1a2e) !important;
 }
