@@ -138,10 +138,10 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
         <div className="absolute inset-0 bg-background/85 backdrop-blur-xl" />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
         
-        <div className="container relative flex h-12 xs:h-13 sm:h-14 items-center justify-between px-2 xs:px-3 sm:px-4 lg:px-6">
+        <div className="container relative flex h-11 sm:h-12 items-center justify-between px-2 xs:px-3 sm:px-4 lg:px-6">
           {/* Logo - Responsive sizing */}
           <Link to="/" className="flex-shrink-0 hover:opacity-80 active:scale-95 transition-all">
-            <Logo size="sm" />
+            <Logo size="xs" />
           </Link>
           
           {/* Center Navigation - Desktop only, only for logged in users */}
