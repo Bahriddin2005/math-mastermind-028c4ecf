@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
     at.addGrant({
       roomJoin: true,
       room: roomName,
-      canPublish: isTeacher, // only teacher can publish video
+      canPublish: true, // all participants can publish (camera/mic/screen)
       canPublishData: true,
       canSubscribe: true,
       canUpdateOwnMetadata: true,

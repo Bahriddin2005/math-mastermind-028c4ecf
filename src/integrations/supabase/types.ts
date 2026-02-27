@@ -806,12 +806,60 @@ export type Database = {
           },
         ]
       }
+      live_chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          file_name: string | null
+          file_url: string | null
+          id: string
+          is_deleted: boolean
+          message_type: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_deleted?: boolean
+          message_type?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          is_deleted?: boolean
+          message_type?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       live_session_participants: {
         Row: {
+          can_screen_share: boolean | null
           created_at: string
           id: string
+          is_camera_on: boolean | null
           is_hand_raised: boolean | null
           is_muted: boolean | null
+          is_screen_sharing: boolean | null
+          is_spotlighted: boolean | null
           joined_at: string | null
           left_at: string | null
           role: string
@@ -819,10 +867,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          can_screen_share?: boolean | null
           created_at?: string
           id?: string
+          is_camera_on?: boolean | null
           is_hand_raised?: boolean | null
           is_muted?: boolean | null
+          is_screen_sharing?: boolean | null
+          is_spotlighted?: boolean | null
           joined_at?: string | null
           left_at?: string | null
           role?: string
@@ -830,10 +882,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          can_screen_share?: boolean | null
           created_at?: string
           id?: string
+          is_camera_on?: boolean | null
           is_hand_raised?: boolean | null
           is_muted?: boolean | null
+          is_screen_sharing?: boolean | null
+          is_spotlighted?: boolean | null
           joined_at?: string | null
           left_at?: string | null
           role?: string
@@ -856,8 +912,12 @@ export type Database = {
           description: string | null
           ended_at: string | null
           id: string
+          is_locked: boolean
+          is_recording: boolean
           is_recurring: boolean | null
           max_participants: number | null
+          recording_duration: number | null
+          recording_url: string | null
           recurrence_rule: string | null
           room_name: string
           scheduled_at: string | null
@@ -872,8 +932,12 @@ export type Database = {
           description?: string | null
           ended_at?: string | null
           id?: string
+          is_locked?: boolean
+          is_recording?: boolean
           is_recurring?: boolean | null
           max_participants?: number | null
+          recording_duration?: number | null
+          recording_url?: string | null
           recurrence_rule?: string | null
           room_name: string
           scheduled_at?: string | null
@@ -888,8 +952,12 @@ export type Database = {
           description?: string | null
           ended_at?: string | null
           id?: string
+          is_locked?: boolean
+          is_recording?: boolean
           is_recurring?: boolean | null
           max_participants?: number | null
+          recording_duration?: number | null
+          recording_url?: string | null
           recurrence_rule?: string | null
           room_name?: string
           scheduled_at?: string | null
