@@ -365,7 +365,7 @@ export const Navbar = ({ soundEnabled, onToggleSound }: NavbarProps) => {
                     <Trophy className="h-3 w-3 text-warning" />
                     {profile.total_score}
                   </span>
-                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-4 font-medium border ${
+                  <Badge variant="outline" className={`text-xs px-2 py-0.5 h-5 font-semibold border ${
                     isAdmin ? 'border-red-400/50 text-red-500 bg-red-500/10' :
                     isTeacher ? 'border-emerald-400/50 text-emerald-600 bg-emerald-500/10' :
                     isParent ? 'border-sky-400/50 text-sky-600 bg-sky-500/10' :
