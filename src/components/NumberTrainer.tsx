@@ -428,8 +428,9 @@ export const NumberTrainer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
+  const [currentSign, setCurrentSign] = useState<'+' | '−' | ''>('');
   const [isAddition, setIsAddition] = useState(true);
-  const [displayedNumbers, setDisplayedNumbers] = useState<{ num: string; isAdd: boolean }[]>([]);
+  const [displayedNumbers, setDisplayedNumbers] = useState<{ num: string; isAdd: boolean; isFirst?: boolean }[]>([]);
   
   // Natija
   const [userAnswer, setUserAnswer] = useState('');
@@ -906,7 +907,8 @@ export const NumberTrainer = () => {
     startTimeRef.current = Date.now();
 
     setCurrentDisplay(String(initialResult));
-    setDisplayedNumbers([{ num: String(initialResult), isAdd: true }]);
+    setCurrentSign('');
+    setDisplayedNumbers([{ num: String(initialResult), isAdd: true, isFirst: true }]);
     setIsRunning(true);
     setIsFinished(false);
     setIsAddition(true);
@@ -949,7 +951,9 @@ export const NumberTrainer = () => {
 
       const result = generateNextNumber();
       if (result !== null) {
+        const sign = result.isAdd ? '+' : '−';
         setCurrentDisplay(String(result.num));
+        setCurrentSign(sign);
         setDisplayedNumbers(prev => [...prev, { num: String(result.num), isAdd: result.isAdd }]);
         
         // Tick sound for each number
@@ -977,6 +981,7 @@ export const NumberTrainer = () => {
     setIsRunning(false);
     setIsFinished(false);
     setCurrentDisplay(null);
+    setCurrentSign('');
     setDisplayedNumbers([]);
   }, [stopTTS]);
 
@@ -1067,6 +1072,7 @@ export const NumberTrainer = () => {
     }
     setIsFinished(false);
     setCurrentDisplay(null);
+    setCurrentSign('');
     setDisplayedNumbers([]);
     setUserAnswer('');
     setShowResult(false);
@@ -1143,16 +1149,18 @@ export const NumberTrainer = () => {
             >
               {/* Matematik amal belgisi va son - bir qatorda */}
               <div className="flex items-center justify-center gap-3 sm:gap-6 w-full">
-                {/* Matematik amal belgisi - har doim ko'rsatiladi */}
-                <span 
-                  className="text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl text-white"
-                  style={{ 
-                    fontFamily: 'system-ui, -apple-system, sans-serif',
-                    filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
-                  }}
-                >
-                  {isAddition ? '+' : '−'}
-                </span>
+                {/* Matematik amal belgisi - birinchi sonda ko'rsatilmaydi */}
+                {currentSign && (
+                  <span 
+                    className={`text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl ${currentSign === '+' ? 'text-white' : 'text-red-200'}`}
+                    style={{ 
+                      fontFamily: 'system-ui, -apple-system, sans-serif',
+                      filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
+                    }}
+                  >
+                    {currentSign}
+                  </span>
+                )}
                 
                 {/* Asosiy son - juda katta */}
                 <span 
@@ -1237,6 +1245,21 @@ export const NumberTrainer = () => {
                   <p className={`text-lg sm:text-xl font-bold ${isCorrect ? 'text-success' : 'text-destructive'}`}>
                     {isCorrect ? "Zo'r! To'g'ri javob!" : "Noto'g'ri javob"}
                   </p>
+                </div>
+
+                {/* Misol ketma-ketligi */}
+                <div className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-border/50 dark:border-slate-700/50 p-4">
+                  <p className="text-xs text-muted-foreground dark:text-slate-400 mb-2">Misollar ketma-ketligi:</p>
+                  <div className="flex flex-wrap items-center gap-1.5 font-mono text-base sm:text-lg font-bold">
+                    {displayedNumbers.map((item, idx) => (
+                      <span key={idx} className={item.isFirst ? 'text-foreground dark:text-white' : item.isAdd ? 'text-success' : 'text-destructive'}>
+                        {item.isFirst ? item.num : `${item.isAdd ? '+' : '−'}${item.num}`}
+                        {idx < displayedNumbers.length - 1 && <span className="text-muted-foreground mx-0.5"> </span>}
+                      </span>
+                    ))}
+                    <span className="text-muted-foreground">=</span>
+                    <span className="text-primary font-black">{runningResultRef.current}</span>
+                  </div>
                 </div>
 
                 {/* Answer details */}
