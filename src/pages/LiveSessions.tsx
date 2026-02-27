@@ -7,14 +7,14 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useSound } from '@/hooks/useSound';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus, Video, Calendar, Users, Clock, ArrowRight } from 'lucide-react';
+import { Plus, Video, Calendar, Users, ArrowRight, Clock, Copy, LinkIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 const LiveSessions = () => {
@@ -27,14 +27,11 @@ const LiveSessions = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
 
-  // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [scheduledAt, setScheduledAt] = useState('');
 
-  useEffect(() => {
-    fetchSessions();
-  }, []);
+  useEffect(() => { fetchSessions(); }, []);
 
   const fetchSessions = async () => {
     const { data, error } = await supabase
@@ -42,22 +39,15 @@ const LiveSessions = () => {
       .select('*')
       .in('status', ['scheduled', 'live'])
       .order('scheduled_at', { ascending: true });
-
     if (!error && data) setSessions(data);
     setLoading(false);
   };
 
-  const generateRoomName = () => {
-    return `room-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-  };
+  const generateRoomName = () => `room-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
   const handleCreate = async () => {
-    if (!title.trim()) {
-      toast.error("Sarlavha kiriting");
-      return;
-    }
+    if (!title.trim()) { toast.error("Sarlavha kiriting"); return; }
     if (!user) return;
-
     setCreating(true);
     const { data, error } = await supabase
       .from('live_sessions')
@@ -75,31 +65,21 @@ const LiveSessions = () => {
 
     if (error) {
       toast.error("Xona yaratishda xatolik");
-      console.error(error);
     } else if (data) {
       toast.success("Dars xonasi yaratildi!");
       setCreateOpen(false);
-      setTitle('');
-      setDescription('');
-      setScheduledAt('');
-
-      // If starting now, navigate to room
-      if (!scheduledAt) {
-        navigate(`/live/${data.id}`);
-      } else {
-        fetchSessions();
-      }
+      setTitle(''); setDescription(''); setScheduledAt('');
+      if (!scheduledAt) navigate(`/live/${data.id}`);
+      else fetchSessions();
     }
     setCreating(false);
   };
 
   const handleStartSession = async (session: any) => {
-    // Update status to live
     await supabase
       .from('live_sessions')
       .update({ status: 'live', started_at: new Date().toISOString() })
       .eq('id', session.id);
-
     navigate(`/live/${session.id}`);
   };
 
@@ -107,73 +87,56 @@ const LiveSessions = () => {
     navigate(`/live/${session.id}`);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'live':
-        return <Badge className="bg-red-500 text-white animate-pulse">🔴 Jonli</Badge>;
-      case 'scheduled':
-        return <Badge variant="outline" className="text-blue-600">📅 Rejalashtirilgan</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
+  const copyLink = (id: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/live/${id}`);
+    toast.success("Havola nusxalandi!");
   };
+
+  const liveSessions = sessions.filter(s => s.status === 'live');
+  const scheduledSessions = sessions.filter(s => s.status === 'scheduled');
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Live Darslar</h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-sm">
               Real vaqtda dars o'tish va qatnashish
             </p>
           </div>
-
           {(isTeacher || isAdmin) && (
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2">
+                <Button className="gap-2 rounded-full px-5 bg-[#1a73e8] hover:bg-[#1557b0] text-white">
                   <Plus className="w-4 h-4" />
-                  <span className="hidden md:inline">Yangi dars</span>
+                  <span className="hidden sm:inline">Yangi dars</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Yangi Live Dars</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 mt-4">
+                <div className="space-y-4 mt-2">
                   <div>
                     <Label>Sarlavha *</Label>
-                    <Input
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Masalan: Abakus asoslari"
-                    />
+                    <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Abakus asoslari" className="mt-1" />
                   </div>
                   <div>
                     <Label>Tavsif</Label>
-                    <Textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Dars haqida qisqacha..."
-                      rows={3}
-                    />
+                    <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Dars haqida qisqacha..." rows={3} className="mt-1" />
                   </div>
                   <div>
-                    <Label>Vaqt (ixtiyoriy - bo'sh qoldirsangiz hozir boshlanadi)</Label>
-                    <Input
-                      type="datetime-local"
-                      value={scheduledAt}
-                      onChange={(e) => setScheduledAt(e.target.value)}
-                    />
+                    <Label>Vaqt (ixtiyoriy)</Label>
+                    <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} className="mt-1" />
+                    <p className="text-xs text-muted-foreground mt-1">Bo'sh qoldirsangiz hozir boshlanadi</p>
                   </div>
-                  <div className="flex gap-2 justify-end">
-                    <Button variant="outline" onClick={() => setCreateOpen(false)}>
-                      Bekor qilish
-                    </Button>
-                    <Button onClick={handleCreate} disabled={creating}>
-                      {creating ? "Yaratilmoqda..." : scheduledAt ? "Rejalashtirish" : "Hozir boshlash"}
+                  <div className="flex gap-2 justify-end pt-2">
+                    <Button variant="outline" onClick={() => setCreateOpen(false)}>Bekor</Button>
+                    <Button onClick={handleCreate} disabled={creating} className="bg-[#1a73e8] hover:bg-[#1557b0] text-white">
+                      {creating ? "Yaratilmoqda..." : scheduledAt ? "📅 Rejalashtirish" : "▶️ Hozir boshlash"}
                     </Button>
                   </div>
                 </div>
@@ -183,66 +146,67 @@ const LiveSessions = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-16">
-            <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-[3px] border-[#1a73e8]/20 border-t-[#1a73e8] rounded-full animate-spin" />
           </div>
         ) : sessions.length === 0 ? (
-          <Card>
-            <CardContent className="py-16 text-center">
-              <Video className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Hozircha darslar yo'q</h3>
-              <p className="text-muted-foreground">
-                {isTeacher || isAdmin
-                  ? "Yangi live dars yarating"
-                  : "O'qituvchi dars boshlaganda bu yerda ko'rinadi"}
-              </p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-20">
+            <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Video className="w-10 h-10 text-muted-foreground/40" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Hozircha darslar yo'q</h3>
+            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+              {isTeacher || isAdmin ? "Yangi live dars yaratib, o'quvchilaringiz bilan bog'laning" : "O'qituvchi dars boshlaganda bu yerda ko'rinadi"}
+            </p>
+          </div>
         ) : (
-          <div className="grid gap-4">
-            {sessions.map((session) => (
-              <Card key={session.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(session.status)}
-                        <h3 className="font-bold text-lg">{session.title}</h3>
-                      </div>
-                      {session.description && (
-                        <p className="text-sm text-muted-foreground">{session.description}</p>
-                      )}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        {session.scheduled_at && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {format(new Date(session.scheduled_at), 'dd.MM.yyyy HH:mm')}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          Max {session.max_participants}
-                        </span>
-                      </div>
-                    </div>
+          <div className="space-y-8">
+            {/* Live sessions */}
+            {liveSessions.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                  <h2 className="font-semibold text-lg">Hozir jonli</h2>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {liveSessions.map(session => (
+                    <SessionCard
+                      key={session.id}
+                      session={session}
+                      isOwner={session.teacher_id === user?.id}
+                      isTeacher={isTeacher || isAdmin}
+                      onJoin={() => handleJoinSession(session)}
+                      onStart={() => handleStartSession(session)}
+                      onCopyLink={() => copyLink(session.id)}
+                      isLive
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-                    <div>
-                      {session.status === 'live' ? (
-                        <Button onClick={() => handleJoinSession(session)} className="gap-1">
-                          <ArrowRight className="w-4 h-4" /> Kirish
-                        </Button>
-                      ) : session.teacher_id === user?.id ? (
-                        <Button onClick={() => handleStartSession(session)} variant="default" className="gap-1">
-                          <Video className="w-4 h-4" /> Boshlash
-                        </Button>
-                      ) : (
-                        <Badge variant="outline">Kutilmoqda</Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            {/* Scheduled sessions */}
+            {scheduledSessions.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Calendar className="w-4 h-4 text-muted-foreground" />
+                  <h2 className="font-semibold text-lg">Rejalashtirilgan</h2>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {scheduledSessions.map(session => (
+                    <SessionCard
+                      key={session.id}
+                      session={session}
+                      isOwner={session.teacher_id === user?.id}
+                      isTeacher={isTeacher || isAdmin}
+                      onJoin={() => handleJoinSession(session)}
+                      onStart={() => handleStartSession(session)}
+                      onCopyLink={() => copyLink(session.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
@@ -250,5 +214,68 @@ const LiveSessions = () => {
     </div>
   );
 };
+
+// Session Card Component
+const SessionCard = ({ 
+  session, isOwner, isTeacher, isLive, onJoin, onStart, onCopyLink 
+}: { 
+  session: any; isOwner: boolean; isTeacher: boolean; isLive?: boolean;
+  onJoin: () => void; onStart: () => void; onCopyLink: () => void;
+}) => (
+  <Card className={`overflow-hidden transition-all hover:shadow-lg ${isLive ? 'border-red-500/30 bg-red-50/5' : ''}`}>
+    <CardContent className="p-0">
+      {/* Color bar */}
+      <div className={`h-1 ${isLive ? 'bg-red-500' : 'bg-[#1a73e8]'}`} />
+      
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              {isLive && (
+                <Badge className="bg-red-500 text-white border-0 text-[10px] px-1.5 h-4 animate-pulse">
+                  LIVE
+                </Badge>
+              )}
+              <h3 className="font-semibold text-base truncate">{session.title}</h3>
+            </div>
+            {session.description && (
+              <p className="text-xs text-muted-foreground line-clamp-2">{session.description}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+          {session.scheduled_at && (
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {format(new Date(session.scheduled_at), 'dd.MM.yyyy HH:mm')}
+            </span>
+          )}
+          <span className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {session.max_participants}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {isLive ? (
+            <Button onClick={onJoin} size="sm" className="flex-1 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full gap-1.5">
+              <ArrowRight className="w-3.5 h-3.5" /> Darsga kirish
+            </Button>
+          ) : isOwner ? (
+            <Button onClick={onStart} size="sm" className="flex-1 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-full gap-1.5">
+              <Video className="w-3.5 h-3.5" /> Boshlash
+            </Button>
+          ) : (
+            <Badge variant="secondary" className="text-xs">Kutilmoqda</Badge>
+          )}
+          <Button onClick={onCopyLink} variant="outline" size="icon" className="h-8 w-8 rounded-full shrink-0">
+            <LinkIcon className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 export default LiveSessions;
