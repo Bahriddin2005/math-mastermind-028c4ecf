@@ -119,7 +119,7 @@ const LiveClassroom = () => {
   return (
     <div className="h-screen flex flex-col bg-black">
       {/* Compact Header */}
-      <div className="flex items-center justify-between px-3 py-1.5 bg-black/90 backdrop-blur-sm border-b border-white/10">
+      <div className="flex items-center justify-between px-3 py-1 bg-black/90 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleDisconnect} className="h-7 w-7 text-white/70 hover:text-white hover:bg-white/10 rounded-full">
             <ArrowLeft className="w-4 h-4" />
