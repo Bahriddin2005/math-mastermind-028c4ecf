@@ -333,15 +333,17 @@ const Dashboard = () => {
   // Show guest dashboard if not logged in
   if (!user) {
     return (
-      <PageBackground className="flex flex-col">
+      <div className="flex flex-col min-h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10">
         <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-        <main className="flex-1 container px-4 py-6 md:py-8">
+        <main className="flex-1 container px-4 py-6 md:py-8 pb-4">
           <div className="max-w-5xl mx-auto">
             <GuestDashboard />
           </div>
         </main>
         <Footer />
-      </PageBackground>
+        {/* Extra spacing for mobile bottom nav + PWA banner */}
+        <div className="h-44 md:h-0 bg-gradient-to-b from-secondary/40 via-primary/5 to-primary/10 dark:from-secondary/15 dark:via-primary/10 dark:to-primary/15" />
+      </div>
     );
   }
 

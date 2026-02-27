@@ -41,7 +41,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-border/30 dark:border-border/20">
+    <footer className="relative overflow-hidden border-t border-border/30 dark:border-border/20 bg-secondary/50 dark:bg-secondary/20">
       {/* Top gradient border - Enhanced dark mode */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 dark:via-primary/80 to-transparent" />
       
