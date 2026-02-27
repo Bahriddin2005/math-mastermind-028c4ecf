@@ -53,8 +53,6 @@ const Terms = lazy(() => import("@/pages/Terms"));
 const About = lazy(() => import("@/pages/About"));
 const AbacusSimulator = lazy(() => import("@/pages/AbacusSimulator"));
 const AbacusPractice = lazy(() => import("@/pages/AbacusPractice"));
-const LiveSessions = lazy(() => import("@/pages/LiveSessions"));
-const LiveClassroom = lazy(() => import("@/pages/LiveClassroom"));
 const Subjects = lazy(() => import("@/pages/Subjects"));
 const SubjectPractice = lazy(() => import("@/pages/SubjectPractice"));
 
@@ -138,8 +136,6 @@ const App = () => (
                       <Route path="/about" element={<About />} />
                       <Route path="/abacus-simulator" element={<AbacusSimulator />} />
                       <Route path="/abacus-practice" element={<ProtectedRoute><AbacusPractice /></ProtectedRoute>} />
-                      <Route path="/live-sessions" element={<ProtectedRoute><LiveSessions /></ProtectedRoute>} />
-                      <Route path="/live/:sessionId" element={<ProtectedRoute><LiveClassroom /></ProtectedRoute>} />
                       <Route path="/subjects" element={<ProtectedRoute><Subjects /></ProtectedRoute>} />
                       <Route path="/subjects/:subjectId" element={<ProtectedRoute><SubjectPractice /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />

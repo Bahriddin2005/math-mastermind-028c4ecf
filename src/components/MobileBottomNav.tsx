@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Play, Trophy, BookOpen, Calculator, BarChart3, FileText, GraduationCap, Video } from 'lucide-react';
+import { Home, Play, Trophy, BookOpen, Calculator, BarChart3, FileText, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -15,7 +15,6 @@ const getNavItems = (role: string | null) => {
   if (role === 'teacher') {
     return [
       { icon: Home, label: "Uy", path: "/", emoji: "🏠" },
-      { icon: Video, label: "Live", path: "/live-sessions", emoji: "📹" },
       { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
       { icon: GraduationCap, label: "Kurslar", path: "/courses", emoji: "📚" },
       { icon: FileText, label: "Hisobot", path: "/lesson-stats", emoji: "📋" },
@@ -27,7 +26,6 @@ const getNavItems = (role: string | null) => {
     { icon: BookOpen, label: "Fanlar", path: "/subjects", emoji: "📚" },
     { icon: Calculator, label: "Abakus", path: "/abacus-simulator", emoji: "🧮" },
     { icon: Trophy, label: "Musobaqa", path: "/weekly-game", emoji: "🏆" },
-    { icon: Video, label: "Live", path: "/live-sessions", emoji: "📹" },
   ];
 };
 
