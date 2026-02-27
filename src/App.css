@@ -60,3 +60,17 @@
 .read-the-docs {
   color: #888;
 }
+
+/* LiveKit control bar compact override */
+.lk-control-bar {
+  padding: 0.25rem 0.5rem !important;
+  min-height: unset !important;
+  gap: 0.25rem !important;
+}
+
+.lk-control-bar .lk-button {
+  height: 2rem !important;
+  min-width: 2rem !important;
+  font-size: 0.75rem !important;
+  padding: 0 0.5rem !important;
+}
