@@ -341,8 +341,8 @@ const Dashboard = () => {
           </div>
         </main>
         <Footer />
-        {/* Extra spacing for mobile bottom nav + PWA banner */}
-        <div className="h-44 md:h-0 bg-gradient-to-b from-secondary/40 via-primary/5 to-primary/10 dark:from-secondary/15 dark:via-primary/10 dark:to-primary/15" />
+        {/* Bottom safe area for mobile: PWA banner + bottom nav overlap */}
+        <div className="md:h-0 bg-gradient-to-b from-secondary/50 to-primary/15 dark:from-secondary/20 dark:to-primary/20 pb-[env(safe-area-inset-bottom)]" style={{ minHeight: '10rem' }} />
       </div>
     );
   }
