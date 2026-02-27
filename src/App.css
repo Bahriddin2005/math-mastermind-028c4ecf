@@ -61,61 +61,52 @@
   color: #888;
 }
 
-/* ===== Zoom-like LiveKit Theme Override ===== */
+/* ===== Google Meet LiveKit Theme ===== */
 
-/* Hide default LiveKit control bar - we use custom controls */
+/* Hide default LiveKit control bar — custom controls used */
 .lk-control-bar {
   display: none !important;
 }
 
-/* Video grid - dark theme */
+/* Video grid */
 .lk-grid-layout {
-  background: #1a1a2e !important;
-  gap: 6px !important;
-  padding: 6px !important;
+  background: #202124 !important;
+  gap: 8px !important;
+  padding: 8px !important;
 }
 
-/* Each video tile */
+/* Video tile */
 .lk-participant-tile {
-  border-radius: 12px !important;
+  border-radius: 8px !important;
   overflow: hidden !important;
-  background: #242442 !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: #3c4043 !important;
+  border: none !important;
 }
 
-.lk-participant-tile:hover {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Participant name */
+/* Participant name bar */
 .lk-participant-metadata {
-  background: linear-gradient(transparent, rgba(0,0,0,0.7)) !important;
-  padding: 8px 12px !important;
+  background: linear-gradient(transparent, rgba(0,0,0,0.6)) !important;
+  padding: 6px 10px !important;
 }
 
 .lk-participant-name {
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: white !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #e8eaed !important;
+  font-family: 'Google Sans', system-ui, sans-serif !important;
 }
 
 /* Focus layout */
 .lk-focus-layout {
-  background: #1a1a2e !important;
+  background: #202124 !important;
 }
 
-/* Chat */
-.lk-chat {
-  background: #242442 !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Connection quality indicator */
-.lk-connection-quality {
-  opacity: 0.6 !important;
-}
-
-/* Placeholder when no video */
+/* No-video placeholder */
 .lk-participant-placeholder {
-  background: linear-gradient(135deg, #242442, #1a1a2e) !important;
+  background: #3c4043 !important;
+}
+
+/* Connection quality */
+.lk-connection-quality {
+  opacity: 0.5 !important;
 }
