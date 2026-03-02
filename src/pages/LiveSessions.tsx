@@ -102,12 +102,12 @@ const LiveSessions = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar soundEnabled={soundEnabled} onToggleSound={toggleSound} />
-      <main className="container mx-auto px-4 py-8 max-w-5xl">
+      <main className="container mx-auto px-3 xs:px-4 py-4 sm:py-6 md:py-8 max-w-5xl pb-24 md:pb-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Live Darslar</h1>
-            <p className="text-muted-foreground mt-1 text-sm">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Live Darslar</h1>
+            <p className="text-muted-foreground mt-0.5 sm:mt-1 text-xs sm:text-sm">
               Real vaqtda dars o'tish va qatnashish
             </p>
           </div>
@@ -171,7 +171,7 @@ const LiveSessions = () => {
                   <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse" />
                   <h2 className="font-semibold text-lg">Hozir jonli</h2>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   {liveSessions.map(s => (
                     <SessionCard key={s.id} session={s} isOwner={s.teacher_id === user?.id}
                       isTeacher={isTeacher || isAdmin} isLive
@@ -189,7 +189,7 @@ const LiveSessions = () => {
                   <Calendar className="w-4 h-4 text-muted-foreground" />
                   <h2 className="font-semibold text-lg">Rejalashtirilgan</h2>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                   {scheduledSessions.map(s => (
                     <SessionCard key={s.id} session={s} isOwner={s.teacher_id === user?.id}
                       isTeacher={isTeacher || isAdmin}
