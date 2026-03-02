@@ -156,7 +156,7 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
       {/* ── Top bar ── */}
       <header className="h-14 flex items-center justify-between px-4 border-b border-border/50 bg-card/80 backdrop-blur-sm shrink-0 z-10">
         <div className="flex items-center gap-3">
-          <h1 className="font-semibold text-sm truncate max-w-[200px] md:max-w-none">{session?.title}</h1>
+          <h1 className="font-semibold text-xs xs:text-sm truncate max-w-[140px] xs:max-w-[200px] md:max-w-none">{session?.title}</h1>
           {isRecording && (
             <Badge variant="destructive" className="gap-1 text-[10px] h-5 animate-pulse">
               <Circle className="w-2 h-2 fill-current" /> REC
@@ -173,44 +173,54 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
       </header>
 
       {/* ── Content area ── */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Video area */}
         <div className="flex-1 relative">
           <VideoConference />
         </div>
 
-        {/* Side panel */}
+        {/* Side panel - Full overlay on mobile, sidebar on desktop */}
         <AnimatePresence>
           {sidePanel && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 340, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="border-l border-border bg-card overflow-hidden shrink-0"
-            >
-              <div className="flex flex-col h-full w-[340px]">
-                <div className="h-12 flex items-center justify-between px-4 border-b border-border">
-                  <span className="font-medium text-sm">
-                    {sidePanel === 'chat' ? 'Chat' : 'Ishtirokchilar'}
-                  </span>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSidePanel(null)}>
-                    <X className="w-4 h-4" />
-                  </Button>
+            <>
+              {/* Mobile overlay backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 z-20 md:hidden"
+                onClick={() => setSidePanel(null)}
+              />
+              <motion.aside
+                initial={{ x: '100%', opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: '100%', opacity: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="fixed inset-y-0 right-0 w-full xs:w-[320px] z-30 md:relative md:inset-auto md:w-[340px] border-l border-border bg-card overflow-hidden shrink-0"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="h-12 flex items-center justify-between px-4 border-b border-border">
+                    <span className="font-medium text-sm">
+                      {sidePanel === 'chat' ? 'Chat' : 'Ishtirokchilar'}
+                    </span>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSidePanel(null)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  {sidePanel === 'chat' ? (
+                    <ChatPanel sessionId={sessionId} />
+                  ) : (
+                    <ParticipantsPanel sessionId={sessionId} isTeacher={isTeacher} />
+                  )}
                 </div>
-                {sidePanel === 'chat' ? (
-                  <ChatPanel sessionId={sessionId} />
-                ) : (
-                  <ParticipantsPanel sessionId={sessionId} isTeacher={isTeacher} />
-                )}
-              </div>
-            </motion.aside>
+              </motion.aside>
+            </>
           )}
         </AnimatePresence>
       </div>
 
       {/* ── Bottom control bar ── */}
-      <footer className="h-16 md:h-[72px] flex items-center justify-center gap-2 md:gap-3 px-4 border-t border-border bg-card/90 backdrop-blur-sm shrink-0 z-10">
+      <footer className="h-16 md:h-[72px] flex items-center justify-center gap-1.5 xs:gap-2 md:gap-3 px-2 xs:px-4 border-t border-border bg-card/90 backdrop-blur-sm shrink-0 z-10" style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
         {/* Mic/Camera handled by LiveKit defaults, we add extra buttons */}
 
         {/* Chat */}
@@ -278,11 +288,11 @@ const ControlButton = ({ icon, label, active, onClick }: {
 }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-xl transition-colors
+    className={`flex flex-col items-center justify-center w-11 h-11 xs:w-14 xs:h-14 md:w-16 md:h-16 rounded-xl transition-colors
       ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}
   >
-    {icon}
-    <span className="text-[10px] mt-0.5">{label}</span>
+    <span className="[&>svg]:w-4 [&>svg]:h-4 xs:[&>svg]:w-5 xs:[&>svg]:h-5">{icon}</span>
+    <span className="text-[9px] xs:text-[10px] mt-0.5 hidden xs:block">{label}</span>
   </button>
 );
 
