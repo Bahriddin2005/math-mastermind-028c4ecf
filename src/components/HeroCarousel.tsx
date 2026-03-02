@@ -155,21 +155,6 @@ export const HeroCarousel = () => {
           ))}
         </CarouselContent>
 
-        {/* Custom dots indicator */}
-        <div className="flex justify-center gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => api?.scrollTo(index)}
-              className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-                current === index 
-                  ? 'w-6 sm:w-8 bg-primary' 
-                  : 'w-1.5 sm:w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
       </Carousel>
     </div>
   );
