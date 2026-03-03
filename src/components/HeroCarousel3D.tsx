@@ -259,7 +259,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                       </div>
                   }
                     <div className="relative">
-                      <span className={`relative inline-flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 px-3 xs:px-4 sm:px-5 py-1.5 xs:py-2 sm:py-2.5 ${slide.badge.bgColor} rounded-full text-[11px] xs:text-xs sm:text-sm font-black shadow-2xl border border-white/20`}>
+                      <span className={`relative inline-flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 px-4 xs:px-5 sm:px-6 py-2 xs:py-2.5 sm:py-3 ${slide.badge.bgColor} rounded-full text-xs xs:text-sm sm:text-base font-black shadow-2xl border-2 border-white/30 ring-2 ring-white/20`}>
                         <slide.badge.icon className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
                         <span className="tracking-wide">{slide.badge.text}</span>
                       </span>
