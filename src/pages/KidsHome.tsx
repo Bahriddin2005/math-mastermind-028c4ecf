@@ -10,7 +10,8 @@ import { PandaMascot } from '@/components/PandaMascot';
 import { useConfettiEffect } from '@/components/kids/Confetti';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Play, Trophy, Zap, Flame, Star, Target, BarChart3, FileText, Users, GraduationCap, Calculator } from 'lucide-react';
+import { Play, Trophy, Zap, Flame, Star, Target, BarChart3, FileText, Users, GraduationCap, Calculator, TrendingUp, Clock, Award, ChevronRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { SectionCarousel, kidsSection, parentsSection, teachersSection } from '@/components/SectionCarousel';
 import { TeacherDashboard } from '@/components/TeacherDashboard';
@@ -48,6 +49,7 @@ const KidsHome = () => {
   const [gamification, setGamification] = useState<GamificationData | null>(null);
   const [todaySolved, setTodaySolved] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [statsDialogOpen, setStatsDialogOpen] = useState<'score' | 'level' | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) {
@@ -278,16 +280,128 @@ const KidsHome = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="text-center p-2 rounded-xl bg-background/60">
+                  <button 
+                    onClick={() => setStatsDialogOpen('score')}
+                    className="text-center p-2 rounded-xl bg-background/60 hover:bg-background/80 active:scale-95 transition-all duration-200 cursor-pointer group"
+                  >
                     <p className="text-xs text-muted-foreground">⭐ Yig'ilgan ballar</p>
                     <p className="text-lg font-bold text-primary">{profile?.total_score || 0}</p>
-                  </div>
-                  <div className="text-center p-2 rounded-xl bg-background/60">
+                    <p className="text-[10px] text-primary/60 group-hover:text-primary/80 flex items-center justify-center gap-0.5 mt-0.5">
+                      Batafsil <ChevronRight className="w-3 h-3" />
+                    </p>
+                  </button>
+                  <button 
+                    onClick={() => setStatsDialogOpen('level')}
+                    className="text-center p-2 rounded-xl bg-background/60 hover:bg-background/80 active:scale-95 transition-all duration-200 cursor-pointer group"
+                  >
                     <p className="text-xs text-muted-foreground">🏆 Bosqich</p>
                     <p className="text-lg font-bold text-accent">{level}</p>
-                  </div>
+                    <p className="text-[10px] text-accent/60 group-hover:text-accent/80 flex items-center justify-center gap-0.5 mt-0.5">
+                      Batafsil <ChevronRight className="w-3 h-3" />
+                    </p>
+                  </button>
                 </div>
               </Card>
+
+              {/* Stats Detail Dialog */}
+              <Dialog open={statsDialogOpen !== null} onOpenChange={() => setStatsDialogOpen(null)}>
+                <DialogContent className="max-w-sm rounded-2xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-lg">
+                      {statsDialogOpen === 'score' ? '⭐ Yig\'ilgan ballar' : '🏆 Bosqich ma\'lumotlari'}
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  {statsDialogOpen === 'score' ? (
+                    <div className="space-y-4">
+                      <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5">
+                        <p className="text-4xl font-black text-primary">{profile?.total_score || 0}</p>
+                        <p className="text-sm text-muted-foreground mt-1">Jami to'plangan ball</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <TrendingUp className="w-5 h-5 mx-auto text-emerald-500 mb-1" />
+                          <p className="text-lg font-bold">{profile?.total_problems_solved || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Yechilgan masalalar</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Flame className="w-5 h-5 mx-auto text-orange-500 mb-1" />
+                          <p className="text-lg font-bold">{profile?.best_streak || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Eng yaxshi seriya</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Target className="w-5 h-5 mx-auto text-primary mb-1" />
+                          <p className="text-lg font-bold">{profile?.daily_goal || 20}</p>
+                          <p className="text-[11px] text-muted-foreground">Kunlik maqsad</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Clock className="w-5 h-5 mx-auto text-blue-500 mb-1" />
+                          <p className="text-lg font-bold">{todaySolved}</p>
+                          <p className="text-[11px] text-muted-foreground">Bugun yechilgan</p>
+                        </div>
+                      </div>
+                      <Button 
+                        className="w-full" 
+                        onClick={() => { setStatsDialogOpen(null); navigate('/statistics'); }}
+                      >
+                        <BarChart3 className="w-4 h-4 mr-2" />
+                        To'liq statistikani ko'rish
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="text-center p-4 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5">
+                        <p className="text-4xl font-black text-accent">{level}</p>
+                        <p className="text-sm text-muted-foreground mt-1">Hozirgi daraja</p>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">XP progress</span>
+                          <span className="font-bold text-primary">{gamification?.current_xp || 0} / {level * 120}</span>
+                        </div>
+                        <div className="h-3 rounded-full bg-muted overflow-hidden">
+                          <div 
+                            className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                            style={{ width: `${Math.min(((gamification?.current_xp || 0) / (level * 120)) * 100, 100)}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center">
+                          Keyingi darajagacha {Math.max((level * 120) - (gamification?.current_xp || 0), 0)} XP qoldi
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Zap className="w-5 h-5 mx-auto text-yellow-500 mb-1" />
+                          <p className="text-lg font-bold">{gamification?.total_xp || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Jami XP</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Award className="w-5 h-5 mx-auto text-purple-500 mb-1" />
+                          <p className="text-lg font-bold">{gamification?.energy || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Energiya</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Star className="w-5 h-5 mx-auto text-amber-500 mb-1" />
+                          <p className="text-lg font-bold">{gamification?.combo || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Combo</p>
+                        </div>
+                        <div className="p-3 rounded-xl bg-muted/50 text-center">
+                          <Flame className="w-5 h-5 mx-auto text-orange-500 mb-1" />
+                          <p className="text-lg font-bold">{profile?.current_streak || 0}</p>
+                          <p className="text-[11px] text-muted-foreground">Joriy seriya</p>
+                        </div>
+                      </div>
+                      <Button 
+                        className="w-full" 
+                        onClick={() => { setStatsDialogOpen(null); navigate('/achievements'); }}
+                      >
+                        <Trophy className="w-4 h-4 mr-2" />
+                        Yutuqlarni ko'rish
+                      </Button>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Main Action Button */}
