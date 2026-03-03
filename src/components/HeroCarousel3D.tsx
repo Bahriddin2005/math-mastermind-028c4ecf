@@ -125,7 +125,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       icon: GraduationCap,
       text: "O'qituvchilar paneli",
       bgColor: 'bg-amber-500 text-white',
-      extraBadge: 'Beta'
+      extraBadge: undefined
     },
     title:
     <>
@@ -335,9 +335,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           )}
         </CarouselContent>
         
-        {/* Navigation Arrows - Hidden on mobile */}
-        <CarouselPrevious className="hidden sm:flex left-2 md:left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
-        <CarouselNext className="hidden sm:flex right-2 md:right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
+        {/* Navigation Arrows - Always visible */}
+        <CarouselPrevious className="flex left-1 sm:left-2 md:left-3 bg-black/30 border-white/20 text-white hover:bg-black/50 active:scale-90 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
+        <CarouselNext className="flex right-1 sm:right-2 md:right-3 bg-black/30 border-white/20 text-white hover:bg-black/50 active:scale-90 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
       </Carousel>
 
 
