@@ -252,8 +252,8 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background: var(--gradient-hero);
     background-color: hsl(var(--background));
+    background-image: var(--gradient-hero);
     
     /* CRITICAL: Standard document flow - NOT fixed height */
     margin: 0;
