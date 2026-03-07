@@ -87,6 +87,10 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const [digitCount, setDigitCount] = useState(1);
   const [speed, setSpeed] = useState(0.5);
   const [problemCount, setProblemCount] = useState(5);
+  const [roomType, setRoomType] = useState<'private' | 'public'>('private');
+  const [openRooms, setOpenRooms] = useState<any[]>([]);
+  const [loadingOpenRooms, setLoadingOpenRooms] = useState(false);
+  const [joinRequestSent, setJoinRequestSent] = useState<string | null>(null);
   
   // O'yin holati
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
