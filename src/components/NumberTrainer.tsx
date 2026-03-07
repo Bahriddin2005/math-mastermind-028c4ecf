@@ -1283,22 +1283,22 @@ export const NumberTrainer = () => {
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-3 sm:gap-4 pt-1">
+            <div className="flex gap-2 sm:gap-3 pt-1">
               <Button
                 onClick={resetGame}
                 variant="outline"
-                size="lg"
-                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
+                size="default"
+                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-xs sm:text-sm"
               >
-                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+                <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Orqaga
               </Button>
               <Button
                 onClick={startGame}
-                size="lg"
-                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
+                size="default"
+                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm"
               >
-                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Yangi mashq
               </Button>
             </div>
