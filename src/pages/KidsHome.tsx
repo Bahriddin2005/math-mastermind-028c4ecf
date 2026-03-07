@@ -64,14 +64,37 @@ const KidsHome = () => {
       .eq('user_id', user.id)
       .maybeSingle();
 
-    // Calculate total score from game_sessions (source of truth)
-    const { data: allSessions } = await supabase
-      .from('game_sessions')
-      .select('score, correct')
-      .eq('user_id', user.id);
-
-    const calculatedTotalScore = allSessions?.reduce((sum, s) => sum + (s.score || 0), 0) || 0;
-    const calculatedTotalProblems = allSessions?.reduce((sum, s) => sum + (s.correct || 0), 0) || 0;
+    // Calculate total score from game_sessions using RPC or sum query
+    const { data: scoreData } = await supabase.rpc('get_user_total_score' as any, { p_user_id: user.id }).maybeSingle();
+    
+    // Fallback: calculate from game_sessions if RPC doesn't exist
+    let calculatedTotalScore = 0;
+    let calculatedTotalProblems = 0;
+    
+    if (scoreData && typeof scoreData === 'object' && 'total_score' in (scoreData as any)) {
+      calculatedTotalScore = (scoreData as any).total_score || 0;
+      calculatedTotalProblems = (scoreData as any).total_problems || 0;
+    } else {
+      // Manual calculation with pagination
+      let offset = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+      while (hasMore) {
+        const { data: batch } = await supabase
+          .from('game_sessions')
+          .select('score, correct')
+          .eq('user_id', user.id)
+          .range(offset, offset + pageSize - 1);
+        if (batch && batch.length > 0) {
+          calculatedTotalScore += batch.reduce((sum, s) => sum + (s.score || 0), 0);
+          calculatedTotalProblems += batch.reduce((sum, s) => sum + (s.correct || 0), 0);
+          offset += pageSize;
+          hasMore = batch.length === pageSize;
+        } else {
+          hasMore = false;
+        }
+      }
+    }
 
     // Sync profile if out of date
     if (profileData && (profileData.total_score || 0) !== calculatedTotalScore) {
@@ -109,11 +132,6 @@ const KidsHome = () => {
 
     // Get today's solved problems
     const today = new Date().toISOString().split('T')[0];
-    const todaySessions = allSessions?.filter(s => {
-      // We don't have created_at here, so fetch separately
-      return true;
-    });
-    
     const { data: sessionsData } = await supabase
       .from('game_sessions')
       .select('correct')
