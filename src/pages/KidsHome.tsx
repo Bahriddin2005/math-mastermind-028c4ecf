@@ -64,11 +64,31 @@ const KidsHome = () => {
       .eq('user_id', user.id)
       .maybeSingle();
 
+    // Calculate total score from game_sessions (source of truth)
+    const { data: allSessions } = await supabase
+      .from('game_sessions')
+      .select('score, correct')
+      .eq('user_id', user.id);
+
+    const calculatedTotalScore = allSessions?.reduce((sum, s) => sum + (s.score || 0), 0) || 0;
+    const calculatedTotalProblems = allSessions?.reduce((sum, s) => sum + (s.correct || 0), 0) || 0;
+
+    // Sync profile if out of date
+    if (profileData && (profileData.total_score || 0) !== calculatedTotalScore) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          total_score: calculatedTotalScore,
+          total_problems_solved: calculatedTotalProblems,
+        })
+        .eq('user_id', user.id);
+    }
+
     if (profileData) {
       setProfile({
         username: profileData.username,
-        total_score: profileData.total_score || 0,
-        total_problems_solved: profileData.total_problems_solved || 0,
+        total_score: calculatedTotalScore,
+        total_problems_solved: calculatedTotalProblems,
         best_streak: profileData.best_streak || 0,
         daily_goal: profileData.daily_goal || 20,
         current_streak: profileData.current_streak || 0,
@@ -89,6 +109,11 @@ const KidsHome = () => {
 
     // Get today's solved problems
     const today = new Date().toISOString().split('T')[0];
+    const todaySessions = allSessions?.filter(s => {
+      // We don't have created_at here, so fetch separately
+      return true;
+    });
+    
     const { data: sessionsData } = await supabase
       .from('game_sessions')
       .select('correct')
