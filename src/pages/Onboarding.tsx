@@ -167,6 +167,7 @@ const Onboarding = () => {
         navigate('/');
       }, 1500);
     } catch (error: any) {
+      if (error?.name === 'AbortError') return;
       toast.error('Xatolik: ' + error.message);
     } finally {
       setSaving(false);
