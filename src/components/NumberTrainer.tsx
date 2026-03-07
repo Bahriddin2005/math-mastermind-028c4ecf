@@ -1225,7 +1225,7 @@ export const NumberTrainer = () => {
                   onClick={checkAnswer}
                   disabled={!userAnswer}
                   size="lg"
-                  className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                  className="w-full gap-2 h-10 sm:h-12 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-sm sm:text-base shadow-glow transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Check className="h-5 w-5 sm:h-6 sm:w-6" />
                   Tekshirish
