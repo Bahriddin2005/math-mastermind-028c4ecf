@@ -1217,7 +1217,7 @@ export const NumberTrainer = () => {
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
                     placeholder="Javobni kiriting..."
-                    className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
+                    className="text-center text-xl sm:text-2xl h-12 sm:h-14 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
                     autoFocus
                   />
                 </div>
