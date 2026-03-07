@@ -1267,6 +1267,14 @@ export const NumberTrainer = () => {
             
             {!showResult ? (
               <div className="space-y-3 sm:space-y-4 animate-fade-in">
+                {/* Ko'paytirish/Bo'lish rejimida misolni ko'rsatish */}
+                {(formulaType === 'kopaytirish' || formulaType === 'bolish') && currentDisplay && (
+                  <div className="text-center py-4 sm:py-6">
+                    <span className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground dark:text-white font-mono">
+                      {currentDisplay}
+                    </span>
+                  </div>
+                )}
                 <div className="relative">
                   <Input
                     type="number"
