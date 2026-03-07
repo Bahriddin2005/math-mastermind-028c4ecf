@@ -2288,6 +2288,13 @@ export type Database = {
           weekly_growth: number
         }[]
       }
+      get_user_total_score: {
+        Args: { p_user_id: string }
+        Returns: {
+          total_problems: number
+          total_score: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
