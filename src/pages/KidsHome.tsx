@@ -64,11 +64,28 @@ const KidsHome = () => {
       .eq('user_id', user.id)
       .maybeSingle();
 
+    // Calculate total score from game_sessions via DB function (source of truth)
+    const { data: scoreData } = await supabase.rpc('get_user_total_score' as any, { p_user_id: user.id });
+    
+    const calculatedTotalScore = scoreData?.[0]?.total_score || 0;
+    const calculatedTotalProblems = scoreData?.[0]?.total_problems || 0;
+
+    // Sync profile if out of date
+    if (profileData && (profileData.total_score || 0) !== calculatedTotalScore) {
+      await supabase
+        .from('profiles')
+        .update({ 
+          total_score: calculatedTotalScore,
+          total_problems_solved: calculatedTotalProblems,
+        })
+        .eq('user_id', user.id);
+    }
+
     if (profileData) {
       setProfile({
         username: profileData.username,
-        total_score: profileData.total_score || 0,
-        total_problems_solved: profileData.total_problems_solved || 0,
+        total_score: Number(calculatedTotalScore),
+        total_problems_solved: Number(calculatedTotalProblems),
         best_streak: profileData.best_streak || 0,
         daily_goal: profileData.daily_goal || 20,
         current_streak: profileData.current_streak || 0,
