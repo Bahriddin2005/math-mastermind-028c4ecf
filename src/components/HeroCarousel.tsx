@@ -99,7 +99,6 @@ export const HeroCarousel = () => {
 
   // Students see competition/leaderboard slides, guests see parent/teacher slides
   const heroSlides = isStudent ? allHeroSlides : guestHeroSlides;
-  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     if (!api) return;
