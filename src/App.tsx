@@ -151,6 +151,7 @@ const App = () => (
             </PullToRefresh>
             <MobileBottomNav />
             <PWAInstallBanner />
+            <NotificationPromptDialog />
             <Suspense fallback={null}>
               <HelpChatWidget />
             </Suspense>
