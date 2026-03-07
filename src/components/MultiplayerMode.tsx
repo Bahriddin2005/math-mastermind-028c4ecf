@@ -230,6 +230,20 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
+  // Ochiq xonalarni yuklash
+  const fetchOpenRooms = async () => {
+    setLoadingOpenRooms(true);
+    const { data } = await supabase
+      .from('multiplayer_rooms')
+      .select('*, multiplayer_participants(count)')
+      .eq('is_public', true)
+      .eq('status', 'waiting')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setOpenRooms(data);
+    setLoadingOpenRooms(false);
+  };
+
   // Xona yaratish
   const createRoom = async () => {
     if (!user || !profile) return;
@@ -247,7 +261,9 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           digit_count: digitCount,
           speed,
           problem_count: problemCount,
-        })
+          is_public: roomType === 'public',
+          host_username: profile.username,
+        } as any)
         .select()
         .single();
       
@@ -285,6 +301,67 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
       toast.error('Xona yaratishda xato');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Ochiq xonaga qo'shilish so'rovi
+  const requestJoinOpenRoom = async (targetRoom: any) => {
+    if (!user || !profile) return;
+    setJoinRequestSent(targetRoom.id);
+    
+    // Broadcast orqali xona egasiga bildirishnoma yuborish
+    const channel = supabase.channel(`join-request-${targetRoom.id}`);
+    await channel.subscribe();
+    await channel.send({
+      type: 'broadcast',
+      event: 'join_request',
+      payload: {
+        userId: user.id,
+        username: profile.username,
+        avatarUrl: profile.avatar_url,
+        roomId: targetRoom.id,
+      },
+    });
+    supabase.removeChannel(channel);
+    
+    // Ochiq xonaga to'g'ridan-to'g'ri qo'shilish
+    try {
+      const { error: participantError } = await supabase
+        .from('multiplayer_participants')
+        .insert({
+          room_id: targetRoom.id,
+          user_id: user.id,
+          username: profile.username,
+          avatar_url: profile.avatar_url,
+        });
+      
+      if (participantError) {
+        if (participantError.code === '23505') {
+          toast.error('Siz allaqachon bu xonadasiz');
+        } else {
+          throw participantError;
+        }
+        setJoinRequestSent(null);
+        return;
+      }
+      
+      setRoom(targetRoom as Room);
+      setView('lobby');
+      
+      const { data: participantsData } = await supabase
+        .from('multiplayer_participants')
+        .select('*')
+        .eq('room_id', targetRoom.id);
+      
+      if (participantsData) {
+        setParticipants(participantsData as Participant[]);
+      }
+      
+      toast.success("Xonaga qo'shildingiz!");
+    } catch (error) {
+      toast.error("Xonaga qo'shilishda xato");
+    } finally {
+      setJoinRequestSent(null);
     }
   };
 
