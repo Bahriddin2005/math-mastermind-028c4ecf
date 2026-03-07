@@ -899,7 +899,40 @@ export const NumberTrainer = () => {
 
     const maxInitial = Math.pow(10, digitCount) - 1;
     const minInitial = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
-    const initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
+    
+    // Formula uchun mos boshlang'ich sonni tanlash
+    // Ba'zi formulalarda ba'zi sonlar hech qanday amalga ruxsat bermaydi
+    let initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
+    
+    // Tekshirish: bu son bilan kamida bitta amal mumkinmi?
+    const testValidInitial = (num: number): boolean => {
+      const ld = num % 10;
+      const t = Math.floor(num / 10);
+      const ht = t > 0;
+      
+      if (formulaType === 'formula10plus') {
+        for (let d = 1; d <= 9; d++) {
+          if (KATTA_DOST_ADD[d]?.includes(ld)) return true;
+          if (ht && KATTA_DOST_SUB[d]?.includes(ld)) return true;
+        }
+        return false;
+      }
+      
+      if (formulaType === 'hammasi') return true; // hammasi har doim ishlaydi
+      if (formulaType === 'manfiy') return true;
+      
+      const rules = FORMULA_RULES[formulaType]?.[ld];
+      if (!rules) return false;
+      if (rules.add.length > 0) return true;
+      if (rules.subtract.some(n => num >= n)) return true;
+      return false;
+    };
+    
+    // Agar boshlang'ich son mos kelmasa, boshqa son tanlash (max 20 urinish)
+    for (let attempt = 0; attempt < 20; attempt++) {
+      if (testValidInitial(initialResult)) break;
+      initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
+    }
     
     runningResultRef.current = initialResult;
     countRef.current = 1;
