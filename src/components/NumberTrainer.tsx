@@ -1152,7 +1152,7 @@ export const NumberTrainer = () => {
                 {/* Matematik amal belgisi - birinchi sonda ko'rsatilmaydi */}
                 {currentSign && (
                   <span 
-                    className={`text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl ${currentSign === '+' ? 'text-white' : 'text-red-200'}`}
+                    className={`text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-bold leading-none drop-shadow-2xl ${currentSign === '+' ? 'text-white' : 'text-red-200'}`}
                     style={{ 
                       fontFamily: 'system-ui, -apple-system, sans-serif',
                       filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
