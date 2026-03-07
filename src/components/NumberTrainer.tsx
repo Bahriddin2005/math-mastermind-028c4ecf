@@ -996,8 +996,28 @@ export const NumberTrainer = () => {
           speakNumber(String(result.num), result.isAdd, false);
         }
       } else {
-        // Agar hech qanday amal mumkin bo'lmasa, countni qaytaramiz va qayta urinamiz
-        countRef.current -= 1;
+        // Agar hech qanday amal mumkin bo'lmasa, oddiy qo'shish/ayirish bilan almashtirish
+        const currentVal = runningResultRef.current;
+        const fallbackDelta = Math.floor(Math.random() * Math.min(currentVal, 5)) + 1;
+        const fallbackIsAdd = currentVal < 5 ? true : Math.random() > 0.5;
+        const finalDelta = fallbackIsAdd ? fallbackDelta : Math.min(fallbackDelta, currentVal);
+        
+        if (fallbackIsAdd) {
+          runningResultRef.current += finalDelta;
+        } else {
+          runningResultRef.current -= finalDelta;
+        }
+        
+        const sign = fallbackIsAdd ? '+' : '−';
+        setCurrentDisplay(String(finalDelta));
+        setCurrentSign(sign);
+        setDisplayedNumbers(prev => [...prev, { num: String(finalDelta), isAdd: fallbackIsAdd }]);
+        setIsAddition(fallbackIsAdd);
+        playSound('tick');
+        
+        if (voiceEnabled) {
+          speakNumber(String(finalDelta), fallbackIsAdd, false);
+        }
       }
     }, speedMs);
   }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
