@@ -1080,7 +1080,9 @@ export type Database = {
           finished_at: string | null
           formula_type: string
           host_id: string
+          host_username: string | null
           id: string
+          is_public: boolean
           problem_count: number
           room_code: string
           speed: number
@@ -1094,7 +1096,9 @@ export type Database = {
           finished_at?: string | null
           formula_type?: string
           host_id: string
+          host_username?: string | null
           id?: string
+          is_public?: boolean
           problem_count?: number
           room_code: string
           speed?: number
@@ -1108,7 +1112,9 @@ export type Database = {
           finished_at?: string | null
           formula_type?: string
           host_id?: string
+          host_username?: string | null
           id?: string
+          is_public?: boolean
           problem_count?: number
           room_code?: string
           speed?: number

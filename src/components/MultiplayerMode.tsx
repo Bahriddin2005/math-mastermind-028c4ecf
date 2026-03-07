@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap, Target, Flame, Swords, Timer, TrendingUp, Medal, Sparkles, Eye, MessageCircle } from 'lucide-react';
+import { Users, Crown, Play, Copy, Check, Clock, Trophy, ArrowLeft, Loader2, Star, Zap, Target, Flame, Swords, Timer, TrendingUp, Medal, Sparkles, Eye, MessageCircle, Globe, Lock, Bell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -67,7 +67,7 @@ interface MultiplayerModeProps {
 export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
-  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'countdown' | 'playing' | 'results' | 'spectator' | 'tournament'>('menu');
+  const [view, setView] = useState<'menu' | 'create' | 'join' | 'open_rooms' | 'lobby' | 'countdown' | 'playing' | 'results' | 'spectator' | 'tournament'>('menu');
   const [room, setRoom] = useState<Room | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [roomCode, setRoomCode] = useState('');
@@ -87,6 +87,10 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const [digitCount, setDigitCount] = useState(1);
   const [speed, setSpeed] = useState(0.5);
   const [problemCount, setProblemCount] = useState(5);
+  const [roomType, setRoomType] = useState<'private' | 'public'>('private');
+  const [openRooms, setOpenRooms] = useState<any[]>([]);
+  const [loadingOpenRooms, setLoadingOpenRooms] = useState(false);
+  const [joinRequestSent, setJoinRequestSent] = useState<string | null>(null);
   
   // O'yin holati
   const [currentDisplay, setCurrentDisplay] = useState<string | null>(null);
@@ -226,6 +230,20 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
+  // Ochiq xonalarni yuklash
+  const fetchOpenRooms = async () => {
+    setLoadingOpenRooms(true);
+    const { data } = await supabase
+      .from('multiplayer_rooms')
+      .select('*, multiplayer_participants(count)')
+      .eq('is_public', true)
+      .eq('status', 'waiting')
+      .order('created_at', { ascending: false })
+      .limit(20);
+    if (data) setOpenRooms(data);
+    setLoadingOpenRooms(false);
+  };
+
   // Xona yaratish
   const createRoom = async () => {
     if (!user || !profile) return;
@@ -243,7 +261,9 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           digit_count: digitCount,
           speed,
           problem_count: problemCount,
-        })
+          is_public: roomType === 'public',
+          host_username: profile.username,
+        } as any)
         .select()
         .single();
       
@@ -281,6 +301,67 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
       toast.error('Xona yaratishda xato');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Ochiq xonaga qo'shilish so'rovi
+  const requestJoinOpenRoom = async (targetRoom: any) => {
+    if (!user || !profile) return;
+    setJoinRequestSent(targetRoom.id);
+    
+    // Broadcast orqali xona egasiga bildirishnoma yuborish
+    const channel = supabase.channel(`join-request-${targetRoom.id}`);
+    await channel.subscribe();
+    await channel.send({
+      type: 'broadcast',
+      event: 'join_request',
+      payload: {
+        userId: user.id,
+        username: profile.username,
+        avatarUrl: profile.avatar_url,
+        roomId: targetRoom.id,
+      },
+    });
+    supabase.removeChannel(channel);
+    
+    // Ochiq xonaga to'g'ridan-to'g'ri qo'shilish
+    try {
+      const { error: participantError } = await supabase
+        .from('multiplayer_participants')
+        .insert({
+          room_id: targetRoom.id,
+          user_id: user.id,
+          username: profile.username,
+          avatar_url: profile.avatar_url,
+        });
+      
+      if (participantError) {
+        if (participantError.code === '23505') {
+          toast.error('Siz allaqachon bu xonadasiz');
+        } else {
+          throw participantError;
+        }
+        setJoinRequestSent(null);
+        return;
+      }
+      
+      setRoom(targetRoom as Room);
+      setView('lobby');
+      
+      const { data: participantsData } = await supabase
+        .from('multiplayer_participants')
+        .select('*')
+        .eq('room_id', targetRoom.id);
+      
+      if (participantsData) {
+        setParticipants(participantsData as Participant[]);
+      }
+      
+      toast.success("Xonaga qo'shildingiz!");
+    } catch (error) {
+      toast.error("Xonaga qo'shilishda xato");
+    } finally {
+      setJoinRequestSent(null);
     }
   };
 
@@ -1329,7 +1410,23 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     );
   }
 
-  // Lobby
+  // Lobby - join request listener for host
+  useEffect(() => {
+    if (view !== 'lobby' || !room || room.host_id !== user?.id) return;
+    
+    const channel = supabase
+      .channel(`join-request-${room.id}`)
+      .on('broadcast', { event: 'join_request' }, ({ payload }) => {
+        toast(`${payload.username} xonangizga qo'shildi!`, {
+          icon: '🔔',
+          description: 'Yangi o\'yinchi tayyor',
+        });
+      })
+      .subscribe();
+    
+    return () => { supabase.removeChannel(channel); };
+  }, [view, room?.id, user?.id]);
+
   if (view === 'lobby' && room) {
     const isHost = room.host_id === user.id;
     
@@ -1602,6 +1699,43 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               </CardContent>
             </Card>
           </div>
+          {/* Room Type */}
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30">
+              <CardTitle className="text-base flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  {roomType === 'public' ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-primary" />}
+                </div>
+                Xona turi
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <RadioGroup value={roomType} onValueChange={(v) => setRoomType(v as 'private' | 'public')} className="grid grid-cols-2 gap-3">
+                <div>
+                  <RadioGroupItem value="private" id="room-private" className="peer sr-only" />
+                  <Label
+                    htmlFor="room-private"
+                    className="flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                  >
+                    <Lock className="h-5 w-5 mb-1 text-muted-foreground" />
+                    <span className="font-semibold text-sm">Kodli</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Kod bilan kirish</span>
+                  </Label>
+                </div>
+                <div>
+                  <RadioGroupItem value="public" id="room-public" className="peer sr-only" />
+                  <Label
+                    htmlFor="room-public"
+                    className="flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                  >
+                    <Globe className="h-5 w-5 mb-1 text-muted-foreground" />
+                    <span className="font-semibold text-sm">Ochiq</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Hammaga ko'rinadi</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </CardContent>
+          </Card>
         </div>
         
         {/* Create Button */}
@@ -1616,7 +1750,7 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           ) : (
             <Crown className="h-5 w-5 mr-2" />
           )}
-          Xona yaratish
+          {roomType === 'public' ? 'Ochiq xona yaratish' : 'Xona yaratish'}
         </Button>
       </div>
     );
@@ -1693,6 +1827,102 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     );
   }
 
+  // Ochiq xonalar ro'yxati
+  if (view === 'open_rooms') {
+    return (
+      <div className="w-full max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
+        <div className="flex items-center gap-4">
+          <Button onClick={() => setView('menu')} variant="ghost" size="icon" className="shrink-0">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold">Ochiq xonalar</h2>
+            <p className="text-sm text-muted-foreground">Bellashish uchun xona tanlang</p>
+          </div>
+        </div>
+
+        {loadingOpenRooms ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : openRooms.length === 0 ? (
+          <div className="text-center py-12 space-y-3">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
+              <Globe className="w-8 h-8 text-muted-foreground/50" />
+            </div>
+            <p className="text-muted-foreground font-medium">Hozircha ochiq xonalar yo'q</p>
+            <p className="text-xs text-muted-foreground">Birinchi bo'lib ochiq xona yarating!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {openRooms.map((r: any) => {
+              const participantCount = r.multiplayer_participants?.[0]?.count || 0;
+              const formulaLabels: Record<string, string> = {
+                oddiy: 'Oddiy', formula5: 'F-5', formula10plus: 'F-10+', formula10minus: 'F-10-', hammasi: 'Hammasi'
+              };
+              return (
+                <Card key={r.id} className="overflow-hidden border-2 hover:border-primary/30 transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                        <Crown className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold truncate">{(r as any).host_username || 'Noma\'lum'} xonasi</p>
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {formulaLabels[r.formula_type] || r.formula_type}
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.digit_count}-xonali
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.speed}s
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.problem_count} son
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <Users className="h-3 w-3" /> {participantCount} o'yinchi
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="shrink-0 rounded-full gap-1.5 px-4"
+                        disabled={joinRequestSent === r.id || r.host_id === user?.id}
+                        onClick={() => requestJoinOpenRoom(r)}
+                      >
+                        {joinRequestSent === r.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Swords className="h-4 w-4" />
+                            Kirish
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        <Button 
+          onClick={fetchOpenRooms} 
+          variant="outline" 
+          className="w-full gap-2"
+          disabled={loadingOpenRooms}
+        >
+          {loadingOpenRooms ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          Yangilash
+        </Button>
+      </div>
+    );
+  }
+
   // Asosiy menyu
   return (
     <div className="w-full max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
@@ -1747,6 +1977,26 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               <p className="text-sm text-muted-foreground">Kod orqali o'yinga qo'shiling</p>
             </div>
             <ArrowLeft className="h-5 w-5 text-muted-foreground rotate-180 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+          </CardContent>
+        </Card>
+
+        {/* Ochiq xonalar Card */}
+        <Card 
+          className="group cursor-pointer border-2 border-transparent hover:border-primary/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
+          onClick={() => { setView('open_rooms'); fetchOpenRooms(); }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Globe className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-primary transition-colors">Ochiq xonalar</h3>
+              <p className="text-sm text-muted-foreground">Jonli xonalarda bellashing</p>
+            </div>
+            <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 text-[10px]">
+              JONLI
+            </Badge>
           </CardContent>
         </Card>
 
