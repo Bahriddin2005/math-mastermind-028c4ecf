@@ -1201,11 +1201,11 @@ export const NumberTrainer = () => {
 
         {/* Asosiy kontent - pastroqda */}
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="relative max-w-lg w-full space-y-4 sm:space-y-5 animate-fade-in mx-auto">
+          <div className="relative max-w-sm w-full space-y-3 sm:space-y-4 animate-fade-in mx-auto">
             {/* Header */}
-            <div className="text-center mb-2">
-              <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
-              <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm mt-1">Javobingizni kiriting</p>
+            <div className="text-center mb-1">
+              <h2 className="text-lg sm:text-xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
+              <p className="text-muted-foreground dark:text-slate-400 text-xs mt-0.5">Javobingizni kiriting</p>
             </div>
             
             {!showResult ? (
@@ -1217,7 +1217,7 @@ export const NumberTrainer = () => {
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
                     placeholder="Javobni kiriting..."
-                    className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
+                    className="text-center text-xl sm:text-2xl h-12 sm:h-14 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
                     autoFocus
                   />
                 </div>
@@ -1225,7 +1225,7 @@ export const NumberTrainer = () => {
                   onClick={checkAnswer}
                   disabled={!userAnswer}
                   size="lg"
-                  className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                  className="w-full gap-2 h-10 sm:h-12 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-sm sm:text-base shadow-glow transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Check className="h-5 w-5 sm:h-6 sm:w-6" />
                   Tekshirish
@@ -1283,22 +1283,22 @@ export const NumberTrainer = () => {
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-3 sm:gap-4 pt-1">
+            <div className="flex gap-2 sm:gap-3 pt-1">
               <Button
                 onClick={resetGame}
                 variant="outline"
-                size="lg"
-                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
+                size="default"
+                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-xs sm:text-sm"
               >
-                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+                <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Orqaga
               </Button>
               <Button
                 onClick={startGame}
-                size="lg"
-                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
+                size="default"
+                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm"
               >
-                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 Yangi mashq
               </Button>
             </div>
