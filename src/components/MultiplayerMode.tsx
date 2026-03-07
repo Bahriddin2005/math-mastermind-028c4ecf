@@ -1811,6 +1811,102 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     );
   }
 
+  // Ochiq xonalar ro'yxati
+  if (view === 'open_rooms') {
+    return (
+      <div className="w-full max-w-lg mx-auto px-4 py-6 space-y-6 animate-fade-in">
+        <div className="flex items-center gap-4">
+          <Button onClick={() => setView('menu')} variant="ghost" size="icon" className="shrink-0">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold">Ochiq xonalar</h2>
+            <p className="text-sm text-muted-foreground">Bellashish uchun xona tanlang</p>
+          </div>
+        </div>
+
+        {loadingOpenRooms ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : openRooms.length === 0 ? (
+          <div className="text-center py-12 space-y-3">
+            <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto">
+              <Globe className="w-8 h-8 text-muted-foreground/50" />
+            </div>
+            <p className="text-muted-foreground font-medium">Hozircha ochiq xonalar yo'q</p>
+            <p className="text-xs text-muted-foreground">Birinchi bo'lib ochiq xona yarating!</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {openRooms.map((r: any) => {
+              const participantCount = r.multiplayer_participants?.[0]?.count || 0;
+              const formulaLabels: Record<string, string> = {
+                oddiy: 'Oddiy', formula5: 'F-5', formula10plus: 'F-10+', formula10minus: 'F-10-', hammasi: 'Hammasi'
+              };
+              return (
+                <Card key={r.id} className="overflow-hidden border-2 hover:border-primary/30 transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                        <Crown className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold truncate">{(r as any).host_username || 'Noma\'lum'} xonasi</p>
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {formulaLabels[r.formula_type] || r.formula_type}
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.digit_count}-xonali
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.speed}s
+                          </Badge>
+                          <Badge variant="secondary" className="text-[10px] px-1.5 h-5">
+                            {r.problem_count} son
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <Users className="h-3 w-3" /> {participantCount} o'yinchi
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="shrink-0 rounded-full gap-1.5 px-4"
+                        disabled={joinRequestSent === r.id || r.host_id === user?.id}
+                        onClick={() => requestJoinOpenRoom(r)}
+                      >
+                        {joinRequestSent === r.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Swords className="h-4 w-4" />
+                            Kirish
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        <Button 
+          onClick={fetchOpenRooms} 
+          variant="outline" 
+          className="w-full gap-2"
+          disabled={loadingOpenRooms}
+        >
+          {loadingOpenRooms ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          Yangilash
+        </Button>
+      </div>
+    );
+  }
+
   // Asosiy menyu
   return (
     <div className="w-full max-w-lg mx-auto px-4 py-8 space-y-8 animate-fade-in">
