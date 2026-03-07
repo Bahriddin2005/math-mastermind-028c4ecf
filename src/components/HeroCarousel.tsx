@@ -9,6 +9,7 @@ import {
 import { Button } from './ui/button';
 import { ArrowRight } from 'lucide-react';
 import Autoplay from 'embla-carousel-autoplay';
+import { useUserRole } from '@/hooks/useUserRole';
 
 // Import hero images
 import heroKidsImg from '@/assets/hero-kids.jpg';
@@ -27,7 +28,7 @@ interface HeroSlide {
   image: string;
 }
 
-const heroSlides: HeroSlide[] = [
+const allHeroSlides: HeroSlide[] = [
   {
     id: 'kids',
     title: "Bola uchun",
@@ -39,6 +40,33 @@ const heroSlides: HeroSlide[] = [
     href: "/train",
     image: heroKidsImg,
   },
+  {
+    id: 'competition',
+    title: "Musobaqalar",
+    subtitle: "Haftalik bellashuvlarda o'z kuchingni sinab ko'r!",
+    description: "Boshqa o'quvchilar bilan raqobatlash va reyting jadvaliga chiqish.",
+    icon: "🏆",
+    gradient: "from-amber-500 via-yellow-500 to-orange-400",
+    buttonText: "Musobaqaga o'tish",
+    href: "/weekly-game",
+    image: heroTeachersImg,
+  },
+  {
+    id: 'leaderboard',
+    title: "Reyting jadvali",
+    subtitle: "Eng yaxshilar orasida bo'l!",
+    description: "Kunlik va haftalik reytingda o'z o'rningni ko'r va yuqoriga ko'taril.",
+    icon: "📊",
+    gradient: "from-purple-500 via-violet-500 to-indigo-500",
+    buttonText: "Reytingni ko'rish",
+    href: "/kids-leaderboard",
+    image: heroParentsImg,
+  },
+];
+
+// Slides for non-student views (landing page, guest)
+const guestHeroSlides: HeroSlide[] = [
+  allHeroSlides[0],
   {
     id: 'parents',
     title: "Ota-ona uchun",
@@ -65,8 +93,12 @@ const heroSlides: HeroSlide[] = [
 
 export const HeroCarousel = () => {
   const navigate = useNavigate();
+  const { isStudent } = useUserRole();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+
+  // Students see competition/leaderboard slides, guests see parent/teacher slides
+  const heroSlides = isStudent ? allHeroSlides : guestHeroSlides;
 
   useEffect(() => {
     if (!api) return;
