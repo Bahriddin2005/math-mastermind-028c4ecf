@@ -403,6 +403,10 @@ export const NumberTrainer = () => {
   const DEFAULT_SETTINGS = {
     formulaType: 'oddiy' as FormulaType,
     digitCount: 1,
+    mulDigit1: 1,
+    mulDigit2: 1,
+    divDividendDigit: 2,
+    divDivisorDigit: 1,
     speed: 0.5,
     problemCount: 5,
     voiceEnabled: true,
@@ -412,11 +416,19 @@ export const NumberTrainer = () => {
   const resetToDefaults = () => {
     setFormulaType(DEFAULT_SETTINGS.formulaType);
     setDigitCount(DEFAULT_SETTINGS.digitCount);
+    setMulDigit1(DEFAULT_SETTINGS.mulDigit1);
+    setMulDigit2(DEFAULT_SETTINGS.mulDigit2);
+    setDivDividendDigit(DEFAULT_SETTINGS.divDividendDigit);
+    setDivDivisorDigit(DEFAULT_SETTINGS.divDivisorDigit);
     setSpeed(DEFAULT_SETTINGS.speed);
     setProblemCount(DEFAULT_SETTINGS.problemCount);
     setVoiceEnabled(DEFAULT_SETTINGS.voiceEnabled);
     localStorage.removeItem('numberTrainer_formulaType');
     localStorage.removeItem('numberTrainer_digitCount');
+    localStorage.removeItem('numberTrainer_mulDigit1');
+    localStorage.removeItem('numberTrainer_mulDigit2');
+    localStorage.removeItem('numberTrainer_divDividendDigit');
+    localStorage.removeItem('numberTrainer_divDivisorDigit');
     localStorage.removeItem('numberTrainer_speed');
     localStorage.removeItem('numberTrainer_problemCount');
     localStorage.removeItem('numberTrainer_voiceEnabled');
