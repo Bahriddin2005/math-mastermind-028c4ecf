@@ -1683,6 +1683,43 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
               </CardContent>
             </Card>
           </div>
+          {/* Room Type */}
+          <Card className="overflow-hidden">
+            <CardHeader className="pb-3 bg-muted/30">
+              <CardTitle className="text-base flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  {roomType === 'public' ? <Globe className="h-4 w-4 text-primary" /> : <Lock className="h-4 w-4 text-primary" />}
+                </div>
+                Xona turi
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <RadioGroup value={roomType} onValueChange={(v) => setRoomType(v as 'private' | 'public')} className="grid grid-cols-2 gap-3">
+                <div>
+                  <RadioGroupItem value="private" id="room-private" className="peer sr-only" />
+                  <Label
+                    htmlFor="room-private"
+                    className="flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                  >
+                    <Lock className="h-5 w-5 mb-1 text-muted-foreground" />
+                    <span className="font-semibold text-sm">Kodli</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Kod bilan kirish</span>
+                  </Label>
+                </div>
+                <div>
+                  <RadioGroupItem value="public" id="room-public" className="peer sr-only" />
+                  <Label
+                    htmlFor="room-public"
+                    className="flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                  >
+                    <Globe className="h-5 w-5 mb-1 text-muted-foreground" />
+                    <span className="font-semibold text-sm">Ochiq</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Hammaga ko'rinadi</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </CardContent>
+          </Card>
         </div>
         
         {/* Create Button */}
@@ -1697,7 +1734,7 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           ) : (
             <Crown className="h-5 w-5 mr-2" />
           )}
-          Xona yaratish
+          {roomType === 'public' ? 'Ochiq xona yaratish' : 'Xona yaratish'}
         </Button>
       </div>
     );
