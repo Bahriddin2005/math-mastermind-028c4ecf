@@ -995,6 +995,9 @@ export const NumberTrainer = () => {
         if (voiceEnabled) {
           speakNumber(String(result.num), result.isAdd, false);
         }
+      } else {
+        // Agar hech qanday amal mumkin bo'lmasa, countni qaytaramiz va qayta urinamiz
+        countRef.current -= 1;
       }
     }, speedMs);
   }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
