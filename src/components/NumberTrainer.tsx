@@ -894,7 +894,7 @@ export const NumberTrainer = () => {
 
     setIsAddition(randomOp.isAdd);
     return { num: finalNumber, isAdd: randomOp.isAdd };
-  }, [formulaType, digitCount]);
+  }, [formulaType, digitCount, mulDigit1, mulDigit2, divDividendDigit, divDivisorDigit]);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
