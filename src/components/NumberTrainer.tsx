@@ -372,7 +372,8 @@ export const NumberTrainer = () => {
   });
   const [problemCount, setProblemCount] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_problemCount');
-    return saved ? parseInt(saved, 10) : 5;
+    const val = saved ? parseInt(saved, 10) : 5;
+    return Math.max(val, 3); // Minimum 3 ta son
   });
   const [voiceEnabled, setVoiceEnabled] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_voiceEnabled');
@@ -996,8 +997,28 @@ export const NumberTrainer = () => {
           speakNumber(String(result.num), result.isAdd, false);
         }
       } else {
-        // Agar hech qanday amal mumkin bo'lmasa, countni qaytaramiz va qayta urinamiz
-        countRef.current -= 1;
+        // Agar hech qanday amal mumkin bo'lmasa, oddiy qo'shish/ayirish bilan almashtirish
+        const currentVal = runningResultRef.current;
+        const fallbackDelta = Math.floor(Math.random() * Math.min(currentVal, 5)) + 1;
+        const fallbackIsAdd = currentVal < 5 ? true : Math.random() > 0.5;
+        const finalDelta = fallbackIsAdd ? fallbackDelta : Math.min(fallbackDelta, currentVal);
+        
+        if (fallbackIsAdd) {
+          runningResultRef.current += finalDelta;
+        } else {
+          runningResultRef.current -= finalDelta;
+        }
+        
+        const sign = fallbackIsAdd ? '+' : '−';
+        setCurrentDisplay(String(finalDelta));
+        setCurrentSign(sign);
+        setDisplayedNumbers(prev => [...prev, { num: String(finalDelta), isAdd: fallbackIsAdd }]);
+        setIsAddition(fallbackIsAdd);
+        playSound('tick');
+        
+        if (voiceEnabled) {
+          speakNumber(String(finalDelta), fallbackIsAdd, false);
+        }
       }
     }, speedMs);
   }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
@@ -1849,12 +1870,12 @@ export const NumberTrainer = () => {
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <Input
                           type="number"
-                          min={1}
+                          min={3}
                           max={25}
                           value={problemCount}
                           onChange={(e) => {
                             const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val) && val >= 1 && val <= 25) {
+                            if (!isNaN(val) && val >= 3 && val <= 25) {
                               setProblemCount(val);
                             }
                           }}
