@@ -1410,7 +1410,23 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
     );
   }
 
-  // Lobby
+  // Lobby - join request listener for host
+  useEffect(() => {
+    if (view !== 'lobby' || !room || room.host_id !== user?.id) return;
+    
+    const channel = supabase
+      .channel(`join-request-${room.id}`)
+      .on('broadcast', { event: 'join_request' }, ({ payload }) => {
+        toast(`${payload.username} xonangizga qo'shildi!`, {
+          icon: '🔔',
+          description: 'Yangi o\'yinchi tayyor',
+        });
+      })
+      .subscribe();
+    
+    return () => { supabase.removeChannel(channel); };
+  }, [view, room?.id, user?.id]);
+
   if (view === 'lobby' && room) {
     const isHost = room.host_id === user.id;
     
