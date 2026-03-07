@@ -1964,6 +1964,26 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
           </CardContent>
         </Card>
 
+        {/* Ochiq xonalar Card */}
+        <Card 
+          className="group cursor-pointer border-2 border-transparent hover:border-primary/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
+          onClick={() => { setView('open_rooms'); fetchOpenRooms(); }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <CardContent className="p-6 flex items-center gap-5 relative">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
+              <Globe className="h-7 w-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg group-hover:text-primary transition-colors">Ochiq xonalar</h3>
+              <p className="text-sm text-muted-foreground">Jonli xonalarda bellashing</p>
+            </div>
+            <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 text-[10px]">
+              JONLI
+            </Badge>
+          </CardContent>
+        </Card>
+
         {/* Spectator Mode Card */}
         <Card 
           className="group cursor-pointer border-2 border-transparent hover:border-purple-500/30 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-card to-card/80"
