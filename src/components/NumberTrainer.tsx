@@ -444,6 +444,22 @@ export const NumberTrainer = () => {
   }, [digitCount]);
 
   useEffect(() => {
+    localStorage.setItem('numberTrainer_mulDigit1', String(mulDigit1));
+  }, [mulDigit1]);
+
+  useEffect(() => {
+    localStorage.setItem('numberTrainer_mulDigit2', String(mulDigit2));
+  }, [mulDigit2]);
+
+  useEffect(() => {
+    localStorage.setItem('numberTrainer_divDividendDigit', String(divDividendDigit));
+  }, [divDividendDigit]);
+
+  useEffect(() => {
+    localStorage.setItem('numberTrainer_divDivisorDigit', String(divDivisorDigit));
+  }, [divDivisorDigit]);
+
+  useEffect(() => {
     localStorage.setItem('numberTrainer_speed', String(speed));
   }, [speed]);
 
