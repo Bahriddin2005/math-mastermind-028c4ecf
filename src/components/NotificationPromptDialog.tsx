@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
-import { BellRing, X } from 'lucide-react';
+import { BellRing } from 'lucide-react';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useAuth } from '@/hooks/useAuth';
+
+const PROMPT_SHOWN_KEY = 'iqromax_notification_prompt_shown';
 
 export const NotificationPromptDialog = () => {
   const [open, setOpen] = useState(false);
@@ -16,9 +18,14 @@ export const NotificationPromptDialog = () => {
     // Don't show if already granted or denied (browser-level block)
     if (permission === 'granted' || permission === 'denied') return;
 
+    // Only show once per session - check if already shown this session
+    const alreadyShown = sessionStorage.getItem(PROMPT_SHOWN_KEY);
+    if (alreadyShown) return;
+
     // Show prompt after a short delay for better UX
     const timer = setTimeout(() => {
       setOpen(true);
+      sessionStorage.setItem(PROMPT_SHOWN_KEY, 'true');
     }, 1500);
 
     return () => clearTimeout(timer);
