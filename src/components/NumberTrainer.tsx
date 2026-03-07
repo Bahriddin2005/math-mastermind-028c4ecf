@@ -1164,7 +1164,7 @@ export const NumberTrainer = () => {
                 
                 {/* Asosiy son - juda katta */}
                 <span 
-                  className="text-[220px] sm:text-[380px] md:text-[540px] lg:text-[700px] font-black leading-none text-white drop-shadow-2xl"
+                  className="text-[120px] sm:text-[200px] md:text-[280px] lg:text-[360px] font-black leading-none text-white drop-shadow-2xl"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     letterSpacing: '-0.02em',
