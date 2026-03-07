@@ -40,39 +40,47 @@ const Onboarding = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     if (!authLoading && !user) {
       navigate('/auth');
       return;
     }
 
     if (user) {
-      checkExistingProfile();
+      (async () => {
+        try {
+          const { data } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+          if (cancelled) return;
+
+          // If profile has a non-default username, skip onboarding
+          if (data?.username && data.username !== 'Player') {
+            navigate('/');
+            return;
+          }
+
+          // Pre-fill username from auth metadata if available
+          const metaUsername = user.user_metadata?.username;
+          if (metaUsername && metaUsername !== 'Player') {
+            setUsername(metaUsername);
+          }
+
+          setCheckingProfile(false);
+        } catch (err: any) {
+          if (cancelled || err?.name === 'AbortError') return;
+          console.error('Profile check error:', err);
+          if (!cancelled) setCheckingProfile(false);
+        }
+      })();
     }
+
+    return () => { cancelled = true; };
   }, [user, authLoading]);
-
-  const checkExistingProfile = async () => {
-    if (!user) return;
-
-    const { data } = await supabase
-      .from('profiles')
-      .select('username')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    // If profile has a non-default username, skip onboarding
-    if (data?.username && data.username !== 'Player') {
-      navigate('/');
-      return;
-    }
-
-    // Pre-fill username from auth metadata if available
-    const metaUsername = user.user_metadata?.username;
-    if (metaUsername && metaUsername !== 'Player') {
-      setUsername(metaUsername);
-    }
-
-    setCheckingProfile(false);
-  };
 
   const handleEmojiSelect = (emoji: string) => {
     setSelectedEmoji(emoji);
