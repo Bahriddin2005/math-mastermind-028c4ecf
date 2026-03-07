@@ -1849,12 +1849,12 @@ export const NumberTrainer = () => {
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <Input
                           type="number"
-                          min={1}
+                          min={3}
                           max={25}
                           value={problemCount}
                           onChange={(e) => {
                             const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val) && val >= 1 && val <= 25) {
+                            if (!isNaN(val) && val >= 3 && val <= 25) {
                               setProblemCount(val);
                             }
                           }}
