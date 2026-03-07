@@ -67,7 +67,7 @@ interface MultiplayerModeProps {
 export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const { user } = useAuth();
   const { playSound } = useSound();
-  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby' | 'countdown' | 'playing' | 'results' | 'spectator' | 'tournament'>('menu');
+  const [view, setView] = useState<'menu' | 'create' | 'join' | 'open_rooms' | 'lobby' | 'countdown' | 'playing' | 'results' | 'spectator' | 'tournament'>('menu');
   const [room, setRoom] = useState<Room | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [roomCode, setRoomCode] = useState('');
