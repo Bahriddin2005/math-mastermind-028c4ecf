@@ -366,6 +366,24 @@ export const NumberTrainer = () => {
     const saved = localStorage.getItem('numberTrainer_digitCount');
     return saved ? parseInt(saved, 10) : 1;
   });
+  // Ko'paytirish uchun alohida xona sozlamalari
+  const [mulDigit1, setMulDigit1] = useState(() => {
+    const saved = localStorage.getItem('numberTrainer_mulDigit1');
+    return saved ? parseInt(saved, 10) : 1;
+  });
+  const [mulDigit2, setMulDigit2] = useState(() => {
+    const saved = localStorage.getItem('numberTrainer_mulDigit2');
+    return saved ? parseInt(saved, 10) : 1;
+  });
+  // Bo'lish uchun alohida xona sozlamalari
+  const [divDividendDigit, setDivDividendDigit] = useState(() => {
+    const saved = localStorage.getItem('numberTrainer_divDividendDigit');
+    return saved ? parseInt(saved, 10) : 2;
+  });
+  const [divDivisorDigit, setDivDivisorDigit] = useState(() => {
+    const saved = localStorage.getItem('numberTrainer_divDivisorDigit');
+    return saved ? parseInt(saved, 10) : 1;
+  });
   const [speed, setSpeed] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_speed');
     return saved ? parseFloat(saved) : 0.5;
