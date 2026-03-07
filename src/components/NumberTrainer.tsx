@@ -372,7 +372,8 @@ export const NumberTrainer = () => {
   });
   const [problemCount, setProblemCount] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_problemCount');
-    return saved ? parseInt(saved, 10) : 5;
+    const val = saved ? parseInt(saved, 10) : 5;
+    return Math.max(val, 3); // Minimum 3 ta son
   });
   const [voiceEnabled, setVoiceEnabled] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_voiceEnabled');
