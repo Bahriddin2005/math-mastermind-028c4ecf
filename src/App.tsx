@@ -14,6 +14,7 @@ import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { PageTransition } from "@/components/PageTransition";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { SessionTimeoutProvider } from "@/components/SessionTimeoutProvider";
+import { NotificationPromptDialog } from "@/components/NotificationPromptDialog";
 
 // Core pages - loaded immediately
 import KidsHome from "@/pages/KidsHome";
@@ -150,6 +151,7 @@ const App = () => (
             </PullToRefresh>
             <MobileBottomNav />
             <PWAInstallBanner />
+            <NotificationPromptDialog />
             <Suspense fallback={null}>
               <HelpChatWidget />
             </Suspense>
