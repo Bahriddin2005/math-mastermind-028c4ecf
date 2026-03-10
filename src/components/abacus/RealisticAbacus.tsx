@@ -119,13 +119,12 @@ export const RealisticAbacus = ({
     }
   }, [playSound, customBeadSound]);
   
-  const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
+  const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    if (cols <= 5) return 16;
-    if (cols <= 9) return 12;
-    if (cols <= 13) return 8;
-    return 4;
+    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const baseGap = Math.max(2, Math.floor(screenWidth / (cols * 20)));
+    return Math.min(16, Math.max(2, baseGap));
   };
   
   const isVertical = orientation === 'vertical';
