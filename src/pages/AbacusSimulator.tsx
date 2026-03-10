@@ -570,19 +570,22 @@ const AbacusSimulator = () => {
           
           {/* Abakus komponenti */}
           <div className={cn(
-            "flex justify-center items-center py-6 w-full max-w-[100vw]",
+            "flex justify-center items-center w-full overflow-x-auto",
+            "py-2 sm:py-4 lg:py-6",
             orientation === 'vertical' && "min-h-[400px]"
           )}>
-            <RealisticAbacus
-              columns={columns}
-              value={value}
-              onChange={setValue}
-              mode={mode}
-              showValue={false}
-              orientation={orientation}
-              colorScheme={colorScheme}
-              onBeadSound={handleBeadSound}
-            />
+            <div className="w-full max-w-full px-0 sm:px-2">
+              <RealisticAbacus
+                columns={columns}
+                value={value}
+                onChange={setValue}
+                mode={mode}
+                showValue={false}
+                orientation={orientation}
+                colorScheme={colorScheme}
+                onBeadSound={handleBeadSound}
+              />
+            </div>
           </div>
         </motion.div>
 
