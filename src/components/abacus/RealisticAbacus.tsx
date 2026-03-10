@@ -56,25 +56,22 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Responsive bead size — large enough to interact comfortably
-  const getBeadSize = (cols: number): number => {
+  // Dynamic responsive bead size based on actual screen width and column count
+  const getBeadSize = useCallback((cols: number): number => {
+    if (typeof window === 'undefined') return 40;
+    const screenWidth = window.innerWidth;
+    const availableWidth = screenWidth - (compact ? 80 : 120); // account for frame padding
+    const maxBeadWidth = Math.floor(availableWidth / (cols * 2.2)); // 2.2 = bead width ratio + gap
+    
+    // Device-based min/max constraints
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 48;
-      if (cols <= 9) return 42;
-      if (cols <= 13) return 36;
-      return 30;
+      return Math.max(22, Math.min(48, maxBeadWidth));
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 58;
-      if (cols <= 9) return 50;
-      if (cols <= 13) return 44;
-      return 38;
+      return Math.max(28, Math.min(56, maxBeadWidth));
     }
-    if (cols <= 5) return 72;
-    if (cols <= 9) return 64;
-    if (cols <= 13) return 56;
-    return 48;
-  };
+    return Math.max(32, Math.min(72, maxBeadWidth));
+  }, [deviceType, compact]);
   
   // Engine state
   const [engineState, setEngineState] = useState<AbacusState>(() =>
