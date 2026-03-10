@@ -56,25 +56,22 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Responsive bead size — large enough to interact comfortably
-  const getBeadSize = (cols: number): number => {
+  // Dynamic responsive bead size based on actual screen width and column count
+  const getBeadSize = useCallback((cols: number): number => {
+    if (typeof window === 'undefined') return 40;
+    const screenWidth = window.innerWidth;
+    const availableWidth = screenWidth - (compact ? 80 : 120); // account for frame padding
+    const maxBeadWidth = Math.floor(availableWidth / (cols * 2.2)); // 2.2 = bead width ratio + gap
+    
+    // Device-based min/max constraints
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 48;
-      if (cols <= 9) return 42;
-      if (cols <= 13) return 36;
-      return 30;
+      return Math.max(22, Math.min(48, maxBeadWidth));
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 58;
-      if (cols <= 9) return 50;
-      if (cols <= 13) return 44;
-      return 38;
+      return Math.max(28, Math.min(56, maxBeadWidth));
     }
-    if (cols <= 5) return 72;
-    if (cols <= 9) return 64;
-    if (cols <= 13) return 56;
-    return 48;
-  };
+    return Math.max(32, Math.min(72, maxBeadWidth));
+  }, [deviceType, compact]);
   
   // Engine state
   const [engineState, setEngineState] = useState<AbacusState>(() =>
@@ -122,13 +119,12 @@ export const RealisticAbacus = ({
     }
   }, [playSound, customBeadSound]);
   
-  const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
+  const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    if (cols <= 5) return 16;
-    if (cols <= 9) return 12;
-    if (cols <= 13) return 8;
-    return 4;
+    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const baseGap = Math.max(2, Math.floor(screenWidth / (cols * 20)));
+    return Math.min(16, Math.max(2, baseGap));
   };
   
   const isVertical = orientation === 'vertical';
@@ -146,9 +142,13 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '16px 20px' : '24px 32px',
-          border: `${compact ? 6 : 8}px solid #0D0704`,
-          borderRadius: compact ? 12 : 14,
+          padding: deviceType === 'mobile' 
+            ? (compact ? '10px 8px' : '14px 12px') 
+            : deviceType === 'tablet' 
+              ? (compact ? '14px 16px' : '20px 24px')
+              : (compact ? '16px 20px' : '24px 32px'),
+          border: `${deviceType === 'mobile' ? 4 : compact ? 6 : 8}px solid #0D0704`,
+          borderRadius: deviceType === 'mobile' ? 10 : compact ? 12 : 14,
           boxShadow: `
             0 16px 48px -12px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
@@ -190,8 +190,14 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
-            padding: compact ? '4px 10px' : '20px 24px',
-            minHeight: compact ? 280 : 380,
+            padding: deviceType === 'mobile' 
+              ? (compact ? '2px 4px' : '8px 8px') 
+              : (compact ? '4px 10px' : '20px 24px'),
+            minHeight: deviceType === 'mobile' 
+              ? (compact ? 200 : 260) 
+              : deviceType === 'tablet' 
+                ? (compact ? 240 : 320) 
+                : (compact ? 280 : 380),
           }}
         >
           {[...Array(columns)].map((_, i) => {

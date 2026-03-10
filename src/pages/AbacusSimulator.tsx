@@ -400,7 +400,7 @@ const AbacusSimulator = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 pb-24 space-y-6">
+      <main className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 pb-24 space-y-3 sm:space-y-6">
         {/* Rejim tanlash */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -570,19 +570,22 @@ const AbacusSimulator = () => {
           
           {/* Abakus komponenti */}
           <div className={cn(
-            "flex justify-center items-center py-6 w-full max-w-[100vw]",
+            "flex justify-center items-center w-full overflow-x-auto",
+            "py-2 sm:py-4 lg:py-6",
             orientation === 'vertical' && "min-h-[400px]"
           )}>
-            <RealisticAbacus
-              columns={columns}
-              value={value}
-              onChange={setValue}
-              mode={mode}
-              showValue={false}
-              orientation={orientation}
-              colorScheme={colorScheme}
-              onBeadSound={handleBeadSound}
-            />
+            <div className="w-full max-w-full px-0 sm:px-2">
+              <RealisticAbacus
+                columns={columns}
+                value={value}
+                onChange={setValue}
+                mode={mode}
+                showValue={false}
+                orientation={orientation}
+                colorScheme={colorScheme}
+                onBeadSound={handleBeadSound}
+              />
+            </div>
           </div>
         </motion.div>
 
