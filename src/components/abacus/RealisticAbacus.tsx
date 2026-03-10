@@ -146,14 +146,14 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '24px 32px' : '32px 44px',
-          border: `${compact ? 8 : 10}px solid #0D0704`,
-          borderRadius: compact ? 14 : 18,
+          padding: compact ? '16px 20px' : '24px 32px',
+          border: `${compact ? 6 : 8}px solid #0D0704`,
+          borderRadius: compact ? 12 : 14,
           boxShadow: `
-            0 20px 60px -15px rgba(0,0,0,0.8),
+            0 16px 48px -12px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
             inset 0 -2px 4px rgba(0,0,0,0.3),
-            0 0 0 ${compact ? 2 : 3}px #3D2B1F
+            0 0 0 ${compact ? 2 : 2}px #3D2B1F
           `,
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
