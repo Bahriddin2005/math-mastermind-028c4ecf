@@ -400,7 +400,7 @@ const AbacusSimulator = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6 pb-24 space-y-6">
+      <main className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 pb-24 space-y-3 sm:space-y-6">
         {/* Rejim tanlash */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
