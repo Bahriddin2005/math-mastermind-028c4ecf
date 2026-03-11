@@ -87,87 +87,57 @@ export const Footer = () => {
         </div>
       </div>
 
-      {/* Main Footer - Enhanced dark mode */}
-      <div className="relative container px-4 py-8 sm:py-10 md:py-14">
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
-          {/* Brand Section */}
-          <div className="col-span-2 md:col-span-1 lg:col-span-1">
+      {/* Main Footer - Compact */}
+      <div className="relative container px-4 py-6 sm:py-8">
+        {/* Logo + Description + Links in one row */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
             <Logo size="md" />
-            <p className="mt-3 sm:mt-4 text-muted-foreground dark:text-muted-foreground/80 text-xs sm:text-sm leading-relaxed">
-              Mental arifmetika bo'yicha eng yaxshi onlayn platforma. 
-              Miyangizni rivojlantiring.
+            <p className="text-muted-foreground dark:text-muted-foreground/80 text-xs sm:text-sm max-w-[200px] leading-snug hidden sm:block">
+              Mental arifmetika bo'yicha eng yaxshi platforma.
             </p>
           </div>
 
-          {/* Platform Links - Enhanced dark mode */}
-          <div>
-            <h4 className="font-display font-semibold text-foreground dark:text-foreground/90 mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wider">Platforma</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {footerLinks.platform.map((link) => (
-                <li key={link.href}>
-                  <Link 
-                    to={link.href} 
-                    className="group inline-flex items-center gap-1 text-muted-foreground dark:text-muted-foreground/80 hover:text-primary dark:hover:text-primary transition-colors text-sm py-1 touch-target"
-                  >
-                    {link.label}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* All Links in horizontal groups */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+            {/* Platform */}
+            {footerLinks.platform.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="text-muted-foreground dark:text-muted-foreground/80 hover:text-primary transition-colors whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <span className="text-border dark:text-border/40 hidden sm:inline">|</span>
+            {/* Support */}
+            {footerLinks.support.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="text-muted-foreground dark:text-muted-foreground/80 hover:text-primary transition-colors whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Support Links */}
-          <div>
-            <h4 className="font-display font-semibold text-foreground dark:text-foreground/90 mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wider">Yordam</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {footerLinks.support.map((link) => (
-                <li key={link.href}>
-                  <Link 
-                    to={link.href} 
-                    className="group inline-flex items-center gap-1 text-muted-foreground dark:text-muted-foreground/80 hover:text-primary dark:hover:text-primary transition-colors text-sm py-1 touch-target"
-                  >
-                    {link.label}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info - Enhanced dark mode */}
-          <div className="col-span-2 md:col-span-1">
-            <h4 className="font-display font-semibold text-foreground dark:text-foreground/90 mb-3 sm:mb-4 text-xs sm:text-sm uppercase tracking-wider">Aloqa</h4>
-            <ul className="space-y-2 sm:space-y-3">
-              <li>
-                <a 
-                  href="mailto:info@iqromax.uz" 
-                  className="group flex items-center gap-3 text-muted-foreground dark:text-muted-foreground/80 hover:text-primary transition-colors text-sm py-1.5 touch-target"
-                >
-                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-secondary/80 dark:bg-secondary/40 flex items-center justify-center group-hover:bg-primary/10 dark:group-hover:bg-primary/25 transition-colors flex-shrink-0 border border-border/30 dark:border-border/20">
-                    <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </div>
-                  <span className="truncate">info@iqromax.uz</span>
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="tel:+998990053000" 
-                  className="group flex items-center gap-3 text-muted-foreground dark:text-muted-foreground/80 hover:text-primary transition-colors text-sm py-1.5 touch-target"
-                >
-                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-secondary/80 dark:bg-secondary/40 flex items-center justify-center group-hover:bg-primary/10 dark:group-hover:bg-primary/25 transition-colors flex-shrink-0 border border-border/30 dark:border-border/20">
-                    <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </div>
-                  +998 99 005 30 00
-                </a>
-              </li>
-              <li className="flex items-center gap-3 text-muted-foreground dark:text-muted-foreground/80 text-sm py-1.5">
-                <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-secondary/80 dark:bg-secondary/40 flex items-center justify-center flex-shrink-0 border border-border/30 dark:border-border/20">
-                  <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />
-                </div>
-                Toshkent, O'zbekiston
-              </li>
-            </ul>
+          {/* Contact - inline */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground/80">
+            <a href="mailto:info@iqromax.uz" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Mail className="h-3.5 w-3.5" />
+              info@iqromax.uz
+            </a>
+            <a href="tel:+998990053000" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Phone className="h-3.5 w-3.5" />
+              +998 99 005 30 00
+            </a>
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5" />
+              Toshkent
+            </span>
           </div>
         </div>
       </div>
