@@ -74,12 +74,12 @@ export const AbacusColumn = memo(({
     onBeadSound?.(true);
   }, [disabled, upperActive, onUpperChange, onBeadSound]);
 
-  // Soroban cascade: activating bead N activates all beads 0..N (push up)
+  // Soroban cascade: activating bead N activates all beads N..3 (push up from clicked bead)
   const handleBeadActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      for (let i = 0; i <= beadIndex; i++) next[i] = true;
+      for (let i = beadIndex; i <= 3; i++) next[i] = true;
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
@@ -87,12 +87,12 @@ export const AbacusColumn = memo(({
     });
     onBeadSound?.(false);
   }, [disabled, onLowerChange, onBeadSound]);
-  // Soroban cascade: deactivating bead N deactivates all beads N..3 (pull down)
+  // Soroban cascade: deactivating bead N deactivates all beads 0..N (pull down from clicked bead)
   const handleBeadDeactivate = useCallback((beadIndex: number) => {
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      for (let i = beadIndex; i <= 3; i++) next[i] = false;
+      for (let i = 0; i <= beadIndex; i++) next[i] = false;
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
