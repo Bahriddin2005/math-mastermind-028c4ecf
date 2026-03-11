@@ -75,7 +75,7 @@ export const useSessionTimeout = ({
     const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
 
     // Throttled reset function
-    let throttleTimeout: NodeJS.Timeout | null = null;
+    let throttleTimeout: ReturnType<typeof setTimeout> | null = null;
     const throttledReset = () => {
       if (throttleTimeout) return;
       throttleTimeout = setTimeout(() => {
