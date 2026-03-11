@@ -16,7 +16,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', siz
   };
 
   return (
-    <div className="inline-flex items-center justify-center">
+    <div ref={ref} className="inline-flex items-center justify-center">
       <img 
         src={iqromaxLogo} 
         alt="IQROMAX - Mental Matematika" 
@@ -30,4 +30,6 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', siz
       />
     </div>
   );
-};
+});
+
+Logo.displayName = 'Logo';
