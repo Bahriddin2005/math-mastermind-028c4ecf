@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+// v2 - fixed HMR compatibility
 
 interface PushNotificationState {
   isSupported: boolean;
