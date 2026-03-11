@@ -43,7 +43,6 @@ export const useStreakNotifications = () => {
       body: 'Bugun hali mashq qilmadingiz. 5 daqiqalik mashq seriyangizni saqlab qoladi!',
       tag: 'streak-reminder',
       requireInteraction: true,
-      data: { type: 'streak-reminder' },
     });
   }, [permission, sendLocalNotification]);
 
@@ -55,7 +54,6 @@ export const useStreakNotifications = () => {
       sendLocalNotification(`🎉 ${streak} kunlik seriya!`, {
         body: `Tabriklaymiz! Siz ${streak} kun ketma-ket mashq qildingiz. Davom eting!`,
         tag: 'streak-achievement',
-        data: { type: 'streak-achievement', streak },
       });
     }
   }, [permission, sendLocalNotification]);
@@ -66,7 +64,6 @@ export const useStreakNotifications = () => {
     sendLocalNotification('😢 Seriya uzildi', {
       body: 'Kecha mashq qilmadingiz va seriya uzildi. Bugundan yangisini boshlang!',
       tag: 'streak-lost',
-      data: { type: 'streak-lost' },
     });
   }, [permission, sendLocalNotification]);
 
@@ -77,7 +74,6 @@ export const useStreakNotifications = () => {
     const checkAndNotify = async () => {
       const today = new Date().toDateString();
       
-      // Only check once per day
       if (lastCheckedRef.current === today) return;
       lastCheckedRef.current = today;
 
@@ -91,9 +87,7 @@ export const useStreakNotifications = () => {
         const now = new Date();
         const daysDiff = Math.floor((now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
 
-        // If no activity today and it's evening (after 6 PM)
         if (daysDiff === 0 && now.getHours() >= 18 && !notificationSentRef.current) {
-          // Check if user hasn't played today
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0);
           
@@ -109,7 +103,6 @@ export const useStreakNotifications = () => {
           }
         }
 
-        // If streak was lost (more than 1 day gap)
         if (daysDiff > 1 && currentStreak === 0) {
           const lastLostNotification = localStorage.getItem('streak-lost-notification');
           if (lastLostNotification !== today) {
@@ -120,12 +113,8 @@ export const useStreakNotifications = () => {
       }
     };
 
-    // Check on mount
     checkAndNotify();
-
-    // Check every hour
     const interval = setInterval(checkAndNotify, 60 * 60 * 1000);
-
     return () => clearInterval(interval);
   }, [user, permission, checkStreakStatus, sendStreakReminder, sendStreakLostNotification]);
 

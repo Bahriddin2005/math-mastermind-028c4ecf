@@ -7,25 +7,23 @@ interface PushNotificationState {
   isSubscribed: boolean;
 }
 
-/**
- * Checks notification support across browsers and devices
- */
 const checkNotificationSupport = (): boolean => {
-  // Check basic Notification API
-  if ('Notification' in window) return true;
-  
-  // Some mobile browsers support notifications only through service worker
-  if ('serviceWorker' in navigator && 'PushManager' in window) return true;
-  
+  try {
+    if ('Notification' in window) return true;
+    if ('serviceWorker' in navigator && 'PushManager' in window) return true;
+  } catch {
+    // Some environments throw on property access
+  }
   return false;
 };
 
-/**
- * Gets current permission, handling edge cases
- */
 const getCurrentPermission = (): NotificationPermission => {
-  if ('Notification' in window) {
-    return Notification.permission;
+  try {
+    if ('Notification' in window) {
+      return Notification.permission;
+    }
+  } catch {
+    // Ignore
   }
   return 'default';
 };
@@ -41,75 +39,80 @@ export const usePushNotifications = () => {
     const isSupported = checkNotificationSupport();
     const permission = isSupported ? getCurrentPermission() : 'default';
     
-    setState(prev => ({
-      ...prev,
+    setState({
       isSupported,
       permission,
-    }));
-
-    // Check push subscription via service worker
-    if (isSupported && 'serviceWorker' in navigator && 'PushManager' in window) {
-      navigator.serviceWorker.ready
-        .then(registration => {
-          return registration.pushManager?.getSubscription();
-        })
-        .then((subscription) => {
-          setState(prev => ({
-            ...prev,
-            isSubscribed: !!subscription,
-          }));
-        })
-        .catch(() => {
-          // Silent fail - SW might not be ready yet
-        });
-    }
+      isSubscribed: false,
+    });
   }, []);
 
-  const requestPermission = useCallback(async () => {
-    if (!state.isSupported) {
+  const requestPermission = useCallback(async (): Promise<boolean> => {
+    if (!checkNotificationSupport()) {
       toast.error("Brauzeringiz bildirishnomalarni qo'llab-quvvatlamaydi", {
         description: "Boshqa brauzer yoki qurilmadan foydalaning",
       });
       return false;
     }
 
-    // If already denied at browser level, show help
-    if ('Notification' in window && Notification.permission === 'denied') {
-      toast.error("Bildirishnomalar bloklangan", {
-        description: "Brauzer sozlamalaridan bildirishnomalarni ruxsat bering: Sozlamalar → Sayt sozlamalari → Bildirishnomalar",
-        duration: 8000,
-      });
-      return false;
-    }
-
     try {
-      let permission: NotificationPermission = 'default';
+      const currentPerm = getCurrentPermission();
+      
+      if (currentPerm === 'denied') {
+        toast.error("Bildirishnomalar bloklangan", {
+          description: "Brauzer sozlamalaridan bildirishnomalarni ruxsat bering: Sozlamalar → Sayt sozlamalari → Bildirishnomalar",
+          duration: 8000,
+        });
+        return false;
+      }
 
-      // Try standard Notification API first
+      if (currentPerm === 'granted') {
+        setState(prev => ({ ...prev, permission: 'granted' }));
+        toast.success('Bildirishnomalar allaqachon yoqilgan!');
+        return true;
+      }
+
+      // Request permission
+      let permission: NotificationPermission = 'default';
+      
       if ('Notification' in window) {
-        permission = await Notification.requestPermission();
+        // Use callback style for maximum compatibility
+        permission = await new Promise<NotificationPermission>((resolve) => {
+          try {
+            Notification.requestPermission((result) => {
+              resolve(result);
+            // Also handle promise-based API
+            })?.then?.((result: NotificationPermission) => {
+              resolve(result);
+            });
+          } catch {
+            // If callback style fails, try promise style
+            Notification.requestPermission().then(resolve).catch(() => resolve('default'));
+          }
+        });
       }
 
       setState(prev => ({ ...prev, permission }));
 
       if (permission === 'granted') {
-        // Register service worker for reliable mobile notifications
-        if ('serviceWorker' in navigator) {
-          try {
-            await navigator.serviceWorker.ready;
-          } catch {
-            // SW not critical for basic notifications
+        // Send test notification
+        try {
+          if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            const reg = await navigator.serviceWorker.ready;
+            await reg.showNotification("IQROMAX bildirishnomalari yoqildi! ✅", {
+              body: "Endi siz muhim yangiliklar va eslatmalarni olasiz",
+              icon: '/pwa-192x192.png',
+              tag: 'permission-granted',
+            });
+          } else {
+            new Notification("IQROMAX bildirishnomalari yoqildi! ✅", {
+              body: "Endi siz muhim yangiliklar va eslatmalarni olasiz",
+              icon: '/pwa-192x192.png',
+              tag: 'permission-granted',
+            });
           }
+        } catch {
+          // Notification sent attempt failed, but permission is granted
         }
-        
-        // Send a test notification to confirm it works
-        sendNotificationViaBestMethod(
-          "IQROMAX bildirishnomalari yoqildi! ✅",
-          {
-            body: "Endi siz muhim yangiliklar va eslatmalarni olasiz",
-            tag: 'permission-granted',
-          }
-        );
         
         toast.success('Bildirishnomalar muvaffaqiyatli yoqildi!');
         return true;
@@ -118,7 +121,6 @@ export const usePushNotifications = () => {
           description: "Qayta yoqish uchun brauzer sozlamalaridan ruxsat bering",
           duration: 6000,
         });
-        return false;
       }
       
       return false;
@@ -127,57 +129,33 @@ export const usePushNotifications = () => {
       toast.error("Bildirishnomalarni yoqishda xatolik yuz berdi");
       return false;
     }
-  }, [state.isSupported]);
+  }, []);
 
-  /**
-   * Sends notification using the best available method:
-   * 1. Service Worker (best for mobile/PWA)
-   * 2. Direct Notification API (fallback)
-   */
-  const sendNotificationViaBestMethod = useCallback((title: string, options?: NotificationOptions) => {
-    const notifOptions: NotificationOptions = {
+  const sendLocalNotification = useCallback((title: string, options?: { body?: string; tag?: string; requireInteraction?: boolean; icon?: string }) => {
+    const currentPermission = getCurrentPermission();
+    if (currentPermission !== 'granted') return;
+
+    const notifOptions = {
       icon: '/pwa-192x192.png',
       badge: '/pwa-192x192.png',
-      requireInteraction: false,
       ...options,
     };
 
-    // Method 1: Service Worker (works better on mobile/PWA)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready
-        .then(registration => {
-          return registration.showNotification(title, notifOptions);
-        })
-        .catch(() => {
-          // Fallback to direct API
-          directNotification(title, notifOptions);
-        });
-    } else {
-      // Method 2: Direct Notification API
-      directNotification(title, notifOptions);
+    try {
+      // Try service worker first (better for mobile/PWA)
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.ready
+          .then(reg => reg.showNotification(title, notifOptions))
+          .catch(() => {
+            try { new Notification(title, notifOptions); } catch { /* ignore */ }
+          });
+      } else if ('Notification' in window) {
+        new Notification(title, notifOptions);
+      }
+    } catch {
+      // Silent fail
     }
   }, []);
-
-  const directNotification = (title: string, options?: NotificationOptions) => {
-    try {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(title, options);
-      }
-    } catch (error) {
-      console.error('Direct notification failed:', error);
-    }
-  };
-
-  const sendLocalNotification = useCallback((title: string, options?: NotificationOptions) => {
-    const currentPermission = getCurrentPermission();
-    
-    if (currentPermission !== 'granted') {
-      console.warn('Notification permission not granted');
-      return;
-    }
-
-    sendNotificationViaBestMethod(title, options);
-  }, [sendNotificationViaBestMethod]);
 
   return {
     ...state,
