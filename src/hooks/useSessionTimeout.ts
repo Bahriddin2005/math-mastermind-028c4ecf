@@ -15,8 +15,8 @@ export const useSessionTimeout = ({
 }: UseSessionTimeoutOptions = {}) => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const warningRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const warningRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
 
   const clearTimers = useCallback(() => {
@@ -75,7 +75,7 @@ export const useSessionTimeout = ({
     const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
 
     // Throttled reset function
-    let throttleTimeout: NodeJS.Timeout | null = null;
+    let throttleTimeout: ReturnType<typeof setTimeout> | null = null;
     const throttledReset = () => {
       if (throttleTimeout) return;
       throttleTimeout = setTimeout(() => {

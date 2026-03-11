@@ -51,7 +51,7 @@ export const VideoPlayer = ({
   const [isMuted, setIsMuted] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [showControls, setShowControls] = useState(true);
-  const hideControlsTimeout = useRef<NodeJS.Timeout>();
+  const hideControlsTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   const [hasSetInitialTime, setHasSetInitialTime] = useState(false);
   const lastSavedTimeRef = useRef(0);
