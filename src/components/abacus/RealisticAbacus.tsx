@@ -191,13 +191,13 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: deviceType === 'mobile' 
-              ? (compact ? '2px 4px' : '8px 8px') 
-              : (compact ? '4px 10px' : '20px 24px'),
+              ? (compact ? '2px 2px' : '4px 4px') 
+              : (compact ? '2px 6px' : '8px 10px'),
             minHeight: deviceType === 'mobile' 
-              ? (compact ? 200 : 260) 
+              ? (compact ? 160 : 200) 
               : deviceType === 'tablet' 
-                ? (compact ? 240 : 320) 
-                : (compact ? 280 : 380),
+                ? (compact ? 180 : 240) 
+                : (compact ? 200 : 280),
           }}
         >
           {[...Array(columns)].map((_, i) => {
