@@ -132,13 +132,13 @@ export const useSound = () => {
         ctx.resume();
       }
 
-      // Use special iOS-style bead sounds
+      // Realistic wooden bead sounds
       if (type === 'bead') {
-        playiOSBeadSound(ctx, false);
+        playRealisticBeadSound(ctx, false);
         return;
       }
       if (type === 'beadHigh') {
-        playiOSBeadSound(ctx, true);
+        playRealisticBeadSound(ctx, true);
         return;
       }
 
