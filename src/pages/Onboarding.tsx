@@ -40,47 +40,39 @@ const Onboarding = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-
     if (!authLoading && !user) {
       navigate('/auth');
       return;
     }
 
     if (user) {
-      (async () => {
-        try {
-          const { data } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('user_id', user.id)
-            .maybeSingle();
+      checkExistingProfile();
+    }
+  }, [user, authLoading]);
 
-          if (cancelled) return;
+  const checkExistingProfile = async () => {
+    if (!user) return;
 
-          // If profile has a non-default username, skip onboarding
-          if (data?.username && data.username !== 'Player') {
-            navigate('/');
-            return;
-          }
+    const { data } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('user_id', user.id)
+      .maybeSingle();
 
-          // Pre-fill username from auth metadata if available
-          const metaUsername = user.user_metadata?.username;
-          if (metaUsername && metaUsername !== 'Player') {
-            setUsername(metaUsername);
-          }
-
-          setCheckingProfile(false);
-        } catch (err: any) {
-          if (cancelled || err?.name === 'AbortError') return;
-          console.error('Profile check error:', err);
-          if (!cancelled) setCheckingProfile(false);
-        }
-      })();
+    // If profile has a non-default username, skip onboarding
+    if (data?.username && data.username !== 'Player') {
+      navigate('/');
+      return;
     }
 
-    return () => { cancelled = true; };
-  }, [user, authLoading]);
+    // Pre-fill username from auth metadata if available
+    const metaUsername = user.user_metadata?.username;
+    if (metaUsername && metaUsername !== 'Player') {
+      setUsername(metaUsername);
+    }
+
+    setCheckingProfile(false);
+  };
 
   const handleEmojiSelect = (emoji: string) => {
     setSelectedEmoji(emoji);
@@ -167,7 +159,6 @@ const Onboarding = () => {
         navigate('/');
       }, 1500);
     } catch (error: any) {
-      if (error?.name === 'AbortError') return;
       toast.error('Xatolik: ' + error.message);
     } finally {
       setSaving(false);

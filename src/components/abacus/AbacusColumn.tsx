@@ -74,12 +74,12 @@ export const AbacusColumn = memo(({
     onBeadSound?.(true);
   }, [disabled, upperActive, onUpperChange, onBeadSound]);
 
-  // Soroban cascade: activating bead N activates all beads N..3 (push up from clicked bead)
+  // Individual bead toggle — only the dragged bead moves
   const handleBeadActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      for (let i = beadIndex; i <= 3; i++) next[i] = true;
+      next[beadIndex] = true;
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
@@ -87,12 +87,11 @@ export const AbacusColumn = memo(({
     });
     onBeadSound?.(false);
   }, [disabled, onLowerChange, onBeadSound]);
-  // Soroban cascade: deactivating bead N deactivates all beads 0..N (pull down from clicked bead)
   const handleBeadDeactivate = useCallback((beadIndex: number) => {
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      for (let i = 0; i <= beadIndex; i++) next[i] = false;
+      next[beadIndex] = false;
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
@@ -100,11 +99,10 @@ export const AbacusColumn = memo(({
     });
     onBeadSound?.(false);
   }, [disabled, onLowerChange, onBeadSound]);
-  const rodWidth = Math.max(6, beadSize * 0.22);
-  const columnMinWidth = Math.max(beadSize * 1.5, beadSize * 1.8);
+  const rodWidth = Math.max(10, beadSize * 0.26);
   return <div className="flex flex-col items-center relative" style={{
-    minWidth: columnMinWidth,
-    padding: '0 0px'
+    minWidth: beadSize * 1.8,
+    padding: '0 1px'
   }}>
       {/* Vertical rod */}
       <div className="absolute z-0" style={{

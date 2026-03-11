@@ -27,20 +27,9 @@ export const TractionStats = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      try {
-        const { data, error } = await supabase.rpc('get_platform_stats');
-        if (error) {
-          console.error('TractionStats RPC error:', error);
-          return;
-        }
-        if (data && Array.isArray(data) && data.length > 0) {
-          setStats(data[0]);
-        } else if (data && !Array.isArray(data)) {
-          // Handle case where data is a single object
-          setStats(data as unknown as PlatformStats);
-        }
-      } catch (err) {
-        console.error('TractionStats fetch error:', err);
+      const { data } = await supabase.rpc('get_platform_stats') as { data: any[] | null };
+      if (data && data.length > 0) {
+        setStats(data[0]);
       }
     };
     fetchStats();

@@ -31,13 +31,6 @@ export const useMFA = () => {
 
   const checkMFAStatus = useCallback(async () => {
     try {
-      // Check if user session exists first
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        setStatus(prev => ({ ...prev, loading: false }));
-        return { isEnabled: false, needsVerification: false };
-      }
-
       setStatus(prev => ({ ...prev, loading: true, error: null }));
 
       // Get assurance level

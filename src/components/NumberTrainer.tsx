@@ -366,32 +366,13 @@ export const NumberTrainer = () => {
     const saved = localStorage.getItem('numberTrainer_digitCount');
     return saved ? parseInt(saved, 10) : 1;
   });
-  // Ko'paytirish uchun alohida xona sozlamalari
-  const [mulDigit1, setMulDigit1] = useState(() => {
-    const saved = localStorage.getItem('numberTrainer_mulDigit1');
-    return saved ? parseInt(saved, 10) : 1;
-  });
-  const [mulDigit2, setMulDigit2] = useState(() => {
-    const saved = localStorage.getItem('numberTrainer_mulDigit2');
-    return saved ? parseInt(saved, 10) : 1;
-  });
-  // Bo'lish uchun alohida xona sozlamalari
-  const [divDividendDigit, setDivDividendDigit] = useState(() => {
-    const saved = localStorage.getItem('numberTrainer_divDividendDigit');
-    return saved ? parseInt(saved, 10) : 2;
-  });
-  const [divDivisorDigit, setDivDivisorDigit] = useState(() => {
-    const saved = localStorage.getItem('numberTrainer_divDivisorDigit');
-    return saved ? parseInt(saved, 10) : 1;
-  });
   const [speed, setSpeed] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_speed');
     return saved ? parseFloat(saved) : 0.5;
   });
   const [problemCount, setProblemCount] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_problemCount');
-    const val = saved ? parseInt(saved, 10) : 5;
-    return Math.max(val, 3); // Minimum 3 ta son
+    return saved ? parseInt(saved, 10) : 5;
   });
   const [voiceEnabled, setVoiceEnabled] = useState(() => {
     const saved = localStorage.getItem('numberTrainer_voiceEnabled');
@@ -403,10 +384,6 @@ export const NumberTrainer = () => {
   const DEFAULT_SETTINGS = {
     formulaType: 'oddiy' as FormulaType,
     digitCount: 1,
-    mulDigit1: 1,
-    mulDigit2: 1,
-    divDividendDigit: 2,
-    divDivisorDigit: 1,
     speed: 0.5,
     problemCount: 5,
     voiceEnabled: true,
@@ -416,19 +393,11 @@ export const NumberTrainer = () => {
   const resetToDefaults = () => {
     setFormulaType(DEFAULT_SETTINGS.formulaType);
     setDigitCount(DEFAULT_SETTINGS.digitCount);
-    setMulDigit1(DEFAULT_SETTINGS.mulDigit1);
-    setMulDigit2(DEFAULT_SETTINGS.mulDigit2);
-    setDivDividendDigit(DEFAULT_SETTINGS.divDividendDigit);
-    setDivDivisorDigit(DEFAULT_SETTINGS.divDivisorDigit);
     setSpeed(DEFAULT_SETTINGS.speed);
     setProblemCount(DEFAULT_SETTINGS.problemCount);
     setVoiceEnabled(DEFAULT_SETTINGS.voiceEnabled);
     localStorage.removeItem('numberTrainer_formulaType');
     localStorage.removeItem('numberTrainer_digitCount');
-    localStorage.removeItem('numberTrainer_mulDigit1');
-    localStorage.removeItem('numberTrainer_mulDigit2');
-    localStorage.removeItem('numberTrainer_divDividendDigit');
-    localStorage.removeItem('numberTrainer_divDivisorDigit');
     localStorage.removeItem('numberTrainer_speed');
     localStorage.removeItem('numberTrainer_problemCount');
     localStorage.removeItem('numberTrainer_voiceEnabled');
@@ -442,22 +411,6 @@ export const NumberTrainer = () => {
   useEffect(() => {
     localStorage.setItem('numberTrainer_digitCount', String(digitCount));
   }, [digitCount]);
-
-  useEffect(() => {
-    localStorage.setItem('numberTrainer_mulDigit1', String(mulDigit1));
-  }, [mulDigit1]);
-
-  useEffect(() => {
-    localStorage.setItem('numberTrainer_mulDigit2', String(mulDigit2));
-  }, [mulDigit2]);
-
-  useEffect(() => {
-    localStorage.setItem('numberTrainer_divDividendDigit', String(divDividendDigit));
-  }, [divDividendDigit]);
-
-  useEffect(() => {
-    localStorage.setItem('numberTrainer_divDivisorDigit', String(divDivisorDigit));
-  }, [divDivisorDigit]);
 
   useEffect(() => {
     localStorage.setItem('numberTrainer_speed', String(speed));
@@ -501,8 +454,8 @@ export const NumberTrainer = () => {
 
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
   const answerStartTimeRef = useRef<number>(0);
   const lastWasKattaDostRef = useRef(false); // Mix formula uchun - ketma-ket katta do'st cheklovi
@@ -625,46 +578,50 @@ export const NumberTrainer = () => {
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
     
-    // Ko'paytirish rejimi - alohida xona sozlamalari
+    // Ko'paytirish rejimi - digitCount ga qarab qiyinlik
     if (formulaType === 'kopaytirish') {
-      const genByDigit = (d: number) => {
-        if (d === 1) return Math.floor(Math.random() * 9) + 1;
-        const min = Math.pow(10, d - 1);
-        const max = Math.pow(10, d) - 1;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      };
-      const num1 = genByDigit(mulDigit1);
-      const num2 = genByDigit(mulDigit2);
+      let num1: number, num2: number;
+      if (digitCount === 1) {
+        // 1 xonali: 1-9 × 2-9
+        num1 = Math.floor(Math.random() * 9) + 1;
+        num2 = Math.floor(Math.random() * 8) + 2;
+      } else if (digitCount === 2) {
+        // 2 xonali: 10-99 × 2-9
+        num1 = Math.floor(Math.random() * 90) + 10;
+        num2 = Math.floor(Math.random() * 8) + 2;
+      } else if (digitCount === 3) {
+        // 3 xonali: 10-99 × 10-99
+        num1 = Math.floor(Math.random() * 90) + 10;
+        num2 = Math.floor(Math.random() * 90) + 10;
+      } else {
+        // 4 xonali: 100-999 × 2-9
+        num1 = Math.floor(Math.random() * 900) + 100;
+        num2 = Math.floor(Math.random() * 8) + 2;
+      }
       runningResultRef.current = num1 * num2;
       return { num: num1, isAdd: true, isMultiply: true, secondNum: num2 };
     }
     
-    // Bo'lish rejimi - alohida xona sozlamalari
+    // Bo'lish rejimi - digitCount ga qarab qiyinlik
     if (formulaType === 'bolish') {
-      const genByDigit = (d: number) => {
-        if (d === 1) return Math.floor(Math.random() * 9) + 1;
-        const min = Math.pow(10, d - 1);
-        const max = Math.pow(10, d) - 1;
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      };
-      // Bo'luvchi (divisor) va bo'linuvchi (dividend) ni generatsiya qilish
-      const divisor = genByDigit(divDivisorDigit);
-      // Bo'linuvchi xonasi bo'yicha natija (quotient) ni hisoblash
-      // dividend = divisor * quotient, dividend divDividendDigit xonali bo'lishi kerak
-      const divMin = Math.pow(10, divDividendDigit - 1);
-      const divMax = Math.pow(10, divDividendDigit) - 1;
-      const quotientMin = Math.max(1, Math.ceil(divMin / divisor));
-      const quotientMax = Math.floor(divMax / divisor);
-      
-      if (quotientMax < quotientMin) {
-        // Agar mos kelmaydigan kombinatsiya bo'lsa, oddiy generatsiya
-        const quotient = Math.floor(Math.random() * 9) + 1;
-        const dividend = divisor * quotient;
-        runningResultRef.current = quotient;
-        return { num: dividend, isAdd: true, isDivide: true, secondNum: divisor };
+      let divisor: number, quotient: number;
+      if (digitCount === 1) {
+        // 1 xonali: natija 1-9, bo'luvchi 2-9
+        divisor = Math.floor(Math.random() * 8) + 2;
+        quotient = Math.floor(Math.random() * 9) + 1;
+      } else if (digitCount === 2) {
+        // 2 xonali: natija 10-99, bo'luvchi 2-9
+        divisor = Math.floor(Math.random() * 8) + 2;
+        quotient = Math.floor(Math.random() * 90) + 10;
+      } else if (digitCount === 3) {
+        // 3 xonali: natija 10-99, bo'luvchi 10-99
+        divisor = Math.floor(Math.random() * 90) + 10;
+        quotient = Math.floor(Math.random() * 9) + 1;
+      } else {
+        // 4 xonali: natija 10-99, bo'luvchi 10-99
+        divisor = Math.floor(Math.random() * 90) + 10;
+        quotient = Math.floor(Math.random() * 90) + 10;
       }
-      
-      const quotient = Math.floor(Math.random() * (quotientMax - quotientMin + 1)) + quotientMin;
       const dividend = divisor * quotient;
       runningResultRef.current = quotient;
       return { num: dividend, isAdd: true, isDivide: true, secondNum: divisor };
@@ -894,7 +851,7 @@ export const NumberTrainer = () => {
 
     setIsAddition(randomOp.isAdd);
     return { num: finalNumber, isAdd: randomOp.isAdd };
-  }, [formulaType, digitCount, mulDigit1, mulDigit2, divDividendDigit, divDivisorDigit]);
+  }, [formulaType, digitCount]);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
@@ -942,40 +899,7 @@ export const NumberTrainer = () => {
 
     const maxInitial = Math.pow(10, digitCount) - 1;
     const minInitial = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
-    
-    // Formula uchun mos boshlang'ich sonni tanlash
-    // Ba'zi formulalarda ba'zi sonlar hech qanday amalga ruxsat bermaydi
-    let initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
-    
-    // Tekshirish: bu son bilan kamida bitta amal mumkinmi?
-    const testValidInitial = (num: number): boolean => {
-      const ld = num % 10;
-      const t = Math.floor(num / 10);
-      const ht = t > 0;
-      
-      if (formulaType === 'formula10plus') {
-        for (let d = 1; d <= 9; d++) {
-          if (KATTA_DOST_ADD[d]?.includes(ld)) return true;
-          if (ht && KATTA_DOST_SUB[d]?.includes(ld)) return true;
-        }
-        return false;
-      }
-      
-      if (formulaType === 'hammasi') return true; // hammasi har doim ishlaydi
-      if (formulaType === 'manfiy') return true;
-      
-      const rules = FORMULA_RULES[formulaType]?.[ld];
-      if (!rules) return false;
-      if (rules.add.length > 0) return true;
-      if (rules.subtract.some(n => num >= n)) return true;
-      return false;
-    };
-    
-    // Agar boshlang'ich son mos kelmasa, boshqa son tanlash (max 20 urinish)
-    for (let attempt = 0; attempt < 20; attempt++) {
-      if (testValidInitial(initialResult)) break;
-      initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
-    }
+    const initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
     
     runningResultRef.current = initialResult;
     countRef.current = 1;
@@ -1037,29 +961,6 @@ export const NumberTrainer = () => {
         
         if (voiceEnabled) {
           speakNumber(String(result.num), result.isAdd, false);
-        }
-      } else {
-        // Agar hech qanday amal mumkin bo'lmasa, oddiy qo'shish/ayirish bilan almashtirish
-        const currentVal = runningResultRef.current;
-        const fallbackDelta = Math.floor(Math.random() * Math.min(currentVal, 5)) + 1;
-        const fallbackIsAdd = currentVal < 5 ? true : Math.random() > 0.5;
-        const finalDelta = fallbackIsAdd ? fallbackDelta : Math.min(fallbackDelta, currentVal);
-        
-        if (fallbackIsAdd) {
-          runningResultRef.current += finalDelta;
-        } else {
-          runningResultRef.current -= finalDelta;
-        }
-        
-        const sign = fallbackIsAdd ? '+' : '−';
-        setCurrentDisplay(String(finalDelta));
-        setCurrentSign(sign);
-        setDisplayedNumbers(prev => [...prev, { num: String(finalDelta), isAdd: fallbackIsAdd }]);
-        setIsAddition(fallbackIsAdd);
-        playSound('tick');
-        
-        if (voiceEnabled) {
-          speakNumber(String(finalDelta), fallbackIsAdd, false);
         }
       }
     }, speedMs);
@@ -1251,7 +1152,7 @@ export const NumberTrainer = () => {
                 {/* Matematik amal belgisi - birinchi sonda ko'rsatilmaydi */}
                 {currentSign && (
                   <span 
-                    className={`text-[80px] sm:text-[140px] md:text-[200px] lg:text-[260px] font-bold leading-none drop-shadow-2xl ${currentSign === '+' ? 'text-white' : 'text-red-200'}`}
+                    className={`text-[150px] sm:text-[280px] md:text-[400px] lg:text-[520px] font-bold leading-none drop-shadow-2xl ${currentSign === '+' ? 'text-white' : 'text-red-200'}`}
                     style={{ 
                       fontFamily: 'system-ui, -apple-system, sans-serif',
                       filter: 'drop-shadow(0 0 30px rgba(0,0,0,0.3))'
@@ -1263,7 +1164,7 @@ export const NumberTrainer = () => {
                 
                 {/* Asosiy son - juda katta */}
                 <span 
-                  className="text-[120px] sm:text-[200px] md:text-[280px] lg:text-[360px] font-black leading-none text-white drop-shadow-2xl"
+                  className="text-[220px] sm:text-[380px] md:text-[540px] lg:text-[700px] font-black leading-none text-white drop-shadow-2xl"
                   style={{ 
                     fontFamily: 'system-ui, -apple-system, sans-serif',
                     letterSpacing: '-0.02em',
@@ -1300,23 +1201,15 @@ export const NumberTrainer = () => {
 
         {/* Asosiy kontent - pastroqda */}
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="relative max-w-sm w-full space-y-3 sm:space-y-4 animate-fade-in mx-auto">
+          <div className="relative max-w-lg w-full space-y-4 sm:space-y-5 animate-fade-in mx-auto">
             {/* Header */}
-            <div className="text-center mb-1">
-              <h2 className="text-lg sm:text-xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
-              <p className="text-muted-foreground dark:text-slate-400 text-xs mt-0.5">Javobingizni kiriting</p>
+            <div className="text-center mb-2">
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-foreground dark:text-white">Mashq tugadi!</h2>
+              <p className="text-muted-foreground dark:text-slate-400 text-xs sm:text-sm mt-1">Javobingizni kiriting</p>
             </div>
             
             {!showResult ? (
               <div className="space-y-3 sm:space-y-4 animate-fade-in">
-                {/* Ko'paytirish/Bo'lish rejimida misolni ko'rsatish */}
-                {(formulaType === 'kopaytirish' || formulaType === 'bolish') && currentDisplay && (
-                  <div className="text-center py-4 sm:py-6">
-                    <span className="text-4xl sm:text-5xl md:text-6xl font-black text-foreground dark:text-white font-mono">
-                      {currentDisplay}
-                    </span>
-                  </div>
-                )}
                 <div className="relative">
                   <Input
                     type="number"
@@ -1324,7 +1217,7 @@ export const NumberTrainer = () => {
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()}
                     placeholder="Javobni kiriting..."
-                    className="text-center text-xl sm:text-2xl h-12 sm:h-14 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
+                    className="text-center text-2xl sm:text-3xl h-16 sm:h-20 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-2 border-primary/20 dark:border-primary/30 focus:border-primary shadow-lg dark:shadow-2xl font-mono dark:text-white dark:placeholder:text-slate-500"
                     autoFocus
                   />
                 </div>
@@ -1332,7 +1225,7 @@ export const NumberTrainer = () => {
                   onClick={checkAnswer}
                   disabled={!userAnswer}
                   size="lg"
-                  className="w-full gap-2 h-10 sm:h-12 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-sm sm:text-base shadow-glow transition-all duration-300 hover:-translate-y-0.5"
+                  className="w-full gap-2 sm:gap-3 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold text-base sm:text-lg shadow-glow transition-all duration-300 hover:-translate-y-0.5"
                 >
                   <Check className="h-5 w-5 sm:h-6 sm:w-6" />
                   Tekshirish
@@ -1390,22 +1283,22 @@ export const NumberTrainer = () => {
             )}
 
             {/* Action buttons */}
-            <div className="flex gap-2 sm:gap-3 pt-1">
+            <div className="flex gap-3 sm:gap-4 pt-1">
               <Button
                 onClick={resetGame}
                 variant="outline"
-                size="default"
-                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-xs sm:text-sm"
+                size="lg"
+                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-card/80 dark:bg-slate-800/80 backdrop-blur-sm border-border/50 dark:border-slate-600 hover:bg-muted dark:hover:bg-slate-700 transition-all duration-300 text-sm sm:text-base"
               >
-                <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <RotateCcw className="h-4 w-4 sm:h-5 sm:w-5" />
                 Orqaga
               </Button>
               <Button
                 onClick={startGame}
-                size="default"
-                className="flex-1 gap-1.5 h-10 sm:h-11 rounded-xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm"
+                size="lg"
+                className="flex-1 gap-2 h-12 sm:h-14 rounded-2xl bg-gradient-to-r from-primary to-primary-glow hover:from-primary-glow hover:to-primary text-primary-foreground font-bold shadow-glow transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
               >
-                <Play className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <Play className="h-4 w-4 sm:h-5 sm:w-5" />
                 Yangi mashq
               </Button>
             </div>
@@ -1797,134 +1690,48 @@ export const NumberTrainer = () => {
                   </CardContent>
                 </Card>
 
-                {/* Son xonasi - formula turiga qarab o'zgaradi */}
-                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden h-auto flex flex-col">
+                {/* Son xonasi */}
+                <Card className="bg-card/80 dark:bg-slate-900/80 backdrop-blur-sm border-border/50 dark:border-slate-700/50 shadow-md dark:shadow-2xl overflow-hidden h-auto md:h-[280px] flex flex-col">
                   <CardHeader className="pb-2 sm:pb-3 bg-gradient-to-r from-accent/5 to-transparent dark:from-accent/10 px-3 sm:px-4 md:px-6">
                     <CardTitle className="flex items-center gap-2 text-sm sm:text-base md:text-lg">
                       <div className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 rounded-md sm:rounded-lg bg-accent/10 dark:bg-accent/20 flex items-center justify-center">
                         <span className="text-accent font-bold text-xs sm:text-sm">123</span>
                       </div>
-                      <span className="dark:text-white">
-                        {formulaType === 'kopaytirish' ? "Ko'paytirish sozlamalari" : formulaType === 'bolish' ? "Bo'lish sozlamalari" : 'Son xonasi'}
-                      </span>
+                      <span className="dark:text-white">Son xonasi</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-2 sm:pt-3 px-3 sm:px-4 md:px-6">
-                    {formulaType === 'kopaytirish' ? (
-                      <div className="space-y-4">
-                        {/* Ko'payuvchi */}
-                        <div>
-                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400 mb-2 block">Ko'payuvchi (1-chi son)</Label>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[1, 2, 3, 4, 5, 6].map((d) => (
-                              <button
-                                key={d}
-                                onClick={() => setMulDigit1(d)}
-                                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border-2
-                                  ${mulDigit1 === d
-                                    ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow'
-                                    : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 text-muted-foreground'
-                                  }`}
-                              >
-                                {d} xona
-                              </button>
-                            ))}
-                          </div>
+                    <RadioGroup
+                      value={String(digitCount)}
+                      onValueChange={(v) => setDigitCount(Number(v))}
+                      className="grid grid-cols-2 gap-1.5 sm:gap-2"
+                    >
+                      {[
+                        { value: 1, label: '1 xonali', desc: '1-9' },
+                        { value: 2, label: '2 xonali', desc: '10-99' },
+                        { value: 3, label: '3 xonali', desc: '100-999' },
+                        { value: 4, label: '4 xonali', desc: '1000-9999' },
+                      ].map((item) => (
+                        <div key={item.value} className="flex items-center">
+                          <RadioGroupItem
+                            value={String(item.value)}
+                            id={`digit-${item.value}`}
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor={`digit-${item.value}`}
+                            className={`flex flex-col w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 
+                              ${digitCount === item.value 
+                                ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow' 
+                                : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
+                              }`}
+                          >
+                            <span className="font-medium text-xs sm:text-sm">{item.label}</span>
+                            <span className="text-[10px] sm:text-xs opacity-70">{item.desc}</span>
+                          </Label>
                         </div>
-                        {/* Ko'paytuvchi */}
-                        <div>
-                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400 mb-2 block">Ko'paytuvchi (2-chi son)</Label>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[1, 2, 3, 4, 5, 6].map((d) => (
-                              <button
-                                key={d}
-                                onClick={() => setMulDigit2(d)}
-                                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border-2
-                                  ${mulDigit2 === d
-                                    ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow'
-                                    : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 text-muted-foreground'
-                                  }`}
-                              >
-                                {d} xona
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : formulaType === 'bolish' ? (
-                      <div className="space-y-4">
-                        {/* Bo'linuvchi */}
-                        <div>
-                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400 mb-2 block">Bo'linuvchi</Label>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
-                              <button
-                                key={d}
-                                onClick={() => setDivDividendDigit(d)}
-                                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border-2
-                                  ${divDividendDigit === d
-                                    ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow'
-                                    : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 text-muted-foreground'
-                                  }`}
-                              >
-                                {d} xona
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        {/* Bo'luvchi */}
-                        <div>
-                          <Label className="text-xs sm:text-sm font-medium text-muted-foreground dark:text-slate-400 mb-2 block">Bo'luvchi</Label>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[1, 2, 3, 4].map((d) => (
-                              <button
-                                key={d}
-                                onClick={() => setDivDivisorDigit(d)}
-                                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 border-2
-                                  ${divDivisorDigit === d
-                                    ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow'
-                                    : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 text-muted-foreground'
-                                  }`}
-                              >
-                                {d} xona
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <RadioGroup
-                        value={String(digitCount)}
-                        onValueChange={(v) => setDigitCount(Number(v))}
-                        className="grid grid-cols-2 gap-1.5 sm:gap-2"
-                      >
-                        {[
-                          { value: 1, label: '1 xonali', desc: '1-9' },
-                          { value: 2, label: '2 xonali', desc: '10-99' },
-                          { value: 3, label: '3 xonali', desc: '100-999' },
-                          { value: 4, label: '4 xonali', desc: '1000-9999' },
-                        ].map((item) => (
-                          <div key={item.value} className="flex items-center">
-                            <RadioGroupItem
-                              value={String(item.value)}
-                              id={`digit-${item.value}`}
-                              className="peer sr-only"
-                            />
-                            <Label
-                              htmlFor={`digit-${item.value}`}
-                              className={`flex flex-col w-full px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200 border-2 
-                                ${digitCount === item.value 
-                                  ? 'bg-accent text-accent-foreground border-accent shadow-accent-glow' 
-                                  : 'bg-muted/50 dark:bg-slate-800/50 border-transparent hover:bg-muted dark:hover:bg-slate-700 hover:border-border dark:hover:border-slate-600'
-                                }`}
-                            >
-                              <span className="font-medium text-xs sm:text-sm">{item.label}</span>
-                              <span className="text-[10px] sm:text-xs opacity-70">{item.desc}</span>
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    )}
+                      ))}
+                    </RadioGroup>
                   </CardContent>
                 </Card>
               </div>
@@ -2006,12 +1813,12 @@ export const NumberTrainer = () => {
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <Input
                           type="number"
-                          min={3}
+                          min={1}
                           max={25}
                           value={problemCount}
                           onChange={(e) => {
                             const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val) && val >= 3 && val <= 25) {
+                            if (!isNaN(val) && val >= 1 && val <= 25) {
                               setProblemCount(val);
                             }
                           }}

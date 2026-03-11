@@ -56,22 +56,25 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Dynamic responsive bead size based on actual screen width and column count
-  const getBeadSize = useCallback((cols: number): number => {
-    if (typeof window === 'undefined') return 40;
-    const screenWidth = window.innerWidth;
-    const availableWidth = screenWidth - (compact ? 80 : 120); // account for frame padding
-    const maxBeadWidth = Math.floor(availableWidth / (cols * 2.2)); // 2.2 = bead width ratio + gap
-    
-    // Device-based min/max constraints
+  // Responsive bead size — large enough to interact comfortably
+  const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      return Math.max(22, Math.min(48, maxBeadWidth));
+      if (cols <= 5) return 68;
+      if (cols <= 9) return 60;
+      if (cols <= 13) return 54;
+      return 46;
     }
     if (deviceType === 'tablet') {
-      return Math.max(28, Math.min(56, maxBeadWidth));
+      if (cols <= 5) return 82;
+      if (cols <= 9) return 74;
+      if (cols <= 13) return 66;
+      return 58;
     }
-    return Math.max(32, Math.min(72, maxBeadWidth));
-  }, [deviceType, compact]);
+    if (cols <= 5) return 108;
+    if (cols <= 9) return 96;
+    if (cols <= 13) return 86;
+    return 76;
+  };
   
   // Engine state
   const [engineState, setEngineState] = useState<AbacusState>(() =>
@@ -119,12 +122,13 @@ export const RealisticAbacus = ({
     }
   }, [playSound, customBeadSound]);
   
-  const beadSize = compact ? Math.min(28, getBeadSize(columns)) : getBeadSize(columns);
+  const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
-    const baseGap = Math.max(2, Math.floor(screenWidth / (cols * 20)));
-    return Math.min(16, Math.max(2, baseGap));
+    if (cols <= 5) return 16;
+    if (cols <= 9) return 12;
+    if (cols <= 13) return 8;
+    return 4;
   };
   
   const isVertical = orientation === 'vertical';
@@ -142,18 +146,14 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: deviceType === 'mobile' 
-            ? (compact ? '6px 4px' : '8px 6px') 
-            : deviceType === 'tablet' 
-              ? (compact ? '8px 10px' : '12px 14px')
-              : (compact ? '10px 12px' : '14px 18px'),
-          border: `${deviceType === 'mobile' ? 3 : compact ? 4 : 5}px solid #0D0704`,
-          borderRadius: deviceType === 'mobile' ? 8 : compact ? 10 : 12,
+          padding: compact ? '24px 32px' : '32px 44px',
+          border: `${compact ? 8 : 10}px solid #0D0704`,
+          borderRadius: compact ? 14 : 18,
           boxShadow: `
-            0 16px 48px -12px rgba(0,0,0,0.8),
+            0 20px 60px -15px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
             inset 0 -2px 4px rgba(0,0,0,0.3),
-            0 0 0 ${compact ? 2 : 2}px #3D2B1F
+            0 0 0 ${compact ? 2 : 3}px #3D2B1F
           `,
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
@@ -190,14 +190,8 @@ export const RealisticAbacus = ({
           className="relative flex justify-center items-center w-full"
           style={{ 
             gap: getGap(columns),
-            padding: deviceType === 'mobile' 
-              ? (compact ? '2px 2px' : '4px 4px') 
-              : (compact ? '2px 6px' : '8px 10px'),
-            minHeight: deviceType === 'mobile' 
-              ? (compact ? 160 : 200) 
-              : deviceType === 'tablet' 
-                ? (compact ? 180 : 240) 
-                : (compact ? 200 : 280),
+            padding: compact ? '8px 16px' : '32px 36px',
+            minHeight: compact ? 340 : 480,
           }}
         >
           {[...Array(columns)].map((_, i) => {

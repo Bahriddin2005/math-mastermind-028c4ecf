@@ -71,9 +71,9 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     id: 'pro',
-    name: 'Bolajon PRO',
+    name: 'Pro',
     description: "Faol o'rganuvchilar uchun",
-    monthlyPrice: 29900,
+    monthlyPrice: 29000,
     yearlyPrice: 249000,
     icon: Zap,
     color: 'bg-gradient-to-br from-blue-500 to-blue-600 text-white',
@@ -90,9 +90,9 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     id: 'premium',
-    name: 'Bolajon PRO',
+    name: 'Premium',
     description: 'Professional darajaga yetish uchun',
-    monthlyPrice: 99900,
+    monthlyPrice: 49000,
     yearlyPrice: 399000,
     icon: Crown,
     color: 'bg-gradient-to-br from-amber-500 to-orange-600 text-white',

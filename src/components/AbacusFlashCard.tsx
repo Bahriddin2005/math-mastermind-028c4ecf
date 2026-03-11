@@ -234,8 +234,8 @@ export const AbacusFlashCard = ({ onComplete }: AbacusFlashCardProps) => {
     }
   }, [digitLevel]);
   
-  const timerIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const displayIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const displayIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const runningResultRef = useRef(0);
 

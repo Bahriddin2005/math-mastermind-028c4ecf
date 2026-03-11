@@ -1080,9 +1080,7 @@ export type Database = {
           finished_at: string | null
           formula_type: string
           host_id: string
-          host_username: string | null
           id: string
-          is_public: boolean
           problem_count: number
           room_code: string
           speed: number
@@ -1096,9 +1094,7 @@ export type Database = {
           finished_at?: string | null
           formula_type?: string
           host_id: string
-          host_username?: string | null
           id?: string
-          is_public?: boolean
           problem_count?: number
           room_code: string
           speed?: number
@@ -1112,9 +1108,7 @@ export type Database = {
           finished_at?: string | null
           formula_type?: string
           host_id?: string
-          host_username?: string | null
           id?: string
-          is_public?: boolean
           problem_count?: number
           room_code?: string
           speed?: number
@@ -2286,13 +2280,6 @@ export type Database = {
           total_problems_solved: number
           total_users: number
           weekly_growth: number
-        }[]
-      }
-      get_user_total_score: {
-        Args: { p_user_id: string }
-        Returns: {
-          total_problems: number
-          total_score: number
         }[]
       }
       has_role: {

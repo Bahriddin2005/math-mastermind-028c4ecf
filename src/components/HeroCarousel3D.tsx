@@ -125,7 +125,7 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
       icon: GraduationCap,
       text: "O'qituvchilar paneli",
       bgColor: 'bg-amber-500 text-white',
-      extraBadge: undefined
+      extraBadge: 'Beta'
     },
     title:
     <>
@@ -259,9 +259,9 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
                       </div>
                   }
                     <div className="relative">
-                      <span className={`relative inline-flex items-center gap-2 xs:gap-2.5 sm:gap-3 px-5 xs:px-6 sm:px-8 py-2.5 xs:py-3 sm:py-3.5 ${slide.badge.bgColor} rounded-full text-sm xs:text-base sm:text-lg font-black shadow-2xl border-2 border-white/30 ring-2 ring-white/20`}>
-                        <slide.badge.icon className="h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6" />
-                        <span className="tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]">{slide.badge.text}</span>
+                      <span className={`relative inline-flex items-center gap-1.5 xs:gap-2 sm:gap-2.5 px-3 xs:px-4 sm:px-5 py-1.5 xs:py-2 sm:py-2.5 ${slide.badge.bgColor} rounded-full text-[11px] xs:text-xs sm:text-sm font-black shadow-2xl border border-white/20`}>
+                        <slide.badge.icon className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-5 sm:w-5" />
+                        <span className="tracking-wide">{slide.badge.text}</span>
                       </span>
                     </div>
                     {slide.badge.extraBadge &&
@@ -335,10 +335,36 @@ export const HeroCarousel3D = ({ totalUsers }: HeroCarousel3DProps) => {
           )}
         </CarouselContent>
         
-        {/* Navigation Arrows - Always visible */}
-        <CarouselPrevious className="flex left-1 sm:left-2 md:left-3 bg-black/30 border-white/20 text-white hover:bg-black/50 active:scale-90 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
-        <CarouselNext className="flex right-1 sm:right-2 md:right-3 bg-black/30 border-white/20 text-white hover:bg-black/50 active:scale-90 h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
+        {/* Navigation Arrows - Hidden on mobile */}
+        <CarouselPrevious className="hidden sm:flex left-2 md:left-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
+        <CarouselNext className="hidden sm:flex right-2 md:right-3 bg-white/20 border-white/30 text-white hover:bg-white/40 active:scale-90 sm:h-10 sm:w-10 md:h-12 md:w-12 shadow-xl" />
       </Carousel>
+
+      {/* Dot Indicators - Simplified */}
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

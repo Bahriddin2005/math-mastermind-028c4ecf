@@ -48,50 +48,8 @@ const RULES_FORMULASIZ: Record<number, { add: number[]; subtract: number[] }> = 
 };
 
 // ============= KICHIK DO'ST (FORMULA 5) QOIDALARI =============
-// +4/-4: Javobga 4 qo'shish yoki 4 ayirish (5 orqali: +5-1 yoki -5+1)
+// +4/-4: 4+1=5 yoki 5-1=4 formulasi
 const RULES_KICHIK_DOST_1: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [4], subtract: [] },
-  2: { add: [4], subtract: [] },
-  3: { add: [4], subtract: [] },
-  4: { add: [4], subtract: [] },
-  5: { add: [], subtract: [4] },
-  6: { add: [], subtract: [4] },
-  7: { add: [], subtract: [4] },
-  8: { add: [], subtract: [4] },
-  9: { add: [], subtract: [] },
-};
-
-// +3/-3: Javobga 3 qo'shish yoki 3 ayirish (5 orqali: +5-2 yoki -5+2)
-const RULES_KICHIK_DOST_2: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [3], subtract: [] },
-  3: { add: [3], subtract: [] },
-  4: { add: [3], subtract: [] },
-  5: { add: [], subtract: [3] },
-  6: { add: [], subtract: [3] },
-  7: { add: [], subtract: [3] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// +2/-2: Javobga 2 qo'shish yoki 2 ayirish (5 orqali: +5-3 yoki -5+3)
-const RULES_KICHIK_DOST_3: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [], subtract: [] },
-  3: { add: [2], subtract: [] },
-  4: { add: [2], subtract: [] },
-  5: { add: [], subtract: [2] },
-  6: { add: [], subtract: [2] },
-  7: { add: [], subtract: [] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// +1/-1: Javobga 1 qo'shish yoki 1 ayirish (5 orqali: +5-4 yoki -5+4)
-const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [] },
   1: { add: [], subtract: [] },
   2: { add: [], subtract: [] },
@@ -100,6 +58,48 @@ const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }>
   5: { add: [], subtract: [1] },
   6: { add: [], subtract: [] },
   7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// +3/-3: 3+2=5 yoki 5-2=3 formulasi
+const RULES_KICHIK_DOST_2: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [], subtract: [] },
+  3: { add: [2], subtract: [] },
+  4: { add: [], subtract: [] },
+  5: { add: [], subtract: [2] },
+  6: { add: [], subtract: [] },
+  7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// +2/-2: 2+3=5 yoki 5-3=2 formulasi
+const RULES_KICHIK_DOST_3: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [3], subtract: [] },
+  3: { add: [], subtract: [] },
+  4: { add: [], subtract: [] },
+  5: { add: [], subtract: [] },
+  6: { add: [], subtract: [3] },
+  7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// +1/-1: 1+4=5 yoki 5-4=1 formulasi
+const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [4], subtract: [] },
+  2: { add: [], subtract: [] },
+  3: { add: [], subtract: [] },
+  4: { add: [], subtract: [] },
+  5: { add: [], subtract: [] },
+  6: { add: [], subtract: [] },
+  7: { add: [], subtract: [4] },
   8: { add: [], subtract: [] },
   9: { add: [], subtract: [] },
 };
@@ -127,12 +127,12 @@ const getBigFriendRules_9 = (tens: number, ones: number): { canAdd: boolean; can
     case 1: return { canAdd: true, canSubtract: hasHigherTens };           // x1: qo'sh ✅, ayir X>0
     case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
     case 3: return { canAdd: true, canSubtract: hasHigherTens };           // x3: qo'sh ✅, ayir X>0
-    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅ (carry), ayir ❌
+    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
     case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
     case 6: return { canAdd: true, canSubtract: hasHigherTens };           // x6: qo'sh ✅, ayir X>0
     case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
     case 8: return { canAdd: true, canSubtract: hasHigherTens };           // x8: qo'sh ✅, ayir X>0
-    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅ (carry), ayir ❌
+    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
@@ -147,13 +147,13 @@ const getBigFriendRules_8 = (tens: number, ones: number): { canAdd: boolean; can
     case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
     case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
     case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
-    case 3: return { canAdd: true, canSubtract: false };                   // x3: qo'sh ✅ (carry), ayir ❌
-    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅ (carry), ayir ❌
+    case 3: return { canAdd: hasHigherTens, canSubtract: false };          // x3: qo'sh X>0, ayir ❌
+    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
     case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
     case 6: return { canAdd: false, canSubtract: hasHigherTens };          // x6: qo'sh ❌, ayir X>0
     case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
-    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅ (carry), ayir ❌
-    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅ (carry), ayir ❌
+    case 8: return { canAdd: hasHigherTens, canSubtract: false };          // x8: qo'sh X>0, ayir ❌
+    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };

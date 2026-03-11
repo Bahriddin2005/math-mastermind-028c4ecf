@@ -68,21 +68,8 @@ export const NotificationSettings = () => {
         <CardContent className="space-y-4">
           {!isSupported ? (
             <p className="text-sm text-muted-foreground">
-              Brauzeringiz bildirishnomalarni qo'llab-quvvatlamaydi. Boshqa brauzer yoki qurilmadan foydalaning.
+              Brauzeringiz bildirishnomalarni qo'llab-quvvatlamaydi
             </p>
-          ) : permission === 'denied' ? (
-            <div className="space-y-3">
-              <p className="text-sm text-destructive font-medium">
-                Bildirishnomalar brauzer tomonidan bloklangan
-              </p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Qayta yoqish uchun: Brauzer sozlamalari → Sayt sozlamalari → Bildirishnomalar → IQROMAX saytini "Ruxsat berish" ga o'zgartiring
-              </p>
-              <Button onClick={requestPermission} variant="outline" className="w-full gap-2">
-                <BellRing className="w-4 h-4" />
-                Qayta urinish
-              </Button>
-            </div>
           ) : permission !== 'granted' ? (
             <Button onClick={requestPermission} className="w-full gap-2">
               <BellRing className="w-4 h-4" />

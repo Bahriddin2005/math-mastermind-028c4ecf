@@ -105,7 +105,7 @@ export const TournamentMode = ({ onBack }: TournamentModeProps) => {
   
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
   // Load profile

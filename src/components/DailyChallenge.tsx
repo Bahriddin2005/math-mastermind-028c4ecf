@@ -131,8 +131,8 @@ export const DailyChallenge = () => {
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
   const seedRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
   // Profilni yuklash

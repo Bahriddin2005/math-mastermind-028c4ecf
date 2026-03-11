@@ -1,4 +1,3 @@
-import React, { forwardRef } from 'react';
 import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 
 interface LogoProps {
@@ -6,7 +5,7 @@ interface LogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', size = 'md' }, ref) => {
+export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
   const sizes = {
     xs: 'h-7 w-24 sm:h-8 sm:w-28',
     sm: 'h-8 w-28 sm:h-9 sm:w-32',
@@ -16,7 +15,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', siz
   };
 
   return (
-    <div ref={ref} className="inline-flex items-center justify-center">
+    <div className="inline-flex items-center justify-center">
       <img 
         src={iqromaxLogo} 
         alt="IQROMAX - Mental Matematika" 
@@ -30,6 +29,4 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', siz
       />
     </div>
   );
-});
-
-Logo.displayName = 'Logo';
+};

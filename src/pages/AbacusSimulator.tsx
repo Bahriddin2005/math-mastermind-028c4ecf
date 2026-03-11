@@ -28,8 +28,9 @@ const AbacusSimulator = () => {
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
   const [showSoundPicker, setShowSoundPicker] = useState(false);
+  // Selected sounds for beads
   const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
-  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('beadHigh');
+  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
@@ -179,8 +180,132 @@ const AbacusSimulator = () => {
             transition={{ delay: 0.1 }}
             className="mb-6"
           >
+            <Card className="border-primary/20 mb-4">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Palette className="w-4 h-4 text-primary" />
+                  Rang sxemasi
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+            <AbacusColorSchemeSelector
+              selectedScheme={colorScheme}
+              onSelect={setColorScheme}
+            />
+              </CardContent>
+            </Card>
           </motion.div>
 
+          {/* Sound selector */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="flex-1"
+          >
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Music className="w-4 h-4 text-primary" />
+                    Tovushlar
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={soundEnabled ? "default" : "outline"}
+                      size="sm"
+                      onClick={toggleSound}
+                      className="gap-1.5"
+                    >
+                      {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                      {soundEnabled ? "Yoniq" : "O'chiq"}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Upper bead sound selector */}
+                  <div>
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full bg-emerald-500" />
+                      Yuqori tosh (5 qiymat) tovushi:
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {allSoundTypes.map(({ type, label }) => (
+                        <motion.button
+                          key={`upper-${type}`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setUpperBeadSound(type);
+                            soundEnabled && playSound(type);
+                          }}
+                          disabled={!soundEnabled}
+                          className={cn(
+                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
+                            upperBeadSound === type 
+                              ? "border-emerald-500 bg-emerald-500/10" 
+                              : "border-border/50",
+                            soundEnabled 
+                              ? "hover:border-emerald-500/50 cursor-pointer" 
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {upperBeadSound === type && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                          <span className="text-lg">{label.split(' ')[0]}</span>
+                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Lower bead sound selector */}
+                  <div>
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full bg-orange-500" />
+                      Pastki toshlar (1 qiymat) tovushi:
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                      {allSoundTypes.map(({ type, label }) => (
+                        <motion.button
+                          key={`lower-${type}`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setLowerBeadSound(type);
+                            soundEnabled && playSound(type);
+                          }}
+                          disabled={!soundEnabled}
+                          className={cn(
+                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
+                            lowerBeadSound === type 
+                              ? "border-orange-500 bg-orange-500/10" 
+                              : "border-border/50",
+                            soundEnabled 
+                              ? "hover:border-orange-500/50 cursor-pointer" 
+                              : "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {lowerBeadSound === type && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
+                          <span className="text-lg">{label.split(' ')[0]}</span>
+                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Continue button */}
           <motion.div
@@ -275,7 +400,7 @@ const AbacusSimulator = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-2 sm:px-4 py-3 sm:py-6 pb-24 space-y-3 sm:space-y-6">
+      <main className="container mx-auto px-4 py-6 pb-24 space-y-6">
         {/* Rejim tanlash */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -445,25 +570,72 @@ const AbacusSimulator = () => {
           
           {/* Abakus komponenti */}
           <div className={cn(
-            "flex justify-center items-center w-full overflow-x-auto",
-            "py-2 sm:py-4 lg:py-6",
+            "flex justify-center items-center py-6 w-full max-w-[100vw]",
             orientation === 'vertical' && "min-h-[400px]"
           )}>
-            <div className="w-full max-w-full px-0 sm:px-2">
-              <RealisticAbacus
-                columns={columns}
-                value={value}
-                onChange={setValue}
-                mode={mode}
-                showValue={false}
-                orientation={orientation}
-                colorScheme={colorScheme}
-                onBeadSound={handleBeadSound}
-              />
-            </div>
+            <RealisticAbacus
+              columns={columns}
+              value={value}
+              onChange={setValue}
+              mode={mode}
+              showValue={mode !== 'mental'}
+              orientation={orientation}
+              colorScheme={colorScheme}
+              onBeadSound={handleBeadSound}
+            />
           </div>
         </motion.div>
 
+        {/* Qo'llanma */}
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="pt-4">
+            <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+              <span className="text-lg">💡</span>
+              Soroban Abakus Qoidalari
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
+              <div className="space-y-1.5">
+                <p className="font-medium text-foreground">Toshlar harakati:</p>
+                <ul className="space-y-1">
+                  <li>• <strong>Drag</strong> - toshni yuqoriga/pastga suring</li>
+                  <li>• <strong>Tap/Click</strong> - toshni almashtirish</li>
+                  <li>• Tosh avtomatik joyiga tushadi (snap)</li>
+                </ul>
+              </div>
+              <div className="space-y-1.5">
+                <p className="font-medium text-foreground">Qiymatlar:</p>
+                <ul className="space-y-1">
+                  <li>• <span className="text-emerald-500 font-bold">Yashil tosh</span> (yuqori) = 5 qiymat</li>
+                  <li>• <span className="text-orange-500 font-bold">Rangli toshlar</span> (pastki) = 1 qiymat</li>
+                  <li>• Faqat chiziqqa tegib turgan tosh aktiv</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Amaliyotga o'tish */}
+        <Card className="bg-gradient-to-r from-accent/20 to-primary/20 border-primary/30">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold flex items-center gap-2">
+                  <span className="text-xl">🎯</span>
+                  Abakus bilan mashq qiling!
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Interaktiv misollar bilan o'rganing
+                </p>
+              </div>
+              <Link to="/abacus-practice">
+                <Button className="bg-primary hover:bg-primary/90 gap-2">
+                  Boshlash
+                  <span className="text-lg">→</span>
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
     </>

@@ -95,7 +95,7 @@ const AbacusPractice = () => {
   });
   const [problemStartTime, setProblemStartTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Timer
   useEffect(() => {
