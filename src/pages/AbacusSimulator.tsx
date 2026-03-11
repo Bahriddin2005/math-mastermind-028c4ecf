@@ -28,9 +28,8 @@ const AbacusSimulator = () => {
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
   const [showSoundPicker, setShowSoundPicker] = useState(false);
-  // Selected sounds for beads
   const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
-  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
+  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('beadHigh');
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
