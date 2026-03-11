@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+// Realistic wooden abacus bead sounds v2
 
 type SoundType = 'correct' | 'incorrect' | 'tick' | 'complete' | 'start' | 'bead' | 'beadHigh' | 'countdown' | 'levelUp' | 'combo' | 'winner' | 'pop' | 'whoosh' | 'sparkle' | 'bounce';
 
