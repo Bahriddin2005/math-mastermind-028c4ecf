@@ -28,9 +28,8 @@ const AbacusSimulator = () => {
   const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
   const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
   const [showSoundPicker, setShowSoundPicker] = useState(false);
-  // Selected sounds for beads
   const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
-  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
+  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('beadHigh');
   const { soundEnabled, toggleSound, playSound } = useSound();
   const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
@@ -182,116 +181,6 @@ const AbacusSimulator = () => {
           >
           </motion.div>
 
-          {/* Sound selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="flex-1"
-          >
-            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Music className="w-4 h-4 text-primary" />
-                    Tovushlar
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={soundEnabled ? "default" : "outline"}
-                      size="sm"
-                      onClick={toggleSound}
-                      className="gap-1.5"
-                    >
-                      {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                      {soundEnabled ? "Yoniq" : "O'chiq"}
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Upper bead sound selector */}
-                  <div>
-                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-emerald-500" />
-                      Yuqori tosh (5 qiymat) tovushi:
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {allSoundTypes.map(({ type, label }) => (
-                        <motion.button
-                          key={`upper-${type}`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setUpperBeadSound(type);
-                            soundEnabled && playSound(type);
-                          }}
-                          disabled={!soundEnabled}
-                          className={cn(
-                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
-                            upperBeadSound === type 
-                              ? "border-emerald-500 bg-emerald-500/10" 
-                              : "border-border/50",
-                            soundEnabled 
-                              ? "hover:border-emerald-500/50 cursor-pointer" 
-                              : "opacity-50 cursor-not-allowed"
-                          )}
-                        >
-                          {upperBeadSound === type && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                          <span className="text-lg">{label.split(' ')[0]}</span>
-                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Lower bead sound selector */}
-                  <div>
-                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-500" />
-                      Pastki toshlar (1 qiymat) tovushi:
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {allSoundTypes.map(({ type, label }) => (
-                        <motion.button
-                          key={`lower-${type}`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setLowerBeadSound(type);
-                            soundEnabled && playSound(type);
-                          }}
-                          disabled={!soundEnabled}
-                          className={cn(
-                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
-                            lowerBeadSound === type 
-                              ? "border-orange-500 bg-orange-500/10" 
-                              : "border-border/50",
-                            soundEnabled 
-                              ? "hover:border-orange-500/50 cursor-pointer" 
-                              : "opacity-50 cursor-not-allowed"
-                          )}
-                        >
-                          {lowerBeadSound === type && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                          <span className="text-lg">{label.split(' ')[0]}</span>
-                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
 
           {/* Continue button */}
           <motion.div
