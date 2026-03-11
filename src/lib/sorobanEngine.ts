@@ -127,12 +127,12 @@ const getBigFriendRules_9 = (tens: number, ones: number): { canAdd: boolean; can
     case 1: return { canAdd: true, canSubtract: hasHigherTens };           // x1: qo'sh ✅, ayir X>0
     case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
     case 3: return { canAdd: true, canSubtract: hasHigherTens };           // x3: qo'sh ✅, ayir X>0
-    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
+    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅ (carry), ayir ❌
     case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
     case 6: return { canAdd: true, canSubtract: hasHigherTens };           // x6: qo'sh ✅, ayir X>0
     case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
     case 8: return { canAdd: true, canSubtract: hasHigherTens };           // x8: qo'sh ✅, ayir X>0
-    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅ (carry), ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
@@ -147,13 +147,13 @@ const getBigFriendRules_8 = (tens: number, ones: number): { canAdd: boolean; can
     case 0: return { canAdd: false, canSubtract: hasHigherTens };          // x0: qo'sh ❌, ayir X>0
     case 1: return { canAdd: false, canSubtract: hasHigherTens };          // x1: qo'sh ❌, ayir X>0
     case 2: return { canAdd: true, canSubtract: hasHigherTens };           // x2: qo'sh ✅, ayir X>0
-    case 3: return { canAdd: hasHigherTens, canSubtract: false };          // x3: qo'sh X>0, ayir ❌
-    case 4: return { canAdd: hasHigherTens, canSubtract: false };          // x4: qo'sh X>0, ayir ❌
+    case 3: return { canAdd: true, canSubtract: false };                   // x3: qo'sh ✅ (carry), ayir ❌
+    case 4: return { canAdd: true, canSubtract: false };                   // x4: qo'sh ✅ (carry), ayir ❌
     case 5: return { canAdd: false, canSubtract: hasHigherTens };          // x5: qo'sh ❌, ayir X>0
     case 6: return { canAdd: false, canSubtract: hasHigherTens };          // x6: qo'sh ❌, ayir X>0
     case 7: return { canAdd: true, canSubtract: hasHigherTens };           // x7: qo'sh ✅, ayir X>0
-    case 8: return { canAdd: hasHigherTens, canSubtract: false };          // x8: qo'sh X>0, ayir ❌
-    case 9: return { canAdd: hasHigherTens, canSubtract: false };          // x9: qo'sh X>0, ayir ❌
+    case 8: return { canAdd: true, canSubtract: false };                   // x8: qo'sh ✅ (carry), ayir ❌
+    case 9: return { canAdd: true, canSubtract: false };                   // x9: qo'sh ✅ (carry), ayir ❌
     default: return { canAdd: false, canSubtract: false };
   }
 };
