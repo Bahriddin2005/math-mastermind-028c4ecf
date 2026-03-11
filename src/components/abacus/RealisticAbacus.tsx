@@ -58,19 +58,18 @@ export const RealisticAbacus = ({
   
   // Dynamic responsive bead size based on actual screen width and column count
   const getBeadSize = useCallback((cols: number): number => {
-    if (typeof window === 'undefined') return 40;
+    if (typeof window === 'undefined') return 28;
     const screenWidth = window.innerWidth;
-    const availableWidth = screenWidth - (compact ? 80 : 120); // account for frame padding
-    const maxBeadWidth = Math.floor(availableWidth / (cols * 2.2)); // 2.2 = bead width ratio + gap
+    const availableWidth = screenWidth - (compact ? 60 : 80);
+    const maxBeadWidth = Math.floor(availableWidth / (cols * 2.2));
     
-    // Device-based min/max constraints
     if (deviceType === 'mobile') {
-      return Math.max(22, Math.min(48, maxBeadWidth));
+      return Math.max(14, Math.min(28, maxBeadWidth));
     }
     if (deviceType === 'tablet') {
-      return Math.max(28, Math.min(56, maxBeadWidth));
+      return Math.max(18, Math.min(36, maxBeadWidth));
     }
-    return Math.max(32, Math.min(72, maxBeadWidth));
+    return Math.max(22, Math.min(48, maxBeadWidth));
   }, [deviceType, compact]);
   
   // Engine state
