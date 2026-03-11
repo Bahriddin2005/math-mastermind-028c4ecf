@@ -143,12 +143,12 @@ export const RealisticAbacus = ({
         style={{
           background: frameBackground,
           padding: deviceType === 'mobile' 
-            ? (compact ? '10px 8px' : '14px 12px') 
+            ? (compact ? '6px 4px' : '8px 6px') 
             : deviceType === 'tablet' 
-              ? (compact ? '14px 16px' : '20px 24px')
-              : (compact ? '16px 20px' : '24px 32px'),
-          border: `${deviceType === 'mobile' ? 4 : compact ? 6 : 8}px solid #0D0704`,
-          borderRadius: deviceType === 'mobile' ? 10 : compact ? 12 : 14,
+              ? (compact ? '8px 10px' : '12px 14px')
+              : (compact ? '10px 12px' : '14px 18px'),
+          border: `${deviceType === 'mobile' ? 3 : compact ? 4 : 5}px solid #0D0704`,
+          borderRadius: deviceType === 'mobile' ? 8 : compact ? 10 : 12,
           boxShadow: `
             0 16px 48px -12px rgba(0,0,0,0.8),
             inset 0 2px 4px rgba(255,255,255,0.03),
@@ -191,13 +191,13 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: deviceType === 'mobile' 
-              ? (compact ? '2px 4px' : '8px 8px') 
-              : (compact ? '4px 10px' : '20px 24px'),
+              ? (compact ? '2px 2px' : '4px 4px') 
+              : (compact ? '2px 6px' : '8px 10px'),
             minHeight: deviceType === 'mobile' 
-              ? (compact ? 200 : 260) 
+              ? (compact ? 160 : 200) 
               : deviceType === 'tablet' 
-                ? (compact ? 240 : 320) 
-                : (compact ? 280 : 380),
+                ? (compact ? 180 : 240) 
+                : (compact ? 200 : 280),
           }}
         >
           {[...Array(columns)].map((_, i) => {
