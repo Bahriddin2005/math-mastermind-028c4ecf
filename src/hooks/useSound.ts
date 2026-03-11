@@ -289,7 +289,7 @@ export const useSound = () => {
     } catch (e) {
       console.log('Sound not available');
     }
-  }, [soundEnabled, playiOSBeadSound]);
+  }, [soundEnabled, playRealisticBeadSound]);
 
   return { soundEnabled, toggleSound, playSound };
 };
