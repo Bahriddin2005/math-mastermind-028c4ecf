@@ -48,8 +48,50 @@ const RULES_FORMULASIZ: Record<number, { add: number[]; subtract: number[] }> = 
 };
 
 // ============= KICHIK DO'ST (FORMULA 5) QOIDALARI =============
-// +4/-4: 4+1=5 yoki 5-1=4 formulasi
+// +4/-4: Javobga 4 qo'shish yoki 4 ayirish (5 orqali: +5-1 yoki -5+1)
 const RULES_KICHIK_DOST_1: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [4], subtract: [] },
+  2: { add: [4], subtract: [] },
+  3: { add: [4], subtract: [] },
+  4: { add: [4], subtract: [] },
+  5: { add: [], subtract: [4] },
+  6: { add: [], subtract: [4] },
+  7: { add: [], subtract: [4] },
+  8: { add: [], subtract: [4] },
+  9: { add: [], subtract: [] },
+};
+
+// +3/-3: Javobga 3 qo'shish yoki 3 ayirish (5 orqali: +5-2 yoki -5+2)
+const RULES_KICHIK_DOST_2: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [3], subtract: [] },
+  3: { add: [3], subtract: [] },
+  4: { add: [3], subtract: [] },
+  5: { add: [], subtract: [3] },
+  6: { add: [], subtract: [3] },
+  7: { add: [], subtract: [3] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// +2/-2: Javobga 2 qo'shish yoki 2 ayirish (5 orqali: +5-3 yoki -5+3)
+const RULES_KICHIK_DOST_3: Record<number, { add: number[]; subtract: number[] }> = {
+  0: { add: [], subtract: [] },
+  1: { add: [], subtract: [] },
+  2: { add: [], subtract: [] },
+  3: { add: [2], subtract: [] },
+  4: { add: [2], subtract: [] },
+  5: { add: [], subtract: [2] },
+  6: { add: [], subtract: [2] },
+  7: { add: [], subtract: [] },
+  8: { add: [], subtract: [] },
+  9: { add: [], subtract: [] },
+};
+
+// +1/-1: Javobga 1 qo'shish yoki 1 ayirish (5 orqali: +5-4 yoki -5+4)
+const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }> = {
   0: { add: [], subtract: [] },
   1: { add: [], subtract: [] },
   2: { add: [], subtract: [] },
@@ -58,48 +100,6 @@ const RULES_KICHIK_DOST_1: Record<number, { add: number[]; subtract: number[] }>
   5: { add: [], subtract: [1] },
   6: { add: [], subtract: [] },
   7: { add: [], subtract: [] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// +3/-3: 3+2=5 yoki 5-2=3 formulasi
-const RULES_KICHIK_DOST_2: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [], subtract: [] },
-  3: { add: [2], subtract: [] },
-  4: { add: [], subtract: [] },
-  5: { add: [], subtract: [2] },
-  6: { add: [], subtract: [] },
-  7: { add: [], subtract: [] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// +2/-2: 2+3=5 yoki 5-3=2 formulasi
-const RULES_KICHIK_DOST_3: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [], subtract: [] },
-  2: { add: [3], subtract: [] },
-  3: { add: [], subtract: [] },
-  4: { add: [], subtract: [] },
-  5: { add: [], subtract: [] },
-  6: { add: [], subtract: [3] },
-  7: { add: [], subtract: [] },
-  8: { add: [], subtract: [] },
-  9: { add: [], subtract: [] },
-};
-
-// +1/-1: 1+4=5 yoki 5-4=1 formulasi
-const RULES_KICHIK_DOST_4: Record<number, { add: number[]; subtract: number[] }> = {
-  0: { add: [], subtract: [] },
-  1: { add: [4], subtract: [] },
-  2: { add: [], subtract: [] },
-  3: { add: [], subtract: [] },
-  4: { add: [], subtract: [] },
-  5: { add: [], subtract: [] },
-  6: { add: [], subtract: [] },
-  7: { add: [], subtract: [4] },
   8: { add: [], subtract: [] },
   9: { add: [], subtract: [] },
 };
