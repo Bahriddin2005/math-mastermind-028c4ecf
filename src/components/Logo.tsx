@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import iqromaxLogo from '@/assets/iqromax-logo-full.png';
 
 interface LogoProps {
@@ -5,7 +6,7 @@ interface LogoProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export const Logo = ({ className = '', size = 'md' }: LogoProps) => {
+export const Logo = forwardRef<HTMLDivElement, LogoProps>(({ className = '', size = 'md' }, ref) => {
   const sizes = {
     xs: 'h-7 w-24 sm:h-8 sm:w-28',
     sm: 'h-8 w-28 sm:h-9 sm:w-32',
