@@ -31,92 +31,145 @@ export const useSound = () => {
   const playRealisticBeadSound = useCallback((ctx: AudioContext, isUpper: boolean) => {
     const now = ctx.currentTime;
 
+    // Slight random variation for natural feel
+    const pitchVar = 1 + (Math.random() - 0.5) * 0.06;
+    const volVar = 0.9 + Math.random() * 0.2;
+
+    // Master chain with warm compression
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(1.8, now);
+    masterGain.gain.setValueAtTime(1.4 * volVar, now);
     const compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-12, now);
-    compressor.knee.setValueAtTime(4, now);
-    compressor.ratio.setValueAtTime(4, now);
+    compressor.threshold.setValueAtTime(-15, now);
+    compressor.knee.setValueAtTime(6, now);
+    compressor.ratio.setValueAtTime(3, now);
     compressor.attack.setValueAtTime(0.001, now);
-    compressor.release.setValueAtTime(0.05, now);
+    compressor.release.setValueAtTime(0.08, now);
     masterGain.connect(compressor);
     compressor.connect(ctx.destination);
 
-    // Realistic wood-on-wood bead clack
-    const baseFreq = isUpper ? 2800 : 1800;
-
-    // === Layer 1: Sharp wood impact (very short sine burst) ===
+    // === Layer 1: Initial wood impact crack ===
+    const baseFreq = (isUpper ? 2200 : 1400) * pitchVar;
     const osc1 = ctx.createOscillator();
     const gain1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(baseFreq, now);
-    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.4, now + 0.04);
-    gain1.gain.setValueAtTime(0.6, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.35, now + 0.035);
+    gain1.gain.setValueAtTime(0.5, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
     osc1.connect(gain1);
     gain1.connect(masterGain);
     osc1.start(now);
-    osc1.stop(now + 0.07);
+    osc1.stop(now + 0.06);
 
-    // === Layer 2: Wood resonance body (lower tone, short decay) ===
+    // === Layer 2: Warm wood body resonance ===
+    const bodyFreq = (isUpper ? 380 : 280) * pitchVar;
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(isUpper ? 420 : 320, now);
-    osc2.frequency.exponentialRampToValueAtTime(isUpper ? 350 : 260, now + 0.08);
-    gain2.gain.setValueAtTime(0.3, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(bodyFreq, now);
+    osc2.frequency.exponentialRampToValueAtTime(bodyFreq * 0.8, now + 0.12);
+    gain2.gain.setValueAtTime(0.25, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
     osc2.connect(gain2);
     gain2.connect(masterGain);
     osc2.start(now);
-    osc2.stop(now + 0.12);
+    osc2.stop(now + 0.16);
 
-    // === Layer 3: Click transient (filtered noise burst) ===
-    const bufferSize = Math.floor(ctx.sampleRate * 0.008);
+    // === Layer 3: Rich click transient (shaped noise) ===
+    const bufferSize = Math.floor(ctx.sampleRate * 0.012);
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const noiseData = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
-      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 8);
+      const env = Math.pow(1 - i / bufferSize, 6);
+      noiseData[i] = (Math.random() * 2 - 1) * env;
     }
     const noiseSource = ctx.createBufferSource();
     noiseSource.buffer = noiseBuffer;
+    // Bandpass for woody character
     const noiseFilter = ctx.createBiquadFilter();
     noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.setValueAtTime(isUpper ? 5500 : 3500, now);
-    noiseFilter.Q.setValueAtTime(1.5, now);
+    noiseFilter.frequency.setValueAtTime(isUpper ? 4800 : 3200, now);
+    noiseFilter.Q.setValueAtTime(1.2, now);
+    // Highshelf to add brightness / air
+    const airShelf = ctx.createBiquadFilter();
+    airShelf.type = 'highshelf';
+    airShelf.frequency.setValueAtTime(6000, now);
+    airShelf.gain.setValueAtTime(3, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.55, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
+    noiseGain.gain.setValueAtTime(0.4, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
     noiseSource.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
+    noiseFilter.connect(airShelf);
+    airShelf.connect(noiseGain);
     noiseGain.connect(masterGain);
     noiseSource.start(now);
 
-    // === Layer 4: Rod vibration (metallic ring from bead hitting rod) ===
+    // === Layer 4: Rod metallic ping (bamboo/metal rod vibration) ===
+    const rodFreq = (isUpper ? 3600 : 2600) * pitchVar;
     const osc3 = ctx.createOscillator();
     const gain3 = ctx.createGain();
     osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(isUpper ? 3200 : 2400, now);
-    gain3.gain.setValueAtTime(0.08, now);
-    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc3.frequency.setValueAtTime(rodFreq, now);
+    osc3.frequency.exponentialRampToValueAtTime(rodFreq * 0.92, now + 0.2);
+    gain3.gain.setValueAtTime(0.06, now);
+    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
     osc3.connect(gain3);
     gain3.connect(masterGain);
     osc3.start(now);
-    osc3.stop(now + 0.16);
+    osc3.stop(now + 0.24);
 
-    // === Layer 5: Subtle room echo ===
+    // === Layer 5: Sub-thump (felt through the desk) ===
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(isUpper ? 160 : 120, now);
+    subOsc.frequency.exponentialRampToValueAtTime(60, now + 0.04);
+    subGain.gain.setValueAtTime(0.15, now);
+    subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    subOsc.connect(subGain);
+    subGain.connect(masterGain);
+    subOsc.start(now);
+    subOsc.stop(now + 0.07);
+
+    // === Layer 6: Second harmonic shimmer ===
+    const shimOsc = ctx.createOscillator();
+    const shimGain = ctx.createGain();
+    shimOsc.type = 'sine';
+    shimOsc.frequency.setValueAtTime((isUpper ? 5200 : 4000) * pitchVar, now);
+    shimGain.gain.setValueAtTime(0.03, now);
+    shimGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    shimOsc.connect(shimGain);
+    shimGain.connect(masterGain);
+    shimOsc.start(now);
+    shimOsc.stop(now + 0.09);
+
+    // === Layer 7: Room ambience (short convolution-style delay) ===
     const delay1 = ctx.createDelay(0.1);
-    delay1.delayTime.setValueAtTime(0.025, now);
+    delay1.delayTime.setValueAtTime(0.018, now);
     const dGain1 = ctx.createGain();
-    dGain1.gain.setValueAtTime(0.06, now);
-    dGain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    dGain1.gain.setValueAtTime(0.05, now);
+    dGain1.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
     const dFilter1 = ctx.createBiquadFilter();
     dFilter1.type = 'lowpass';
-    dFilter1.frequency.setValueAtTime(1500, now);
+    dFilter1.frequency.setValueAtTime(2000, now);
     masterGain.connect(delay1);
     delay1.connect(dFilter1);
     dFilter1.connect(dGain1);
     dGain1.connect(ctx.destination);
+
+    // Second reflection
+    const delay2 = ctx.createDelay(0.15);
+    delay2.delayTime.setValueAtTime(0.042, now);
+    const dGain2 = ctx.createGain();
+    dGain2.gain.setValueAtTime(0.025, now);
+    dGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    const dFilter2 = ctx.createBiquadFilter();
+    dFilter2.type = 'lowpass';
+    dFilter2.frequency.setValueAtTime(1200, now);
+    masterGain.connect(delay2);
+    delay2.connect(dFilter2);
+    dFilter2.connect(dGain2);
+    dGain2.connect(ctx.destination);
   }, []);
 
   const playSound = useCallback((type: SoundType) => {
