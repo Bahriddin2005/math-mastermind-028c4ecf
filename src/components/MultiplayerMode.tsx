@@ -108,8 +108,8 @@ export const MultiplayerMode = ({ onBack }: MultiplayerModeProps) => {
   const [chatOpen, setChatOpen] = useState(false);
   const runningResultRef = useRef(0);
   const countRef = useRef(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number>(0);
 
   // Profilni yuklash

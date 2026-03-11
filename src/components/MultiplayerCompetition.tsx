@@ -76,7 +76,7 @@ export const MultiplayerCompetition = () => {
   
   const runningResultRef = useRef(0);
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Xona yaratish
   const createRoom = useCallback(async () => {
