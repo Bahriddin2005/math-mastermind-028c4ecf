@@ -126,54 +126,6 @@ const AbacusSimulator = () => {
           <AbacusModeSelector mode={mode} onChange={setMode} />
         </motion.div>
 
-        {/* Tovushlar paneli */}
-        <AnimatePresence>
-          {showSoundPicker && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Music className="w-4 h-4 text-primary" />
-                      Tovushlar
-                    </CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={playAllSounds}
-                      disabled={playingAllSounds}
-                      className={cn("gap-1.5", playingAllSounds && "animate-pulse")}
-                    >
-                      <Play className="w-3 h-3" />
-                      {playingAllSounds ? "Ijro..." : "Hammasini"}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                    {allSoundTypes.map(({ type, label, desc }) => (
-                      <motion.button
-                        key={type}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => playSound(type)}
-                        className="flex flex-col items-center gap-1 p-3 rounded-xl bg-background/80 border border-border/50 hover:border-primary/50 hover:bg-primary/10 transition-all"
-                      >
-                        <span className="text-xl">{label.split(' ')[0]}</span>
-                        <span className="text-xs font-medium">{label.split(' ')[1]}</span>
-                        <span className="text-[10px] text-muted-foreground hidden sm:block">{desc}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Sozlamalar paneli */}
         {showSettings && (
