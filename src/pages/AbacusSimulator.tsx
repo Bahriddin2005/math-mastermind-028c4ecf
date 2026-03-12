@@ -54,15 +54,6 @@ const AbacusSimulator = () => {
     'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
   ];
 
-            >
-              Davom etish
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </motion.div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <>
