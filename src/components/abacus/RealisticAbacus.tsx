@@ -49,27 +49,27 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Bead sizes
+  // Bead sizes — larger for comfortable interaction
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 3) return 72;
-      if (cols <= 5) return 60;
-      if (cols <= 7) return 50;
-      if (cols <= 10) return 42;
-      return 36;
+      if (cols <= 3) return 88;
+      if (cols <= 5) return 72;
+      if (cols <= 7) return 60;
+      if (cols <= 10) return 50;
+      return 42;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 3) return 86;
-      if (cols <= 5) return 74;
-      if (cols <= 7) return 64;
-      if (cols <= 10) return 56;
-      return 48;
+      if (cols <= 3) return 100;
+      if (cols <= 5) return 86;
+      if (cols <= 7) return 74;
+      if (cols <= 10) return 64;
+      return 54;
     }
-    if (cols <= 3) return 104;
-    if (cols <= 5) return 90;
-    if (cols <= 7) return 78;
-    if (cols <= 10) return 68;
-    return 58;
+    if (cols <= 3) return 120;
+    if (cols <= 5) return 104;
+    if (cols <= 7) return 90;
+    if (cols <= 10) return 78;
+    return 66;
   };
   
   const [engineState, setEngineState] = useState<AbacusState>(() =>
