@@ -177,20 +177,6 @@ const AbacusSimulator = () => {
             transition={{ delay: 0.1 }}
             className="mb-6"
           >
-            <Card className="border-primary/20 mb-4">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-primary" />
-                  Rang sxemasi
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-            <AbacusColorSchemeSelector
-              selectedScheme={colorScheme}
-              onSelect={setColorScheme}
-            />
-              </CardContent>
-            </Card>
           </motion.div>
 
           {/* Sound selector */}
