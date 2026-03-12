@@ -33,21 +33,6 @@ const AbacusSimulator = () => {
     }
   }, [soundEnabled, playSound]);
 
-  const playAllSounds = useCallback(() => {
-    if (playingAllSounds) return;
-    setPlayingAllSounds(true);
-    
-    allSoundTypes.forEach(({ type }, index) => {
-      setTimeout(() => {
-        playSound(type);
-      }, index * 400);
-    });
-    
-    // Reset state after all sounds played
-    setTimeout(() => {
-      setPlayingAllSounds(false);
-    }, allSoundTypes.length * 400 + 500);
-  }, [playSound, playingAllSounds]);
 
   const handleReset = useCallback(() => {
     setValue(0);
