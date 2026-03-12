@@ -30,117 +30,147 @@ export const useSound = () => {
   const playiOSBeadSound = useCallback((ctx: AudioContext, isUpper: boolean) => {
     const now = ctx.currentTime;
 
+    // Subtle random variation for each click — feels alive
+    const pitchVar = 1 + (Math.random() - 0.5) * 0.06;
+    const volVar = 0.9 + Math.random() * 0.2;
+
     const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(2.8, now);
+    masterGain.gain.setValueAtTime(1.8 * volVar, now);
+
+    // Gentle compressor for polish
     const compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.setValueAtTime(-15, now);
-    compressor.knee.setValueAtTime(6, now);
-    compressor.ratio.setValueAtTime(3, now);
+    compressor.threshold.setValueAtTime(-18, now);
+    compressor.knee.setValueAtTime(8, now);
+    compressor.ratio.setValueAtTime(4, now);
     compressor.attack.setValueAtTime(0.001, now);
-    compressor.release.setValueAtTime(0.04, now);
+    compressor.release.setValueAtTime(0.06, now);
     masterGain.connect(compressor);
     compressor.connect(ctx.destination);
 
-    // iOS Marimba — warm wooden mallet strike
-    const baseFreq = isUpper ? 1318.5 : 523.25; // E6 / C5
+    // ── Warm wood tone palette ──
+    const baseFreq = isUpper
+      ? (880 + Math.random() * 60) * pitchVar   // A5 area — bright clack
+      : (440 + Math.random() * 40) * pitchVar;  // A4 area — deep clack
 
-    // === Layer 1: Marimba fundamental ===
+    // Layer 1: Fundamental — warm sine body
     const osc1 = ctx.createOscillator();
-    const gain1 = ctx.createGain();
+    const g1 = ctx.createGain();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(baseFreq, now);
-    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.98, now + 0.3);
-    gain1.gain.setValueAtTime(0.5, now);
-    gain1.gain.setValueAtTime(0.45, now + 0.01);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-    osc1.connect(gain1);
-    gain1.connect(masterGain);
+    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.92, now + 0.18);
+    g1.gain.setValueAtTime(0.42, now);
+    g1.gain.setValueAtTime(0.38, now + 0.008);
+    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+    osc1.connect(g1);
+    g1.connect(masterGain);
     osc1.start(now);
-    osc1.stop(now + 0.35);
+    osc1.stop(now + 0.25);
 
-    // === Layer 2: Octave harmonic ===
+    // Layer 2: 3rd harmonic — wood character
     const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
+    const g2 = ctx.createGain();
     osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(baseFreq * 2, now);
-    gain2.gain.setValueAtTime(0.2, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    osc2.connect(gain2);
-    gain2.connect(masterGain);
+    osc2.frequency.setValueAtTime(baseFreq * 3, now);
+    osc2.frequency.exponentialRampToValueAtTime(baseFreq * 2.7, now + 0.08);
+    g2.gain.setValueAtTime(0.12, now);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+    osc2.connect(g2);
+    g2.connect(masterGain);
     osc2.start(now);
-    osc2.stop(now + 0.2);
+    osc2.stop(now + 0.1);
 
-    // === Layer 3: 4th harmonic (brightness) ===
+    // Layer 3: 5th harmonic — sparkle
     const osc3 = ctx.createOscillator();
-    const gain3 = ctx.createGain();
+    const g3 = ctx.createGain();
     osc3.type = 'sine';
-    osc3.frequency.setValueAtTime(baseFreq * 4, now);
-    gain3.gain.setValueAtTime(0.08, now);
-    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-    osc3.connect(gain3);
-    gain3.connect(masterGain);
+    osc3.frequency.setValueAtTime(baseFreq * 5.04, now);
+    g3.gain.setValueAtTime(0.04, now);
+    g3.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+    osc3.connect(g3);
+    g3.connect(masterGain);
     osc3.start(now);
-    osc3.stop(now + 0.1);
+    osc3.stop(now + 0.05);
 
-    // === Layer 4: Mallet strike noise ===
-    const bufferSize = Math.floor(ctx.sampleRate * 0.012);
-    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      noiseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 6);
+    // Layer 4: Sub-resonance — body warmth
+    const oscSub = ctx.createOscillator();
+    const gSub = ctx.createGain();
+    oscSub.type = 'sine';
+    oscSub.frequency.setValueAtTime(baseFreq * 0.5, now);
+    gSub.gain.setValueAtTime(0.18, now);
+    gSub.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    oscSub.connect(gSub);
+    gSub.connect(masterGain);
+    oscSub.start(now);
+    oscSub.stop(now + 0.18);
+
+    // Layer 5: Transient click — crisp attack
+    const clickLen = Math.floor(ctx.sampleRate * 0.006);
+    const clickBuf = ctx.createBuffer(1, clickLen, ctx.sampleRate);
+    const clickData = clickBuf.getChannelData(0);
+    for (let i = 0; i < clickLen; i++) {
+      const env = Math.pow(1 - i / clickLen, 10);
+      clickData[i] = (Math.random() * 2 - 1) * env;
     }
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = noiseBuffer;
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.setValueAtTime(isUpper ? 6000 : 4000, now);
-    noiseFilter.Q.setValueAtTime(0.8, now);
+    const clickSrc = ctx.createBufferSource();
+    clickSrc.buffer = clickBuf;
+    const clickFilter = ctx.createBiquadFilter();
+    clickFilter.type = 'bandpass';
+    clickFilter.frequency.setValueAtTime(isUpper ? 5500 : 3800, now);
+    clickFilter.Q.setValueAtTime(1.2, now);
+    const clickGain = ctx.createGain();
+    clickGain.gain.setValueAtTime(0.5, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.008);
+    clickSrc.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(masterGain);
+    clickSrc.start(now);
+
+    // Layer 6: Shaped noise burst — wood texture
+    const noiseLen = Math.floor(ctx.sampleRate * 0.02);
+    const noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+    const noiseData = noiseBuf.getChannelData(0);
+    for (let i = 0; i < noiseLen; i++) {
+      const env = Math.exp(-i / (noiseLen * 0.15));
+      noiseData[i] = (Math.random() * 2 - 1) * env * 0.6;
+    }
+    const noiseSrc = ctx.createBufferSource();
+    noiseSrc.buffer = noiseBuf;
+    const noiseHP = ctx.createBiquadFilter();
+    noiseHP.type = 'highpass';
+    noiseHP.frequency.setValueAtTime(800, now);
+    const noiseLP = ctx.createBiquadFilter();
+    noiseLP.type = 'lowpass';
+    noiseLP.frequency.setValueAtTime(isUpper ? 8000 : 5000, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.35, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.012);
-    noiseSource.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
+    noiseGain.gain.setValueAtTime(0.22, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+    noiseSrc.connect(noiseHP);
+    noiseHP.connect(noiseLP);
+    noiseLP.connect(noiseGain);
     noiseGain.connect(masterGain);
-    noiseSource.start(now);
+    noiseSrc.start(now);
 
-    // === Layer 5: Sub-resonance (warm body) ===
-    const osc4 = ctx.createOscillator();
-    const gain4 = ctx.createGain();
-    osc4.type = 'sine';
-    osc4.frequency.setValueAtTime(baseFreq / 2, now);
-    gain4.gain.setValueAtTime(0.15, now);
-    gain4.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc4.connect(gain4);
-    gain4.connect(masterGain);
-    osc4.start(now);
-    osc4.stop(now + 0.25);
-
-    // === Layer 6: Reverb delays ===
-    const delay1 = ctx.createDelay(0.15);
-    delay1.delayTime.setValueAtTime(0.04, now);
-    const dGain1 = ctx.createGain();
-    dGain1.gain.setValueAtTime(0.1, now);
-    dGain1.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-    const dFilter1 = ctx.createBiquadFilter();
-    dFilter1.type = 'lowpass';
-    dFilter1.frequency.setValueAtTime(2000, now);
-    masterGain.connect(delay1);
-    delay1.connect(dFilter1);
-    dFilter1.connect(dGain1);
-    dGain1.connect(ctx.destination);
-
-    const delay2 = ctx.createDelay(0.2);
-    delay2.delayTime.setValueAtTime(0.085, now);
-    const dGain2 = ctx.createGain();
-    dGain2.gain.setValueAtTime(0.04, now);
-    dGain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-    const dFilter2 = ctx.createBiquadFilter();
-    dFilter2.type = 'lowpass';
-    dFilter2.frequency.setValueAtTime(1200, now);
-    masterGain.connect(delay2);
-    delay2.connect(dFilter2);
-    dFilter2.connect(dGain2);
-    dGain2.connect(ctx.destination);
+    // Layer 7: Micro-reverb — sense of space
+    const reverbLen = Math.floor(ctx.sampleRate * 0.3);
+    const reverbBuf = ctx.createBuffer(2, reverbLen, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = reverbBuf.getChannelData(ch);
+      for (let i = 0; i < reverbLen; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (reverbLen * 0.12));
+      }
+    }
+    const convolver = ctx.createConvolver();
+    convolver.buffer = reverbBuf;
+    const reverbGain = ctx.createGain();
+    reverbGain.gain.setValueAtTime(0.06, now);
+    reverbGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    const reverbLP = ctx.createBiquadFilter();
+    reverbLP.type = 'lowpass';
+    reverbLP.frequency.setValueAtTime(2500, now);
+    masterGain.connect(convolver);
+    convolver.connect(reverbLP);
+    reverbLP.connect(reverbGain);
+    reverbGain.connect(ctx.destination);
   }, []);
 
   const playSound = useCallback((type: SoundType) => {
