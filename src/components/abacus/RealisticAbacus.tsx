@@ -59,21 +59,24 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 5) return 52;
-      if (cols <= 9) return 44;
-      if (cols <= 13) return 38;
-      return 32;
+      if (cols <= 3) return 52;
+      if (cols <= 5) return 46;
+      if (cols <= 7) return 38;
+      if (cols <= 10) return 32;
+      return 26;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 5) return 64;
-      if (cols <= 9) return 56;
-      if (cols <= 13) return 50;
-      return 42;
+      if (cols <= 3) return 64;
+      if (cols <= 5) return 56;
+      if (cols <= 7) return 48;
+      if (cols <= 10) return 42;
+      return 36;
     }
-    if (cols <= 5) return 82;
-    if (cols <= 9) return 72;
-    if (cols <= 13) return 64;
-    return 56;
+    if (cols <= 3) return 82;
+    if (cols <= 5) return 72;
+    if (cols <= 7) return 62;
+    if (cols <= 10) return 54;
+    return 46;
   };
   
   // Engine state
@@ -125,9 +128,10 @@ export const RealisticAbacus = ({
   const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
-    if (cols <= 5) return 16;
-    if (cols <= 9) return 12;
-    if (cols <= 13) return 8;
+    if (cols <= 3) return 20;
+    if (cols <= 5) return 14;
+    if (cols <= 7) return 10;
+    if (cols <= 10) return 6;
     return 4;
   };
   
@@ -151,10 +155,10 @@ export const RealisticAbacus = ({
     )}>
       {/* === OUTER FRAME — thick dark wooden frame === */}
       <motion.div 
-        className="relative overflow-hidden"
+        className="relative overflow-visible"
         style={{
-          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 32 : 1200),
-          maxWidth: '100%',
+          width: frameWidth,
+          maxWidth: 'calc(100vw - 24px)',
           background: frameBackground,
           padding: compact ? '16px 20px' : '20px 28px',
           border: `${compact ? 8 : 10}px solid #0D0704`,
