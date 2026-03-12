@@ -24,38 +24,14 @@ const AbacusSimulator = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const colorScheme = 'classic' as const;
-  const [showSetupScreen, setShowSetupScreen] = useState(true);
-  const [showSoundPicker, setShowSoundPicker] = useState(false);
-  // Selected sounds for beads
-  const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
-  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
   const { soundEnabled, toggleSound, playSound } = useSound();
-  const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
-  const allSoundTypes = [
-    { type: 'pop' as BeadSoundType, label: '🫧 Pop', desc: 'Surish boshi' },
-    { type: 'bead' as BeadSoundType, label: '🎹 Bead', desc: 'Pastki tosh' },
-    { type: 'beadHigh' as BeadSoundType, label: '🔔 Bell', desc: 'Yuqori tosh' },
-    { type: 'tick' as BeadSoundType, label: '⏱️ Tick', desc: 'Taymer' },
-    { type: 'correct' as BeadSoundType, label: '✅ To\'g\'ri', desc: 'To\'g\'ri javob' },
-    { type: 'incorrect' as BeadSoundType, label: '❌ Xato', desc: 'Noto\'g\'ri javob' },
-    { type: 'start' as BeadSoundType, label: '🚀 Start', desc: 'O\'yin boshi' },
-    { type: 'countdown' as BeadSoundType, label: '⏰ Countdown', desc: 'Ortga sanash' },
-    { type: 'combo' as BeadSoundType, label: '🔥 Combo', desc: 'Ketma-ket' },
-    { type: 'levelUp' as BeadSoundType, label: '⬆️ Level Up', desc: 'Daraja oshdi' },
-    { type: 'complete' as BeadSoundType, label: '🎉 Complete', desc: 'Yakunlash' },
-    { type: 'winner' as BeadSoundType, label: '🏆 G\'olib', desc: 'G\'alaba' },
-    { type: 'whoosh' as BeadSoundType, label: '💨 Whoosh', desc: 'Tez harakat' },
-    { type: 'sparkle' as BeadSoundType, label: '✨ Sparkle', desc: 'Sehrli' },
-    { type: 'bounce' as BeadSoundType, label: '🏀 Bounce', desc: 'Sakrash' },
-  ];
-
-  // Handle bead sound in simulator based on selected sounds
-  const handleBeadSound = useCallback((isUpper: boolean) => {
+  // Always use tick sound for all beads
+  const handleBeadSound = useCallback(() => {
     if (soundEnabled) {
-      playSound(isUpper ? upperBeadSound : lowerBeadSound);
+      playSound('tick');
     }
-  }, [soundEnabled, playSound, upperBeadSound, lowerBeadSound]);
+  }, [soundEnabled, playSound]);
 
   const playAllSounds = useCallback(() => {
     if (playingAllSounds) return;
