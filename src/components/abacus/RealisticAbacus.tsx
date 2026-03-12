@@ -146,7 +146,7 @@ export const RealisticAbacus = ({
         className="relative overflow-hidden w-full"
         style={{
           background: frameBackground,
-          padding: compact ? '24px 32px' : '32px 44px',
+          padding: compact ? '16px 20px' : '20px 28px',
           border: `${compact ? 8 : 10}px solid #0D0704`,
           borderRadius: compact ? 14 : 18,
           boxShadow: `
