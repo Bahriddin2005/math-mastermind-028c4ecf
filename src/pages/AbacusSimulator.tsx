@@ -255,33 +255,6 @@ const AbacusSimulator = () => {
           </div>
         </motion.div>
 
-        {/* Qo'llanma */}
-        <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="pt-4">
-            <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
-              <span className="text-lg">💡</span>
-              Soroban Abakus Qoidalari
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-3 text-sm text-muted-foreground">
-              <div className="space-y-1.5">
-                <p className="font-medium text-foreground">Toshlar harakati:</p>
-                <ul className="space-y-1">
-                  <li>• <strong>Drag</strong> - toshni yuqoriga/pastga suring</li>
-                  <li>• <strong>Tap/Click</strong> - toshni almashtirish</li>
-                  <li>• Tosh avtomatik joyiga tushadi (snap)</li>
-                </ul>
-              </div>
-              <div className="space-y-1.5">
-                <p className="font-medium text-foreground">Qiymatlar:</p>
-                <ul className="space-y-1">
-                  <li>• <span className="text-emerald-500 font-bold">Yashil tosh</span> (yuqori) = 5 qiymat</li>
-                  <li>• <span className="text-orange-500 font-bold">Rangli toshlar</span> (pastki) = 1 qiymat</li>
-                  <li>• Faqat chiziqqa tegib turgan tosh aktiv</li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Amaliyotga o'tish */}
         <Card className="bg-gradient-to-r from-accent/20 to-primary/20 border-primary/30">
