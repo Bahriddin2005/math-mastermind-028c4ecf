@@ -255,29 +255,6 @@ const AbacusSimulator = () => {
           </div>
         </motion.div>
 
-
-        {/* Amaliyotga o'tish */}
-        <Card className="bg-gradient-to-r from-accent/20 to-primary/20 border-primary/30">
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-bold flex items-center gap-2">
-                  <span className="text-xl">🎯</span>
-                  Abakus bilan mashq qiling!
-                </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Interaktiv misollar bilan o'rganing
-                </p>
-              </div>
-              <Link to="/abacus-practice">
-                <Button className="bg-primary hover:bg-primary/90 gap-2">
-                  Boshlash
-                  <span className="text-lg">→</span>
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
     </>
