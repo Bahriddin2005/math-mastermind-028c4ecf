@@ -1,6 +1,6 @@
 import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, Palette, ArrowRight, Sparkles, Music, Play, Check } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, ArrowRight, Sparkles, Music, Play, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,10 +8,8 @@ import {
   RealisticAbacus, 
   AbacusModeSelector,
   FullscreenAbacus,
-  AbacusColorSchemeSelector,
   type AbacusMode,
   type AbacusOrientation,
-  type AbacusColorScheme,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
@@ -25,8 +23,8 @@ const AbacusSimulator = () => {
   const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
-  const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
+  const colorScheme = 'classic' as const;
+  const [showSetupScreen, setShowSetupScreen] = useState(true);
   const [showSoundPicker, setShowSoundPicker] = useState(false);
   // Selected sounds for beads
   const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
@@ -96,7 +94,7 @@ const AbacusSimulator = () => {
   ];
 
   // If showing color picker, render the color selection screen
-  if (showColorPicker) {
+  if (showSetupScreen) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background flex flex-col overflow-y-auto">
         {/* Header */}
@@ -173,28 +171,6 @@ const AbacusSimulator = () => {
             </Card>
           </motion.div>
 
-          {/* Color scheme selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6"
-          >
-            <Card className="border-primary/20 mb-4">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Palette className="w-4 h-4 text-primary" />
-                  Rang sxemasi
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-            <AbacusColorSchemeSelector
-              selectedScheme={colorScheme}
-              onSelect={setColorScheme}
-            />
-              </CardContent>
-            </Card>
-          </motion.div>
 
           {/* Sound selector */}
           <motion.div
@@ -317,7 +293,7 @@ const AbacusSimulator = () => {
             <Button
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-              onClick={() => setShowColorPicker(false)}
+              onClick={() => setShowSetupScreen(false)}
             >
               Davom etish
               <ArrowRight className="w-5 h-5" />
