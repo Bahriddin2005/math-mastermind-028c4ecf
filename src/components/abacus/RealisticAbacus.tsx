@@ -136,15 +136,25 @@ export const RealisticAbacus = ({
   // Frame colors — dark wood matching reference
   const frameBackground = colorPalette.frame || 'linear-gradient(145deg, #1A0F08 0%, #2C1D12 20%, #1A0F08 50%, #0D0704 100%)';
   
+  // Calculate frame width based on columns + bead size + gaps
+  const gap = getGap(columns);
+  const framePaddingX = compact ? 20 + 12 : 28 + 20; // outer + inner padding each side
+  const borderWidth = compact ? 8 : 10;
+  const extraFrame = compact ? 2 : 3; // outer ring
+  const totalColumnWidth = columns * beadSize + (columns - 1) * gap;
+  const frameWidth = totalColumnWidth + (framePaddingX + borderWidth + extraFrame) * 2;
+  
   return (
     <div className={cn(
-      "flex items-center w-full",
-      isVertical ? "flex-row justify-center overflow-y-auto" : "flex-col overflow-x-auto px-2 sm:px-4 lg:px-6"
+      "flex items-center justify-center w-full",
+      isVertical ? "flex-row overflow-y-auto" : "flex-col overflow-x-auto px-2 sm:px-4 lg:px-6"
     )}>
       {/* === OUTER FRAME — thick dark wooden frame === */}
       <motion.div 
-        className="relative overflow-hidden w-full"
+        className="relative overflow-hidden"
         style={{
+          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 32 : 1200),
+          maxWidth: '100%',
           background: frameBackground,
           padding: compact ? '16px 20px' : '20px 28px',
           border: `${compact ? 8 : 10}px solid #0D0704`,
