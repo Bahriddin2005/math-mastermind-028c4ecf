@@ -8,10 +8,8 @@ import {
   RealisticAbacus, 
   AbacusModeSelector,
   FullscreenAbacus,
-  AbacusColorSchemeSelector,
   type AbacusMode,
   type AbacusOrientation,
-  type AbacusColorScheme,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
