@@ -155,10 +155,10 @@ export const RealisticAbacus = ({
     )}>
       {/* === OUTER FRAME — thick dark wooden frame === */}
       <motion.div 
-        className="relative overflow-hidden"
+        className="relative overflow-visible"
         style={{
-          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 32 : 1200),
-          maxWidth: '100%',
+          width: frameWidth,
+          maxWidth: 'calc(100vw - 24px)',
           background: frameBackground,
           padding: compact ? '16px 20px' : '20px 28px',
           border: `${compact ? 8 : 10}px solid #0D0704`,
