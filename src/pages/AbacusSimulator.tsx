@@ -1,63 +1,96 @@
-import { useState, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2 } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, RotateCcw, Calculator, Volume2, VolumeX, Maximize2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   RealisticAbacus, 
-  AbacusModeSelector,
   FullscreenAbacus,
   type AbacusMode,
-  type AbacusOrientation,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
 import { cn } from '@/lib/utils';
 
-export type BeadSoundType = 'pop' | 'bead' | 'beadHigh' | 'tick' | 'correct' | 'incorrect' | 'start' | 'countdown' | 'combo' | 'levelUp' | 'complete' | 'winner' | 'whoosh' | 'sparkle' | 'bounce';
+const COLUMN_OPTIONS = [3, 5, 7, 10] as const;
 
 const AbacusSimulator = () => {
-  const [columns, setColumns] = useState(10);
+  const [columns, setColumns] = useState<number | null>(null);
   const [value, setValue] = useState(0);
-  const [mode, setMode] = useState<AbacusMode>('beginner');
-  const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
-  const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const colorScheme = 'classic' as const;
+  const mode: AbacusMode = 'beginner';
   const { soundEnabled, toggleSound, playSound } = useSound();
 
-  // Always use tick sound for all beads
   const handleBeadSound = useCallback(() => {
     if (soundEnabled) {
       playSound('tick');
     }
   }, [soundEnabled, playSound]);
 
-
   const handleReset = useCallback(() => {
     setValue(0);
   }, []);
 
-  // Min: 3, Max: 17 ustun
-  const adjustColumns = useCallback((delta: number) => {
-    const newColumns = Math.max(3, Math.min(17, columns + delta));
-    setColumns(newColumns);
-    // Qiymatni yangi ustunlar soniga moslashtirish
-    const maxValue = Math.pow(10, newColumns) - 1;
-    setValue(prev => Math.min(prev, maxValue));
-  }, [columns]);
+  const handleBack = useCallback(() => {
+    setColumns(null);
+    setValue(0);
+  }, []);
 
-  // Kengaytirilgan ustun nomlari (17 tagacha)
-  const columnLabels = [
-    'Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik", "Yuz minglik",
-    'Million', "O'n mln", "Yuz mln", 'Milliard', "O'n mlrd", "Yuz mlrd",
-    'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
-  ];
+  // Column selection screen
+  if (columns === null) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background flex flex-col">
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm font-medium hidden sm:inline">Orqaga</span>
+            </Link>
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-primary" />
+              Abakus Simulator
+            </h1>
+            <div className="w-9" />
+          </div>
+        </header>
 
+        <main className="flex-1 flex items-center justify-center px-4 py-12">
+          <motion.div 
+            className="w-full max-w-md space-y-8 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-foreground">Nechta ustun kerak?</h2>
+              <p className="text-sm text-muted-foreground">Abakus ustunlar sonini tanlang</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {COLUMN_OPTIONS.map((col) => (
+                <motion.button
+                  key={col}
+                  onClick={() => setColumns(col)}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-border/50 bg-card p-6",
+                    "hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer",
+                    "shadow-sm hover:shadow-md"
+                  )}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <span className="text-4xl font-bold text-primary">{col}</span>
+                  <span className="text-xs text-muted-foreground font-medium">ustun</span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Fullscreen Abacus Modal */}
       <FullscreenAbacus
         isOpen={isFullscreen}
         onClose={() => setIsFullscreen(false)}
@@ -69,163 +102,32 @@ const AbacusSimulator = () => {
       />
 
       <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium hidden sm:inline">Orqaga</span>
-          </Link>
-          
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <Calculator className="w-5 h-5 text-primary" />
-            <span className="hidden sm:inline">Abakus Simulator</span>
-            <span className="sm:hidden">Abakus</span>
-          </h1>
-          
-          <div className="flex items-center gap-1">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={toggleSound}
-              className="w-9 h-9 p-0"
-            >
-              {soundEnabled ? (
-                <Volume2 className="w-4 h-4" />
-              ) : (
-                <VolumeX className="w-4 h-4" />
-              )}
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowSettings(!showSettings)}
-              className={cn("w-9 h-9 p-0", showSettings && "bg-primary/10")}
-            >
-              <Settings2 className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleReset} 
-              className="gap-1"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span className="hidden sm:inline">Reset</span>
-            </Button>
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
+          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+            <button onClick={handleBack} className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+              <span className="text-sm font-medium hidden sm:inline">Orqaga</span>
+            </button>
+            
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-primary" />
+              <span>{columns} ustunli Abakus</span>
+            </h1>
+            
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="sm" onClick={toggleSound} className="w-9 h-9 p-0">
+                {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleReset} className="gap-1">
+                <RotateCcw className="w-4 h-4" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="container mx-auto px-4 py-6 pb-24 space-y-6">
-        {/* Rejim tanlash */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <AbacusModeSelector mode={mode} onChange={setMode} />
-        </motion.div>
-
-
-        {/* Sozlamalar paneli */}
-        {showSettings && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <Card className="border-primary/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Settings2 className="w-4 h-4" />
-                  Sozlamalar
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Ustunlar soni */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Ustunlar soni:</span>
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => adjustColumns(-1)}
-                      disabled={columns <= 3}
-                      className="w-8 h-8 p-0"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="w-10 text-center font-bold text-lg">{columns}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => adjustColumns(1)}
-                      disabled={columns >= 17}
-                      className="w-8 h-8 p-0"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Yo'nalish tanlash */}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Yo'nalish:</span>
-                  <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                    <Button
-                      variant={orientation === 'horizontal' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setOrientation('horizontal')}
-                      className="h-8 px-3 gap-1.5"
-                    >
-                      <Monitor className="w-4 h-4" />
-                      <span className="hidden sm:inline text-xs">Gorizontal</span>
-                    </Button>
-                    <Button
-                      variant={orientation === 'vertical' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setOrientation('vertical')}
-                      className="h-8 px-3 gap-1.5"
-                    >
-                      <Smartphone className="w-4 h-4" />
-                      <span className="hidden sm:inline text-xs">Vertikal</span>
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Ustunlar nomlari */}
-                <div className="flex flex-wrap justify-center gap-2">
-                  {Array.from({ length: columns }).reverse().map((_, i) => {
-                    const colIndex = columns - 1 - i;
-                    return (
-                      <span 
-                        key={colIndex}
-                        className={cn(
-                          "text-xs px-2 py-1 rounded-full",
-                          colIndex === 0 
-                            ? "bg-primary/20 text-primary" 
-                            : "bg-muted text-muted-foreground"
-                        )}
-                      >
-                        {columnLabels[colIndex]}
-                      </span>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Abakus */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="relative"
-        >
-          {/* Fullscreen tugmasi */}
-          <div className="flex justify-center gap-2 mb-3">
+        <main className="container mx-auto px-2 py-4 pb-24 space-y-4">
+          <div className="flex justify-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -237,26 +139,21 @@ const AbacusSimulator = () => {
             </Button>
           </div>
           
-          {/* Abakus komponenti */}
-          <div className={cn(
-            "flex justify-center items-center py-6 w-full max-w-[100vw]",
-            orientation === 'vertical' && "min-h-[400px]"
-          )}>
+          <div className="flex justify-center items-center py-2 w-full max-w-[100vw]">
             <RealisticAbacus
               columns={columns}
               value={value}
               onChange={setValue}
               mode={mode}
-              showValue={mode !== 'mental'}
-              orientation={orientation}
+              compact
+              showValue={false}
+              orientation="horizontal"
               colorScheme={colorScheme}
               onBeadSound={handleBeadSound}
             />
           </div>
-        </motion.div>
-
-      </main>
-    </div>
+        </main>
+      </div>
     </>
   );
 };
