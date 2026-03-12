@@ -94,7 +94,7 @@ const AbacusSimulator = () => {
   ];
 
   // If showing color picker, render the color selection screen
-  if (showColorPicker) {
+  if (showSetupScreen) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background flex flex-col overflow-y-auto">
         {/* Header */}
