@@ -218,38 +218,6 @@ export const RealisticAbacus = ({
         </div>
       </motion.div>
       
-      {/* Value display */}
-      {showValue && (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentState.value}
-            initial={{ scale: 0.8, opacity: 0, y: -15 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 15 }}
-            transition={{ duration: 0.25, type: 'spring' }}
-            className="mt-3 sm:mt-4"
-          >
-            <div 
-              className="px-5 sm:px-7 py-2 sm:py-2.5 rounded-xl"
-              style={{
-                background: 'linear-gradient(135deg, #2C1D12, #1A0F08)',
-                border: '2px solid #3D2B1F',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-              }}
-            >
-              <span 
-                className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wider"
-                style={{
-                  color: '#F5E6D3',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                }}
-              >
-                {currentState.value.toLocaleString()}
-              </span>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      )}
     </div>
   );
 };
