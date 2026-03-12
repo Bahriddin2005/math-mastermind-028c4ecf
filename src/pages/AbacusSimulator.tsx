@@ -301,7 +301,7 @@ const AbacusSimulator = () => {
             <Button
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-              onClick={() => setShowColorPicker(false)}
+              onClick={() => setShowSetupScreen(false)}
             >
               Davom etish
               <ArrowRight className="w-5 h-5" />
