@@ -1,6 +1,6 @@
 import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2, ArrowRight, Sparkles, Music, Play, Check } from 'lucide-react';
+import { ArrowLeft, RotateCcw, Minus, Plus, Calculator, Settings2, Volume2, VolumeX, Smartphone, Monitor, Maximize2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,54 +24,15 @@ const AbacusSimulator = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const colorScheme = 'classic' as const;
-  const [showSetupScreen, setShowSetupScreen] = useState(true);
-  const [showSoundPicker, setShowSoundPicker] = useState(false);
-  // Selected sounds for beads
-  const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
-  const [lowerBeadSound, setLowerBeadSound] = useState<BeadSoundType>('bead');
   const { soundEnabled, toggleSound, playSound } = useSound();
-  const [playingAllSounds, setPlayingAllSounds] = useState(false);
 
-  const allSoundTypes = [
-    { type: 'pop' as BeadSoundType, label: '🫧 Pop', desc: 'Surish boshi' },
-    { type: 'bead' as BeadSoundType, label: '🎹 Bead', desc: 'Pastki tosh' },
-    { type: 'beadHigh' as BeadSoundType, label: '🔔 Bell', desc: 'Yuqori tosh' },
-    { type: 'tick' as BeadSoundType, label: '⏱️ Tick', desc: 'Taymer' },
-    { type: 'correct' as BeadSoundType, label: '✅ To\'g\'ri', desc: 'To\'g\'ri javob' },
-    { type: 'incorrect' as BeadSoundType, label: '❌ Xato', desc: 'Noto\'g\'ri javob' },
-    { type: 'start' as BeadSoundType, label: '🚀 Start', desc: 'O\'yin boshi' },
-    { type: 'countdown' as BeadSoundType, label: '⏰ Countdown', desc: 'Ortga sanash' },
-    { type: 'combo' as BeadSoundType, label: '🔥 Combo', desc: 'Ketma-ket' },
-    { type: 'levelUp' as BeadSoundType, label: '⬆️ Level Up', desc: 'Daraja oshdi' },
-    { type: 'complete' as BeadSoundType, label: '🎉 Complete', desc: 'Yakunlash' },
-    { type: 'winner' as BeadSoundType, label: '🏆 G\'olib', desc: 'G\'alaba' },
-    { type: 'whoosh' as BeadSoundType, label: '💨 Whoosh', desc: 'Tez harakat' },
-    { type: 'sparkle' as BeadSoundType, label: '✨ Sparkle', desc: 'Sehrli' },
-    { type: 'bounce' as BeadSoundType, label: '🏀 Bounce', desc: 'Sakrash' },
-  ];
-
-  // Handle bead sound in simulator based on selected sounds
-  const handleBeadSound = useCallback((isUpper: boolean) => {
+  // Always use tick sound for all beads
+  const handleBeadSound = useCallback(() => {
     if (soundEnabled) {
-      playSound(isUpper ? upperBeadSound : lowerBeadSound);
+      playSound('tick');
     }
-  }, [soundEnabled, playSound, upperBeadSound, lowerBeadSound]);
+  }, [soundEnabled, playSound]);
 
-  const playAllSounds = useCallback(() => {
-    if (playingAllSounds) return;
-    setPlayingAllSounds(true);
-    
-    allSoundTypes.forEach(({ type }, index) => {
-      setTimeout(() => {
-        playSound(type);
-      }, index * 400);
-    });
-    
-    // Reset state after all sounds played
-    setTimeout(() => {
-      setPlayingAllSounds(false);
-    }, allSoundTypes.length * 400 + 500);
-  }, [playSound, playingAllSounds]);
 
   const handleReset = useCallback(() => {
     setValue(0);
@@ -93,216 +54,6 @@ const AbacusSimulator = () => {
     'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
   ];
 
-  // If showing color picker, render the color selection screen
-  if (showSetupScreen) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background flex flex-col overflow-y-auto">
-        {/* Header */}
-        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg border-b border-border/50">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span className="text-sm font-medium hidden sm:inline">Orqaga</span>
-            </Link>
-            
-            <h1 className="text-lg font-bold flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-primary" />
-              <span>Abakus sozlamalari</span>
-            </h1>
-            
-            <div className="w-20" />
-          </div>
-        </header>
-
-        <main className="flex-1 container mx-auto px-4 py-6 flex flex-col overflow-y-auto">
-          {/* Welcome message */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-6"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Abakus Simulator</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-              Abakusni sozlang! 🧮
-            </h2>
-            <p className="text-muted-foreground">
-              Ustunlar soni, rang va tovushni tanlang
-            </p>
-          </motion.div>
-
-          {/* Column count selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="mb-6"
-          >
-            <Card className="border-primary/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-primary" />
-                  Ustunlar soni
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {[5, 7, 9, 10, 13, 15, 17].map((count) => (
-                    <Button
-                      key={count}
-                      variant={columns === count ? 'default' : 'outline'}
-                      size="lg"
-                      onClick={() => setColumns(count)}
-                      className={cn(
-                        "min-w-[60px] h-12 text-lg font-bold transition-all",
-                        columns === count && "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                      )}
-                    >
-                      {count}
-                    </Button>
-                  ))}
-                </div>
-                <p className="text-center text-sm text-muted-foreground mt-3">
-                  {columns} ta ustun = {columnLabels.slice(0, columns).reverse().join(', ')}
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-
-          {/* Sound selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="flex-1"
-          >
-            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Music className="w-4 h-4 text-primary" />
-                    Tovushlar
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={soundEnabled ? "default" : "outline"}
-                      size="sm"
-                      onClick={toggleSound}
-                      className="gap-1.5"
-                    >
-                      {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                      {soundEnabled ? "Yoniq" : "O'chiq"}
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {/* Upper bead sound selector */}
-                  <div>
-                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-emerald-500" />
-                      Yuqori tosh (5 qiymat) tovushi:
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {allSoundTypes.map(({ type, label }) => (
-                        <motion.button
-                          key={`upper-${type}`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setUpperBeadSound(type);
-                            soundEnabled && playSound(type);
-                          }}
-                          disabled={!soundEnabled}
-                          className={cn(
-                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
-                            upperBeadSound === type 
-                              ? "border-emerald-500 bg-emerald-500/10" 
-                              : "border-border/50",
-                            soundEnabled 
-                              ? "hover:border-emerald-500/50 cursor-pointer" 
-                              : "opacity-50 cursor-not-allowed"
-                          )}
-                        >
-                          {upperBeadSound === type && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                          <span className="text-lg">{label.split(' ')[0]}</span>
-                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Lower bead sound selector */}
-                  <div>
-                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-orange-500" />
-                      Pastki toshlar (1 qiymat) tovushi:
-                    </p>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                      {allSoundTypes.map(({ type, label }) => (
-                        <motion.button
-                          key={`lower-${type}`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            setLowerBeadSound(type);
-                            soundEnabled && playSound(type);
-                          }}
-                          disabled={!soundEnabled}
-                          className={cn(
-                            "relative flex flex-col items-center gap-1 p-2 rounded-xl bg-background/80 border-2 transition-all",
-                            lowerBeadSound === type 
-                              ? "border-orange-500 bg-orange-500/10" 
-                              : "border-border/50",
-                            soundEnabled 
-                              ? "hover:border-orange-500/50 cursor-pointer" 
-                              : "opacity-50 cursor-not-allowed"
-                          )}
-                        >
-                          {lowerBeadSound === type && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
-                          <span className="text-lg">{label.split(' ')[0]}</span>
-                          <span className="text-[10px] font-medium">{label.split(' ')[1]}</span>
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Continue button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mt-6 pb-6"
-          >
-            <Button
-              size="lg"
-              className="w-full h-14 text-lg font-bold gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-              onClick={() => setShowSetupScreen(false)}
-            >
-              Davom etish
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </motion.div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -348,16 +99,6 @@ const AbacusSimulator = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setShowSoundPicker(!showSoundPicker)}
-              disabled={!soundEnabled}
-              className={cn("w-9 h-9 p-0", showSoundPicker && "bg-primary/20")}
-              title="Barcha tovushlarni tinglash"
-            >
-              <Music className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
               onClick={() => setShowSettings(!showSettings)}
               className={cn("w-9 h-9 p-0", showSettings && "bg-primary/10")}
             >
@@ -385,54 +126,6 @@ const AbacusSimulator = () => {
           <AbacusModeSelector mode={mode} onChange={setMode} />
         </motion.div>
 
-        {/* Tovushlar paneli */}
-        <AnimatePresence>
-          {showSoundPicker && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Music className="w-4 h-4 text-primary" />
-                      Tovushlar
-                    </CardTitle>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={playAllSounds}
-                      disabled={playingAllSounds}
-                      className={cn("gap-1.5", playingAllSounds && "animate-pulse")}
-                    >
-                      <Play className="w-3 h-3" />
-                      {playingAllSounds ? "Ijro..." : "Hammasini"}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                    {allSoundTypes.map(({ type, label, desc }) => (
-                      <motion.button
-                        key={type}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => playSound(type)}
-                        className="flex flex-col items-center gap-1 p-3 rounded-xl bg-background/80 border border-border/50 hover:border-primary/50 hover:bg-primary/10 transition-all"
-                      >
-                        <span className="text-xl">{label.split(' ')[0]}</span>
-                        <span className="text-xs font-medium">{label.split(' ')[1]}</span>
-                        <span className="text-[10px] text-muted-foreground hidden sm:block">{desc}</span>
-                      </motion.button>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Sozlamalar paneli */}
         {showSettings && (
