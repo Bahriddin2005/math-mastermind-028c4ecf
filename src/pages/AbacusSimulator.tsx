@@ -23,8 +23,7 @@ const AbacusSimulator = () => {
   const [orientation, setOrientation] = useState<AbacusOrientation>('horizontal');
   const [showSettings, setShowSettings] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [colorScheme, setColorScheme] = useState<AbacusColorScheme>('classic');
-  const [showColorPicker, setShowColorPicker] = useState(true); // Show color picker initially
+  const colorScheme = 'classic' as const;
   const [showSoundPicker, setShowSoundPicker] = useState(false);
   // Selected sounds for beads
   const [upperBeadSound, setUpperBeadSound] = useState<BeadSoundType>('beadHigh');
