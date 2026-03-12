@@ -99,16 +99,6 @@ const AbacusSimulator = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => setShowSoundPicker(!showSoundPicker)}
-              disabled={!soundEnabled}
-              className={cn("w-9 h-9 p-0", showSoundPicker && "bg-primary/20")}
-              title="Barcha tovushlarni tinglash"
-            >
-              <Music className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
               onClick={() => setShowSettings(!showSettings)}
               className={cn("w-9 h-9 p-0", showSettings && "bg-primary/10")}
             >
