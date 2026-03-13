@@ -263,7 +263,7 @@ const SessionCard = ({ session, isOwner, isTeacher, isLive, participantCount = 0
           )}
           <span className="flex items-center gap-1">
             <Users className="w-3 h-3" />
-            {session.max_participants}
+            {participantCount}/{session.max_participants}
           </span>
         </div>
 
