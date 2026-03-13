@@ -231,8 +231,8 @@ const LiveSessions = () => {
 };
 
 /* ─── Session Card ─── */
-const SessionCard = ({ session, isOwner, isTeacher, isLive, onJoin, onStart, onCopy, onDelete }: {
-  session: any; isOwner: boolean; isTeacher: boolean; isLive?: boolean;
+const SessionCard = ({ session, isOwner, isTeacher, isLive, participantCount = 0, onJoin, onStart, onCopy, onDelete }: {
+  session: any; isOwner: boolean; isTeacher: boolean; isLive?: boolean; participantCount?: number;
   onJoin: () => void; onStart: () => void; onCopy: () => void; onDelete: () => void;
 }) => (
   <Card className={`overflow-hidden transition-all hover:shadow-md group ${isLive ? 'border-destructive/30' : ''}`}>
