@@ -160,7 +160,7 @@ Deno.serve(async (req) => {
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filepath = `${sessionId}/${timestamp}.mp4`;
-      const storageEndpoint = `https://${projectRef}.storage.supabase.co/storage/v1/s3`;
+      const storageEndpoint = `https://${projectRef}.supabase.co/storage/v1/s3`;
 
       const s3AccessKey = Deno.env.get("SUPABASE_STORAGE_S3_ACCESS_KEY") || projectRef;
       const s3Secret = Deno.env.get("SUPABASE_STORAGE_S3_SECRET_KEY") || supabaseServiceKey;
