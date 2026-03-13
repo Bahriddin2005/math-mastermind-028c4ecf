@@ -1,0 +1,3 @@
+
+ALTER TABLE public.courses
+  ADD COLUMN IF NOT EXISTS teacher_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;

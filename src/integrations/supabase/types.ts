@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendance: {
+        Row: {
+          duration_minutes: number | null
+          id: string
+          joined_at: string
+          left_at: string | null
+          live_session_id: string
+          student_id: string
+        }
+        Insert: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          live_session_id: string
+          student_id: string
+        }
+        Update: {
+          duration_minutes?: number | null
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          live_session_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_live_session_id_fkey"
+            columns: ["live_session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -291,6 +326,7 @@ export type Database = {
           id: string
           is_published: boolean | null
           order_index: number | null
+          teacher_id: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -302,6 +338,7 @@ export type Database = {
           id?: string
           is_published?: boolean | null
           order_index?: number | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -313,6 +350,7 @@ export type Database = {
           id?: string
           is_published?: boolean | null
           order_index?: number | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -401,6 +439,44 @@ export type Database = {
           speed?: number
         }
         Relationships: []
+      }
+      enrollments: {
+        Row: {
+          completed_at: string | null
+          course_id: string
+          enrolled_at: string
+          id: string
+          progress: number | null
+          status: string
+          student_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          progress?: number | null
+          status?: string
+          student_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          progress?: number | null
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       faq_items: {
         Row: {
@@ -908,6 +984,7 @@ export type Database = {
       }
       live_sessions: {
         Row: {
+          course_id: string | null
           created_at: string
           description: string | null
           ended_at: string | null
@@ -916,6 +993,7 @@ export type Database = {
           is_recording: boolean
           is_recurring: boolean | null
           max_participants: number | null
+          meeting_type: string
           recording_duration: number | null
           recording_url: string | null
           recurrence_rule: string | null
@@ -926,8 +1004,13 @@ export type Database = {
           teacher_id: string
           title: string
           updated_at: string
+          zoom_join_url: string | null
+          zoom_meeting_id: string | null
+          zoom_password: string | null
+          zoom_start_url: string | null
         }
         Insert: {
+          course_id?: string | null
           created_at?: string
           description?: string | null
           ended_at?: string | null
@@ -936,6 +1019,7 @@ export type Database = {
           is_recording?: boolean
           is_recurring?: boolean | null
           max_participants?: number | null
+          meeting_type?: string
           recording_duration?: number | null
           recording_url?: string | null
           recurrence_rule?: string | null
@@ -946,8 +1030,13 @@ export type Database = {
           teacher_id: string
           title: string
           updated_at?: string
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: string | null
+          zoom_start_url?: string | null
         }
         Update: {
+          course_id?: string | null
           created_at?: string
           description?: string | null
           ended_at?: string | null
@@ -956,6 +1045,7 @@ export type Database = {
           is_recording?: boolean
           is_recurring?: boolean | null
           max_participants?: number | null
+          meeting_type?: string
           recording_duration?: number | null
           recording_url?: string | null
           recurrence_rule?: string | null
@@ -966,8 +1056,20 @@ export type Database = {
           teacher_id?: string
           title?: string
           updated_at?: string
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: string | null
+          zoom_start_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "live_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       math_examples: {
         Row: {
@@ -1314,6 +1416,54 @@ export type Database = {
           vip_expires_at?: string | null
         }
         Relationships: []
+      }
+      recordings: {
+        Row: {
+          created_at: string
+          duration: number | null
+          file_size: number | null
+          id: string
+          lesson_id: string | null
+          live_session_id: string | null
+          recording_url: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration?: number | null
+          file_size?: number | null
+          id?: string
+          lesson_id?: string | null
+          live_session_id?: string | null
+          recording_url: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration?: number | null
+          file_size?: number | null
+          id?: string
+          lesson_id?: string | null
+          live_session_id?: string | null
+          recording_url?: string
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recordings_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recordings_live_session_id_fkey"
+            columns: ["live_session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       shop_items: {
         Row: {
