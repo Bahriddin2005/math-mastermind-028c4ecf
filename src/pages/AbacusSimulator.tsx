@@ -143,9 +143,13 @@ const AbacusSimulator = () => {
       const newColumns = Math.max(3, Math.min(17, current + delta));
       const maxValue = Math.pow(10, newColumns) - 1;
       setValue(v => Math.min(v, maxValue));
+      // Auto-switch orientation on mobile
+      if (isMobile) {
+        setOrientation(newColumns > 5 ? 'vertical' : 'horizontal');
+      }
       return newColumns;
     });
-  }, []);
+  }, [isMobile]);
 
   const columnLabels = [
     'Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik", "Yuz minglik",
