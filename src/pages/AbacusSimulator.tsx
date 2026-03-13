@@ -153,8 +153,18 @@ const AbacusSimulator = () => {
     'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
   ];
 
+  const handleColumnSelect = useCallback((cols: number) => {
+    setColumns(cols);
+    // Mobile: auto-switch to vertical for 5+ columns
+    if (isMobile && cols > 5) {
+      setOrientation('vertical');
+    } else {
+      setOrientation('horizontal');
+    }
+  }, [isMobile]);
+
   if (columns === null) {
-    return <ColumnSelector onSelect={(cols) => setColumns(cols)} />;
+    return <ColumnSelector onSelect={handleColumnSelect} />;
   }
 
   return (
