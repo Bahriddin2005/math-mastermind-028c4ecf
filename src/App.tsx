@@ -56,7 +56,6 @@ const AbacusPractice = lazy(() => import("@/pages/AbacusPractice"));
 const LiveSessions = lazy(() => import("@/pages/LiveSessions"));
 const LiveClassroom = lazy(() => import("@/pages/LiveClassroom"));
 const Subjects = lazy(() => import("@/pages/Subjects"));
-const Subjects = lazy(() => import("@/pages/Subjects"));
 const SubjectPractice = lazy(() => import("@/pages/SubjectPractice"));
 const LMSDashboard = lazy(() => import("@/pages/LMSDashboard"));
 
