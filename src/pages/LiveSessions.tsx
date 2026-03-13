@@ -213,6 +213,7 @@ const LiveSessions = () => {
                   {scheduledSessions.map(s => (
                     <SessionCard key={s.id} session={s} isOwner={s.teacher_id === user?.id}
                       isTeacher={isTeacher || isAdmin}
+                      participantCount={participantCounts[s.id] || 0}
                       onJoin={() => navigate(`/live/${s.id}`)}
                       onStart={() => handleStartSession(s)}
                       onCopy={() => copyLink(s.id)}
