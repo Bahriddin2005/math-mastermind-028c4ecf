@@ -142,10 +142,44 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
   };
 
   const toggleRecording = async () => {
-    const newState = !isRecording;
-    await supabase.from('live_sessions').update({ is_recording: newState }).eq('id', sessionId);
-    setIsRecording(newState);
-    toast.success(newState ? "Yozib olish boshlandi" : "Yozib olish to'xtatildi");
+    if (recordingLoading) return;
+    setRecordingLoading(true);
+    try {
+      if (!isRecording) {
+        // Start recording
+        const { data, error: fnErr } = await supabase.functions.invoke('livekit-recording', {
+          body: { action: 'start', sessionId, roomName: session?.room_name }
+        });
+        if (fnErr || !data?.success) {
+          toast.error(data?.error || "Yozib olishni boshlashda xatolik");
+          return;
+        }
+        setEgressId(data.egressId);
+        setIsRecording(true);
+        toast.success("🔴 Yozib olish boshlandi");
+      } else {
+        // Stop recording
+        const { data, error: fnErr } = await supabase.functions.invoke('livekit-recording', {
+          body: { action: 'stop', sessionId, roomName: session?.room_name, egressId }
+        });
+        if (fnErr || !data?.success) {
+          toast.error(data?.error || "Yozib olishni to'xtatishda xatolik");
+          return;
+        }
+        setEgressId(null);
+        setIsRecording(false);
+        if (data.recordingUrl) {
+          toast.success("✅ Video muvaffaqiyatli saqlandi!");
+        } else {
+          toast.success("Yozib olish to'xtatildi");
+        }
+      }
+    } catch (err) {
+      toast.error("Xatolik yuz berdi");
+      console.error("Recording error:", err);
+    } finally {
+      setRecordingLoading(false);
+    }
   };
 
   const toggleHand = () => {
