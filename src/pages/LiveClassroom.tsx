@@ -169,7 +169,24 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
         setEgressId(null);
         setIsRecording(false);
         if (data.recordingUrl) {
-          toast.success("✅ Video muvaffaqiyatli saqlandi!");
+          toast.success("✅ Video saqlandi! Yuklab olish boshlanmoqda...");
+          // Auto-download the recorded video
+          try {
+            const response = await fetch(data.recordingUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${session?.title || 'dars'}-yozuv-${new Date().toLocaleDateString('uz-UZ')}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          } catch (dlErr) {
+            console.error("Download error:", dlErr);
+            // Fallback: open in new tab
+            window.open(data.recordingUrl, '_blank');
+          }
         } else {
           toast.success("Yozib olish to'xtatildi");
         }
