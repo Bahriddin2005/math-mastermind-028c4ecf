@@ -291,6 +291,7 @@ export type Database = {
           id: string
           is_published: boolean | null
           order_index: number | null
+          teacher_id: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -302,6 +303,7 @@ export type Database = {
           id?: string
           is_published?: boolean | null
           order_index?: number | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -313,6 +315,7 @@ export type Database = {
           id?: string
           is_published?: boolean | null
           order_index?: number | null
+          teacher_id?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
