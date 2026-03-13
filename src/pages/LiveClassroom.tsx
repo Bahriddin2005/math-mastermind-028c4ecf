@@ -285,8 +285,10 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
               onClick={toggleLock}
             />
             <ControlButton
-              icon={<Circle className={`w-5 h-5 ${isRecording ? 'fill-destructive text-destructive' : ''}`} />}
-              label="Yozish"
+              icon={recordingLoading
+                ? <div className="w-5 h-5 border-2 border-destructive/30 border-t-destructive rounded-full animate-spin" />
+                : <Circle className={`w-5 h-5 ${isRecording ? 'fill-destructive text-destructive' : ''}`} />}
+              label={recordingLoading ? "..." : (isRecording ? "To'xtatish" : "Yozish")}
               active={isRecording}
               onClick={toggleRecording}
             />
