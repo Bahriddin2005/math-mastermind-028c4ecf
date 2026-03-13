@@ -39,7 +39,25 @@ const LiveSessions = () => {
       .select('*')
       .in('status', ['scheduled', 'live'])
       .order('scheduled_at', { ascending: true });
-    if (!error && data) setSessions(data);
+    if (!error && data) {
+      setSessions(data);
+      // Fetch participant counts for all sessions
+      const sessionIds = data.map(s => s.id);
+      if (sessionIds.length > 0) {
+        const { data: participants } = await supabase
+          .from('live_session_participants')
+          .select('session_id')
+          .in('session_id', sessionIds)
+          .is('left_at', null);
+        if (participants) {
+          const counts: Record<string, number> = {};
+          participants.forEach(p => {
+            counts[p.session_id] = (counts[p.session_id] || 0) + 1;
+          });
+          setParticipantCounts(counts);
+        }
+      }
+    }
     setLoading(false);
   };
 
