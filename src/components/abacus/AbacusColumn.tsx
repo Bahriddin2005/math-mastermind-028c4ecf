@@ -74,12 +74,16 @@ export const AbacusColumn = memo(({
     onBeadSound?.(true);
   }, [disabled, upperActive, onUpperChange, onBeadSound]);
 
-  // Individual bead toggle — only the dragged bead moves
+  // Soroban cascade: pushing bead up cascades to all beads above (toward bar)
+  // Pulling bead down cascades to all beads below (away from bar)
   const handleBeadActivate = useCallback((beadIndex: number) => {
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      next[beadIndex] = true;
+      // Activate this bead and all beads above it (between it and the bar)
+      for (let i = beadIndex; i <= 3; i++) {
+        next[i] = true;
+      }
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
@@ -91,7 +95,10 @@ export const AbacusColumn = memo(({
     if (disabled) return;
     setBeadStates(prev => {
       const next = [...prev];
-      next[beadIndex] = false;
+      // Deactivate this bead and all beads below it (away from bar)
+      for (let i = beadIndex; i >= 0; i--) {
+        next[i] = false;
+      }
       const newCount = next.filter(Boolean).length;
       lastSentCount.current = newCount as 0 | 1 | 2 | 3 | 4;
       onLowerChange(newCount);
