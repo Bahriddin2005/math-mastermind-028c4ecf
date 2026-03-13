@@ -25,6 +25,7 @@ const LiveSessions = () => {
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const [participantCounts, setParticipantCounts] = useState<Record<string, number>>({});
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -38,7 +39,25 @@ const LiveSessions = () => {
       .select('*')
       .in('status', ['scheduled', 'live'])
       .order('scheduled_at', { ascending: true });
-    if (!error && data) setSessions(data);
+    if (!error && data) {
+      setSessions(data);
+      // Fetch participant counts for all sessions
+      const sessionIds = data.map(s => s.id);
+      if (sessionIds.length > 0) {
+        const { data: participants } = await supabase
+          .from('live_session_participants')
+          .select('session_id')
+          .in('session_id', sessionIds)
+          .is('left_at', null);
+        if (participants) {
+          const counts: Record<string, number> = {};
+          participants.forEach(p => {
+            counts[p.session_id] = (counts[p.session_id] || 0) + 1;
+          });
+          setParticipantCounts(counts);
+        }
+      }
+    }
     setLoading(false);
   };
 
@@ -175,6 +194,7 @@ const LiveSessions = () => {
                   {liveSessions.map(s => (
                     <SessionCard key={s.id} session={s} isOwner={s.teacher_id === user?.id}
                       isTeacher={isTeacher || isAdmin} isLive
+                      participantCount={participantCounts[s.id] || 0}
                       onJoin={() => navigate(`/live/${s.id}`)}
                       onStart={() => handleStartSession(s)}
                       onCopy={() => copyLink(s.id)}
@@ -193,6 +213,7 @@ const LiveSessions = () => {
                   {scheduledSessions.map(s => (
                     <SessionCard key={s.id} session={s} isOwner={s.teacher_id === user?.id}
                       isTeacher={isTeacher || isAdmin}
+                      participantCount={participantCounts[s.id] || 0}
                       onJoin={() => navigate(`/live/${s.id}`)}
                       onStart={() => handleStartSession(s)}
                       onCopy={() => copyLink(s.id)}
@@ -210,8 +231,8 @@ const LiveSessions = () => {
 };
 
 /* ─── Session Card ─── */
-const SessionCard = ({ session, isOwner, isTeacher, isLive, onJoin, onStart, onCopy, onDelete }: {
-  session: any; isOwner: boolean; isTeacher: boolean; isLive?: boolean;
+const SessionCard = ({ session, isOwner, isTeacher, isLive, participantCount = 0, onJoin, onStart, onCopy, onDelete }: {
+  session: any; isOwner: boolean; isTeacher: boolean; isLive?: boolean; participantCount?: number;
   onJoin: () => void; onStart: () => void; onCopy: () => void; onDelete: () => void;
 }) => (
   <Card className={`overflow-hidden transition-all hover:shadow-md group ${isLive ? 'border-destructive/30' : ''}`}>
@@ -242,7 +263,7 @@ const SessionCard = ({ session, isOwner, isTeacher, isLive, onJoin, onStart, onC
           )}
           <span className="flex items-center gap-1">
             <Users className="w-3 h-3" />
-            {session.max_participants}
+            {participantCount}/{session.max_participants}
           </span>
         </div>
 
