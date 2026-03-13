@@ -144,6 +144,7 @@ const App = () => (
                       <Route path="/live/:sessionId" element={<ProtectedRoute><LiveClassroom /></ProtectedRoute>} />
                       <Route path="/subjects" element={<ProtectedRoute><Subjects /></ProtectedRoute>} />
                       <Route path="/subjects/:subjectId" element={<ProtectedRoute><SubjectPractice /></ProtectedRoute>} />
+                      <Route path="/lms" element={<ProtectedRoute><LMSDashboard /></ProtectedRoute>} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
