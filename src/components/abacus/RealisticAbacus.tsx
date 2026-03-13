@@ -180,26 +180,65 @@ export const RealisticAbacus = ({
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4, type: 'spring' }}
       >
-        {/* Wood grain texture overlay */}
+        {/* Wood grain texture */}
         <div 
-          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
           style={{
-            backgroundImage: `repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 8px,
-              rgba(255,255,255,0.1) 8px,
-              rgba(255,255,255,0.1) 9px
-            )`,
+            backgroundImage: `
+              repeating-linear-gradient(2deg, transparent, transparent 6px, rgba(255,200,140,0.12) 6px, rgba(255,200,140,0.12) 7px),
+              repeating-linear-gradient(178deg, transparent, transparent 11px, rgba(0,0,0,0.08) 11px, rgba(0,0,0,0.08) 12px)
+            `,
+            borderRadius: 'inherit',
           }}
         />
         
-        {/* Inner frame edge highlight */}
+        {/* Corner ornaments — top-left */}
+        <div className="absolute pointer-events-none" style={{ top: 6, left: 6, width: 28, height: 28 }}>
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 26C2 14 14 2 26 2" stroke="rgba(218,180,130,0.25)" strokeWidth="1.5" fill="none"/>
+            <path d="M6 26C6 16 16 6 26 6" stroke="rgba(218,180,130,0.15)" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="4" r="2" fill="rgba(218,180,130,0.2)"/>
+          </svg>
+        </div>
+        {/* Corner ornaments — top-right */}
+        <div className="absolute pointer-events-none" style={{ top: 6, right: 6, width: 28, height: 28, transform: 'scaleX(-1)' }}>
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 26C2 14 14 2 26 2" stroke="rgba(218,180,130,0.25)" strokeWidth="1.5" fill="none"/>
+            <path d="M6 26C6 16 16 6 26 6" stroke="rgba(218,180,130,0.15)" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="4" r="2" fill="rgba(218,180,130,0.2)"/>
+          </svg>
+        </div>
+        {/* Corner ornaments — bottom-left */}
+        <div className="absolute pointer-events-none" style={{ bottom: 6, left: 6, width: 28, height: 28, transform: 'scaleY(-1)' }}>
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 26C2 14 14 2 26 2" stroke="rgba(218,180,130,0.25)" strokeWidth="1.5" fill="none"/>
+            <path d="M6 26C6 16 16 6 26 6" stroke="rgba(218,180,130,0.15)" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="4" r="2" fill="rgba(218,180,130,0.2)"/>
+          </svg>
+        </div>
+        {/* Corner ornaments — bottom-right */}
+        <div className="absolute pointer-events-none" style={{ bottom: 6, right: 6, width: 28, height: 28, transform: 'scale(-1)' }}>
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 26C2 14 14 2 26 2" stroke="rgba(218,180,130,0.25)" strokeWidth="1.5" fill="none"/>
+            <path d="M6 26C6 16 16 6 26 6" stroke="rgba(218,180,130,0.15)" strokeWidth="1" fill="none"/>
+            <circle cx="4" cy="4" r="2" fill="rgba(218,180,130,0.2)"/>
+          </svg>
+        </div>
+        
+        {/* Top & bottom carved border lines */}
+        <div className="absolute left-8 right-8 pointer-events-none" style={{ top: 4, height: 2, background: 'linear-gradient(90deg, transparent, rgba(218,180,130,0.15) 20%, rgba(218,180,130,0.25) 50%, rgba(218,180,130,0.15) 80%, transparent)', borderRadius: 1 }} />
+        <div className="absolute left-8 right-8 pointer-events-none" style={{ bottom: 4, height: 2, background: 'linear-gradient(90deg, transparent, rgba(218,180,130,0.15) 20%, rgba(218,180,130,0.25) 50%, rgba(218,180,130,0.15) 80%, transparent)', borderRadius: 1 }} />
+        
+        {/* Left & right carved border lines */}
+        <div className="absolute top-8 bottom-8 pointer-events-none" style={{ left: 4, width: 2, background: 'linear-gradient(180deg, transparent, rgba(218,180,130,0.15) 20%, rgba(218,180,130,0.25) 50%, rgba(218,180,130,0.15) 80%, transparent)', borderRadius: 1 }} />
+        <div className="absolute top-8 bottom-8 pointer-events-none" style={{ right: 4, width: 2, background: 'linear-gradient(180deg, transparent, rgba(218,180,130,0.15) 20%, rgba(218,180,130,0.25) 50%, rgba(218,180,130,0.15) 80%, transparent)', borderRadius: 1 }} />
+        
+        {/* Inner frame bevel highlight */}
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
             borderRadius: 'inherit',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+            boxShadow: 'inset 0 2px 0 rgba(255,220,180,0.05), inset 0 -1px 0 rgba(0,0,0,0.3)',
           }}
         />
         
