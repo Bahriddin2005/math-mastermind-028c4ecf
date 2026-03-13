@@ -164,7 +164,10 @@ Deno.serve(async (req) => {
 
       const s3AccessKey = Deno.env.get("SUPABASE_STORAGE_S3_ACCESS_KEY") || projectRef;
       const s3Secret = Deno.env.get("SUPABASE_STORAGE_S3_SECRET_KEY") || supabaseServiceKey;
-      const s3Region = Deno.env.get("SUPABASE_STORAGE_S3_REGION") || "auto";
+      const s3Region =
+        Deno.env.get("SUPABASE_STORAGE_S3_REGION") ||
+        Deno.env.get("SB_REGION") ||
+        "eu-central-1";
 
       const fileOutput = new EncodedFileOutput({
         fileType: EncodedFileType.MP4,
