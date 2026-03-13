@@ -115,6 +115,8 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
   const [handRaised, setHandRaised] = useState(false);
   const [isLocked, setIsLocked] = useState(session?.is_locked || false);
   const [isRecording, setIsRecording] = useState(session?.is_recording || false);
+  const [recordingLoading, setRecordingLoading] = useState(false);
+  const [egressId, setEgressId] = useState<string | null>(session?.egress_id || null);
   const [timer, setTimer] = useState(0);
 
   // Timer
