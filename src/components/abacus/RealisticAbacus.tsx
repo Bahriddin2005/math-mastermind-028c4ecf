@@ -137,16 +137,16 @@ export const RealisticAbacus = ({
   
   const isVertical = orientation === 'vertical';
   
-  // Frame colors — dark wood matching reference
-  const frameBackground = colorPalette.frame || 'linear-gradient(145deg, #1A0F08 0%, #2C1D12 20%, #1A0F08 50%, #0D0704 100%)';
+  // Frame colors — premium rosewood with carved patterns
+  const frameBackground = 'linear-gradient(145deg, #2A1508 0%, #3D2010 15%, #4A2814 30%, #3D2010 50%, #2A1508 70%, #1A0D06 100%)';
   
   // Calculate frame width based on columns + bead size + gaps
   const gap = getGap(columns);
-  const columnMinWidth = beadSize * 1.8; // matches AbacusColumn minWidth
+  const columnMinWidth = beadSize * 1.8;
   const totalColumnWidth = columns * columnMinWidth + (columns - 1) * gap;
-  const framePaddingX = compact ? 32 : 48; // inner content padding each side
-  const borderWidth = compact ? 8 : 10;
-  const extraFrame = compact ? 2 : 3; // outer ring
+  const framePaddingX = compact ? 36 : 56;
+  const borderWidth = compact ? 10 : 14;
+  const extraFrame = compact ? 3 : 4;
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   return (
@@ -154,21 +154,24 @@ export const RealisticAbacus = ({
       "flex items-center justify-center w-full",
       isVertical ? "flex-row overflow-y-auto" : "flex-col overflow-x-auto px-2 sm:px-4 lg:px-6"
     )}>
-      {/* === OUTER FRAME — thick dark wooden frame === */}
+      {/* === OUTER FRAME — carved rosewood frame === */}
       <motion.div 
         className="relative overflow-visible"
         style={{
           width: frameWidth,
           maxWidth: 'calc(100vw - 24px)',
           background: frameBackground,
-          padding: compact ? '16px 20px' : '20px 28px',
-          border: `${compact ? 8 : 10}px solid #0D0704`,
-          borderRadius: compact ? 14 : 18,
+          padding: compact ? '18px 24px' : '24px 36px',
+          border: `${borderWidth}px solid #1A0D06`,
+          borderRadius: compact ? 16 : 22,
           boxShadow: `
-            0 20px 60px -15px rgba(0,0,0,0.8),
-            inset 0 2px 4px rgba(255,255,255,0.03),
-            inset 0 -2px 4px rgba(0,0,0,0.3),
-            0 0 0 ${compact ? 2 : 3}px #3D2B1F
+            0 25px 70px -15px rgba(0,0,0,0.85),
+            0 8px 25px -5px rgba(0,0,0,0.5),
+            inset 0 2px 6px rgba(255,220,180,0.06),
+            inset 0 -3px 8px rgba(0,0,0,0.4),
+            0 0 0 ${extraFrame}px #5A3D28,
+            0 0 0 ${extraFrame + 1}px #1A0D06,
+            0 0 0 ${extraFrame + 3}px #3D2818
           `,
           transform: isVertical ? 'rotate(90deg)' : 'none',
           transformOrigin: 'center center',
