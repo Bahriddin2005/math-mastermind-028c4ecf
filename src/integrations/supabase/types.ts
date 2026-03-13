@@ -987,6 +987,7 @@ export type Database = {
           course_id: string | null
           created_at: string
           description: string | null
+          egress_id: string | null
           ended_at: string | null
           id: string
           is_locked: boolean
@@ -1013,6 +1014,7 @@ export type Database = {
           course_id?: string | null
           created_at?: string
           description?: string | null
+          egress_id?: string | null
           ended_at?: string | null
           id?: string
           is_locked?: boolean
@@ -1039,6 +1041,7 @@ export type Database = {
           course_id?: string | null
           created_at?: string
           description?: string | null
+          egress_id?: string | null
           ended_at?: string | null
           id?: string
           is_locked?: boolean
