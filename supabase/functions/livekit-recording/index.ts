@@ -27,7 +27,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
@@ -50,8 +49,10 @@ Deno.serve(async (req) => {
 
     const { action, sessionId, roomName, egressId } = await req.json();
 
-    // Verify teacher owns the session
-    const { data: session } = await supabase
+    const adminSupabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Fetch session with admin client to avoid RLS issues
+    const { data: session } = await adminSupabase
       .from("live_sessions")
       .select("*")
       .eq("id", sessionId)
@@ -65,11 +66,18 @@ Deno.serve(async (req) => {
     }
 
     const egressClient = new EgressClient(livekitUrl, livekitApiKey, livekitApiSecret);
-
-    // Extract project ref from supabase URL for S3 access
     const projectRef = supabaseUrl.replace("https://", "").split(".")[0];
 
     if (action === "start") {
+      // If there's already an active egress, try to stop it first
+      if (session.egress_id) {
+        try {
+          await egressClient.stopEgress(session.egress_id);
+        } catch (_e) {
+          // Ignore - old egress may already be stopped
+        }
+      }
+
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
       const filepath = `${sessionId}/${timestamp}.mp4`;
 
@@ -91,8 +99,6 @@ Deno.serve(async (req) => {
 
       const info = await egressClient.startRoomCompositeEgress(roomName, { file: fileOutput });
 
-      // Save egress ID to session
-      const adminSupabase = createClient(supabaseUrl, supabaseServiceKey);
       await adminSupabase
         .from("live_sessions")
         .update({ egress_id: info.egressId, is_recording: true })
@@ -105,31 +111,68 @@ Deno.serve(async (req) => {
     }
 
     if (action === "stop") {
-      const activeEgressId = egressId || session.egress_id;
+      // Always prefer the DB egress_id over what the frontend sends
+      const activeEgressId = session.egress_id || egressId;
+      
       if (!activeEgressId) {
+        // No active egress - just reset the state
+        await adminSupabase
+          .from("live_sessions")
+          .update({ egress_id: null, is_recording: false })
+          .eq("id", sessionId);
         return new Response(
-          JSON.stringify({ success: false, error: "No active recording found" }),
+          JSON.stringify({ success: true, recordingUrl: "" }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
-      const info = await egressClient.stopEgress(activeEgressId);
-
-      // Get the file result to find the recording URL
-      const fileResults = info.fileResults || [];
       let recordingUrl = "";
-      if (fileResults.length > 0) {
-        const filename = fileResults[0].filename;
-        recordingUrl = `${supabaseUrl}/storage/v1/object/public/recordings/${filename}`;
+
+      try {
+        const info = await egressClient.stopEgress(activeEgressId);
+        const fileResults = info.fileResults || [];
+        if (fileResults.length > 0) {
+          const filename = fileResults[0].filename;
+          recordingUrl = `${supabaseUrl}/storage/v1/object/public/recordings/${filename}`;
+        }
+      } catch (stopErr: any) {
+        const errMsg = stopErr?.message || String(stopErr);
+        console.error("Stop egress error:", errMsg);
+        
+        // If egress is already ended/aborted, that's OK - just clean up
+        if (errMsg.includes("cannot be stopped") || errMsg.includes("not found") || errMsg.includes("ABORTED") || errMsg.includes("COMPLETE")) {
+          // Try to find the recording file in storage
+          try {
+            const { data: files } = await adminSupabase.storage
+              .from("recordings")
+              .list(sessionId, { limit: 10, sortBy: { column: "created_at", order: "desc" } });
+            
+            if (files && files.length > 0) {
+              recordingUrl = `${supabaseUrl}/storage/v1/object/public/recordings/${sessionId}/${files[0].name}`;
+            }
+          } catch (_listErr) {
+            // Ignore storage list errors
+          }
+        } else {
+          // Real error - reset state but report it
+          await adminSupabase
+            .from("live_sessions")
+            .update({ egress_id: null, is_recording: false })
+            .eq("id", sessionId);
+          return new Response(
+            JSON.stringify({ success: false, error: "Yozib olishni to'xtatishda xatolik: " + errMsg }),
+            { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
       }
 
-      // Update session and save recording
-      const adminSupabase = createClient(supabaseUrl, supabaseServiceKey);
+      // Clean up session state
       await adminSupabase
         .from("live_sessions")
         .update({ egress_id: null, is_recording: false })
         .eq("id", sessionId);
 
+      // Save recording if URL found
       if (recordingUrl) {
         await adminSupabase.from("recordings").insert({
           live_session_id: sessionId,
@@ -145,10 +188,10 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: false, error: "Invalid action. Use 'start' or 'stop'" }),
+      JSON.stringify({ success: false, error: "Invalid action" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error("LiveKit recording error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err.message || "Internal server error" }),
