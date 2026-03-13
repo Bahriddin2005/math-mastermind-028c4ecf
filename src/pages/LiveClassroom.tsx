@@ -169,10 +169,27 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
         setEgressId(null);
         setIsRecording(false);
         if (data.recordingUrl) {
-          toast.success("✅ Video saqlandi! Yuklab olish boshlanmoqda...");
-          // Auto-download the recorded video
+          toast.success("✅ Video saqlandi! Yuklab olish tayyorlanmoqda...");
           try {
-            const response = await fetch(data.recordingUrl);
+            let response: Response | null = null;
+
+            for (let attempt = 0; attempt < 10; attempt++) {
+              const cacheBustedUrl = `${data.recordingUrl}${data.recordingUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
+              const current = await fetch(cacheBustedUrl, { cache: 'no-store' });
+              const contentType = current.headers.get('content-type') || '';
+
+              if (current.ok && contentType.includes('video')) {
+                response = current;
+                break;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+
+            if (!response) {
+              throw new Error('Video fayl hali tayyor emas');
+            }
+
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -182,13 +199,14 @@ const MeetUI = ({ session, isTeacher, sessionId, onLeave }: {
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
+            toast.success("🎉 Video yuklab olindi");
           } catch (dlErr) {
             console.error("Download error:", dlErr);
-            // Fallback: open in new tab
+            toast.error("Video hali tayyor emas. Birozdan keyin qayta urinib ko'ring.");
             window.open(data.recordingUrl, '_blank');
           }
         } else {
-          toast.success("Yozib olish to'xtatildi");
+          toast.info("Yozuv tayyorlanmoqda, birozdan keyin qayta urinib ko'ring");
         }
       }
     } catch (err) {
