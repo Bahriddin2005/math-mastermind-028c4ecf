@@ -117,6 +117,7 @@ const ColumnSelector = ({ onSelect }: { onSelect: (cols: number) => void }) => {
 };
 
 const AbacusSimulator = () => {
+  const isMobile = useIsMobile();
   const [columns, setColumns] = useState<number | null>(null);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
