@@ -11,6 +11,7 @@ import {
   type AbacusOrientation,
 } from '@/components/abacus';
 import { useSound } from '@/hooks/useSound';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 export type BeadSoundType = 'pop' | 'bead' | 'beadHigh' | 'tick' | 'correct' | 'incorrect' | 'start' | 'countdown' | 'combo' | 'levelUp' | 'complete' | 'winner' | 'whoosh' | 'sparkle' | 'bounce';
@@ -116,6 +117,7 @@ const ColumnSelector = ({ onSelect }: { onSelect: (cols: number) => void }) => {
 };
 
 const AbacusSimulator = () => {
+  const isMobile = useIsMobile();
   const [columns, setColumns] = useState<number | null>(null);
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<AbacusMode>('beginner');
@@ -141,9 +143,13 @@ const AbacusSimulator = () => {
       const newColumns = Math.max(3, Math.min(17, current + delta));
       const maxValue = Math.pow(10, newColumns) - 1;
       setValue(v => Math.min(v, maxValue));
+      // Auto-switch orientation on mobile
+      if (isMobile) {
+        setOrientation(newColumns > 5 ? 'vertical' : 'horizontal');
+      }
       return newColumns;
     });
-  }, []);
+  }, [isMobile]);
 
   const columnLabels = [
     'Birlik', "O'nlik", 'Yuzlik', 'Minglik', "O'n minglik", "Yuz minglik",
@@ -151,8 +157,18 @@ const AbacusSimulator = () => {
     'Trillion', "O'n trln", "Yuz trln", "Ming trln", "O'n ming trln"
   ];
 
+  const handleColumnSelect = useCallback((cols: number) => {
+    setColumns(cols);
+    // Mobile: auto-switch to vertical for 5+ columns
+    if (isMobile && cols > 5) {
+      setOrientation('vertical');
+    } else {
+      setOrientation('horizontal');
+    }
+  }, [isMobile]);
+
   if (columns === null) {
-    return <ColumnSelector onSelect={(cols) => setColumns(cols)} />;
+    return <ColumnSelector onSelect={handleColumnSelect} />;
   }
 
   return (
