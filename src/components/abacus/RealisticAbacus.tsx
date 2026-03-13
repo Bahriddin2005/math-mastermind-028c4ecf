@@ -142,11 +142,12 @@ export const RealisticAbacus = ({
   
   // Calculate frame width based on columns + bead size + gaps
   const gap = getGap(columns);
-  const framePaddingX = compact ? 20 + 12 : 28 + 20; // outer + inner padding each side
+  const columnMinWidth = beadSize * 1.8; // matches AbacusColumn minWidth
+  const totalColumnWidth = columns * columnMinWidth + (columns - 1) * gap;
+  const framePaddingX = compact ? 32 : 48; // inner content padding each side
   const borderWidth = compact ? 8 : 10;
   const extraFrame = compact ? 2 : 3; // outer ring
-  const totalColumnWidth = columns * beadSize + (columns - 1) * gap;
-  const frameWidth = totalColumnWidth + (framePaddingX + borderWidth + extraFrame) * 2;
+  const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   return (
     <div className={cn(
