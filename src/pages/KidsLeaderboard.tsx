@@ -62,13 +62,11 @@ const KidsLeaderboard = () => {
 
     if (timeFilter === 'all') {
       const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, user_id, username, total_score, best_streak, avatar_url')
-        .order('total_score', { ascending: false })
-        .limit(50);
+        .rpc('get_leaderboard_profiles') as { data: any[] | null };
 
       if (profilesData) {
-        const userIds = profilesData.map(p => p.user_id);
+        const limitedData = profilesData.slice(0, 50);
+        const userIds = limitedData.map(p => p.user_id);
         const { data: gamificationData } = await supabase
           .from('user_gamification')
           .select('user_id, level, total_xp')
@@ -78,14 +76,14 @@ const KidsLeaderboard = () => {
           gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
         );
 
-        setEntries(profilesData.map(p => ({
+        setEntries(limitedData.map(p => ({
           ...p,
           level: gamificationMap.get(p.user_id)?.level || 1,
           total_xp: gamificationMap.get(p.user_id)?.total_xp || 0,
         })));
         
         // Trigger confetti if user is in top 3
-        const userRank = profilesData.findIndex(p => p.user_id === user?.id);
+        const userRank = limitedData.findIndex(p => p.user_id === user?.id);
         if (userRank >= 0 && userRank < 3) {
           triggerConfetti('stars');
         }
@@ -122,9 +120,7 @@ const KidsLeaderboard = () => {
         
         if (userIds.length > 0) {
           const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, user_id, username, avatar_url')
-            .in('user_id', userIds);
+            .rpc('get_public_profiles_by_ids', { user_ids: userIds }) as { data: any[] | null };
 
           const { data: gamificationData } = await supabase
             .from('user_gamification')

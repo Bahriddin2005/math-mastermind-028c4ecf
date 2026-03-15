@@ -60,9 +60,7 @@ export const BlogComments = ({ postId }: BlogCommentsProps) => {
     if (commentsData) {
       const userIds = [...new Set(commentsData.map(c => c.user_id))];
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username, avatar_url')
-        .in('user_id', userIds);
+        .rpc('get_public_profiles_by_ids', { user_ids: userIds }) as { data: any[] | null };
 
       const commentsWithProfiles = commentsData.map(comment => ({
         ...comment,
