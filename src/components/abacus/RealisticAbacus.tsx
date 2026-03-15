@@ -156,15 +156,36 @@ export const RealisticAbacus = ({
   const extraFrame = deviceType === 'mobile' ? 2 : (compact ? 3 : 4);
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
-  // Auto-scale to fit viewport on mobile
-  const availableWidth = typeof window !== 'undefined' ? window.innerWidth - 16 : 9999;
-  const scaleFactor = frameWidth > availableWidth ? availableWidth / frameWidth : 1;
+  // Estimate frame height from minHeight + padding + borders
+  const innerMinHeight = compact ? 280 : 380;
+  const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
+  const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
+  
+  // Auto-scale to fit viewport
+  const screenW = typeof window !== 'undefined' ? window.innerWidth : 9999;
+  const screenH = typeof window !== 'undefined' ? window.innerHeight : 9999;
+  
+  let scaleFactor = 1;
+  if (isVertical && deviceType === 'mobile') {
+    // After 90deg rotation: frameWidth → visual height, frameHeight → visual width
+    const availH = screenH - 160; // header + controls space
+    const availW = screenW - 16;
+    scaleFactor = Math.min(availW / frameHeight, availH / frameWidth, 1);
+  } else {
+    const availW = screenW - 16;
+    scaleFactor = frameWidth > availW ? availW / frameWidth : 1;
+  }
   
   return (
     <div className={cn(
       "flex items-center justify-center w-full",
-      isVertical ? "flex-row overflow-y-auto" : "flex-col px-1 sm:px-4 lg:px-6"
-    )}>
+      isVertical ? "flex-row" : "flex-col px-1 sm:px-4 lg:px-6"
+    )}
+    style={isVertical && deviceType === 'mobile' ? { 
+      height: `${frameWidth * scaleFactor + 20}px`,
+      overflow: 'hidden',
+    } : undefined}
+    >
       {/* === OUTER FRAME — carved rosewood frame === */}
       <motion.div 
         className="relative overflow-visible"
@@ -187,7 +208,7 @@ export const RealisticAbacus = ({
           `,
         }}
         initial={{ opacity: 0, scale: 0.97, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        animate={{ opacity: 1, scale: scaleFactor, y: 0 }}
         transition={{ duration: 0.4, type: 'spring' }}
       >
         {/* Wood grain texture */}
