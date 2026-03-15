@@ -59,11 +59,11 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 3) return 56;
-      if (cols <= 5) return 48;
-      if (cols <= 7) return 40;
-      if (cols <= 10) return 34;
-      return 28;
+      if (cols <= 3) return 64;
+      if (cols <= 5) return 54;
+      if (cols <= 7) return 46;
+      if (cols <= 10) return 38;
+      return 32;
     }
     if (deviceType === 'tablet') {
       if (cols <= 3) return 58;
@@ -157,7 +157,7 @@ export const RealisticAbacus = ({
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   // Estimate frame height from minHeight + padding + borders
-  const innerMinHeight = compact ? 280 : 380;
+  const innerMinHeight = compact ? 320 : 460;
   const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
   const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
   
@@ -286,7 +286,7 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: compact ? '8px 12px' : '16px 20px',
-            minHeight: compact ? 280 : 380,
+            minHeight: compact ? 320 : 460,
           }}
         >
           {[...Array(columns)].map((_, i) => {
