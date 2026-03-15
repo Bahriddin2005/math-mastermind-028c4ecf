@@ -119,9 +119,7 @@ const KidsLeaderboard = () => {
         
         if (userIds.length > 0) {
           const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, user_id, username, avatar_url')
-            .in('user_id', userIds);
+            .rpc('get_public_profiles_by_ids', { user_ids: userIds }) as { data: any[] | null };
 
           const { data: gamificationData } = await supabase
             .from('user_gamification')

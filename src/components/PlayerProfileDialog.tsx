@@ -100,7 +100,7 @@ export const PlayerProfileDialog = ({ userId, open, onOpenChange }: PlayerProfil
 
       // Fetch profile and gamification in parallel
       const [profileResult, gamificationResult] = await Promise.all([
-        supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
+        supabase.rpc('get_public_profile', { target_user_id: userId }),
         supabase.from('user_gamification').select('level, current_xp, total_xp, energy, max_energy, max_combo, total_correct, total_incorrect').eq('user_id', userId).maybeSingle()
       ]);
 

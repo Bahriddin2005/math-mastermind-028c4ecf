@@ -485,7 +485,7 @@ const ParticipantsPanel = ({ sessionId, isTeacher }: { sessionId: string; isTeac
         // Fetch profiles
         const uids = data.map(p => p.user_id);
         if (uids.length) {
-          const { data: profs } = await supabase.from('profiles').select('user_id, username, avatar_url').in('user_id', uids);
+          const { data: profs } = await supabase.rpc('get_public_profiles_by_ids', { user_ids: uids }) as { data: any[] | null };
           if (profs) {
             const map: Record<string, any> = {};
             profs.forEach(p => { map[p.user_id] = p; });
