@@ -151,9 +151,9 @@ export const RealisticAbacus = ({
   const gap = getGap(columns);
   const columnMinWidth = beadSize * 1.8;
   const totalColumnWidth = columns * columnMinWidth + (columns - 1) * gap;
-  const framePaddingX = compact ? 36 : 56;
-  const borderWidth = compact ? 10 : 14;
-  const extraFrame = compact ? 3 : 4;
+  const framePaddingX = deviceType === 'mobile' ? (compact ? 16 : 24) : (compact ? 36 : 56);
+  const borderWidth = deviceType === 'mobile' ? (compact ? 6 : 8) : (compact ? 10 : 14);
+  const extraFrame = deviceType === 'mobile' ? 2 : (compact ? 3 : 4);
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   return (
