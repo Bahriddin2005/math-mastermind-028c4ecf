@@ -161,19 +161,26 @@ export const RealisticAbacus = ({
   const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
   const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
   
-  // Auto-scale to fit viewport
+  // Auto-scale to fit viewport — fill as much space as possible
   const screenW = typeof window !== 'undefined' ? window.innerWidth : 9999;
   const screenH = typeof window !== 'undefined' ? window.innerHeight : 9999;
   
   let scaleFactor = 1;
   if (isVertical && deviceType === 'mobile') {
     // After 90deg rotation: frameWidth → visual height, frameHeight → visual width
-    const availH = screenH - 160; // header + controls space
+    const availH = screenH - 160;
     const availW = screenW - 16;
     scaleFactor = Math.min(availW / frameHeight, availH / frameWidth, 1);
   } else {
+    // Horizontal: scale UP to fill available width (max 100vw - 16px)
     const availW = screenW - 16;
-    scaleFactor = frameWidth > availW ? availW / frameWidth : 1;
+    scaleFactor = availW / frameWidth;
+    // Also check height so it doesn't overflow vertically
+    const availH = screenH - (deviceType === 'mobile' ? 220 : 280);
+    const heightScale = availH / frameHeight;
+    scaleFactor = Math.min(scaleFactor, heightScale);
+    // Cap at reasonable max
+    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.5 : 1.2);
   }
   
   return (
