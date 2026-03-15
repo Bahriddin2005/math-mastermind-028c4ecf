@@ -414,39 +414,7 @@ export const FullscreenAbacus = ({
         </div>
       </div>
 
-      {/* Bottom Value Display */}
-      <AnimatePresence>
-        {showControls && mode !== 'mental' && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            transition={{ duration: 0.3 }}
-            className="absolute bottom-0 left-0 right-0 z-50"
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
-              background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, transparent 100%)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center px-4 py-4">
-              <motion.div
-                key={value}
-                initial={{ scale: 0.9, opacity: 0.5 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="inline-block"
-              >
-                <div className="px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl">
-                  <span className="text-5xl sm:text-6xl font-bold text-white tracking-wider">
-                    {value.toLocaleString()}
-                  </span>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Bottom Value Display — removed */}
 
       {/* Mental mode indicator */}
       {mode === 'mental' && showControls && (
