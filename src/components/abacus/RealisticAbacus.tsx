@@ -165,8 +165,8 @@ export const RealisticAbacus = ({
       <motion.div 
         className="relative overflow-visible"
         style={{
-          width: frameWidth,
-          maxWidth: 'calc(100vw - 24px)',
+          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 24 : frameWidth),
+          maxWidth: 'calc(100vw - 16px)',
           background: frameBackground,
           padding: compact ? '18px 24px' : '24px 36px',
           border: `${borderWidth}px solid #1A0D06`,
