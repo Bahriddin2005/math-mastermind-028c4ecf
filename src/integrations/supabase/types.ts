@@ -2407,7 +2407,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          best_streak: number | null
+          created_at: string | null
+          current_streak: number | null
+          daily_goal: number | null
+          id: string | null
+          last_active_date: string | null
+          selected_frame: string | null
+          teacher_status: string | null
+          total_problems_solved: number | null
+          total_score: number | null
+          user_id: string | null
+          username: string | null
+          vip_expires_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          best_streak?: number | null
+          created_at?: string | null
+          current_streak?: number | null
+          daily_goal?: number | null
+          id?: string | null
+          last_active_date?: string | null
+          selected_frame?: string | null
+          teacher_status?: string | null
+          total_problems_solved?: number | null
+          total_score?: number | null
+          user_id?: string | null
+          username?: string | null
+          vip_expires_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          best_streak?: number | null
+          created_at?: string | null
+          current_streak?: number | null
+          daily_goal?: number | null
+          id?: string | null
+          last_active_date?: string | null
+          selected_frame?: string | null
+          teacher_status?: string | null
+          total_problems_solved?: number | null
+          total_score?: number | null
+          user_id?: string | null
+          username?: string | null
+          vip_expires_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_leaderboard_profiles: {
