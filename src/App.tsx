@@ -93,7 +93,7 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <TooltipProvider>
         <AuthProvider>
-          <SessionTimeoutProvider>
+            <SessionTimeoutProvider>
             <PageLoader />
           <Toaster />
           <Sonner />
