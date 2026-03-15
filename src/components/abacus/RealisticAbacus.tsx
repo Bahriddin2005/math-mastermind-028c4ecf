@@ -172,15 +172,15 @@ export const RealisticAbacus = ({
     const availW = screenW - 16;
     scaleFactor = Math.min(availW / frameHeight, availH / frameWidth, 1);
   } else {
-    // Horizontal: scale UP to fill available width (max 100vw - 16px)
-    const availW = screenW - 16;
+    // Horizontal: scale UP to fill available width
+    const availW = screenW - 12;
     scaleFactor = availW / frameWidth;
     // Also check height so it doesn't overflow vertically
-    const availH = screenH - (deviceType === 'mobile' ? 220 : 280);
+    const availH = screenH - (deviceType === 'mobile' ? 180 : 260);
     const heightScale = availH / frameHeight;
     scaleFactor = Math.min(scaleFactor, heightScale);
     // Cap at reasonable max
-    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.5 : 1.2);
+    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 2.0 : 1.3);
   }
   
   return (
