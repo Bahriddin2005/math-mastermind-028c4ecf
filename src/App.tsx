@@ -47,7 +47,7 @@ const KidsCourses = lazy(() => import("@/pages/KidsCourses"));
 const KidsLeaderboard = lazy(() => import("@/pages/KidsLeaderboard"));
 const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
 const LessonStats = lazy(() => import("@/pages/LessonStats"));
-const Onboarding = lazy(() => import("@/pages/Onboarding"));
+
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const About = lazy(() => import("@/pages/About"));
@@ -109,7 +109,7 @@ const App = () => (
                       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                       <Route path="/train" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                       <Route path="/auth" element={<Auth />} />
-                      <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                      
                       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                       <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/contact" element={<Contact />} />

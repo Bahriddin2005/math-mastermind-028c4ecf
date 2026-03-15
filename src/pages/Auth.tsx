@@ -161,7 +161,7 @@ const Auth = () => {
           toastHook({ variant: 'destructive', title: 'Xatolik', description: msg });
         } else {
           toastHook({ title: 'Muvaffaqiyat! 🎉', description: 'Akkaunt yaratildi!' });
-          navigate('/onboarding');
+          navigate('/');
         }
       } else if (mode === 'forgot-password') {
         const { error } = await resetPassword(email);
