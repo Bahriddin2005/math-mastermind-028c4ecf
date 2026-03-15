@@ -168,7 +168,7 @@ export const RealisticAbacus = ({
           width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 24 : frameWidth),
           maxWidth: 'calc(100vw - 16px)',
           background: frameBackground,
-          padding: compact ? '18px 24px' : '24px 36px',
+          padding: deviceType === 'mobile' ? (compact ? '10px 12px' : '14px 16px') : (compact ? '18px 24px' : '24px 36px'),
           border: `${borderWidth}px solid #1A0D06`,
           borderRadius: compact ? 16 : 22,
           boxShadow: `
