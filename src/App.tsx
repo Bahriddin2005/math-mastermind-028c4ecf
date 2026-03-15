@@ -47,7 +47,7 @@ const KidsCourses = lazy(() => import("@/pages/KidsCourses"));
 const KidsLeaderboard = lazy(() => import("@/pages/KidsLeaderboard"));
 const ParentDashboard = lazy(() => import("@/pages/ParentDashboard"));
 const LessonStats = lazy(() => import("@/pages/LessonStats"));
-const Onboarding = lazy(() => import("@/pages/Onboarding"));
+
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const About = lazy(() => import("@/pages/About"));
