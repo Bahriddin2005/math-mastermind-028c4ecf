@@ -76,7 +76,7 @@ const KidsLeaderboard = () => {
           gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
         );
 
-        setEntries(profilesData.map(p => ({
+        setEntries(limitedData.map(p => ({
           ...p,
           level: gamificationMap.get(p.user_id)?.level || 1,
           total_xp: gamificationMap.get(p.user_id)?.total_xp || 0,
