@@ -128,6 +128,13 @@ export const RealisticAbacus = ({
   const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
+    if (deviceType === 'mobile') {
+      if (cols <= 3) return 12;
+      if (cols <= 5) return 8;
+      if (cols <= 7) return 5;
+      if (cols <= 10) return 3;
+      return 2;
+    }
     if (cols <= 3) return 20;
     if (cols <= 5) return 14;
     if (cols <= 7) return 10;
