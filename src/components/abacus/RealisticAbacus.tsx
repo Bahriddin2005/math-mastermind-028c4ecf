@@ -59,18 +59,18 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 3) return 52;
-      if (cols <= 5) return 46;
-      if (cols <= 7) return 38;
-      if (cols <= 10) return 32;
-      return 26;
+      if (cols <= 3) return 44;
+      if (cols <= 5) return 36;
+      if (cols <= 7) return 30;
+      if (cols <= 10) return 26;
+      return 22;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 3) return 64;
-      if (cols <= 5) return 56;
-      if (cols <= 7) return 48;
-      if (cols <= 10) return 42;
-      return 36;
+      if (cols <= 3) return 58;
+      if (cols <= 5) return 50;
+      if (cols <= 7) return 42;
+      if (cols <= 10) return 36;
+      return 30;
     }
     if (cols <= 3) return 82;
     if (cols <= 5) return 72;
@@ -128,6 +128,13 @@ export const RealisticAbacus = ({
   const beadSize = compact ? Math.min(26, getBeadSize(columns)) : getBeadSize(columns);
   
   const getGap = (cols: number): number => {
+    if (deviceType === 'mobile') {
+      if (cols <= 3) return 12;
+      if (cols <= 5) return 8;
+      if (cols <= 7) return 5;
+      if (cols <= 10) return 3;
+      return 2;
+    }
     if (cols <= 3) return 20;
     if (cols <= 5) return 14;
     if (cols <= 7) return 10;
@@ -144,9 +151,9 @@ export const RealisticAbacus = ({
   const gap = getGap(columns);
   const columnMinWidth = beadSize * 1.8;
   const totalColumnWidth = columns * columnMinWidth + (columns - 1) * gap;
-  const framePaddingX = compact ? 36 : 56;
-  const borderWidth = compact ? 10 : 14;
-  const extraFrame = compact ? 3 : 4;
+  const framePaddingX = deviceType === 'mobile' ? (compact ? 16 : 24) : (compact ? 36 : 56);
+  const borderWidth = deviceType === 'mobile' ? (compact ? 6 : 8) : (compact ? 10 : 14);
+  const extraFrame = deviceType === 'mobile' ? 2 : (compact ? 3 : 4);
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   return (
@@ -158,10 +165,10 @@ export const RealisticAbacus = ({
       <motion.div 
         className="relative overflow-visible"
         style={{
-          width: frameWidth,
-          maxWidth: 'calc(100vw - 24px)',
+          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 24 : frameWidth),
+          maxWidth: 'calc(100vw - 16px)',
           background: frameBackground,
-          padding: compact ? '18px 24px' : '24px 36px',
+          padding: deviceType === 'mobile' ? (compact ? '10px 12px' : '14px 16px') : (compact ? '18px 24px' : '24px 36px'),
           border: `${borderWidth}px solid #1A0D06`,
           borderRadius: compact ? 16 : 22,
           boxShadow: `
