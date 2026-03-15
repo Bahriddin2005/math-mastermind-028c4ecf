@@ -65,7 +65,8 @@ const KidsLeaderboard = () => {
         .rpc('get_leaderboard_profiles') as { data: any[] | null };
 
       if (profilesData) {
-        const userIds = profilesData.map(p => p.user_id);
+        const limitedData = profilesData.slice(0, 50);
+        const userIds = limitedData.map(p => p.user_id);
         const { data: gamificationData } = await supabase
           .from('user_gamification')
           .select('user_id, level, total_xp')
