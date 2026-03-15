@@ -62,10 +62,7 @@ const KidsLeaderboard = () => {
 
     if (timeFilter === 'all') {
       const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, user_id, username, total_score, best_streak, avatar_url')
-        .order('total_score', { ascending: false })
-        .limit(50);
+        .rpc('get_leaderboard_profiles') as { data: any[] | null };
 
       if (profilesData) {
         const userIds = profilesData.map(p => p.user_id);
