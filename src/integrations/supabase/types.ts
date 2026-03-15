@@ -2410,6 +2410,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_leaderboard_profiles: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          current_streak: number
+          selected_frame: string
+          total_problems_solved: number
+          total_score: number
+          user_id: string
+          username: string
+        }[]
+      }
       get_or_create_daily_challenge: {
         Args: never
         Returns: {
@@ -2439,6 +2452,19 @@ export type Database = {
           total_problems_solved: number
           total_users: number
           weekly_growth: number
+        }[]
+      }
+      get_public_profile: {
+        Args: { target_user_id: string }
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          current_streak: number
+          selected_frame: string
+          total_problems_solved: number
+          total_score: number
+          user_id: string
+          username: string
         }[]
       }
       get_user_total_score: {
