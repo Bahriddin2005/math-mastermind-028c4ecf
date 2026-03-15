@@ -80,7 +80,7 @@ export const StudentLMSDashboard = () => {
         .limit(50),
     ]);
 
-    if (lessonsRes.data) setUpcomingLessons(lessonsRes.data);
+    if (lessonsRes.data) setUpcomingLessons(lessonsRes.data as any);
     if (enrollmentsRes.data) {
       // Fetch course titles
       const courseIds = enrollmentsRes.data.map(e => e.course_id);

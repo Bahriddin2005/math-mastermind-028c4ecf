@@ -90,7 +90,7 @@ export const TeacherLMSDashboard = () => {
         .limit(100),
     ]);
 
-    if (sessionsRes.data) setSessions(sessionsRes.data);
+    if (sessionsRes.data) setSessions(sessionsRes.data as any);
     if (coursesRes.data) setCourses(coursesRes.data);
     if (attendanceRes.data) setAttendance(attendanceRes.data);
     setLoading(false);
