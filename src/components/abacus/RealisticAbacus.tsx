@@ -157,7 +157,7 @@ export const RealisticAbacus = ({
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   // Estimate frame height from minHeight + padding + borders
-  const innerMinHeight = compact ? 380 : 540;
+  const innerMinHeight = compact ? 440 : 620;
   const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
   const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
   
@@ -286,7 +286,7 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: compact ? '8px 12px' : '16px 20px',
-            minHeight: compact ? 380 : 540,
+            minHeight: compact ? 440 : 620,
           }}
         >
           {[...Array(columns)].map((_, i) => {
