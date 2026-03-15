@@ -104,7 +104,7 @@ export const PlayerProfileDialog = ({ userId, open, onOpenChange }: PlayerProfil
         supabase.from('user_gamification').select('level, current_xp, total_xp, energy, max_energy, max_combo, total_correct, total_incorrect').eq('user_id', userId).maybeSingle()
       ]);
 
-      const profileData = profileResult.data;
+      const profileData = Array.isArray(profileResult.data) ? profileResult.data[0] : profileResult.data;
 
       if (gamificationResult.data) {
         setGamification(gamificationResult.data);
