@@ -156,18 +156,23 @@ export const RealisticAbacus = ({
   const extraFrame = deviceType === 'mobile' ? 2 : (compact ? 3 : 4);
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
+  // Auto-scale to fit viewport on mobile
+  const availableWidth = typeof window !== 'undefined' ? window.innerWidth - 16 : 9999;
+  const scaleFactor = frameWidth > availableWidth ? availableWidth / frameWidth : 1;
+  
   return (
     <div className={cn(
       "flex items-center justify-center w-full",
-      isVertical ? "flex-row overflow-y-auto" : "flex-col overflow-x-auto px-2 sm:px-4 lg:px-6"
+      isVertical ? "flex-row overflow-y-auto" : "flex-col px-1 sm:px-4 lg:px-6"
     )}>
       {/* === OUTER FRAME — carved rosewood frame === */}
       <motion.div 
         className="relative overflow-visible"
         style={{
-          width: Math.min(frameWidth, typeof window !== 'undefined' ? window.innerWidth - 24 : frameWidth),
-          maxWidth: 'calc(100vw - 16px)',
+          width: frameWidth,
           background: frameBackground,
+          transform: `${isVertical ? 'rotate(90deg) ' : ''}scale(${scaleFactor})`,
+          transformOrigin: 'center center',
           padding: deviceType === 'mobile' ? (compact ? '10px 12px' : '14px 16px') : (compact ? '18px 24px' : '24px 36px'),
           border: `${borderWidth}px solid #1A0D06`,
           borderRadius: compact ? 16 : 22,
