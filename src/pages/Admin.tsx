@@ -110,6 +110,7 @@ interface UserProfile {
   created_at: string;
   avatar_url: string | null;
   phone_number: string | null;
+  last_active_date?: string | null;
 }
 
 interface GameSession {
@@ -209,10 +210,15 @@ const Admin = () => {
   }, [isAdmin]);
 
   const fetchAdminUsers = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('user_roles')
       .select('user_id')
       .eq('role', 'admin');
+    if (error) {
+      console.error('Error fetching admin users:', error);
+      toast.error("Admin foydalanuvchilar ro'yxatini olishda xatolik");
+      return;
+    }
     if (data) {
       setAdminUsers(data.map(r => r.user_id));
     }
@@ -231,6 +237,9 @@ const Admin = () => {
       if (!error) {
         setAdminUsers(prev => prev.filter(id => id !== userId));
         toast.success("Admin huquqi olib tashlandi");
+      } else {
+        console.error('Error removing admin role:', error);
+        toast.error("Admin huquqini olib tashlashda xatolik");
       }
     } else {
       const { error } = await supabase
@@ -240,18 +249,28 @@ const Admin = () => {
       if (!error) {
         setAdminUsers(prev => [...prev, userId]);
         toast.success("Admin huquqi berildi");
+      } else {
+        console.error('Error assigning admin role:', error);
+        toast.error("Admin huquqini berishda xatolik");
       }
     }
   };
 
   const checkAdminRole = async () => {
     if (!user) return;
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
       .eq('role', 'admin')
       .maybeSingle();
+    if (error) {
+      console.error('Error checking admin role:', error);
+      toast.error("Admin huquqini tekshirishda xatolik");
+      navigate('/');
+      setCheckingAdmin(false);
+      return;
+    }
     if (data) {
       setIsAdmin(true);
     } else {
@@ -263,51 +282,77 @@ const Admin = () => {
 
   const fetchMessages = async () => {
     setLoadingMessages(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
-    if (data) setMessages(data);
+    if (error) {
+      console.error('Error fetching contact messages:', error);
+      toast.error("Xabarlarni olishda xatolik");
+    } else if (data) {
+      setMessages(data);
+    }
     setLoadingMessages(false);
   };
 
   const fetchBlogPosts = async () => {
     setLoadingPosts(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false });
-    if (data) setBlogPosts(data);
+    if (error) {
+      console.error('Error fetching blog posts:', error);
+      toast.error("Maqolalarni olishda xatolik");
+    } else if (data) {
+      setBlogPosts(data);
+    }
     setLoadingPosts(false);
   };
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .order('total_score', { ascending: false });
-    if (data) setUsers(data);
+    if (error) {
+      console.error('Error fetching users:', error);
+      toast.error("Foydalanuvchilar ro'yxatini olishda xatolik");
+    } else if (data) {
+      setUsers(data);
+    }
     setLoadingUsers(false);
   };
 
   const fetchGameSessions = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('game_sessions')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(500);
-    if (data) setGameSessions(data);
+    if (error) {
+      console.error('Error fetching game sessions:', error);
+      toast.error("O'yin sessiyalarini olishda xatolik");
+    } else if (data) {
+      setGameSessions(data);
+    }
   };
 
   const fetchStats = async () => {
     const today = new Date().toISOString().split('T')[0];
     
     // Get profiles stats
-    const { data: profiles } = await supabase.from('profiles').select('*');
+    const { data: profiles, error: profilesError } = await supabase.from('profiles').select('*');
     // Get game sessions count
-    const { count: gamesCount } = await supabase.from('game_sessions').select('*', { count: 'exact', head: true });
+    const { count: gamesCount, error: gamesError } = await supabase.from('game_sessions').select('*', { count: 'exact', head: true });
     
+    if (profilesError || gamesError) {
+      console.error('Error fetching stats:', { profilesError, gamesError });
+      toast.error("Statistikani olishda xatolik");
+      return;
+    }
+
     if (profiles) {
       const totalScore = profiles.reduce((sum, p) => sum + (p.total_score || 0), 0);
       const totalProblems = profiles.reduce((sum, p) => sum + (p.total_problems_solved || 0), 0);

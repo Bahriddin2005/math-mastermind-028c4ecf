@@ -5,6 +5,13 @@ import type { Database } from './types';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  // Early, clear failure instead of silent runtime bugs
+  throw new Error(
+    "Supabase konfiguratsiyasi topilmadi. Iltimos, 'VITE_SUPABASE_URL' va 'VITE_SUPABASE_PUBLISHABLE_KEY' environment o'zgaruvchilarini .env faylida to'g'ri sozlang."
+  );
+}
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
