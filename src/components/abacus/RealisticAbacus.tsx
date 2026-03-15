@@ -185,8 +185,6 @@ export const RealisticAbacus = ({
             0 0 0 ${extraFrame + 1}px #1A0D06,
             0 0 0 ${extraFrame + 3}px #3D2818
           `,
-          transform: isVertical ? 'rotate(90deg)' : 'none',
-          transformOrigin: 'center center',
         }}
         initial={{ opacity: 0, scale: 0.97, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
