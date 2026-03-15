@@ -47,6 +47,13 @@ export type Database = {
             referencedRelation: "live_sessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "attendance_live_session_id_fkey"
+            columns: ["live_session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       audit_logs: {
@@ -924,6 +931,13 @@ export type Database = {
             referencedRelation: "live_sessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "live_chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       live_session_participants: {
@@ -978,6 +992,13 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_session_participants_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1464,6 +1485,13 @@ export type Database = {
             columns: ["live_session_id"]
             isOneToOne: false
             referencedRelation: "live_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recordings_live_session_id_fkey"
+            columns: ["live_session_id"]
+            isOneToOne: false
+            referencedRelation: "live_sessions_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -2407,7 +2435,98 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      live_sessions_safe: {
+        Row: {
+          course_id: string | null
+          created_at: string | null
+          description: string | null
+          egress_id: string | null
+          ended_at: string | null
+          id: string | null
+          is_locked: boolean | null
+          is_recording: boolean | null
+          is_recurring: boolean | null
+          max_participants: number | null
+          meeting_type: string | null
+          recording_duration: number | null
+          recording_url: string | null
+          recurrence_rule: string | null
+          room_name: string | null
+          scheduled_at: string | null
+          started_at: string | null
+          status: string | null
+          teacher_id: string | null
+          title: string | null
+          updated_at: string | null
+          zoom_join_url: string | null
+          zoom_meeting_id: string | null
+          zoom_password: string | null
+          zoom_start_url: string | null
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          egress_id?: string | null
+          ended_at?: string | null
+          id?: string | null
+          is_locked?: boolean | null
+          is_recording?: boolean | null
+          is_recurring?: boolean | null
+          max_participants?: number | null
+          meeting_type?: string | null
+          recording_duration?: number | null
+          recording_url?: string | null
+          recurrence_rule?: string | null
+          room_name?: string | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          teacher_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: never
+          zoom_start_url?: never
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          egress_id?: string | null
+          ended_at?: string | null
+          id?: string | null
+          is_locked?: boolean | null
+          is_recording?: boolean | null
+          is_recurring?: boolean | null
+          max_participants?: number | null
+          meeting_type?: string | null
+          recording_duration?: number | null
+          recording_url?: string | null
+          recurrence_rule?: string | null
+          room_name?: string | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          teacher_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          zoom_join_url?: string | null
+          zoom_meeting_id?: string | null
+          zoom_password?: never
+          zoom_start_url?: never
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_leaderboard_profiles: {

@@ -63,7 +63,7 @@ export const StudentLMSDashboard = () => {
 
     const [lessonsRes, enrollmentsRes, attendanceRes] = await Promise.all([
       supabase
-        .from('live_sessions')
+        .from('live_sessions_safe' as any)
         .select('*')
         .gte('scheduled_at', now)
         .in('status', ['scheduled', 'live'])
@@ -80,7 +80,7 @@ export const StudentLMSDashboard = () => {
         .limit(50),
     ]);
 
-    if (lessonsRes.data) setUpcomingLessons(lessonsRes.data);
+    if (lessonsRes.data) setUpcomingLessons(lessonsRes.data as any);
     if (enrollmentsRes.data) {
       // Fetch course titles
       const courseIds = enrollmentsRes.data.map(e => e.course_id);
