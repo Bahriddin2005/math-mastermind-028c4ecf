@@ -35,7 +35,7 @@ const LiveSessions = () => {
 
   const fetchSessions = async () => {
     const { data, error } = await supabase
-      .from('live_sessions')
+      .from('live_sessions_safe' as any)
       .select('*')
       .in('status', ['scheduled', 'live'])
       .order('scheduled_at', { ascending: true });

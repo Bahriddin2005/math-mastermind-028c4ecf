@@ -35,7 +35,7 @@ const LiveClassroom = () => {
     if (!sessionId || !user) return;
     (async () => {
       // Fetch session
-      const { data: sess } = await supabase.from('live_sessions').select('*').eq('id', sessionId).single();
+      const { data: sess } = await supabase.from('live_sessions_safe' as any).select('*').eq('id', sessionId).single();
       if (!sess) { setError("Dars topilmadi"); setLoading(false); return; }
       setSession(sess);
 
