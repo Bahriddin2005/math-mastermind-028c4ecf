@@ -111,7 +111,7 @@ export const PlayerProfileDialog = ({ userId, open, onOpenChange }: PlayerProfil
       }
 
       if (profileData) {
-        setProfile(profileData);
+        setProfile(profileData as unknown as PlayerProfile);
       }
 
       // Fetch game sessions for stats
