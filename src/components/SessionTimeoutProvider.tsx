@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSessionTimeout } from '@/hooks/useSessionTimeout';
-import { useAuth } from '@/hooks/useAuth';
 
 export const SessionTimeoutProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
   const [settings, setSettings] = useState({
     enabled: true,
     timeoutMinutes: 30,
@@ -23,7 +21,6 @@ export const SessionTimeoutProvider = ({ children }: { children: React.ReactNode
 
     loadSettings();
 
-    // Listen for storage changes
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'sessionTimeoutEnabled' || e.key === 'sessionTimeoutMinutes') {
         loadSettings();
@@ -31,8 +28,6 @@ export const SessionTimeoutProvider = ({ children }: { children: React.ReactNode
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for custom event for same-tab updates
     const handleCustomEvent = () => loadSettings();
     window.addEventListener('sessionTimeoutSettingsChanged', handleCustomEvent);
 
@@ -42,11 +37,11 @@ export const SessionTimeoutProvider = ({ children }: { children: React.ReactNode
     };
   }, []);
 
-  // Use the session timeout hook
+  // useSessionTimeout internally checks for user via useAuth
   useSessionTimeout({
     timeoutMinutes: settings.timeoutMinutes,
     warningMinutes: 5,
-    enabled: settings.enabled && !!user,
+    enabled: settings.enabled,
   });
 
   return <>{children}</>;
