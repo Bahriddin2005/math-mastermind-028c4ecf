@@ -2407,57 +2407,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
-        Row: {
-          avatar_url: string | null
-          best_streak: number | null
-          created_at: string | null
-          current_streak: number | null
-          daily_goal: number | null
-          id: string | null
-          last_active_date: string | null
-          selected_frame: string | null
-          teacher_status: string | null
-          total_problems_solved: number | null
-          total_score: number | null
-          user_id: string | null
-          username: string | null
-          vip_expires_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          best_streak?: number | null
-          created_at?: string | null
-          current_streak?: number | null
-          daily_goal?: number | null
-          id?: string | null
-          last_active_date?: string | null
-          selected_frame?: string | null
-          teacher_status?: string | null
-          total_problems_solved?: number | null
-          total_score?: number | null
-          user_id?: string | null
-          username?: string | null
-          vip_expires_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          best_streak?: number | null
-          created_at?: string | null
-          current_streak?: number | null
-          daily_goal?: number | null
-          id?: string | null
-          last_active_date?: string | null
-          selected_frame?: string | null
-          teacher_status?: string | null
-          total_problems_solved?: number | null
-          total_score?: number | null
-          user_id?: string | null
-          username?: string | null
-          vip_expires_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_leaderboard_profiles: {
@@ -2515,6 +2465,25 @@ export type Database = {
           total_score: number
           user_id: string
           username: string
+        }[]
+      }
+      get_public_profiles_by_ids: {
+        Args: { user_ids: string[] }
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          created_at: string
+          current_streak: number
+          daily_goal: number
+          id: string
+          last_active_date: string
+          selected_frame: string
+          teacher_status: string
+          total_problems_solved: number
+          total_score: number
+          user_id: string
+          username: string
+          vip_expires_at: string
         }[]
       }
       get_user_total_score: {
