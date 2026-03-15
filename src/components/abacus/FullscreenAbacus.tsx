@@ -388,14 +388,14 @@ export const FullscreenAbacus = ({
       <div 
         className="absolute inset-0 flex items-center justify-center overflow-hidden"
         style={{ 
-          paddingTop: mode === 'test' && showControls ? '200px' : '100px', 
-          paddingBottom: '120px',
+          paddingTop: mode === 'test' && showControls ? '160px' : '60px', 
+          paddingBottom: '40px',
         }}
       >
         <div 
           className="transform rotate-90 origin-center"
           style={{
-            width: `calc((100dvh - ${mode === 'test' && showControls ? '320px' : '220px'}) * ${abacusScale})`,
+            width: `calc((100dvh - ${mode === 'test' && showControls ? '200px' : '100px'}) * ${abacusScale})`,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -407,7 +407,6 @@ export const FullscreenAbacus = ({
             onChange={setValue}
             mode={mode}
             showValue={false}
-            compact
             colorScheme={colorScheme}
             onBeadSound={onBeadSound}
           />
