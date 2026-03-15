@@ -83,7 +83,7 @@ const KidsLeaderboard = () => {
         })));
         
         // Trigger confetti if user is in top 3
-        const userRank = profilesData.findIndex(p => p.user_id === user?.id);
+        const userRank = limitedData.findIndex(p => p.user_id === user?.id);
         if (userRank >= 0 && userRank < 3) {
           triggerConfetti('stars');
         }
