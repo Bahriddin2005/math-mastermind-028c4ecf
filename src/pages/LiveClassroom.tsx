@@ -423,7 +423,7 @@ const ChatPanel = ({ sessionId }: { sessionId: string }) => {
     const userIds = [...new Set(messages.map(m => m.user_id))].filter(id => !usernames[id]);
     if (userIds.length === 0) return;
     (async () => {
-      const { data } = await supabase.from('profiles').select('user_id, username').in('user_id', userIds);
+      const { data } = await supabase.rpc('get_public_profiles_by_ids', { user_ids: userIds }) as { data: any[] | null };
       if (data) {
         const map: Record<string, string> = {};
         data.forEach(p => { map[p.user_id] = p.username; });
