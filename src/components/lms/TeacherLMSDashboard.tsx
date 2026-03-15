@@ -75,7 +75,7 @@ export const TeacherLMSDashboard = () => {
 
     const [sessionsRes, coursesRes, attendanceRes] = await Promise.all([
       supabase
-        .from('live_sessions')
+        .from('live_sessions_safe' as any)
         .select('*')
         .eq('teacher_id', user.id)
         .order('scheduled_at', { ascending: false }),

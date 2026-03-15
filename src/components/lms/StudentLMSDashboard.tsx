@@ -63,7 +63,7 @@ export const StudentLMSDashboard = () => {
 
     const [lessonsRes, enrollmentsRes, attendanceRes] = await Promise.all([
       supabase
-        .from('live_sessions')
+        .from('live_sessions_safe' as any)
         .select('*')
         .gte('scheduled_at', now)
         .in('status', ['scheduled', 'live'])

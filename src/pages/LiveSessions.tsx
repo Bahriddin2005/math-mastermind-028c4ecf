@@ -38,7 +38,7 @@ const LiveSessions = () => {
       .from('live_sessions_safe' as any)
       .select('*')
       .in('status', ['scheduled', 'live'])
-      .order('scheduled_at', { ascending: true });
+      .order('scheduled_at', { ascending: true }) as { data: any[], error: any };
     if (!error && data) {
       setSessions(data);
       // Fetch participant counts for all sessions
