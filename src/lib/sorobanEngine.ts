@@ -928,23 +928,24 @@ function verifyMixFormula(
 export function generateExample(cfg: ExampleConfig): GeneratedExample {
   const {
     operation, stage, digitsCount, termsCount, mainFormula,
-    maxAttempts = 3000, minPrimarySteps = 1
+    minPrimarySteps = 1
   } = cfg;
 
   let result: FormulasizResult | null = null;
 
+  // Har bir generator o'zining default maxAttempts qiymatidan foydalanadi
   switch (stage) {
     case 'formulasiz':
-      result = generateFormulasiz(operation, digitsCount, termsCount, maxAttempts);
+      result = generateFormulasiz(operation, digitsCount, termsCount);
       break;
     case '5':
-      result = generateFiveFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateFiveFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
     case '10':
-      result = generateTenFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateTenFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
     case 'mix':
-      result = generateMixFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateMixFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
   }
 
