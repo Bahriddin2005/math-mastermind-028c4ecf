@@ -939,9 +939,11 @@ function generateMixFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 500,
+  maxAttempts: number = 1000,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
+  const needMixed = termsCount > 4;
+
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     const firstNumber = randomNonZeroNumber(digitsCount);
     const numbers = [firstNumber];
@@ -949,18 +951,23 @@ function generateMixFormula(
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      let built = false;
+      let curOp = operation;
+      if (needMixed) {
+        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
+      }
 
+      let built = false;
       for (let _retry = 0; _retry < 50; _retry++) {
         const state = numberToDigits(currentValue, digitsCount);
         const termDigits = new Array(digitsCount).fill(0);
         let termValid = true;
 
         for (let pos = digitsCount - 1; pos >= 0; pos--) {
-          const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
+          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula);
           if (!choice) { termValid = false; break; }
           termDigits[pos] = choice.operandDigit;
-          applyDigit(state, pos, choice.operandDigit, operation);
+          applyDigit(state, pos, choice.operandDigit, curOp);
         }
         if (!termValid) continue;
 
@@ -971,7 +978,7 @@ function generateMixFormula(
         const nextValue = digitsToNumber(state);
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
-        numbers.push(term);
+        numbers.push(needMixed ? (curOp === 'add' ? term : -term) : term);
         currentValue = nextValue;
         built = true;
         break;
@@ -982,10 +989,33 @@ function generateMixFormula(
 
     if (!ok || numbers.length !== termsCount) continue;
 
-    const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-    if (!verified.ok) continue;
+    if (!needMixed) {
+      const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
+      if (!verified.ok) continue;
+      return { numbers, answer: verified.answer!, ok: true };
+    }
 
-    return { numbers, answer: verified.answer!, ok: true };
+    // Mixed verification
+    let val = numbers[0], valid = true, pCount = 0;
+    const simSt = numberToDigits(numbers[0], digitsCount);
+    for (let i = 1; i < numbers.length; i++) {
+      const signed = numbers[i];
+      const term = Math.abs(signed);
+      const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+      const td = numberToDigits(term, digitsCount);
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const un = pos > 0 ? simSt[pos - 1] > 0 : false;
+        const cl = classifyMixStageStep(termOp, simSt[pos], td[pos], un, mainFormula);
+        if (cl === null) { valid = false; break; }
+        if (cl === 'mix_primary') pCount++;
+        applyDigit(simSt, pos, td[pos], termOp);
+      }
+      if (!valid) break;
+      val = digitsToNumber(simSt);
+      if (val < 0) { valid = false; break; }
+    }
+    if (!valid || pCount < minPrimarySteps) continue;
+    return { numbers, answer: val, ok: true };
   }
   return null;
 }
