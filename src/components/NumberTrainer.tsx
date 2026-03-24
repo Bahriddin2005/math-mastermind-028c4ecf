@@ -1,4 +1,12 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { 
+  generateVerifiedProblem, 
+  verifyProblem, 
+  getLegacyFormulas,
+  type FormulaCategory as SorobanFormulaCategory,
+  type GeneratedProblem as SorobanProblem,
+  type VerificationResult,
+} from '@/lib/sorobanEngine';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
