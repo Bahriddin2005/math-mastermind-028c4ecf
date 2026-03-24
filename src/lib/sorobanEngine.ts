@@ -328,8 +328,9 @@ function generateFormulasiz(
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     try {
+      // Qo'shishda kichik boshlang'ich son bilan boshlash (overflow oldini olish)
       const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
+        ? randomSmallNumber(digitsCount)
         : randomInitialForSub(digitsCount);
 
       const numbers = [firstNumber];
@@ -348,7 +349,17 @@ function generateFormulasiz(
             for (const digit of currentDigits) {
               const allowed = table[digit] || [];
               if (allowed.length === 0) { termValid = false; break; }
-              termDigits.push(allowed[Math.floor(Math.random() * allowed.length)]);
+              // Qo'shishda kichikroq raqamlarni ustuvor tanlash (overflow kamroq)
+              let pick: number;
+              if (operation === 'add' && digit >= 5) {
+                // 5+ bo'lganda faqat kichik raqamlar tanlash
+                const small = allowed.filter(a => a <= 4);
+                const pool = small.length > 0 ? small : allowed;
+                pick = pool[Math.floor(Math.random() * pool.length)];
+              } else {
+                pick = allowed[Math.floor(Math.random() * allowed.length)];
+              }
+              termDigits.push(pick);
             }
             if (!termValid) continue;
 
