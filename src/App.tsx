@@ -10,7 +10,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { PageLoader } from "@/components/PageLoader";
-import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+
 import { PageTransition } from "@/components/PageTransition";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { SessionTimeoutProvider } from "@/components/SessionTimeoutProvider";
@@ -151,7 +151,7 @@ const App = () => (
               </main>
             </PullToRefresh>
             <MobileBottomNav />
-            <PWAInstallBanner />
+            
             <Suspense fallback={null}>
               <HelpChatWidget />
             </Suspense>
