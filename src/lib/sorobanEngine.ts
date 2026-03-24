@@ -171,6 +171,15 @@ function randomNonZeroNumber(digitsCount: number): number {
   return digitsToNumber(digits);
 }
 
+/** Formulasiz qo'shish uchun kichik boshlang'ich son (1-4 har ustunda) */
+function randomSmallNumber(digitsCount: number): number {
+  const digits: number[] = [];
+  for (let i = 0; i < digitsCount; i++) {
+    digits.push(Math.floor(Math.random() * 4) + 1); // 1-4
+  }
+  return digitsToNumber(digits);
+}
+
 function randomInitialForSub(digitsCount: number): number {
   const digits: number[] = [];
   for (let i = 0; i < digitsCount; i++) {
