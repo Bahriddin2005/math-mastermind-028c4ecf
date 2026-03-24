@@ -877,7 +877,7 @@ function generateMixFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 200,
+  maxAttempts: number = 500,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
@@ -887,27 +887,35 @@ function generateMixFormula(
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      const state = numberToDigits(currentValue, digitsCount);
-      const termDigits = new Array(digitsCount).fill(0);
-      let termValid = true;
+      let built = false;
 
-      for (let pos = digitsCount - 1; pos >= 0; pos--) {
-        const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
-        if (!choice) { termValid = false; break; }
-        termDigits[pos] = choice.operandDigit;
-        applyDigit(state, pos, choice.operandDigit, operation);
+      for (let _retry = 0; _retry < 20; _retry++) {
+        const state = numberToDigits(currentValue, digitsCount);
+        const termDigits = new Array(digitsCount).fill(0);
+        let termValid = true;
+
+        for (let pos = digitsCount - 1; pos >= 0; pos--) {
+          const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
+          if (!choice) { termValid = false; break; }
+          termDigits[pos] = choice.operandDigit;
+          applyDigit(state, pos, choice.operandDigit, operation);
+        }
+        if (!termValid) continue;
+
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) continue;
+        if (state[0] >= 10 || state[0] < 0) continue;
+
+        const nextValue = digitsToNumber(state);
+        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+
+        numbers.push(term);
+        currentValue = nextValue;
+        built = true;
+        break;
       }
-      if (!termValid) { ok = false; break; }
 
-      const term = digitsToNumber(termDigits);
-      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
-      if (state[0] >= 10 || state[0] < 0) { ok = false; break; }
-
-      const nextValue = digitsToNumber(state);
-      if (nextValue < 0 || String(nextValue).length > digitsCount) { ok = false; break; }
-
-      numbers.push(term);
-      currentValue = nextValue;
+      if (!built) { ok = false; break; }
     }
 
     if (!ok || numbers.length !== termsCount) continue;
