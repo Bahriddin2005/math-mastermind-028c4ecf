@@ -489,64 +489,65 @@ function chooseFiveFormulaDigit(
   return null;
 }
 
+/** 5-lik formula uchun aqlli boshlang'ich son */
+function smartInitialForFive(operation: OperationType, mainFormula: number, digitsCount: number): number {
+  const digits: number[] = [];
+  for (let i = 0; i < digitsCount; i++) {
+    if (operation === 'add') {
+      // +N formulasi ishlashi uchun currentDigit (5-N)..4 oralig'ida bo'lishi kerak
+      const low = Math.max(1, 5 - mainFormula);
+      digits.push(low + Math.floor(Math.random() * (4 - low + 1)));
+    } else {
+      // -N formulasi ishlashi uchun currentDigit 5..(4+N) oralig'ida bo'lishi kerak
+      const high = Math.min(9, 4 + mainFormula);
+      digits.push(5 + Math.floor(Math.random() * (high - 5 + 1)));
+    }
+  }
+  return digitsToNumber(digits);
+}
+
 function generateFiveFormula(
   operation: OperationType,
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 5000,
+  maxAttempts: number = 200,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = smartInitialForFive(operation, mainFormula, digitsCount);
+    const numbers = [firstNumber];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
+    for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+      const currentDigits = numberToDigits(currentValue, digitsCount);
+      const termDigits: number[] = [];
+      let termValid = true;
 
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
-
-        for (let _retry = 0; _retry < 300; _retry++) {
-          try {
-            const currentDigits = numberToDigits(currentValue, digitsCount);
-            const termDigits: number[] = [];
-            let termValid = true;
-
-            for (const digit of currentDigits) {
-              const choice = chooseFiveFormulaDigit(digit, operation, mainFormula);
-              if (!choice) { termValid = false; break; }
-              termDigits.push(choice.operandDigit);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-
-            const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
-        }
-
-        if (!built) { success = false; break; }
+      for (const digit of currentDigits) {
+        const choice = chooseFiveFormulaDigit(digit, operation, mainFormula);
+        if (!choice) { termValid = false; break; }
+        termDigits.push(choice.operandDigit);
       }
+      if (!termValid) { ok = false; break; }
 
-      if (!success) continue;
+      const term = digitsToNumber(termDigits);
+      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
 
-      const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-      if (!verified.ok) continue;
+      const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
+      if (nextValue < 0 || String(nextValue).length > digitsCount) { ok = false; break; }
 
-      return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+      numbers.push(term);
+      currentValue = nextValue;
+    }
+
+    if (!ok || numbers.length !== termsCount) continue;
+
+    const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
+    if (!verified.ok) continue;
+
+    return { numbers, answer: verified.answer!, ok: true };
   }
   return null;
 }
