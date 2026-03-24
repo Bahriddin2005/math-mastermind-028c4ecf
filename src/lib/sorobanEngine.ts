@@ -511,9 +511,13 @@ function generateFiveFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 200,
+  maxAttempts: number = 500,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
+  // Pure add/sub uchun max terms cheklangan (digit space tez to'ladi)
+  // 5+ hadli misollar aralash add/sub kerak
+  const needMixed = termsCount > 4;
+
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     const firstNumber = smartInitialForFive(operation, mainFormula, digitsCount);
     const numbers = [firstNumber];
@@ -521,28 +525,76 @@ function generateFiveFormula(
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      const currentDigits = numberToDigits(currentValue, digitsCount);
-      const termDigits: number[] = [];
-      let termValid = true;
-
-      for (const digit of currentDigits) {
-        const choice = chooseFiveFormulaDigit(digit, operation, mainFormula);
-        if (!choice) { termValid = false; break; }
-        termDigits.push(choice.operandDigit);
+      // Ko'p hadli misolda oscillatsiya qilish
+      let curOp = operation;
+      if (needMixed) {
+        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        if (operation === 'add') {
+          curOp = avg >= 6 ? 'sub' : 'add';
+        } else {
+          curOp = avg <= 3 ? 'add' : 'sub';
+        }
       }
-      if (!termValid) { ok = false; break; }
 
-      const term = digitsToNumber(termDigits);
-      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      let built = false;
+      for (let _retry = 0; _retry < 15; _retry++) {
+        const currentDigits = numberToDigits(currentValue, digitsCount);
+        const termDigits: number[] = [];
+        let termValid = true;
 
-      const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
-      if (nextValue < 0 || String(nextValue).length > digitsCount) { ok = false; break; }
+        for (const digit of currentDigits) {
+          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula);
+          if (!choice) { termValid = false; break; }
+          termDigits.push(choice.operandDigit);
+        }
+        if (!termValid) continue;
 
-      numbers.push(term);
-      currentValue = nextValue;
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) continue;
+
+        const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
+        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+
+        // Mixed mode: store signed
+        if (needMixed) {
+          numbers.push(curOp === 'add' ? term : -term);
+        } else {
+          numbers.push(term);
+        }
+        currentValue = nextValue;
+        built = true;
+        break;
+      }
+
+      if (!built) { ok = false; break; }
     }
 
     if (!ok || numbers.length !== termsCount) continue;
+
+    // Mixed mode uchun verification skip (signed terms bor)
+    if (needMixed) {
+      // Verify manually
+      let val = numbers[0];
+      let valid = true;
+      let primaryCount = 0;
+      for (let i = 1; i < numbers.length; i++) {
+        const signed = numbers[i];
+        const term = Math.abs(signed);
+        const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+        const cd = numberToDigits(val, digitsCount);
+        const td = numberToDigits(term, digitsCount);
+        for (let p = 0; p < digitsCount; p++) {
+          const cl = classifyFiveStageStep(termOp, cd[p], td[p]);
+          if (cl === null) { valid = false; break; }
+          if (cl === '5' && td[p] === mainFormula) primaryCount++;
+        }
+        if (!valid) break;
+        val = termOp === 'add' ? val + term : val - term;
+        if (val < 0) { valid = false; break; }
+      }
+      if (!valid || primaryCount < minPrimarySteps) continue;
+      return { numbers, answer: val, ok: true };
+    }
 
     const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
     if (!verified.ok) continue;
