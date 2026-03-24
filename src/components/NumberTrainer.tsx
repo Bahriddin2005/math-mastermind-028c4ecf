@@ -467,6 +467,8 @@ export const NumberTrainer = () => {
   const startTimeRef = useRef<number>(0);
   const answerStartTimeRef = useRef<number>(0);
   const lastWasKattaDostRef = useRef(false); // Mix formula uchun - ketma-ket katta do'st cheklovi
+  const preGeneratedProblemRef = useRef<SorobanProblem | null>(null); // Oldindan generatsiya qilingan va tekshirilgan misol
+  const preGeneratedIndexRef = useRef(0); // Oldindan generatsiya qilingan misoldan qaysi qadamda ekanligimiz
 
   // Mount va admin tekshirish
   useEffect(() => {
