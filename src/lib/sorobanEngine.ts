@@ -171,6 +171,15 @@ function randomNonZeroNumber(digitsCount: number): number {
   return digitsToNumber(digits);
 }
 
+/** Formulasiz qo'shish uchun kichik boshlang'ich son (1-4 har ustunda) */
+function randomSmallNumber(digitsCount: number): number {
+  const digits: number[] = [];
+  for (let i = 0; i < digitsCount; i++) {
+    digits.push(Math.floor(Math.random() * 4) + 1); // 1-4
+  }
+  return digitsToNumber(digits);
+}
+
 function randomInitialForSub(digitsCount: number): number {
   const digits: number[] = [];
   for (let i = 0; i < digitsCount; i++) {
@@ -313,61 +322,88 @@ function generateFormulasiz(
   operation: OperationType,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 5000
+  maxAttempts: number = 100
 ): FormulasizResult | null {
+  // Ko'p hadli sof add/sub imkonsiz — aralash ishlatamiz
+  if (termsCount > 4) {
+    return generateFormulasizMixed(digitsCount, termsCount, maxAttempts);
+  }
+
   const table = operation === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = operation === 'add'
+      ? randomSmallNumber(digitsCount)
+      : randomInitialForSub(digitsCount);
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
+    const numbers = [firstNumber];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
+    for (let t = 1; t < termsCount; t++) {
+      const cd = numberToDigits(currentValue, digitsCount);
+      const td: number[] = [];
+      let valid = true;
 
-        for (let _retry = 0; _retry < 200; _retry++) {
-          try {
-            const currentDigits = numberToDigits(currentValue, digitsCount);
-            const termDigits: number[] = [];
-
-            let termValid = true;
-            for (const digit of currentDigits) {
-              const allowed = table[digit] || [];
-              if (allowed.length === 0) { termValid = false; break; }
-              termDigits.push(allowed[Math.floor(Math.random() * allowed.length)]);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-
-            const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
-        }
-
-        if (!built) { success = false; break; }
+      for (const d of cd) {
+        const allowed = table[d] || [];
+        if (!allowed.length) { valid = false; break; }
+        td.push(allowed[Math.floor(Math.random() * allowed.length)]);
       }
+      if (!valid) { ok = false; break; }
 
-      if (!success) continue;
+      const term = digitsToNumber(td);
+      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      const next = operation === 'add' ? currentValue + term : currentValue - term;
+      if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
-      // Verify
-      const verified = verifyFormulasiz(numbers, operation, digitsCount, termsCount);
-      if (!verified.ok) continue;
+      numbers.push(term);
+      currentValue = next;
+    }
 
-      return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+    if (!ok || numbers.length !== termsCount) continue;
+    return { numbers, answer: currentValue, ok: true };
+  }
+  return null;
+}
+
+function generateFormulasizMixed(
+  digitsCount: number,
+  termsCount: number,
+  maxAttempts: number = 100
+): FormulasizResult | null {
+  for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
+    const firstNumber = randomNonZeroNumber(digitsCount);
+    const signedTerms: number[] = [];
+    let currentValue = firstNumber;
+    let ok = true;
+
+    for (let t = 1; t < termsCount; t++) {
+      const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+      const op: OperationType = avg >= 5 ? 'sub' : (Math.random() > 0.4 ? 'add' : 'sub');
+      const table = op === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
+      const cd = numberToDigits(currentValue, digitsCount);
+      const td: number[] = [];
+      let valid = true;
+
+      for (const d of cd) {
+        const allowed = table[d] || [];
+        if (!allowed.length) { valid = false; break; }
+        td.push(allowed[Math.floor(Math.random() * allowed.length)]);
+      }
+      if (!valid) { ok = false; break; }
+
+      const term = digitsToNumber(td);
+      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      const next = op === 'add' ? currentValue + term : currentValue - term;
+      if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
+
+      signedTerms.push(op === 'add' ? term : -term);
+      currentValue = next;
+    }
+
+    if (!ok || signedTerms.length !== termsCount - 1) continue;
+    return { numbers: [firstNumber, ...signedTerms], answer: currentValue, ok: true };
   }
   return null;
 }
@@ -908,23 +944,24 @@ function verifyMixFormula(
 export function generateExample(cfg: ExampleConfig): GeneratedExample {
   const {
     operation, stage, digitsCount, termsCount, mainFormula,
-    maxAttempts = 3000, minPrimarySteps = 1
+    minPrimarySteps = 1
   } = cfg;
 
   let result: FormulasizResult | null = null;
 
+  // Har bir generator o'zining default maxAttempts qiymatidan foydalanadi
   switch (stage) {
     case 'formulasiz':
-      result = generateFormulasiz(operation, digitsCount, termsCount, maxAttempts);
+      result = generateFormulasiz(operation, digitsCount, termsCount);
       break;
     case '5':
-      result = generateFiveFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateFiveFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
     case '10':
-      result = generateTenFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateTenFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
     case 'mix':
-      result = generateMixFormula(operation, mainFormula!, digitsCount, termsCount, maxAttempts, minPrimarySteps);
+      result = generateMixFormula(operation, mainFormula!, digitsCount, termsCount, undefined, minPrimarySteps);
       break;
   }
 
