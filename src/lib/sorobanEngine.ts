@@ -322,8 +322,17 @@ function generateFormulasiz(
   operation: OperationType,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 300
+  maxAttempts: number = 500
 ): FormulasizResult | null {
+  // Formulasiz qo'shishda har bir ustun max ~5 ta qo'shishga chidaydi
+  // Shuning uchun ko'p hadli misollar uchun aralash add/sub ishlatamiz
+  const needMixed = (operation === 'add' && termsCount > 5) ||
+                    (operation === 'sub' && termsCount > 5);
+  
+  if (needMixed) {
+    return generateFormulasizMixed(digitsCount, termsCount, maxAttempts);
+  }
+
   const table = operation === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
@@ -344,19 +353,11 @@ function generateFormulasiz(
         for (const digit of currentDigits) {
           const allowed = table[digit] || [];
           if (allowed.length === 0) { termValid = false; break; }
-          // Weighted selection: prefer smaller for add, larger for sub
-          if (operation === 'add') {
-            const sorted = [...allowed].sort((a, b) => a - b);
-            // 70% chance pick from lower half
-            const half = Math.max(1, Math.ceil(sorted.length / 2));
-            const pool = Math.random() < 0.7 ? sorted.slice(0, half) : sorted;
-            termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
-          } else {
-            const sorted = [...allowed].sort((a, b) => a - b);
-            const half = Math.max(1, Math.ceil(sorted.length / 2));
-            const pool = Math.random() < 0.7 ? sorted.slice(0, half) : sorted;
-            termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
-          }
+          // Kichikroq raqamlarni afzal ko'rish (overflow oldini olish)
+          const sorted = [...allowed].sort((a, b) => a - b);
+          const half = Math.max(1, Math.ceil(sorted.length / 2));
+          const pool = Math.random() < 0.7 ? sorted.slice(0, half) : sorted;
+          termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
         }
 
         if (!termValid) { success = false; break; }
@@ -377,6 +378,83 @@ function generateFormulasiz(
       if (!verified.ok) continue;
 
       return { numbers, answer: verified.answer!, ok: true };
+    } catch { continue; }
+  }
+  return null;
+}
+
+/** Formulasiz aralash (+/-) generator — ko'p hadli misollar uchun */
+function generateFormulasizMixed(
+  digitsCount: number,
+  termsCount: number,
+  maxAttempts: number = 500
+): FormulasizResult | null {
+  for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
+    try {
+      const firstNumber = randomNonZeroNumber(digitsCount);
+      const numbers = [firstNumber];
+      const signs: (1 | -1)[] = [];
+      let currentValue = firstNumber;
+      let success = true;
+
+      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+        // Raqamlar baland bo'lsa ayirish, past bo'lsa qo'shish
+        const avgDigit = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        const op: OperationType = avgDigit >= 5 ? 'sub' : (Math.random() > 0.4 ? 'add' : 'sub');
+        const table = op === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
+        const currentDigits = numberToDigits(currentValue, digitsCount);
+        const termDigits: number[] = [];
+        let termValid = true;
+
+        for (const digit of currentDigits) {
+          const allowed = table[digit] || [];
+          if (allowed.length === 0) { termValid = false; break; }
+          const sorted = [...allowed].sort((a, b) => a - b);
+          const half = Math.max(1, Math.ceil(sorted.length / 2));
+          const pool = Math.random() < 0.6 ? sorted.slice(0, half) : sorted;
+          termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
+        }
+
+        if (!termValid) { success = false; break; }
+
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) { success = false; break; }
+
+        const nextValue = op === 'add' ? currentValue + term : currentValue - term;
+        if (nextValue < 0 || String(nextValue).length > digitsCount) { success = false; break; }
+
+        numbers.push(term);
+        signs.push(op === 'add' ? 1 : -1);
+        currentValue = nextValue;
+      }
+
+      if (!success || numbers.length !== termsCount) continue;
+
+      // Verifikatsiya: har bir qadam formulasiz bo'lishi kerak
+      let valid = true;
+      let checkVal = numbers[0];
+      for (let i = 1; i < numbers.length; i++) {
+        const checkOp: OperationType = signs[i - 1] === 1 ? 'add' : 'sub';
+        const checkTable = checkOp === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
+        const cd = numberToDigits(checkVal, digitsCount);
+        const td = numberToDigits(numbers[i], digitsCount);
+        for (let p = 0; p < digitsCount; p++) {
+          if (!(checkTable[cd[p]] || []).includes(td[p])) { valid = false; break; }
+        }
+        if (!valid) break;
+        checkVal = checkOp === 'add' ? checkVal + numbers[i] : checkVal - numbers[i];
+        if (checkVal < 0) { valid = false; break; }
+      }
+
+      if (!valid) continue;
+
+      // Convert to signed sequence for compatibility
+      const signedNumbers = [numbers[0]];
+      for (let i = 1; i < numbers.length; i++) {
+        signedNumbers.push(signs[i - 1] === 1 ? numbers[i] : -numbers[i]);
+      }
+
+      return { numbers: signedNumbers, answer: currentValue, ok: true };
     } catch { continue; }
   }
   return null;
