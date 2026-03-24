@@ -270,6 +270,45 @@ const Dashboard = () => {
     };
 
     fetchData();
+
+    // Realtime subscription for game_sessions
+    const sessionsChannel = supabase
+      .channel('dashboard-game-sessions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'game_sessions',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // Realtime subscription for profiles
+    const profilesChannel = supabase
+      .channel('dashboard-profiles')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(sessionsChannel);
+      supabase.removeChannel(profilesChannel);
+    };
   }, [user, authLoading]);
 
   // Pull to refresh handler
