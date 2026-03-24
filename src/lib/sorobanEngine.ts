@@ -740,7 +740,7 @@ function generateTenFormula(
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
       let built = false;
 
-      for (let _retry = 0; _retry < 20; _retry++) {
+      for (let _retry = 0; _retry < 50; _retry++) {
         const state = numberToDigits(currentValue, digitsCount);
         const termDigits = new Array(digitsCount).fill(0);
         let termValid = true;
