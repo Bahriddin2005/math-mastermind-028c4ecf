@@ -489,64 +489,117 @@ function chooseFiveFormulaDigit(
   return null;
 }
 
+/** 5-lik formula uchun aqlli boshlang'ich son */
+function smartInitialForFive(operation: OperationType, mainFormula: number, digitsCount: number): number {
+  const digits: number[] = [];
+  for (let i = 0; i < digitsCount; i++) {
+    if (operation === 'add') {
+      // +N formulasi ishlashi uchun currentDigit (5-N)..4 oralig'ida bo'lishi kerak
+      const low = Math.max(1, 5 - mainFormula);
+      digits.push(low + Math.floor(Math.random() * (4 - low + 1)));
+    } else {
+      // -N formulasi ishlashi uchun currentDigit 5..(4+N) oralig'ida bo'lishi kerak
+      const high = Math.min(9, 4 + mainFormula);
+      digits.push(5 + Math.floor(Math.random() * (high - 5 + 1)));
+    }
+  }
+  return digitsToNumber(digits);
+}
+
 function generateFiveFormula(
   operation: OperationType,
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 5000,
+  maxAttempts: number = 500,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
+  // Pure add/sub uchun max terms cheklangan (digit space tez to'ladi)
+  // 5+ hadli misollar aralash add/sub kerak
+  const needMixed = termsCount > 4;
+
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = smartInitialForFive(operation, mainFormula, digitsCount);
+    const numbers = [firstNumber];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
-
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
-
-        for (let _retry = 0; _retry < 300; _retry++) {
-          try {
-            const currentDigits = numberToDigits(currentValue, digitsCount);
-            const termDigits: number[] = [];
-            let termValid = true;
-
-            for (const digit of currentDigits) {
-              const choice = chooseFiveFormulaDigit(digit, operation, mainFormula);
-              if (!choice) { termValid = false; break; }
-              termDigits.push(choice.operandDigit);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-
-            const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
+    for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+      // Ko'p hadli misolda oscillatsiya qilish
+      let curOp = operation;
+      if (needMixed) {
+        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        if (operation === 'add') {
+          curOp = avg >= 6 ? 'sub' : 'add';
+        } else {
+          curOp = avg <= 3 ? 'add' : 'sub';
         }
-
-        if (!built) { success = false; break; }
       }
 
-      if (!success) continue;
+      let built = false;
+      for (let _retry = 0; _retry < 15; _retry++) {
+        const currentDigits = numberToDigits(currentValue, digitsCount);
+        const termDigits: number[] = [];
+        let termValid = true;
 
-      const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-      if (!verified.ok) continue;
+        for (const digit of currentDigits) {
+          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula);
+          if (!choice) { termValid = false; break; }
+          termDigits.push(choice.operandDigit);
+        }
+        if (!termValid) continue;
 
-      return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) continue;
+
+        const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
+        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+
+        // Mixed mode: store signed
+        if (needMixed) {
+          numbers.push(curOp === 'add' ? term : -term);
+        } else {
+          numbers.push(term);
+        }
+        currentValue = nextValue;
+        built = true;
+        break;
+      }
+
+      if (!built) { ok = false; break; }
+    }
+
+    if (!ok || numbers.length !== termsCount) continue;
+
+    // Mixed mode uchun verification skip (signed terms bor)
+    if (needMixed) {
+      // Verify manually
+      let val = numbers[0];
+      let valid = true;
+      let primaryCount = 0;
+      for (let i = 1; i < numbers.length; i++) {
+        const signed = numbers[i];
+        const term = Math.abs(signed);
+        const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+        const cd = numberToDigits(val, digitsCount);
+        const td = numberToDigits(term, digitsCount);
+        for (let p = 0; p < digitsCount; p++) {
+          const cl = classifyFiveStageStep(termOp, cd[p], td[p]);
+          if (cl === null) { valid = false; break; }
+          if (cl === '5' && td[p] === mainFormula) primaryCount++;
+        }
+        if (!valid) break;
+        val = termOp === 'add' ? val + term : val - term;
+        if (val < 0) { valid = false; break; }
+      }
+      if (!valid || primaryCount < minPrimarySteps) continue;
+      return { numbers, answer: val, ok: true };
+    }
+
+    const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
+    if (!verified.ok) continue;
+
+    return { numbers, answer: verified.answer!, ok: true };
   }
   return null;
 }
@@ -642,16 +695,32 @@ function chooseTenFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  if (primary.length > 0) {
-    return { operandDigit: primary[Math.floor(Math.random() * primary.length)], formula: '10_primary', isPrimary: true };
+  // Probabilistik tanlash — primary har doim tanlanmasin (overflow xavfi)
+  const allOptions: Array<{ d: number; formula: string; isPrimary: boolean }> = [];
+  for (const d of primary) allOptions.push({ d, formula: '10_primary', isPrimary: true });
+  for (const d of fallback5) allOptions.push({ d, formula: '5_fallback', isPrimary: false });
+  for (const d of fallbackFormulasiz) allOptions.push({ d, formula: 'formulasiz_fallback', isPrimary: false });
+
+  if (allOptions.length === 0) return null;
+
+  // Primary 70% ehtimollik, agar mavjud bo'lsa
+  if (primary.length > 0 && Math.random() < 0.7) {
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: '10_primary', isPrimary: true };
   }
-  if (fallback5.length > 0) {
-    return { operandDigit: fallback5[Math.floor(Math.random() * fallback5.length)], formula: '5_fallback', isPrimary: false };
+
+  // Fallback tanlanadi
+  const fallbacks = [...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
+    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false }))];
+  
+  if (fallbacks.length > 0) {
+    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
   }
-  if (fallbackFormulasiz.length > 0) {
-    return { operandDigit: fallbackFormulasiz[Math.floor(Math.random() * fallbackFormulasiz.length)], formula: 'formulasiz_fallback', isPrimary: false };
-  }
-  return null;
+
+  // Faqat primary qoldi
+  const d = primary[Math.floor(Math.random() * primary.length)];
+  return { operandDigit: d, formula: '10_primary', isPrimary: true };
 }
 
 function generateTenFormula(
@@ -659,62 +728,89 @@ function generateTenFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 6000,
+  maxAttempts: number = 1000,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
+  const needMixed = termsCount > 4;
+
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = randomNonZeroNumber(digitsCount);
+    const numbers = [firstNumber];
+    const signs: (1 | -1)[] = [];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
-
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
-
-        for (let _retry = 0; _retry < 400; _retry++) {
-          try {
-            const state = numberToDigits(currentValue, digitsCount);
-            const termDigits = new Array(digitsCount).fill(0);
-            let termValid = true;
-
-            // Right to left
-            for (let pos = digitsCount - 1; pos >= 0; pos--) {
-              const choice = chooseTenFormulaDigit(state, pos, operation, mainFormula);
-              if (!choice) { termValid = false; break; }
-              termDigits[pos] = choice.operandDigit;
-              applyDigit(state, pos, choice.operandDigit, operation);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-            if (state[0] >= 10 || state[0] < 0) continue;
-
-            const nextValue = digitsToNumber(state);
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
-        }
-
-        if (!built) { success = false; break; }
+    for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+      let curOp = operation;
+      if (needMixed) {
+        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
       }
 
-      if (!success) continue;
+      let built = false;
+      for (let _retry = 0; _retry < 50; _retry++) {
+        const state = numberToDigits(currentValue, digitsCount);
+        const termDigits = new Array(digitsCount).fill(0);
+        let termValid = true;
 
+        for (let pos = digitsCount - 1; pos >= 0; pos--) {
+          const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula);
+          if (!choice) { termValid = false; break; }
+          termDigits[pos] = choice.operandDigit;
+          applyDigit(state, pos, choice.operandDigit, curOp);
+        }
+        if (!termValid) continue;
+
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) continue;
+        if (state[0] >= 10 || state[0] < 0) continue;
+
+        const nextValue = digitsToNumber(state);
+        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+
+        if (needMixed) {
+          numbers.push(curOp === 'add' ? term : -term);
+          signs.push(curOp === 'add' ? 1 : -1);
+        } else {
+          numbers.push(term);
+        }
+        currentValue = nextValue;
+        built = true;
+        break;
+      }
+
+      if (!built) { ok = false; break; }
+    }
+
+    if (!ok || numbers.length !== termsCount) continue;
+
+    if (!needMixed) {
       const verified = verifyTenFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
       if (!verified.ok) continue;
-
       return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+    }
+
+    // Mixed verification
+    let val = numbers[0], valid = true, pCount = 0;
+    const simSt = numberToDigits(numbers[0], digitsCount);
+    for (let i = 1; i < numbers.length; i++) {
+      const signed = numbers[i];
+      const term = Math.abs(signed);
+      const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+      const td = numberToDigits(term, digitsCount);
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const un = pos > 0 ? simSt[pos - 1] > 0 : false;
+        const cl = classifyTenStageStep(termOp, simSt[pos], td[pos], un, mainFormula);
+        if (cl === null) { valid = false; break; }
+        if (cl === '10_primary') pCount++;
+        applyDigit(simSt, pos, td[pos], termOp);
+      }
+      if (!valid) break;
+      val = digitsToNumber(simSt);
+      if (val < 0) { valid = false; break; }
+    }
+    if (!valid || pCount < minPrimarySteps) continue;
+    return { numbers, answer: val, ok: true };
   }
   return null;
 }
@@ -813,18 +909,28 @@ function chooseMixFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
+  // Probabilistik tanlash
+  if (primary.length > 0 && Math.random() < 0.65) {
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
+  }
+
+  const fallbacks = [
+    ...fallback10.map(d => ({ d, formula: '10_fallback', isPrimary: false })),
+    ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
+    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
+  ];
+
+  if (fallbacks.length > 0) {
+    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
+  }
+
   if (primary.length > 0) {
-    return { operandDigit: primary[Math.floor(Math.random() * primary.length)], formula: 'mix_primary', isPrimary: true };
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
   }
-  if (fallback10.length > 0) {
-    return { operandDigit: fallback10[Math.floor(Math.random() * fallback10.length)], formula: '10_fallback', isPrimary: false };
-  }
-  if (fallback5.length > 0) {
-    return { operandDigit: fallback5[Math.floor(Math.random() * fallback5.length)], formula: '5_fallback', isPrimary: false };
-  }
-  if (fallbackFormulasiz.length > 0) {
-    return { operandDigit: fallbackFormulasiz[Math.floor(Math.random() * fallbackFormulasiz.length)], formula: 'formulasiz_fallback', isPrimary: false };
-  }
+
   return null;
 }
 
@@ -833,61 +939,83 @@ function generateMixFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 7000,
+  maxAttempts: number = 1000,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
+  const needMixed = termsCount > 4;
+
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = randomNonZeroNumber(digitsCount);
+    const numbers = [firstNumber];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
-
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
-
-        for (let _retry = 0; _retry < 500; _retry++) {
-          try {
-            const state = numberToDigits(currentValue, digitsCount);
-            const termDigits = new Array(digitsCount).fill(0);
-            let termValid = true;
-
-            for (let pos = digitsCount - 1; pos >= 0; pos--) {
-              const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
-              if (!choice) { termValid = false; break; }
-              termDigits[pos] = choice.operandDigit;
-              applyDigit(state, pos, choice.operandDigit, operation);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-            if (state[0] >= 10 || state[0] < 0) continue;
-
-            const nextValue = digitsToNumber(state);
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
-        }
-
-        if (!built) { success = false; break; }
+    for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+      let curOp = operation;
+      if (needMixed) {
+        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
       }
 
-      if (!success) continue;
+      let built = false;
+      for (let _retry = 0; _retry < 50; _retry++) {
+        const state = numberToDigits(currentValue, digitsCount);
+        const termDigits = new Array(digitsCount).fill(0);
+        let termValid = true;
 
+        for (let pos = digitsCount - 1; pos >= 0; pos--) {
+          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula);
+          if (!choice) { termValid = false; break; }
+          termDigits[pos] = choice.operandDigit;
+          applyDigit(state, pos, choice.operandDigit, curOp);
+        }
+        if (!termValid) continue;
+
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) continue;
+        if (state[0] >= 10 || state[0] < 0) continue;
+
+        const nextValue = digitsToNumber(state);
+        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+
+        numbers.push(needMixed ? (curOp === 'add' ? term : -term) : term);
+        currentValue = nextValue;
+        built = true;
+        break;
+      }
+
+      if (!built) { ok = false; break; }
+    }
+
+    if (!ok || numbers.length !== termsCount) continue;
+
+    if (!needMixed) {
       const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
       if (!verified.ok) continue;
-
       return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+    }
+
+    // Mixed verification
+    let val = numbers[0], valid = true, pCount = 0;
+    const simSt = numberToDigits(numbers[0], digitsCount);
+    for (let i = 1; i < numbers.length; i++) {
+      const signed = numbers[i];
+      const term = Math.abs(signed);
+      const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+      const td = numberToDigits(term, digitsCount);
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const un = pos > 0 ? simSt[pos - 1] > 0 : false;
+        const cl = classifyMixStageStep(termOp, simSt[pos], td[pos], un, mainFormula);
+        if (cl === null) { valid = false; break; }
+        if (cl === 'mix_primary') pCount++;
+        applyDigit(simSt, pos, td[pos], termOp);
+      }
+      if (!valid) break;
+      val = digitsToNumber(simSt);
+      if (val < 0) { valid = false; break; }
+    }
+    if (!valid || pCount < minPrimarySteps) continue;
+    return { numbers, answer: val, ok: true };
   }
   return null;
 }
@@ -970,23 +1098,83 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
   }
 
   const answer = result.answer;
+
+  // Step-by-step logging va admin preview uchun
+  const stepLogs: StepLog[] = [];
+  const formulaStats: Record<string, number> = {
+    formulasiz: 0, kichik_dost: 0, katta_dost: 0, mix: 0, unknown: 0,
+  };
+  let primarySteps = 0;
+
+  // Re-simulate to build step logs
+  if (stage !== 'formulasiz') {
+    const simState = numberToDigits(result.numbers[0], digitsCount);
+    for (let termIdx = 1; termIdx < result.numbers.length; termIdx++) {
+      const termDigits = numberToDigits(result.numbers[termIdx], digitsCount);
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const currentDigit = simState[pos];
+        const operandDigit = termDigits[pos];
+        const upperNonzero = pos > 0 ? simState[pos - 1] > 0 : false;
+        const upperBefore = pos > 0 ? simState[pos - 1] : 0;
+
+        let formula: string;
+        let isPrimary = false;
+
+        if (stage === '5') {
+          const cl = classifyFiveStageStep(operation, currentDigit, operandDigit);
+          formula = cl || 'unknown';
+          isPrimary = cl === '5' && operandDigit === mainFormula;
+        } else if (stage === '10') {
+          const cl = classifyTenStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          formula = cl || 'unknown';
+          isPrimary = cl === '10_primary';
+        } else {
+          const cl = classifyMixStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          formula = cl || 'unknown';
+          isPrimary = cl === 'mix_primary';
+        }
+
+        if (isPrimary) primarySteps++;
+        const genericCl = classifyStepGeneric(operation, currentDigit, operandDigit, upperNonzero);
+        formulaStats[genericCl] = (formulaStats[genericCl] || 0) + 1;
+
+        applyDigit(simState, pos, operandDigit, operation);
+
+        stepLogs.push({
+          termIndex: termIdx,
+          displayPos: pos,
+          statePos: pos,
+          beforeDigit: currentDigit,
+          operandDigit,
+          operation,
+          classified: genericCl,
+          isPrimary,
+          upperBefore,
+          afterDigit: simState[pos],
+          upperAfter: pos > 0 ? simState[pos - 1] : 0,
+        });
+      }
+    }
+  }
+
+  const totalSteps = (result.numbers.length - 1) * digitsCount;
   const verification: VerificationResult = {
     isValid: true,
     answer,
-    totalSteps: (termsCount - 1) * digitsCount,
-    primarySteps: 0,
-    stats: {},
-    steps: [],
+    totalSteps,
+    primarySteps,
+    stats: formulaStats,
+    steps: stepLogs,
     errors: [],
-    formulaStats: { formulasiz: 0, kichik_dost: 0, katta_dost: 0, mix: 0, unknown: 0 },
-    primaryFormulaRatio: 0,
+    formulaStats: formulaStats as any,
+    primaryFormulaRatio: totalSteps > 0 ? primarySteps / totalSteps : 0,
   };
 
   return {
     config: cfg,
     terms: result.numbers,
     answer,
-    stepLogs: [],
+    stepLogs,
     verification,
     formatted: formatVerticalExample(result.numbers, answer, operation),
   };
