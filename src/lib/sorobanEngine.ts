@@ -722,7 +722,336 @@ export const FORMULA_LABELS: Record<string, { label: string; icon: string; descr
   },
 };
 
-// ============= VALIDATION =============
+// ============= STEP CLASSIFICATION =============
+
+export type StepClassification = 'formulasiz' | 'kichik_dost' | 'katta_dost' | 'mix' | 'unknown';
+
+/**
+ * Qo'shish qadamini klassifikatsiya qilish (Python algoritmiga asoslangan)
+ * 
+ * formulasiz: FORMULASIZ_PLUS jadvaliga mos
+ * kichik_dost (5-lik): +4(1-4da), +3(2-4da), +2(3-4da), +1(4da)
+ * mix: +6(5-8da), +7(5-7da), +8(5-6da), +9(5da) - kichik_dost + katta_dost birgalikda
+ * katta_dost (10-lik): carry talab qiladi va mix emas
+ */
+const classifyAddStep = (currentDigit: number, operandDigit: number): StepClassification => {
+  // 1. Formulasiz?
+  if (RULES_FORMULASIZ[currentDigit]?.add.includes(operandDigit)) {
+    return 'formulasiz';
+  }
+  
+  // 2. Kichik do'st (5-lik formula)?
+  // +4: current 1-4, +3: current 2-4, +2: current 3-4, +1: current 4
+  if (operandDigit >= 1 && operandDigit <= 4) {
+    const low = 5 - operandDigit;
+    if (low <= currentDigit && currentDigit <= 4) {
+      return 'kichik_dost';
+    }
+  }
+  
+  // 3. Mix formula? (+6,+7,+8,+9 maxsus holatlarda)
+  // +6: current 5-8, +7: current 5-7, +8: current 5-6, +9: current 5
+  if (operandDigit >= 6 && operandDigit <= 9) {
+    const high = 14 - operandDigit; // 6->8, 7->7, 8->6, 9->5
+    if (5 <= currentDigit && currentDigit <= high) {
+      return 'mix';
+    }
+  }
+  
+  // 4. Katta do'st (10-lik formula)?
+  if (operandDigit >= 1 && operandDigit <= 9) {
+    if (currentDigit + operandDigit >= 10) {
+      return 'katta_dost';
+    }
+  }
+  
+  return 'unknown';
+};
+
+/**
+ * Ayirish qadamini klassifikatsiya qilish
+ * 
+ * formulasiz: FORMULASIZ_MINUS jadvaliga mos
+ * kichik_dost (5-lik): -4(5-8da), -3(5-7da), -2(5-6da), -1(5da)
+ * mix: -6(1-4da, X>0), -7(2-4da), -8(3-4da), -9(4da)
+ * katta_dost (10-lik): borrow talab qiladi va mix emas
+ */
+const classifySubStep = (currentDigit: number, operandDigit: number, hasHigherTens: boolean): StepClassification => {
+  // 1. Formulasiz?
+  if (RULES_FORMULASIZ[currentDigit]?.subtract.includes(operandDigit)) {
+    return 'formulasiz';
+  }
+  
+  // 2. Kichik do'st (5-lik formula)?
+  // -4: current 5-8, -3: current 5-7, -2: current 5-6, -1: current 5
+  if (operandDigit >= 1 && operandDigit <= 4) {
+    if (5 <= currentDigit && currentDigit <= (4 + operandDigit)) {
+      return 'kichik_dost';
+    }
+  }
+  
+  // 3. Mix formula? (-6,-7,-8,-9 maxsus holatlarda)
+  // -6: current 1-4, -7: current 2-4, -8: current 3-4, -9: current 4
+  if (operandDigit >= 6 && operandDigit <= 9 && hasHigherTens) {
+    const low = 10 - operandDigit; // 6->4, 7->3, 8->2, 9->1
+    if (low <= currentDigit && currentDigit <= 4) {
+      return 'mix';
+    }
+  }
+  
+  // 4. Katta do'st (10-lik formula)?
+  if (operandDigit >= 1 && operandDigit <= 9 && hasHigherTens) {
+    if (currentDigit < operandDigit) {
+      return 'katta_dost';
+    }
+  }
+  
+  return 'unknown';
+};
+
+/**
+ * Bitta qadamni klassifikatsiya qilish
+ */
+export const classifyStep = (
+  currentValue: number,
+  operandDigit: number,
+  isAdd: boolean
+): StepClassification => {
+  const currentDigit = Math.abs(currentValue) % 10;
+  const hasHigherTens = Math.floor(Math.abs(currentValue) / 10) > 0;
+  
+  if (isAdd) {
+    return classifyAddStep(currentDigit, operandDigit);
+  }
+  return classifySubStep(currentDigit, operandDigit, hasHigherTens);
+};
+
+// ============= COMPREHENSIVE VERIFIER =============
+
+export interface StepVerification {
+  stepIndex: number;
+  operand: number;         // +5 yoki -3
+  currentValue: number;    // Shu qadam boshlanishidagi qiymat
+  resultValue: number;     // Shu qadamdan keyingi qiymat
+  classification: StepClassification;  // Qaysi formula turi
+  isValid: boolean;
+  error?: string;
+}
+
+export interface VerificationResult {
+  isValid: boolean;
+  answer: number;
+  steps: StepVerification[];
+  formulaStats: Record<StepClassification, number>;  // Har bir formula turi necha marta ishlatildi
+  primaryFormulaRatio: number;  // Tanlangan formulaning ulushi (0-1)
+  errors: string[];
+}
+
+/**
+ * Misolni to'liq verifikatsiya qilish
+ * Har bir qadam bo'yicha formula turini aniqlash va tekshirish
+ */
+export const verifyProblem = (
+  startValue: number,
+  sequence: number[],
+  expectedStage?: string
+): VerificationResult => {
+  const steps: StepVerification[] = [];
+  const errors: string[] = [];
+  const formulaStats: Record<StepClassification, number> = {
+    formulasiz: 0,
+    kichik_dost: 0,
+    katta_dost: 0,
+    mix: 0,
+    unknown: 0,
+  };
+  
+  let currentValue = startValue;
+  let lastWasCarry = false;
+  
+  for (let i = 0; i < sequence.length; i++) {
+    const delta = sequence[i];
+    const isAdd = delta > 0;
+    const absDelta = Math.abs(delta);
+    
+    // Birliklar xonasidagi raqamni olish
+    const currentDigit = Math.abs(currentValue) % 10;
+    const hasHigherTens = Math.floor(Math.abs(currentValue) / 10) > 0;
+    
+    // Qadamni klassifikatsiya qilish
+    const classification = classifyStep(currentValue, absDelta, isAdd);
+    formulaStats[classification]++;
+    
+    let isValid = true;
+    let error: string | undefined;
+    
+    // 1. Noma'lum amal
+    if (classification === 'unknown') {
+      isValid = false;
+      error = `unknown_operation: ${isAdd ? '+' : '-'}${absDelta} at digit ${currentDigit}`;
+    }
+    
+    // 2. Stage tekshiruvi
+    if (expectedStage && classification !== 'unknown') {
+      const allowedClassifications = getStageAllowedClassifications(expectedStage);
+      if (!allowedClassifications.includes(classification)) {
+        isValid = false;
+        error = `topic_mismatch: ${classification} used in ${expectedStage} stage`;
+      }
+    }
+    
+    // 3. Ketma-ket katta do'st tekshiruvi
+    const isCarry = classification === 'katta_dost' || classification === 'mix';
+    if (isCarry && lastWasCarry) {
+      isValid = false;
+      error = 'consecutive_carry: ketma-ket carry/borrow ishlatildi';
+    }
+    
+    // 4. Formulasiz rejimda carry ishlatilganligini tekshirish
+    if (expectedStage === 'formulasiz' && isCarry) {
+      isValid = false;
+      error = 'carry_used_in_formulasiz';
+    }
+    
+    const resultValue = currentValue + delta;
+    
+    // 5. Natija manfiy bo'lmasligi kerak (agar ensurePositive)
+    if (resultValue < 0) {
+      isValid = false;
+      error = 'negative_result';
+    }
+    
+    // 6. 0 raqami tekshiruvi (ko'p xonali sonlarda)
+    if (absDelta >= 10) {
+      const digits = String(absDelta);
+      if (digits.includes('0')) {
+        isValid = false;
+        error = 'zero_digit_found';
+      }
+    }
+    
+    if (error && !errors.includes(error)) {
+      errors.push(error);
+    }
+    
+    steps.push({
+      stepIndex: i,
+      operand: delta,
+      currentValue,
+      resultValue,
+      classification,
+      isValid,
+      error,
+    });
+    
+    currentValue = resultValue;
+    lastWasCarry = isCarry;
+  }
+  
+  // Primary formula ratio hisoblash
+  let primaryFormulaRatio = 0;
+  if (expectedStage && steps.length > 0) {
+    const primaryClass = getStagePrimaryClassification(expectedStage);
+    if (primaryClass) {
+      const primaryCount = formulaStats[primaryClass] || 0;
+      primaryFormulaRatio = primaryCount / steps.length;
+    }
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    answer: currentValue,
+    steps,
+    formulaStats,
+    primaryFormulaRatio,
+    errors,
+  };
+};
+
+/**
+ * Stage uchun ruxsat etilgan klassifikatsiyalar
+ */
+const getStageAllowedClassifications = (stage: string): StepClassification[] => {
+  switch (stage) {
+    case 'formulasiz':
+    case 'oddiy':
+      return ['formulasiz'];
+    case 'kichik_dost':
+    case 'formula5':
+      return ['formulasiz', 'kichik_dost'];
+    case 'katta_dost':
+    case 'formula10plus':
+    case 'formula10minus':
+      return ['formulasiz', 'katta_dost'];
+    case 'mix':
+    case 'hammasi':
+      return ['formulasiz', 'kichik_dost', 'katta_dost', 'mix'];
+    default:
+      return ['formulasiz', 'kichik_dost', 'katta_dost', 'mix'];
+  }
+};
+
+/**
+ * Stage uchun asosiy (primary) formula klassifikatsiyasi
+ */
+const getStagePrimaryClassification = (stage: string): StepClassification | null => {
+  switch (stage) {
+    case 'formulasiz':
+    case 'oddiy':
+      return 'formulasiz';
+    case 'kichik_dost':
+    case 'formula5':
+      return 'kichik_dost';
+    case 'katta_dost':
+    case 'formula10plus':
+    case 'formula10minus':
+      return 'katta_dost';
+    default:
+      return null;
+  }
+};
+
+// ============= VALIDATED GENERATOR =============
+
+/**
+ * Verifikatsiyadan o'tgan misol generatsiya qilish
+ * Generatsiya + tekshirish = ishonchli misol
+ */
+export const generateVerifiedProblem = (
+  config: ProblemConfig,
+  stage?: string,
+  maxRetries: number = 10
+): { problem: GeneratedProblem; verification: VerificationResult } | null => {
+  for (let i = 0; i < maxRetries; i++) {
+    const problem = generateProblem(config);
+    
+    // Misol to'liq generatsiya bo'lganligini tekshirish
+    if (problem.sequence.length < config.operationCount - 1) continue;
+    
+    // Verifikatsiya
+    const verification = verifyProblem(
+      problem.startValue,
+      problem.sequence,
+      stage
+    );
+    
+    if (verification.isValid) {
+      return { problem, verification };
+    }
+  }
+  
+  // Fallback: verifikatsiyasiz qaytarish (lekin xabar berish)
+  const fallback = generateProblem(config);
+  const fallbackVerification = verifyProblem(
+    fallback.startValue,
+    fallback.sequence,
+    stage
+  );
+  
+  return { problem: fallback, verification: fallbackVerification };
+};
+
+// ============= LEGACY VALIDATION (backward compatibility) =============
 
 /**
  * Misol ketma-ketligini tekshirish
@@ -739,42 +1068,26 @@ export const validateProblemSequence = (
     return { isValid: false, errors };
   }
   
-  let currentValue = sequence[0];
-  let lastWasCarry = false;
+  const verification = verifyProblem(sequence[0], sequence.slice(1));
   
-  for (let i = 1; i < sequence.length; i++) {
-    const delta = sequence[i];
-    const isAdd = delta > 0;
-    const absDelta = Math.abs(delta);
-    
-    // Tekshirish: qaysi formula ishlatilayotgan?
-    const currentDigit = Math.abs(currentValue) % 10;
-    
-    let formulaUsed: FormulaCategory | null = null;
-    let isCarryOperation = false;
-    
-    if (isFormulasizAllowed(currentDigit, absDelta, isAdd)) {
-      formulaUsed = 'formulasiz';
-    } else if (isKichikDostAllowed(currentDigit, absDelta, isAdd)) {
-      formulaUsed = 'kichik_dost';
-    } else if (isKattaDostAllowed(currentValue, absDelta, isAdd)) {
-      formulaUsed = 'katta_dost';
-      isCarryOperation = true;
+  // Ruxsat etilgan formulalar tekshiruvi
+  for (const step of verification.steps) {
+    if (step.classification === 'unknown') {
+      errors.push(`${step.stepIndex + 1}-amal (${step.operand}) ruxsat etilmagan: joriy qiymat ${step.currentValue}`);
+    } else {
+      // Map classification to FormulaCategory
+      const catMap: Record<StepClassification, FormulaCategory | null> = {
+        formulasiz: 'formulasiz',
+        kichik_dost: 'kichik_dost',
+        katta_dost: 'katta_dost',
+        mix: 'mix',
+        unknown: null,
+      };
+      const cat = catMap[step.classification];
+      if (cat && !allowedFormulas.includes(cat)) {
+        errors.push(`${step.stepIndex + 1}-amal ${step.classification} formulasi ishlatilgan, lekin ruxsat etilmagan`);
+      }
     }
-    
-    if (!formulaUsed) {
-      errors.push(`${i}-amal (${delta}) ruxsat etilmagan: joriy qiymat ${currentValue}`);
-    } else if (!allowedFormulas.includes(formulaUsed)) {
-      errors.push(`${i}-amal ${formulaUsed} formulasi ishlatilgan, lekin ruxsat etilmagan`);
-    }
-    
-    // Ketma-ket katta do'st tekshirish
-    if (isCarryOperation && lastWasCarry) {
-      errors.push(`${i}-amalda ketma-ket katta do'st ishlatildi - bu ruxsat etilmagan`);
-    }
-    
-    currentValue += delta;
-    lastWasCarry = isCarryOperation;
   }
   
   return { isValid: errors.length === 0, errors };
