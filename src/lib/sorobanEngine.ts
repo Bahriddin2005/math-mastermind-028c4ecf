@@ -938,23 +938,78 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
   }
 
   const answer = result.answer;
+
+  // Step-by-step logging va admin preview uchun
+  const stepLogs: StepLog[] = [];
+  const formulaStats: Record<string, number> = {
+    formulasiz: 0, kichik_dost: 0, katta_dost: 0, mix: 0, unknown: 0,
+  };
+  let primarySteps = 0;
+
+  // Re-simulate to build step logs
+  if (stage !== 'formulasiz') {
+    const simState = numberToDigits(result.numbers[0], digitsCount);
+    for (let termIdx = 1; termIdx < result.numbers.length; termIdx++) {
+      const termDigits = numberToDigits(result.numbers[termIdx], digitsCount);
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const currentDigit = simState[pos];
+        const operandDigit = termDigits[pos];
+        const upperNonzero = pos > 0 ? simState[pos - 1] > 0 : false;
+
+        let formula: string;
+        let isPrimary = false;
+
+        if (stage === '5') {
+          const cl = classifyFiveStageStep(operation, currentDigit, operandDigit);
+          formula = cl || 'unknown';
+          isPrimary = cl === '5' && operandDigit === mainFormula;
+        } else if (stage === '10') {
+          const cl = classifyTenStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          formula = cl || 'unknown';
+          isPrimary = cl === '10_primary';
+        } else {
+          const cl = classifyMixStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          formula = cl || 'unknown';
+          isPrimary = cl === 'mix_primary';
+        }
+
+        if (isPrimary) primarySteps++;
+        const genericCl = classifyStepGeneric(operation, currentDigit, operandDigit, upperNonzero);
+        formulaStats[genericCl] = (formulaStats[genericCl] || 0) + 1;
+
+        stepLogs.push({
+          termIndex: termIdx,
+          position: pos,
+          formula,
+          isPrimary,
+          currentDigit,
+          operandDigit,
+          upperNonzero,
+        });
+
+        applyDigit(simState, pos, operandDigit, operation);
+      }
+    }
+  }
+
+  const totalSteps = (result.numbers.length - 1) * digitsCount;
   const verification: VerificationResult = {
     isValid: true,
     answer,
-    totalSteps: (termsCount - 1) * digitsCount,
-    primarySteps: 0,
-    stats: {},
-    steps: [],
+    totalSteps,
+    primarySteps,
+    stats: formulaStats,
+    steps: stepLogs,
     errors: [],
-    formulaStats: { formulasiz: 0, kichik_dost: 0, katta_dost: 0, mix: 0, unknown: 0 },
-    primaryFormulaRatio: 0,
+    formulaStats: formulaStats as any,
+    primaryFormulaRatio: totalSteps > 0 ? primarySteps / totalSteps : 0,
   };
 
   return {
     config: cfg,
     terms: result.numbers,
     answer,
-    stepLogs: [],
+    stepLogs,
     verification,
     formatted: formatVerticalExample(result.numbers, answer, operation),
   };
