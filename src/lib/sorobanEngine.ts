@@ -817,61 +817,45 @@ function generateMixFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 7000,
+  maxAttempts: number = 200,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    try {
-      const firstNumber = operation === 'add'
-        ? randomNonZeroNumber(digitsCount)
-        : randomInitialForSub(digitsCount);
+    const firstNumber = randomNonZeroNumber(digitsCount);
+    const numbers = [firstNumber];
+    let currentValue = firstNumber;
+    let ok = true;
 
-      const numbers = [firstNumber];
-      let currentValue = firstNumber;
-      let success = true;
+    for (let termIndex = 1; termIndex < termsCount; termIndex++) {
+      const state = numberToDigits(currentValue, digitsCount);
+      const termDigits = new Array(digitsCount).fill(0);
+      let termValid = true;
 
-      for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
-
-        for (let _retry = 0; _retry < 500; _retry++) {
-          try {
-            const state = numberToDigits(currentValue, digitsCount);
-            const termDigits = new Array(digitsCount).fill(0);
-            let termValid = true;
-
-            for (let pos = digitsCount - 1; pos >= 0; pos--) {
-              const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
-              if (!choice) { termValid = false; break; }
-              termDigits[pos] = choice.operandDigit;
-              applyDigit(state, pos, choice.operandDigit, operation);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-            if (state[0] >= 10 || state[0] < 0) continue;
-
-            const nextValue = digitsToNumber(state);
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
-        }
-
-        if (!built) { success = false; break; }
+      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        const choice = chooseMixFormulaDigit(state, pos, operation, mainFormula);
+        if (!choice) { termValid = false; break; }
+        termDigits[pos] = choice.operandDigit;
+        applyDigit(state, pos, choice.operandDigit, operation);
       }
+      if (!termValid) { ok = false; break; }
 
-      if (!success) continue;
+      const term = digitsToNumber(termDigits);
+      if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      if (state[0] >= 10 || state[0] < 0) { ok = false; break; }
 
-      const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-      if (!verified.ok) continue;
+      const nextValue = digitsToNumber(state);
+      if (nextValue < 0 || String(nextValue).length > digitsCount) { ok = false; break; }
 
-      return { numbers, answer: verified.answer!, ok: true };
-    } catch { continue; }
+      numbers.push(term);
+      currentValue = nextValue;
+    }
+
+    if (!ok || numbers.length !== termsCount) continue;
+
+    const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
+    if (!verified.ok) continue;
+
+    return { numbers, answer: verified.answer!, ok: true };
   }
   return null;
 }
