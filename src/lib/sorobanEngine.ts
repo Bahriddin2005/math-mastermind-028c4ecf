@@ -728,7 +728,7 @@ function generateTenFormula(
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 500,
+  maxAttempts: number = 1000,
   minPrimarySteps: number = 1
 ): FormulasizResult | null {
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
