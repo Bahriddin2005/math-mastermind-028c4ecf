@@ -873,18 +873,28 @@ function chooseMixFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
+  // Probabilistik tanlash
+  if (primary.length > 0 && Math.random() < 0.65) {
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
+  }
+
+  const fallbacks = [
+    ...fallback10.map(d => ({ d, formula: '10_fallback', isPrimary: false })),
+    ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
+    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
+  ];
+
+  if (fallbacks.length > 0) {
+    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
+  }
+
   if (primary.length > 0) {
-    return { operandDigit: primary[Math.floor(Math.random() * primary.length)], formula: 'mix_primary', isPrimary: true };
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
   }
-  if (fallback10.length > 0) {
-    return { operandDigit: fallback10[Math.floor(Math.random() * fallback10.length)], formula: '10_fallback', isPrimary: false };
-  }
-  if (fallback5.length > 0) {
-    return { operandDigit: fallback5[Math.floor(Math.random() * fallback5.length)], formula: '5_fallback', isPrimary: false };
-  }
-  if (fallbackFormulasiz.length > 0) {
-    return { operandDigit: fallbackFormulasiz[Math.floor(Math.random() * fallbackFormulasiz.length)], formula: 'formulasiz_fallback', isPrimary: false };
-  }
+
   return null;
 }
 
