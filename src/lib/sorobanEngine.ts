@@ -955,6 +955,7 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
         const currentDigit = simState[pos];
         const operandDigit = termDigits[pos];
         const upperNonzero = pos > 0 ? simState[pos - 1] > 0 : false;
+        const upperBefore = pos > 0 ? simState[pos - 1] : 0;
 
         let formula: string;
         let isPrimary = false;
@@ -977,17 +978,21 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
         const genericCl = classifyStepGeneric(operation, currentDigit, operandDigit, upperNonzero);
         formulaStats[genericCl] = (formulaStats[genericCl] || 0) + 1;
 
+        applyDigit(simState, pos, operandDigit, operation);
+
         stepLogs.push({
           termIndex: termIdx,
-          position: pos,
-          formula,
-          isPrimary,
-          currentDigit,
+          displayPos: pos,
+          statePos: pos,
+          beforeDigit: currentDigit,
           operandDigit,
-          upperNonzero,
+          operation,
+          classified: genericCl,
+          isPrimary,
+          upperBefore,
+          afterDigit: simState[pos],
+          upperAfter: pos > 0 ? simState[pos - 1] : 0,
         });
-
-        applyDigit(simState, pos, operandDigit, operation);
       }
     }
   }
