@@ -322,13 +322,12 @@ function generateFormulasiz(
   operation: OperationType,
   digitsCount: number,
   termsCount: number,
-  maxAttempts: number = 5000
+  maxAttempts: number = 300
 ): FormulasizResult | null {
   const table = operation === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     try {
-      // Qo'shishda kichik boshlang'ich son bilan boshlash (overflow oldini olish)
       const firstNumber = operation === 'add'
         ? randomSmallNumber(digitsCount)
         : randomInitialForSub(digitsCount);
@@ -338,51 +337,42 @@ function generateFormulasiz(
       let success = true;
 
       for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-        let built = false;
+        const currentDigits = numberToDigits(currentValue, digitsCount);
+        const termDigits: number[] = [];
+        let termValid = true;
 
-        for (let _retry = 0; _retry < 200; _retry++) {
-          try {
-            const currentDigits = numberToDigits(currentValue, digitsCount);
-            const termDigits: number[] = [];
-
-            let termValid = true;
-            for (const digit of currentDigits) {
-              const allowed = table[digit] || [];
-              if (allowed.length === 0) { termValid = false; break; }
-              // Qo'shishda kichikroq raqamlarni ustuvor tanlash (overflow kamroq)
-              let pick: number;
-              if (operation === 'add' && digit >= 5) {
-                // 5+ bo'lganda faqat kichik raqamlar tanlash
-                const small = allowed.filter(a => a <= 4);
-                const pool = small.length > 0 ? small : allowed;
-                pick = pool[Math.floor(Math.random() * pool.length)];
-              } else {
-                pick = allowed[Math.floor(Math.random() * allowed.length)];
-              }
-              termDigits.push(pick);
-            }
-            if (!termValid) continue;
-
-            const term = digitsToNumber(termDigits);
-            if (hasZeroInDisplayed(term, digitsCount)) continue;
-
-            const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
-            if (nextValue < 0) continue;
-            if (String(nextValue).length > digitsCount) continue;
-
-            numbers.push(term);
-            currentValue = nextValue;
-            built = true;
-            break;
-          } catch { continue; }
+        for (const digit of currentDigits) {
+          const allowed = table[digit] || [];
+          if (allowed.length === 0) { termValid = false; break; }
+          // Weighted selection: prefer smaller for add, larger for sub
+          if (operation === 'add') {
+            const sorted = [...allowed].sort((a, b) => a - b);
+            // 70% chance pick from lower half
+            const half = Math.max(1, Math.ceil(sorted.length / 2));
+            const pool = Math.random() < 0.7 ? sorted.slice(0, half) : sorted;
+            termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
+          } else {
+            const sorted = [...allowed].sort((a, b) => a - b);
+            const half = Math.max(1, Math.ceil(sorted.length / 2));
+            const pool = Math.random() < 0.7 ? sorted.slice(0, half) : sorted;
+            termDigits.push(pool[Math.floor(Math.random() * pool.length)]);
+          }
         }
 
-        if (!built) { success = false; break; }
+        if (!termValid) { success = false; break; }
+
+        const term = digitsToNumber(termDigits);
+        if (hasZeroInDisplayed(term, digitsCount)) { success = false; break; }
+
+        const nextValue = operation === 'add' ? currentValue + term : currentValue - term;
+        if (nextValue < 0 || String(nextValue).length > digitsCount) { success = false; break; }
+
+        numbers.push(term);
+        currentValue = nextValue;
       }
 
-      if (!success) continue;
+      if (!success || numbers.length !== termsCount) continue;
 
-      // Verify
       const verified = verifyFormulasiz(numbers, operation, digitsCount, termsCount);
       if (!verified.ok) continue;
 
