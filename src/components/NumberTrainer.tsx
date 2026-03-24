@@ -1,4 +1,12 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { 
+  generateVerifiedProblem, 
+  verifyProblem, 
+  getLegacyFormulas,
+  type FormulaCategory as SorobanFormulaCategory,
+  type GeneratedProblem as SorobanProblem,
+  type VerificationResult,
+} from '@/lib/sorobanEngine';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -459,6 +467,8 @@ export const NumberTrainer = () => {
   const startTimeRef = useRef<number>(0);
   const answerStartTimeRef = useRef<number>(0);
   const lastWasKattaDostRef = useRef(false); // Mix formula uchun - ketma-ket katta do'st cheklovi
+  const preGeneratedProblemRef = useRef<SorobanProblem | null>(null); // Oldindan generatsiya qilingan va tekshirilgan misol
+  const preGeneratedIndexRef = useRef(0); // Oldindan generatsiya qilingan misoldan qaysi qadamda ekanligimiz
 
   // Mount va admin tekshirish
   useEffect(() => {
@@ -897,13 +907,117 @@ export const NumberTrainer = () => {
       return;
     }
 
+    // ===== YANGI: Oldindan verifikatsiya qilingan misol generatsiya qilish =====
+    // Formulasiz, formula5, formula10, hammasi rejimlari uchun sorobanEngine dan foydalanish
+    const isFormulaMode = ['oddiy', 'formula5', 'formula10plus', 'hammasi', 'manfiy'].includes(formulaType);
+    
+    if (isFormulaMode && formulaType !== 'manfiy') {
+      // SorobanEngine orqali oldindan to'liq misolni generatsiya + verifikatsiya
+      const allowedFormulas = getLegacyFormulas(formulaType);
+      const verified = generateVerifiedProblem(
+        {
+          digitCount,
+          operationCount: problemCount,
+          allowedFormulas,
+          ensurePositiveResult: true,
+        },
+        formulaType,
+        15 // maxRetries
+      );
+      
+      if (verified && verified.problem.sequence.length >= problemCount - 1) {
+        // Verifikatsiyadan o'tgan misolni ishlatish
+        preGeneratedProblemRef.current = verified.problem;
+        preGeneratedIndexRef.current = 0;
+        
+        const initialValue = verified.problem.startValue;
+        runningResultRef.current = initialValue;
+        
+        // Yakuniy javobni oldindan saqlash (sequence oxirigacha hisoblash)
+        // finalAnswer allaqachon problem da bor
+        
+        countRef.current = 1;
+        lastWasKattaDostRef.current = false;
+        startTimeRef.current = Date.now();
+        
+        setCurrentDisplay(String(initialValue));
+        setCurrentSign('');
+        setDisplayedNumbers([{ num: String(initialValue), isAdd: true, isFirst: true }]);
+        setIsRunning(true);
+        setIsFinished(false);
+        setIsAddition(true);
+        setUserAnswer('');
+        setShowResult(false);
+        setIsCorrect(null);
+        setElapsedTime(0);
+        setAnswerTime(0);
+        
+        playSound('start');
+        
+        timerRef.current = setInterval(() => {
+          setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 100) / 10);
+        }, 100);
+        
+        if (voiceEnabled) {
+          speakNumber(String(initialValue), true, true);
+        }
+        
+        const speedMs = speed * 1000;
+        
+        intervalRef.current = setInterval(() => {
+          const idx = preGeneratedIndexRef.current;
+          const problem = preGeneratedProblemRef.current;
+          
+          if (!problem || idx >= problem.sequence.length) {
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
+            }
+            // Yakuniy javobni o'rnatish
+            runningResultRef.current = problem?.finalAnswer ?? runningResultRef.current;
+            answerStartTimeRef.current = Date.now();
+            setIsRunning(false);
+            setIsFinished(true);
+            setCurrentDisplay(null);
+            playSound('complete');
+            return;
+          }
+          
+          const delta = problem.sequence[idx];
+          const isAdd = delta > 0;
+          const absNum = Math.abs(delta);
+          
+          preGeneratedIndexRef.current = idx + 1;
+          runningResultRef.current += delta;
+          
+          const sign = isAdd ? '+' : '−';
+          setCurrentDisplay(String(absNum));
+          setCurrentSign(sign);
+          setIsAddition(isAdd);
+          setDisplayedNumbers(prev => [...prev, { num: String(absNum), isAdd }]);
+          
+          playSound('tick');
+          
+          if (voiceEnabled) {
+            speakNumber(String(absNum), isAdd, false);
+          }
+        }, speedMs);
+        
+        return;
+      }
+    }
+    
+    // ===== FALLBACK: Eski usul (manfiy rejim yoki verifikatsiya muvaffaqiyatsiz bo'lganda) =====
+    preGeneratedProblemRef.current = null;
+    preGeneratedIndexRef.current = 0;
+    
     const maxInitial = Math.pow(10, digitCount) - 1;
     const minInitial = digitCount === 1 ? 1 : Math.pow(10, digitCount - 1);
     const initialResult = Math.floor(Math.random() * (maxInitial - minInitial + 1)) + minInitial;
     
     runningResultRef.current = initialResult;
     countRef.current = 1;
-    lastWasKattaDostRef.current = false; // Mix formula uchun reset
+    lastWasKattaDostRef.current = false;
     startTimeRef.current = Date.now();
 
     setCurrentDisplay(String(initialResult));
@@ -918,10 +1032,8 @@ export const NumberTrainer = () => {
     setElapsedTime(0);
     setAnswerTime(0);
 
-    // Start sound
     playSound('start');
 
-    // Taymer
     timerRef.current = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTimeRef.current) / 100) / 10);
     }, 100);
@@ -944,7 +1056,6 @@ export const NumberTrainer = () => {
         setIsRunning(false);
         setIsFinished(true);
         setCurrentDisplay(null);
-        // Complete sound when game ends
         playSound('complete');
         return;
       }
@@ -956,7 +1067,6 @@ export const NumberTrainer = () => {
         setCurrentSign(sign);
         setDisplayedNumbers(prev => [...prev, { num: String(result.num), isAdd: result.isAdd }]);
         
-        // Tick sound for each number
         playSound('tick');
         
         if (voiceEnabled) {
