@@ -695,16 +695,32 @@ function chooseTenFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  if (primary.length > 0) {
-    return { operandDigit: primary[Math.floor(Math.random() * primary.length)], formula: '10_primary', isPrimary: true };
+  // Probabilistik tanlash — primary har doim tanlanmasin (overflow xavfi)
+  const allOptions: Array<{ d: number; formula: string; isPrimary: boolean }> = [];
+  for (const d of primary) allOptions.push({ d, formula: '10_primary', isPrimary: true });
+  for (const d of fallback5) allOptions.push({ d, formula: '5_fallback', isPrimary: false });
+  for (const d of fallbackFormulasiz) allOptions.push({ d, formula: 'formulasiz_fallback', isPrimary: false });
+
+  if (allOptions.length === 0) return null;
+
+  // Primary 70% ehtimollik, agar mavjud bo'lsa
+  if (primary.length > 0 && Math.random() < 0.7) {
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: '10_primary', isPrimary: true };
   }
-  if (fallback5.length > 0) {
-    return { operandDigit: fallback5[Math.floor(Math.random() * fallback5.length)], formula: '5_fallback', isPrimary: false };
+
+  // Fallback tanlanadi
+  const fallbacks = [...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
+    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false }))];
+  
+  if (fallbacks.length > 0) {
+    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
   }
-  if (fallbackFormulasiz.length > 0) {
-    return { operandDigit: fallbackFormulasiz[Math.floor(Math.random() * fallbackFormulasiz.length)], formula: 'formulasiz_fallback', isPrimary: false };
-  }
-  return null;
+
+  // Faqat primary qoldi
+  const d = primary[Math.floor(Math.random() * primary.length)];
+  return { operandDigit: d, formula: '10_primary', isPrimary: true };
 }
 
 function generateTenFormula(
