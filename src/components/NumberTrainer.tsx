@@ -914,7 +914,10 @@ export const NumberTrainer = () => {
     if (isFormulaMode && formulaType !== 'manfiy') {
       // SorobanEngine orqali oldindan to'liq misolni generatsiya + verifikatsiya
       const allowedFormulas = getLegacyFormulas(formulaType);
-      const verified = generateVerifiedProblem(
+      const requiredSteps = Math.max(problemCount - 1, 1);
+      const minTermAbs = digitCount > 1 ? Math.pow(10, digitCount - 1) : 1;
+
+      let verified = generateVerifiedProblem(
         {
           digitCount,
           operationCount: problemCount,
@@ -924,8 +927,35 @@ export const NumberTrainer = () => {
         formulaType,
         15 // maxRetries
       );
+
+      const isSequenceAcceptable = (seq: number[]) => {
+        if (seq.length < requiredSteps) return false;
+        if (digitCount > 1 && seq.some(delta => Math.abs(delta) < minTermAbs)) return false;
+        return true;
+      };
+
+      // Qo'shimcha retry: to'liq xonali hadlar chiqmaguncha qayta urinish
+      if (!verified || !isSequenceAcceptable(verified.problem.sequence)) {
+        for (let attempt = 0; attempt < 40; attempt++) {
+          const candidate = generateVerifiedProblem(
+            {
+              digitCount,
+              operationCount: problemCount,
+              allowedFormulas,
+              ensurePositiveResult: true,
+            },
+            formulaType,
+            10
+          );
+
+          if (candidate && isSequenceAcceptable(candidate.problem.sequence)) {
+            verified = candidate;
+            break;
+          }
+        }
+      }
       
-      if (verified && verified.problem.sequence.length >= problemCount - 1) {
+      if (verified && isSequenceAcceptable(verified.problem.sequence)) {
         // Verifikatsiyadan o'tgan misolni ishlatish
         preGeneratedProblemRef.current = verified.problem;
         preGeneratedIndexRef.current = 0;
