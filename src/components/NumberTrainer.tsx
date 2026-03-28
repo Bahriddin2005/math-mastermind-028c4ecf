@@ -1037,8 +1037,10 @@ export const NumberTrainer = () => {
       }
     }
     
-    // ===== FALLBACK: Eski usul (manfiy rejim yoki verifikatsiya muvaffaqiyatsiz bo'lganda) =====
-    preGeneratedProblemRef.current = null;
+    // ===== FALLBACK: Eski usul (faqat manfiy rejim uchun) =====
+    if (formulaType !== 'manfiy') {
+      return;
+    }
     preGeneratedIndexRef.current = 0;
     
     const maxInitial = Math.pow(10, digitCount) - 1;
