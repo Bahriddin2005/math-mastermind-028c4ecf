@@ -1361,6 +1361,74 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
 
   const mainFormula = pickMainFormula(stage);
 
+  // Ixtisoslashtirilgan generatorlardan foydalanish
+  let specializedResult: FormulasizResult | null = null;
+
+  switch (stage) {
+    case 'formulasiz': {
+      // Formulasiz uchun maxsus generator (aralash add/sub)
+      specializedResult = generateFormulasiz('add', digitCount, operationCount, 500);
+      if (!specializedResult) {
+        specializedResult = generateFormulasizMixed(digitCount, operationCount, 500);
+      }
+      break;
+    }
+    case '5': {
+      const mf = mainFormula ?? ([1, 2, 3, 4][Math.floor(Math.random() * 4)]);
+      const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
+      specializedResult = generateFiveFormula(op, mf, digitCount, operationCount, 500, 1);
+      break;
+    }
+    case '10': {
+      const mf = mainFormula ?? (Math.floor(Math.random() * 9) + 1);
+      const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
+      specializedResult = generateTenFormula(op, mf, digitCount, operationCount, 1000, 1);
+      break;
+    }
+    case 'mix': {
+      const mf = mainFormula ?? ([6, 7, 8, 9][Math.floor(Math.random() * 4)]);
+      const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
+      specializedResult = generateMixFormula(op, mf, digitCount, operationCount, 1000, 1);
+      break;
+    }
+  }
+
+  // Ixtisoslashtirilgan generator natijasini GeneratedProblem formatiga o'girish
+  if (specializedResult && specializedResult.ok && specializedResult.numbers.length >= 2) {
+    const startValue = specializedResult.numbers[0];
+    const restNumbers = specializedResult.numbers.slice(1);
+    
+    // numbers[1..] signed bo'lishi mumkin (mixed mode) yoki unsigned (pure add/sub)
+    // Agar unsigned bo'lsa, formulasiz uchun qo'shish deb olamiz
+    // Agar signed bo'lsa (manfiy qiymatlar bor), to'g'ridan-to'g'ri ishlatamiz
+    const hasSigned = restNumbers.some(n => n < 0);
+    
+    let sequence: number[];
+    if (hasSigned) {
+      // Allaqachon signed format
+      sequence = restNumbers;
+    } else {
+      // Unsigned - signed formatga o'girish kerak
+      // Formulasiz uchun answer = start + n1 + n2 + ... (pure add) yoki start - n1 - n2 - ... (pure sub)
+      // Lekin aslida answer ni hisoblashdan bilamiz
+      // Agar formulasiz bo'lsa, qo'shish sifatida olamiz
+      sequence = restNumbers;
+    }
+    
+    return {
+      startValue,
+      operations: sequence.map(delta => ({
+        delta: Math.abs(delta),
+        isAdd: delta > 0,
+        formulaType: 'formulasiz' as FormulaCategory,
+        isCarry: false,
+      })),
+      finalAnswer: specializedResult.answer,
+      sequence,
+    };
+  }
+
+  // Fallback: generateMixedProblem
   const result = generateMixedProblem({
     digitsCount: digitCount,
     termsCount: operationCount,
