@@ -781,47 +781,48 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
-    // MANFIY SONLAR rejimi - barcha raqamlar (1-9) qo'shish va ayirish uchun ruxsat
-    // Natija oralig'i: -9 dan 9 gacha (1 xonali uchun), -99 dan 99 gacha (2 xonali uchun)
+    // MANFIY SONLAR rejimi - digitCount ga mos TO'LIQ xonali sonlar generatsiya qilish
+    // 1 xonali: 1..9, 2 xonali: 10..99, 3 xonali: 100..999, ...
     if (formulaType === 'manfiy') {
       const possibleOperations: { number: number; isAdd: boolean }[] = [];
-      const maxValue = Math.pow(10, digitCount) - 1; // 9, 99, 999...
-      const minValue = -maxValue; // -9, -99, -999...
-      
-      // Barcha raqamlar (1-9) qo'shish va ayirish uchun ruxsat
-      for (let num = 1; num <= 9; num++) {
-        // Qo'shish - natija maxValue dan oshmasa
+      const maxValue = Math.pow(10, digitCount) - 1;
+      const minValue = -maxValue;
+      const minTerm = digitCount > 1 ? Math.pow(10, digitCount - 1) : 1;
+      const maxTerm = digitCount > 1 ? maxValue : 9;
+
+      // Avval to'liq xonali variantlarni yig'amiz
+      for (let num = minTerm; num <= maxTerm; num++) {
         if (currentResult + num <= maxValue) {
           possibleOperations.push({ number: num, isAdd: true });
         }
-        // Ayirish - natija minValue dan tushmasa
         if (currentResult - num >= minValue) {
           possibleOperations.push({ number: num, isAdd: false });
         }
       }
-      
-      if (possibleOperations.length === 0) return null;
-      
-      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
-      
-      let finalNumber = randomOp.number;
-      if (digitCount > 1) {
-        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
-        const proposedNumber = randomOp.number * Math.min(multiplier, Math.pow(10, digitCount - 1));
-        // Natija chegaradan chiqmasligini tekshirish
-        if (randomOp.isAdd && currentResult + proposedNumber <= maxValue) {
-          finalNumber = proposedNumber;
-        } else if (!randomOp.isAdd && currentResult - proposedNumber >= minValue) {
-          finalNumber = proposedNumber;
+
+      // Juda kam holatda to'liq xonali variant qolmasa, fallback
+      if (possibleOperations.length === 0) {
+        for (let num = 1; num <= 9; num++) {
+          if (currentResult + num <= maxValue) {
+            possibleOperations.push({ number: num, isAdd: true });
+          }
+          if (currentResult - num >= minValue) {
+            possibleOperations.push({ number: num, isAdd: false });
+          }
         }
       }
-      
+
+      if (possibleOperations.length === 0) return null;
+
+      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      const finalNumber = randomOp.number;
+
       if (randomOp.isAdd) {
         runningResultRef.current += finalNumber;
       } else {
         runningResultRef.current -= finalNumber;
       }
-      
+
       setIsAddition(randomOp.isAdd);
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
