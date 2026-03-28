@@ -588,51 +588,33 @@ export const NumberTrainer = () => {
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
     
-    // Ko'paytirish rejimi - digitCount ga qarab qiyinlik
+    // Ko'paytirish rejimi - digitCount ga mos to'liq xonali sonlar
     if (formulaType === 'kopaytirish') {
-      let num1: number, num2: number;
-      if (digitCount === 1) {
-        // 1 xonali: 1-9 × 2-9
-        num1 = Math.floor(Math.random() * 9) + 1;
-        num2 = Math.floor(Math.random() * 8) + 2;
-      } else if (digitCount === 2) {
-        // 2 xonali: 10-99 × 2-9
-        num1 = Math.floor(Math.random() * 90) + 10;
-        num2 = Math.floor(Math.random() * 8) + 2;
-      } else if (digitCount === 3) {
-        // 3 xonali: 10-99 × 10-99
-        num1 = Math.floor(Math.random() * 90) + 10;
-        num2 = Math.floor(Math.random() * 90) + 10;
-      } else {
-        // 4 xonali: 100-999 × 2-9
-        num1 = Math.floor(Math.random() * 900) + 100;
-        num2 = Math.floor(Math.random() * 8) + 2;
-      }
+      const getRange = (digits: number) => {
+        if (digits <= 1) return { min: 1, max: 9 };
+        return { min: Math.pow(10, digits - 1), max: Math.pow(10, digits) - 1 };
+      };
+
+      const r = getRange(digitCount);
+      const num1 = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+      const num2 = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+
       runningResultRef.current = num1 * num2;
       return { num: num1, isAdd: true, isMultiply: true, secondNum: num2 };
     }
     
-    // Bo'lish rejimi - digitCount ga qarab qiyinlik
+    // Bo'lish rejimi - digitCount ga mos to'liq xonali bo'luvchi va natija
     if (formulaType === 'bolish') {
-      let divisor: number, quotient: number;
-      if (digitCount === 1) {
-        // 1 xonali: natija 1-9, bo'luvchi 2-9
-        divisor = Math.floor(Math.random() * 8) + 2;
-        quotient = Math.floor(Math.random() * 9) + 1;
-      } else if (digitCount === 2) {
-        // 2 xonali: natija 10-99, bo'luvchi 2-9
-        divisor = Math.floor(Math.random() * 8) + 2;
-        quotient = Math.floor(Math.random() * 90) + 10;
-      } else if (digitCount === 3) {
-        // 3 xonali: natija 10-99, bo'luvchi 10-99
-        divisor = Math.floor(Math.random() * 90) + 10;
-        quotient = Math.floor(Math.random() * 9) + 1;
-      } else {
-        // 4 xonali: natija 10-99, bo'luvchi 10-99
-        divisor = Math.floor(Math.random() * 90) + 10;
-        quotient = Math.floor(Math.random() * 90) + 10;
-      }
+      const getRange = (digits: number) => {
+        if (digits <= 1) return { min: 1, max: 9 };
+        return { min: Math.pow(10, digits - 1), max: Math.pow(10, digits) - 1 };
+      };
+
+      const r = getRange(digitCount);
+      const divisor = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+      const quotient = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
       const dividend = divisor * quotient;
+
       runningResultRef.current = quotient;
       return { num: dividend, isAdd: true, isDivide: true, secondNum: divisor };
     }
