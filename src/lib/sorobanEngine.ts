@@ -1399,20 +1399,17 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
     const restNumbers = specializedResult.numbers.slice(1);
     
     // numbers[1..] signed bo'lishi mumkin (mixed mode) yoki unsigned (pure add/sub)
-    // Agar unsigned bo'lsa, formulasiz uchun qo'shish deb olamiz
-    // Agar signed bo'lsa (manfiy qiymatlar bor), to'g'ridan-to'g'ri ishlatamiz
     const hasSigned = restNumbers.some(n => n < 0);
-    
+
     let sequence: number[];
     if (hasSigned) {
-      // Allaqachon signed format
       sequence = restNumbers;
     } else {
-      // Unsigned - signed formatga o'girish kerak
-      // Formulasiz uchun answer = start + n1 + n2 + ... (pure add) yoki start - n1 - n2 - ... (pure sub)
-      // Lekin aslida answer ni hisoblashdan bilamiz
-      // Agar formulasiz bo'lsa, qo'shish sifatida olamiz
-      sequence = restNumbers;
+      // Unsigned bo'lsa, answer bo'yicha qaysi operation ekanini aniqlab signed ga aylantiramiz
+      // (oldin bu joy hammasini musbat qilgani uchun noto'g'ri sign chiqayotgan edi)
+      const sumRest = restNumbers.reduce((sum, n) => sum + n, 0);
+      const inferredOp: OperationType = specializedResult.answer === startValue - sumRest ? 'sub' : 'add';
+      sequence = restNumbers.map(n => (inferredOp === 'add' ? n : -n));
     }
     
     return {
