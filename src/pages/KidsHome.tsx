@@ -310,12 +310,7 @@ const KidsHome = () => {
           </>
         )}
 
-        {/* Subscription Plans - for students and teachers (role-filtered) */}
-        {(isStudent || isTeacher) && (
-          <div className="container px-3 xs:px-4">
-            <SubscriptionPlans />
-          </div>
-        )}
+        {/* Subscription Plans - temporarily hidden */}
       </PullToRefresh>
     </PageBackground>
   );
