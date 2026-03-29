@@ -157,7 +157,7 @@ export const RealisticAbacus = ({
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   // Estimate frame height from minHeight + padding + borders
-  const innerMinHeight = compact ? 750 : 950;
+  const innerMinHeight = compact ? 550 : 700;
   const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
   const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
   
