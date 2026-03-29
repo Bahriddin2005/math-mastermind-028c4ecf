@@ -56,27 +56,27 @@ export const RealisticAbacus = ({
   const showValue = showValueProp ?? (mode === 'beginner');
   const colorPalette = useMemo(() => getColorPaletteForScheme(colorScheme), [colorScheme]);
   
-  // Responsive bead size — large enough to interact comfortably
+  // Responsive bead size — scales UP with more columns
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 3) return 58;
-      if (cols <= 5) return 48;
+      if (cols <= 3) return 28;
+      if (cols <= 5) return 34;
       if (cols <= 7) return 40;
-      if (cols <= 10) return 34;
-      return 28;
+      if (cols <= 10) return 48;
+      return 58;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 3) return 30;
-      if (cols <= 5) return 26;
-      if (cols <= 7) return 22;
-      if (cols <= 10) return 18;
-      return 16;
+      if (cols <= 3) return 18;
+      if (cols <= 5) return 22;
+      if (cols <= 7) return 26;
+      if (cols <= 10) return 30;
+      return 34;
     }
-    if (cols <= 3) return 38;
-    if (cols <= 5) return 34;
-    if (cols <= 7) return 30;
-    if (cols <= 10) return 26;
-    return 22;
+    if (cols <= 3) return 24;
+    if (cols <= 5) return 30;
+    if (cols <= 7) return 36;
+    if (cols <= 10) return 42;
+    return 48;
   };
   
   // Engine state
