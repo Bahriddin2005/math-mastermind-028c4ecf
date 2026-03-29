@@ -984,6 +984,7 @@ export const NumberTrainer = () => {
               operationCount: problemCount,
               allowedFormulas,
               ensurePositiveResult: true,
+              difficulty: adaptiveDifficulty.level,
             },
             formulaType,
             10
