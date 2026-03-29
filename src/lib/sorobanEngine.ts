@@ -1402,7 +1402,7 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
     case '10': {
       const mf = mainFormula ?? (Math.floor(Math.random() * 9) + 1);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateTenFormula(op, mf, digitCount, operationCount, 1000, 1);
+      specializedResult = generateTenFormula(op, mf, digitCount, operationCount, 1000, 1, difficulty);
       break;
     }
     case 'mix': {
