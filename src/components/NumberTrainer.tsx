@@ -909,6 +909,8 @@ export const NumberTrainer = () => {
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
+    // Progress engine session start
+    progressEngine.startSession();
     // Ko'paytirish yoki Bo'lish rejimida boshqacha boshlanadi
     if (formulaType === 'kopaytirish' || formulaType === 'bolish') {
       runningResultRef.current = 0;
