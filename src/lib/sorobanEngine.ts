@@ -983,7 +983,7 @@ function generateMixFormula(
         let termValid = true;
 
         for (let pos = digitsCount - 1; pos >= 0; pos--) {
-          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula);
+          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits[pos] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
