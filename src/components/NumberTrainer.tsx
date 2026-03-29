@@ -588,9 +588,10 @@ export const NumberTrainer = () => {
   // useElevenLabs=true enables ElevenLabs when provider setting is 'elevenlabs'
   const { speakNumber, stop: stopTTS, cleanup: cleanupTTS } = useTTS({ useElevenLabs: true });
 
-  // Sonni generatsiya qilish
+  // Sonni generatsiya qilish - ADAPTIVE DIFFICULTY integratsiyasi bilan
   const generateNextNumber = useCallback(() => {
     const currentResult = runningResultRef.current;
+    const diffWeights = adaptiveDifficulty.getWeights();
     
     // Ko'paytirish rejimi - digitCount ga mos to'liq xonali sonlar
     if (formulaType === 'kopaytirish') {
@@ -629,17 +630,17 @@ export const NumberTrainer = () => {
     
     // Katta do'st uchun maxsus tekshiruv
     if (formulaType === 'formula10plus') {
-      const possibleOperations: { number: number; isAdd: boolean }[] = [];
+      const possibleOperations: { number: number; isAdd: boolean; isPrimary: boolean }[] = [];
       
       // Qo'shish - KATTA_DOST_ADD jadvaliga qarab
       for (let delta = 1; delta <= 9; delta++) {
         if (KATTA_DOST_ADD[delta]?.includes(lastDigit)) {
-          // X>0 sharti tekshirish (ba'zi holatlarda)
           if (delta === 4 && lastDigit === 9 && !hasHigherTens) continue;
           if (delta === 8 && [3, 4, 8, 9].includes(lastDigit) && !hasHigherTens) continue;
           if (delta === 9 && lastDigit === 4 && !hasHigherTens) continue;
           if (delta === 9 && lastDigit === 9 && !hasHigherTens) continue;
-          possibleOperations.push({ number: delta, isAdd: true });
+          // Kattaroq deltalar = primary (murakkab)
+          possibleOperations.push({ number: delta, isAdd: true, isPrimary: delta >= 6 });
         }
       }
       
@@ -647,14 +648,20 @@ export const NumberTrainer = () => {
       if (hasHigherTens) {
         for (let delta = 1; delta <= 9; delta++) {
           if (KATTA_DOST_SUB[delta]?.includes(lastDigit)) {
-            possibleOperations.push({ number: delta, isAdd: false });
+            possibleOperations.push({ number: delta, isAdd: false, isPrimary: delta >= 6 });
           }
         }
       }
       
       if (possibleOperations.length === 0) return null;
       
-      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      // ADAPTIVE: primary va fallback operatsiyalarni ajratib, weighted tanlash
+      const primaryOps = possibleOperations.filter(op => op.isPrimary);
+      const fallbackOps = possibleOperations.filter(op => !op.isPrimary);
+      
+      const randomOp = adaptiveDifficulty.selectWeighted(primaryOps, fallbackOps) 
+        || possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      
       let finalNumber = randomOp.number;
       
       if (digitCount > 1) {
@@ -672,80 +679,82 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
-    // MIX FORMULA (hammasi) - Yapon metodologiyasi
-    // Qoidalar: 1) Ketma-ket 2 ta katta do'st yo'q
-    //           2) Formulasiz, kichik do'st, katta do'st aralash
+    // MIX FORMULA (hammasi) - Yapon metodologiyasi + ADAPTIVE DIFFICULTY
     if (formulaType === 'hammasi') {
-      const possibleOperations: { number: number; isAdd: boolean; isKattaDost: boolean }[] = [];
+      const basicOps: { number: number; isAdd: boolean; isKattaDost: boolean }[] = [];
+      const kichikDostOps: { number: number; isAdd: boolean; isKattaDost: boolean }[] = [];
+      const kattaDostOps: { number: number; isAdd: boolean; isKattaDost: boolean }[] = [];
       
-      // 1. FORMULASIZ amallar
+      // 1. FORMULASIZ amallar (fallback - oson)
       const basicRules = RULES_BASIC[lastDigit];
       if (basicRules) {
         basicRules.add.forEach(num => {
-          possibleOperations.push({ number: num, isAdd: true, isKattaDost: false });
+          basicOps.push({ number: num, isAdd: true, isKattaDost: false });
         });
         basicRules.subtract.forEach(num => {
           if (currentResult >= num) {
-            possibleOperations.push({ number: num, isAdd: false, isKattaDost: false });
+            basicOps.push({ number: num, isAdd: false, isKattaDost: false });
           }
         });
       }
       
-      // 2. KICHIK DO'ST (Formula 5) amallar
+      // 2. KICHIK DO'ST (Formula 5) amallar (o'rta)
       const smallFriendRules = RULES_FORMULA_5[lastDigit];
       if (smallFriendRules) {
         smallFriendRules.add.forEach(num => {
-          if (!possibleOperations.some(op => op.number === num && op.isAdd)) {
-            possibleOperations.push({ number: num, isAdd: true, isKattaDost: false });
+          if (!basicOps.some(op => op.number === num && op.isAdd)) {
+            kichikDostOps.push({ number: num, isAdd: true, isKattaDost: false });
           }
         });
         smallFriendRules.subtract.forEach(num => {
-          if (currentResult >= num && !possibleOperations.some(op => op.number === num && !op.isAdd)) {
-            possibleOperations.push({ number: num, isAdd: false, isKattaDost: false });
+          if (currentResult >= num && !basicOps.some(op => op.number === num && !op.isAdd)) {
+            kichikDostOps.push({ number: num, isAdd: false, isKattaDost: false });
           }
         });
       }
       
-      // 3. KATTA DO'ST (Formula 10) - faqat oldingi amal katta do'st bo'lmasa
+      // 3. KATTA DO'ST (Formula 10) - primary (murakkab)
       if (!lastWasKattaDostRef.current) {
-        // Qo'shish
         for (let delta = 1; delta <= 9; delta++) {
           if (KATTA_DOST_ADD[delta]?.includes(lastDigit)) {
-            // X>0 sharti tekshirish
             if (delta === 4 && lastDigit === 9 && !hasHigherTens) continue;
             if (delta === 8 && [3, 4, 8, 9].includes(lastDigit) && !hasHigherTens) continue;
             if (delta === 9 && lastDigit === 4 && !hasHigherTens) continue;
             if (delta === 9 && lastDigit === 9 && !hasHigherTens) continue;
-            if (!possibleOperations.some(op => op.number === delta && op.isAdd)) {
-              possibleOperations.push({ number: delta, isAdd: true, isKattaDost: true });
+            const exists = [...basicOps, ...kichikDostOps].some(op => op.number === delta && op.isAdd);
+            if (!exists) {
+              kattaDostOps.push({ number: delta, isAdd: true, isKattaDost: true });
             }
           }
         }
-        // Ayirish (faqat X>0)
         if (hasHigherTens) {
           for (let delta = 1; delta <= 9; delta++) {
             if (KATTA_DOST_SUB[delta]?.includes(lastDigit)) {
-              if (!possibleOperations.some(op => op.number === delta && !op.isAdd)) {
-                possibleOperations.push({ number: delta, isAdd: false, isKattaDost: true });
+              const exists = [...basicOps, ...kichikDostOps].some(op => op.number === delta && !op.isAdd);
+              if (!exists) {
+                kattaDostOps.push({ number: delta, isAdd: false, isKattaDost: true });
               }
             }
           }
         }
       }
       
-      if (possibleOperations.length === 0) return null;
+      // ADAPTIVE: Weighted selection
+      // Primary = kattaDost + kichikDost, Fallback = basicOps
+      const primaryOps = [...kattaDostOps, ...kichikDostOps];
+      const fallbackOps = basicOps;
+      const allOps = [...primaryOps, ...fallbackOps];
       
-      // Weighted selection: katta do'stni kamroq tanlash (25% ehtimollik)
-      const nonKattaDostOps = possibleOperations.filter(op => !op.isKattaDost);
-      const kattaDostOps = possibleOperations.filter(op => op.isKattaDost);
+      if (allOps.length === 0) return null;
       
+      // Carry operatsiyalarini adaptive ehtimollik bilan tanlash
       let randomOp: { number: number; isAdd: boolean; isKattaDost: boolean };
-      if (nonKattaDostOps.length > 0 && Math.random() > 0.25) {
-        randomOp = nonKattaDostOps[Math.floor(Math.random() * nonKattaDostOps.length)];
-      } else if (kattaDostOps.length > 0) {
+      
+      if (kattaDostOps.length > 0 && adaptiveDifficulty.shouldSelectCarry()) {
         randomOp = kattaDostOps[Math.floor(Math.random() * kattaDostOps.length)];
       } else {
-        randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+        const selected = adaptiveDifficulty.selectWeighted(primaryOps, fallbackOps);
+        randomOp = selected || allOps[Math.floor(Math.random() * allOps.length)];
       }
       
       // Ketma-ket katta do'st cheklovini yangilash
@@ -767,8 +776,7 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
-    // MANFIY SONLAR rejimi - digitCount ga mos TO'LIQ xonali sonlar generatsiya qilish
-    // 1 xonali: 1..9, 2 xonali: 10..99, 3 xonali: 100..999, ...
+    // MANFIY SONLAR rejimi
     if (formulaType === 'manfiy') {
       const possibleOperations: { number: number; isAdd: boolean }[] = [];
       const maxValue = Math.pow(10, digitCount) - 1;
@@ -776,7 +784,6 @@ export const NumberTrainer = () => {
       const minTerm = digitCount > 1 ? Math.pow(10, digitCount - 1) : 1;
       const maxTerm = digitCount > 1 ? maxValue : 9;
 
-      // Avval to'liq xonali variantlarni yig'amiz
       for (let num = minTerm; num <= maxTerm; num++) {
         if (currentResult + num <= maxValue) {
           possibleOperations.push({ number: num, isAdd: true });
@@ -786,7 +793,6 @@ export const NumberTrainer = () => {
         }
       }
 
-      // Juda kam holatda to'liq xonali variant qolmasa, fallback
       if (possibleOperations.length === 0) {
         for (let num = 1; num <= 9; num++) {
           if (currentResult + num <= maxValue) {
@@ -800,7 +806,11 @@ export const NumberTrainer = () => {
 
       if (possibleOperations.length === 0) return null;
 
-      const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+      // ADAPTIVE: murakkablik darajasiga qarab kattaroq/kichikroq raqamlarni tanlash
+      const numbers = possibleOperations.map(op => op.number);
+      const selectedNum = adaptiveDifficulty.selectByComplexity([...new Set(numbers)]);
+      const matchingOps = possibleOperations.filter(op => op.number === selectedNum);
+      const randomOp = matchingOps[Math.floor(Math.random() * matchingOps.length)];
       const finalNumber = randomOp.number;
 
       if (randomOp.isAdd) {
@@ -813,6 +823,7 @@ export const NumberTrainer = () => {
       return { num: finalNumber, isAdd: randomOp.isAdd };
     }
     
+    // ODDIY va FORMULA5 rejimlari
     const rules = FORMULA_RULES[formulaType]?.[lastDigit];
 
     if (!rules) return null;
@@ -823,7 +834,6 @@ export const NumberTrainer = () => {
       possibleOperations.push({ number: num, isAdd: true });
     });
 
-    // Ayirish uchun natija manfiy bo'lmasligi kerak (manfiy rejimi uchun emas)
     rules.subtract.forEach(num => {
       if (currentResult >= num) {
         possibleOperations.push({ number: num, isAdd: false });
@@ -832,7 +842,11 @@ export const NumberTrainer = () => {
 
     if (possibleOperations.length === 0) return null;
 
-    const randomOp = possibleOperations[Math.floor(Math.random() * possibleOperations.length)];
+    // ADAPTIVE: kattaroq/kichikroq raqamlarni tanlash
+    const numbers = possibleOperations.map(op => op.number);
+    const selectedNum = adaptiveDifficulty.selectByComplexity([...new Set(numbers)]);
+    const matchingOps = possibleOperations.filter(op => op.number === selectedNum);
+    const randomOp = matchingOps[Math.floor(Math.random() * matchingOps.length)];
 
     let finalNumber = randomOp.number;
     if (digitCount > 1) {
@@ -848,7 +862,7 @@ export const NumberTrainer = () => {
 
     setIsAddition(randomOp.isAdd);
     return { num: finalNumber, isAdd: randomOp.isAdd };
-  }, [formulaType, digitCount]);
+  }, [formulaType, digitCount, adaptiveDifficulty]);
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
