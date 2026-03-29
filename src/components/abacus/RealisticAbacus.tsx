@@ -59,24 +59,24 @@ export const RealisticAbacus = ({
   // Responsive bead size — large enough to interact comfortably
   const getBeadSize = (cols: number): number => {
     if (deviceType === 'mobile') {
-      if (cols <= 3) return 110;
-      if (cols <= 5) return 92;
-      if (cols <= 7) return 78;
-      if (cols <= 10) return 64;
-      return 52;
+      if (cols <= 3) return 82;
+      if (cols <= 5) return 68;
+      if (cols <= 7) return 58;
+      if (cols <= 10) return 48;
+      return 40;
     }
     if (deviceType === 'tablet') {
-      if (cols <= 3) return 52;
-      if (cols <= 5) return 44;
-      if (cols <= 7) return 38;
-      if (cols <= 10) return 32;
-      return 26;
+      if (cols <= 3) return 40;
+      if (cols <= 5) return 34;
+      if (cols <= 7) return 28;
+      if (cols <= 10) return 24;
+      return 20;
     }
-    if (cols <= 3) return 72;
-    if (cols <= 5) return 62;
-    if (cols <= 7) return 54;
-    if (cols <= 10) return 46;
-    return 40;
+    if (cols <= 3) return 52;
+    if (cols <= 5) return 46;
+    if (cols <= 7) return 40;
+    if (cols <= 10) return 34;
+    return 30;
   };
   
   // Engine state
@@ -157,7 +157,7 @@ export const RealisticAbacus = ({
   const frameWidth = totalColumnWidth + framePaddingX * 2 + (borderWidth + extraFrame) * 2;
   
   // Estimate frame height from minHeight + padding + borders
-  const innerMinHeight = compact ? 750 : 950;
+  const innerMinHeight = compact ? 550 : 700;
   const framePaddingY = deviceType === 'mobile' ? (compact ? 10 : 14) : (compact ? 18 : 24);
   const frameHeight = innerMinHeight + (compact ? 8 : 16) * 2 + framePaddingY * 2 + (borderWidth + extraFrame) * 2;
   
@@ -180,7 +180,7 @@ export const RealisticAbacus = ({
     const heightScale = availH / frameHeight;
     scaleFactor = Math.min(scaleFactor, heightScale);
     // Cap at reasonable max
-    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.8 : 1.2);
+    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.5 : 1.0);
   }
   
   return (
@@ -286,7 +286,7 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: compact ? '8px 12px' : '16px 20px',
-            minHeight: compact ? 750 : 950,
+            minHeight: compact ? 550 : 700,
           }}
         >
           {[...Array(columns)].map((_, i) => {
