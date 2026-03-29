@@ -1364,10 +1364,11 @@ export interface ProblemConfig {
   operationCount: number;
   allowedFormulas: FormulaCategory[];
   ensurePositiveResult?: boolean;
+  difficulty?: DifficultyLevel;
 }
 
 export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
-  const { digitCount, operationCount, allowedFormulas } = config;
+  const { digitCount, operationCount, allowedFormulas, difficulty = 'medium' } = config;
 
   let stage: StageType = 'formulasiz';
   if (allowedFormulas.includes('katta_dost') && allowedFormulas.includes('kichik_dost')) {
