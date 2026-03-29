@@ -95,6 +95,22 @@ export async function saveProgressResult(result: ProgressResult): Promise<void> 
         streak_after_session: streak.currentStreak,
       } as any);
   }
+
+  // 4. Update leaderboard period stats
+  try {
+    await updateLeaderboardStats({
+      userId,
+      topic: topicProgress.topic,
+      operation: topicProgress.operation,
+      mainFormula: topicProgress.mainFormula,
+      xpEarned: xp.earned,
+      attemptsCount: sessionSummary.attemptsCount,
+      correctCount: sessionSummary.correctCount,
+      avgResponseTimeMs: sessionSummary.avgResponseTimeMs,
+    });
+  } catch (e) {
+    console.error('Leaderboard update error:', e);
+  }
 }
 
 /**
