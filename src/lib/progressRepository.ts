@@ -6,6 +6,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { ProgressResult } from './progressEngine';
+import { updateLeaderboardStats } from './leaderboardEngine';
 
 /**
  * Session progress natijalarini database ga saqlash
@@ -93,6 +94,22 @@ export async function saveProgressResult(result: ProgressResult): Promise<void> 
         new_difficulty: sessionSummary.difficultyAfter,
         streak_after_session: streak.currentStreak,
       } as any);
+  }
+
+  // 4. Update leaderboard period stats
+  try {
+    await updateLeaderboardStats({
+      userId,
+      topic: topicProgress.topic,
+      operation: topicProgress.operation,
+      mainFormula: topicProgress.mainFormula,
+      xpEarned: xp.earned,
+      attemptsCount: sessionSummary.attemptsCount,
+      correctCount: sessionSummary.correctCount,
+      avgResponseTimeMs: sessionSummary.avgResponseTimeMs,
+    });
+  } catch (e) {
+    console.error('Leaderboard update error:', e);
   }
 }
 
