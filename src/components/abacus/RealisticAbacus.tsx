@@ -180,7 +180,7 @@ export const RealisticAbacus = ({
     const heightScale = availH / frameHeight;
     scaleFactor = Math.min(scaleFactor, heightScale);
     // Cap at reasonable max
-    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.8 : 1.2);
+    scaleFactor = Math.min(scaleFactor, deviceType === 'mobile' ? 1.5 : 1.0);
   }
   
   return (
