@@ -952,9 +952,6 @@ function chooseMixFormulaDigit(
   return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
 }
 
-  return null;
-}
-
 function generateMixFormula(
   operation: OperationType,
   mainFormula: number,
