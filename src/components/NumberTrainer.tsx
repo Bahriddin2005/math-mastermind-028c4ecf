@@ -1271,7 +1271,16 @@ export const NumberTrainer = () => {
           </div>
           <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <span>Son: {countRef.current}/{problemCount}</span>
-            <span>{digitCount} xonali • {formulaType}</span>
+            <span className="flex items-center gap-2">
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
+                adaptiveDifficulty.level === 'easy' ? 'bg-success/20 text-success' :
+                adaptiveDifficulty.level === 'hard' ? 'bg-destructive/20 text-destructive' :
+                'bg-warning/20 text-warning'
+              }`}>
+                {adaptiveDifficulty.level === 'easy' ? 'Oson' : adaptiveDifficulty.level === 'hard' ? 'Qiyin' : "O'rta"}
+              </span>
+              {digitCount} xonali • {formulaType}
+            </span>
           </div>
         </div>
         
