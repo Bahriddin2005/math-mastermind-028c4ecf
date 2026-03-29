@@ -286,7 +286,7 @@ export const RealisticAbacus = ({
           style={{ 
             gap: getGap(columns),
             padding: compact ? '8px 12px' : '16px 20px',
-            minHeight: compact ? 550 : 700,
+            minHeight: compact ? 380 : 480,
           }}
         >
           {[...Array(columns)].map((_, i) => {
