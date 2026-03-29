@@ -1425,6 +1425,17 @@ export const NumberTrainer = () => {
                     <span className="text-sm text-muted-foreground dark:text-slate-400">Javob vaqti:</span>
                     <span className="text-base sm:text-lg font-bold text-accent font-mono">{answerTime.toFixed(1)}s</span>
                   </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-border/50 dark:border-slate-700/50">
+                    <span className="text-sm text-muted-foreground dark:text-slate-400">Murakkablik:</span>
+                    <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${
+                      adaptiveDifficulty.level === 'easy' ? 'bg-success/10 text-success' :
+                      adaptiveDifficulty.level === 'hard' ? 'bg-destructive/10 text-destructive' :
+                      'bg-warning/10 text-warning'
+                    }`}>
+                      {adaptiveDifficulty.level === 'easy' ? '🟢 Oson' : 
+                       adaptiveDifficulty.level === 'hard' ? '🔴 Qiyin' : '🟡 O\'rta'}
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
