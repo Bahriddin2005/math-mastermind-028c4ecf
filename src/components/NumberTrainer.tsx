@@ -28,6 +28,7 @@ import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { useAdaptiveDifficulty } from '@/hooks/useAdaptiveDifficulty';
+import { useProgressEngine } from '@/hooks/useProgressEngine';
 import { GamificationDisplay } from './GamificationDisplay';
 import {
   DropdownMenu,
