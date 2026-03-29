@@ -1226,7 +1226,8 @@ export const NumberTrainer = () => {
     setElapsedTime(0);
     setAnswerTime(0);
     gamification.resetCombo();
-  }, [gamification]);
+    adaptiveDifficulty.reset();
+  }, [gamification, adaptiveDifficulty]);
 
   useEffect(() => {
     return () => {
