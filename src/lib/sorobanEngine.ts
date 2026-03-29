@@ -9,12 +9,23 @@
  * 3. 10-lik formula (katta do'st) 
  * 4. Mix (aralash) formula
  * 
+ * 9-11 BLOK: Adaptive Difficulty integratsiyasi
+ * - chooseForFiveFormula, chooseForTenFormula, chooseForMixFormula
+ * - difficulty parametri orqali weighted choice
+ * 
  * Har bir blok o'zining:
  * - Klassifikatsiya funksiyasi
  * - Generator funksiyasi
  * - Verifikator funksiyasi
  * ga ega.
  */
+
+import {
+  type DifficultyLevel,
+  chooseForFiveFormula,
+  chooseForTenFormula,
+  chooseForMixFormula,
+} from '@/hooks/useAdaptiveDifficulty';
 
 // ============= TYPES =============
 
