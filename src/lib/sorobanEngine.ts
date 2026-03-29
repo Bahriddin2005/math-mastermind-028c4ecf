@@ -773,7 +773,7 @@ function generateTenFormula(
         let termValid = true;
 
         for (let pos = digitsCount - 1; pos >= 0; pos--) {
-          const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula);
+          const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits[pos] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
