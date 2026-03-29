@@ -473,7 +473,8 @@ function classifyFiveStageStep(
 function chooseFiveFormulaDigit(
   currentDigit: number,
   operation: OperationType,
-  mainFormula: number
+  mainFormula: number,
+  difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; classified: string; isPrimary: boolean } | null {
   const primaryCandidates: number[] = [];
   const fallbackCandidates: number[] = [];
@@ -489,6 +490,17 @@ function chooseFiveFormulaDigit(
     }
   }
 
+  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
+  const weighted = chooseForFiveFormula(primaryCandidates, fallbackCandidates, difficulty);
+  if (weighted) {
+    return {
+      operandDigit: weighted.operand_digit,
+      classified: weighted.is_primary ? '5' : 'formulasiz',
+      isPrimary: weighted.is_primary,
+    };
+  }
+
+  // Fallback: agar weighted null bo'lsa, oddiy random
   if (primaryCandidates.length > 0) {
     const chosen = primaryCandidates[Math.floor(Math.random() * primaryCandidates.length)];
     return { operandDigit: chosen, classified: '5', isPrimary: true };
