@@ -958,7 +958,8 @@ function generateMixFormula(
   digitsCount: number,
   termsCount: number,
   maxAttempts: number = 1000,
-  minPrimarySteps: number = 1
+  minPrimarySteps: number = 1,
+  difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   const needMixed = termsCount > 4;
 
