@@ -28,6 +28,7 @@ import { useSound } from '@/hooks/useSound';
 import { useTTS } from '@/hooks/useTTS';
 import { useAdaptiveGamification } from '@/hooks/useAdaptiveGamification';
 import { useAdaptiveDifficulty } from '@/hooks/useAdaptiveDifficulty';
+import { useProgressEngine } from '@/hooks/useProgressEngine';
 import { GamificationDisplay } from './GamificationDisplay';
 import {
   DropdownMenu,
@@ -345,6 +346,9 @@ export const NumberTrainer = () => {
 
   // Adaptive Difficulty hook - misol murakkabligini boshqarish
   const adaptiveDifficulty = useAdaptiveDifficulty();
+
+  // Progress Engine hook - XP, Level, Streak tracking
+  const progressEngine = useProgressEngine();
 
   // Answer start time tracking for gamification - moved to refs section below
   
@@ -905,6 +909,8 @@ export const NumberTrainer = () => {
 
   // O'yinni boshlash
   const startGame = useCallback(() => {
+    // Progress engine session start
+    progressEngine.startSession();
     // Ko'paytirish yoki Bo'lish rejimida boshqacha boshlanadi
     if (formulaType === 'kopaytirish' || formulaType === 'bolish') {
       runningResultRef.current = 0;
@@ -1148,7 +1154,7 @@ export const NumberTrainer = () => {
         }
       }
     }, speedMs);
-  }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
+  }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber, progressEngine]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
@@ -1202,6 +1208,14 @@ export const NumberTrainer = () => {
     // Adaptive Difficulty - javobni qayd etish va murakkablikni sozlash
     adaptiveDifficulty.recordAnswer(correct, responseTimeMs);
 
+    // Progress Engine - attempt qayd etish
+    progressEngine.recordAttempt({
+      isCorrect: correct,
+      responseTimeMs,
+      correctAnswer,
+      userAnswer: isNaN(userNum) ? null : userNum,
+    });
+
     // Adaptive Gamification - process answer
     if (user) {
       const difficultyMultiplier = digitCount + (formulaType === 'hammasi' ? 1 : 0);
@@ -1213,7 +1227,7 @@ export const NumberTrainer = () => {
       try {
         const scoreEarned = correct ? Math.floor(10 * gamification.comboMultiplier) : 0;
         
-        await supabase.from('game_sessions').insert({
+        const { data: sessionData } = await supabase.from('game_sessions').insert({
           user_id: user.id,
           section: 'number-trainer',
           difficulty: formulaType,
@@ -1225,31 +1239,26 @@ export const NumberTrainer = () => {
           total_time: totalTime,
           problems_solved: problemCount,
           formula_type: formulaType,
-        });
+        }).select('id').single();
 
-        // Profilni yangilash
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('total_score, total_problems_solved, best_streak')
-          .eq('user_id', user.id)
-          .single();
+        // Progress Engine - session yakunlash va XP/Level/Streak hisoblash
+        const progressResult = await progressEngine.finishSession({
+          topic: formulaType,
+          operation: 'mixed',
+          mainFormula: null,
+          digitsCount: digitCount,
+          termsCount: problemCount,
+        }, sessionData?.id);
 
-        if (profile) {
-          await supabase
-            .from('profiles')
-            .update({
-              total_score: (profile.total_score || 0) + scoreEarned,
-              total_problems_solved: (profile.total_problems_solved || 0) + 1,
-              best_streak: Math.max(profile.best_streak || 0, newStreak, gamification.maxCombo),
-              last_active_date: new Date().toISOString().split('T')[0],
-            })
-            .eq('user_id', user.id);
+        // Level up confetti
+        if (progressResult?.level.levelUp) {
+          triggerLevelUpConfetti();
         }
       } catch (error) {
         console.error('Error saving session:', error);
       }
     }
-  }, [userAnswer, user, formulaType, digitCount, problemCount, currentStreak, gamification]);
+  }, [userAnswer, user, formulaType, digitCount, problemCount, currentStreak, gamification, progressEngine, triggerLevelUpConfetti]);
 
   // Qayta boshlash
   const resetGame = useCallback(() => {
