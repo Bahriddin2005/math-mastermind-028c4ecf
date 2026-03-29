@@ -9,12 +9,23 @@
  * 3. 10-lik formula (katta do'st) 
  * 4. Mix (aralash) formula
  * 
+ * 9-11 BLOK: Adaptive Difficulty integratsiyasi
+ * - chooseForFiveFormula, chooseForTenFormula, chooseForMixFormula
+ * - difficulty parametri orqali weighted choice
+ * 
  * Har bir blok o'zining:
  * - Klassifikatsiya funksiyasi
  * - Generator funksiyasi
  * - Verifikator funksiyasi
  * ga ega.
  */
+
+import {
+  type DifficultyLevel,
+  chooseForFiveFormula,
+  chooseForTenFormula,
+  chooseForMixFormula,
+} from '@/hooks/useAdaptiveDifficulty';
 
 // ============= TYPES =============
 
@@ -462,7 +473,8 @@ function classifyFiveStageStep(
 function chooseFiveFormulaDigit(
   currentDigit: number,
   operation: OperationType,
-  mainFormula: number
+  mainFormula: number,
+  difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; classified: string; isPrimary: boolean } | null {
   const primaryCandidates: number[] = [];
   const fallbackCandidates: number[] = [];
@@ -478,6 +490,17 @@ function chooseFiveFormulaDigit(
     }
   }
 
+  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
+  const weighted = chooseForFiveFormula(primaryCandidates, fallbackCandidates, difficulty);
+  if (weighted) {
+    return {
+      operandDigit: weighted.operand_digit,
+      classified: weighted.is_primary ? '5' : 'formulasiz',
+      isPrimary: weighted.is_primary,
+    };
+  }
+
+  // Fallback: agar weighted null bo'lsa, oddiy random
   if (primaryCandidates.length > 0) {
     const chosen = primaryCandidates[Math.floor(Math.random() * primaryCandidates.length)];
     return { operandDigit: chosen, classified: '5', isPrimary: true };
@@ -512,7 +535,8 @@ function generateFiveFormula(
   digitsCount: number,
   termsCount: number,
   maxAttempts: number = 500,
-  minPrimarySteps: number = 1
+  minPrimarySteps: number = 1,
+  difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   // Pure add/sub uchun max terms cheklangan (digit space tez to'ladi)
   // 5+ hadli misollar aralash add/sub kerak
@@ -543,7 +567,7 @@ function generateFiveFormula(
         let termValid = true;
 
         for (const digit of currentDigits) {
-          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula);
+          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits.push(choice.operandDigit);
         }
@@ -678,7 +702,8 @@ function chooseTenFormulaDigit(
   state: number[],
   pos: number,
   operation: OperationType,
-  mainFormula: number
+  mainFormula: number,
+  difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; formula: string; isPrimary: boolean } | null {
   const currentDigit = state[pos];
   const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
@@ -695,32 +720,25 @@ function chooseTenFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  // Probabilistik tanlash — primary har doim tanlanmasin (overflow xavfi)
-  const allOptions: Array<{ d: number; formula: string; isPrimary: boolean }> = [];
-  for (const d of primary) allOptions.push({ d, formula: '10_primary', isPrimary: true });
-  for (const d of fallback5) allOptions.push({ d, formula: '5_fallback', isPrimary: false });
-  for (const d of fallbackFormulasiz) allOptions.push({ d, formula: 'formulasiz_fallback', isPrimary: false });
+  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
+  const weighted = chooseForTenFormula(primary, fallback5, fallbackFormulasiz, difficulty);
+  if (weighted) {
+    const isPrimary = weighted.formula_group === 'primary';
+    let formula = 'formulasiz_fallback';
+    if (isPrimary) formula = '10_primary';
+    else if (weighted.formula_group === 'fallback_5') formula = '5_fallback';
+    return { operandDigit: weighted.operand_digit, formula, isPrimary };
+  }
 
+  // Fallback: oddiy random
+  const allOptions = [
+    ...primary.map(d => ({ d, formula: '10_primary', isPrimary: true })),
+    ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
+    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
+  ];
   if (allOptions.length === 0) return null;
-
-  // Primary 70% ehtimollik, agar mavjud bo'lsa
-  if (primary.length > 0 && Math.random() < 0.7) {
-    const d = primary[Math.floor(Math.random() * primary.length)];
-    return { operandDigit: d, formula: '10_primary', isPrimary: true };
-  }
-
-  // Fallback tanlanadi
-  const fallbacks = [...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
-    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false }))];
-  
-  if (fallbacks.length > 0) {
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
-  }
-
-  // Faqat primary qoldi
-  const d = primary[Math.floor(Math.random() * primary.length)];
-  return { operandDigit: d, formula: '10_primary', isPrimary: true };
+  const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
+  return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
 }
 
 function generateTenFormula(
@@ -729,7 +747,8 @@ function generateTenFormula(
   digitsCount: number,
   termsCount: number,
   maxAttempts: number = 1000,
-  minPrimarySteps: number = 1
+  minPrimarySteps: number = 1,
+  difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   const needMixed = termsCount > 4;
 
@@ -754,7 +773,7 @@ function generateTenFormula(
         let termValid = true;
 
         for (let pos = digitsCount - 1; pos >= 0; pos--) {
-          const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula);
+          const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits[pos] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
@@ -890,7 +909,8 @@ function chooseMixFormulaDigit(
   state: number[],
   pos: number,
   operation: OperationType,
-  mainFormula: number
+  mainFormula: number,
+  difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; formula: string; isPrimary: boolean } | null {
   const currentDigit = state[pos];
   const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
@@ -909,29 +929,27 @@ function chooseMixFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  // Probabilistik tanlash
-  if (primary.length > 0 && Math.random() < 0.65) {
-    const d = primary[Math.floor(Math.random() * primary.length)];
-    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
+  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
+  const weighted = chooseForMixFormula(primary, fallback10, fallback5, fallbackFormulasiz, difficulty);
+  if (weighted) {
+    const isPrimary = weighted.formula_group === 'primary';
+    let formula = 'formulasiz_fallback';
+    if (isPrimary) formula = 'mix_primary';
+    else if (weighted.formula_group === 'fallback_10') formula = '10_fallback';
+    else if (weighted.formula_group === 'fallback_5') formula = '5_fallback';
+    return { operandDigit: weighted.operand_digit, formula, isPrimary };
   }
 
-  const fallbacks = [
+  // Fallback: oddiy random
+  const allOptions = [
+    ...primary.map(d => ({ d, formula: 'mix_primary', isPrimary: true })),
     ...fallback10.map(d => ({ d, formula: '10_fallback', isPrimary: false })),
     ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
     ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
   ];
-
-  if (fallbacks.length > 0) {
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
-  }
-
-  if (primary.length > 0) {
-    const d = primary[Math.floor(Math.random() * primary.length)];
-    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
-  }
-
-  return null;
+  if (allOptions.length === 0) return null;
+  const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
+  return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
 }
 
 function generateMixFormula(
@@ -940,7 +958,8 @@ function generateMixFormula(
   digitsCount: number,
   termsCount: number,
   maxAttempts: number = 1000,
-  minPrimarySteps: number = 1
+  minPrimarySteps: number = 1,
+  difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   const needMixed = termsCount > 4;
 
@@ -964,7 +983,7 @@ function generateMixFormula(
         let termValid = true;
 
         for (let pos = digitsCount - 1; pos >= 0; pos--) {
-          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula);
+          const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits[pos] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
@@ -1345,10 +1364,11 @@ export interface ProblemConfig {
   operationCount: number;
   allowedFormulas: FormulaCategory[];
   ensurePositiveResult?: boolean;
+  difficulty?: DifficultyLevel;
 }
 
 export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
-  const { digitCount, operationCount, allowedFormulas } = config;
+  const { digitCount, operationCount, allowedFormulas, difficulty = 'medium' } = config;
 
   let stage: StageType = 'formulasiz';
   if (allowedFormulas.includes('katta_dost') && allowedFormulas.includes('kichik_dost')) {
@@ -1376,19 +1396,19 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
     case '5': {
       const mf = mainFormula ?? ([1, 2, 3, 4][Math.floor(Math.random() * 4)]);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateFiveFormula(op, mf, digitCount, operationCount, 500, 1);
+      specializedResult = generateFiveFormula(op, mf, digitCount, operationCount, 500, 1, difficulty);
       break;
     }
     case '10': {
       const mf = mainFormula ?? (Math.floor(Math.random() * 9) + 1);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateTenFormula(op, mf, digitCount, operationCount, 1000, 1);
+      specializedResult = generateTenFormula(op, mf, digitCount, operationCount, 1000, 1, difficulty);
       break;
     }
     case 'mix': {
       const mf = mainFormula ?? ([6, 7, 8, 9][Math.floor(Math.random() * 4)]);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateMixFormula(op, mf, digitCount, operationCount, 1000, 1);
+      specializedResult = generateMixFormula(op, mf, digitCount, operationCount, 1000, 1, difficulty);
       break;
     }
   }
