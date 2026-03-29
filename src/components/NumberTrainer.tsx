@@ -347,6 +347,9 @@ export const NumberTrainer = () => {
   // Adaptive Difficulty hook - misol murakkabligini boshqarish
   const adaptiveDifficulty = useAdaptiveDifficulty();
 
+  // Progress Engine hook - XP, Level, Streak tracking
+  const progressEngine = useProgressEngine();
+
   // Answer start time tracking for gamification - moved to refs section below
   
   const tabOrder = ['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'];
