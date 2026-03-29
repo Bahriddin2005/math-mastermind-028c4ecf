@@ -1496,6 +1496,86 @@ export type Database = {
           },
         ]
       }
+      session_progress_logs: {
+        Row: {
+          accuracy_percent: number
+          attempts_count: number
+          avg_response_time_ms: number
+          correct_count: number
+          created_at: string
+          digits_count: number
+          id: string
+          level_up: boolean
+          main_formula: number | null
+          new_difficulty: string | null
+          new_level: number
+          old_difficulty: string | null
+          old_level: number
+          operation: string
+          session_id: string | null
+          streak_after_session: number
+          terms_count: number
+          topic: string
+          user_id: string
+          wrong_count: number
+          xp_earned: number
+        }
+        Insert: {
+          accuracy_percent: number
+          attempts_count: number
+          avg_response_time_ms: number
+          correct_count: number
+          created_at?: string
+          digits_count: number
+          id?: string
+          level_up?: boolean
+          main_formula?: number | null
+          new_difficulty?: string | null
+          new_level?: number
+          old_difficulty?: string | null
+          old_level?: number
+          operation: string
+          session_id?: string | null
+          streak_after_session?: number
+          terms_count: number
+          topic: string
+          user_id: string
+          wrong_count: number
+          xp_earned?: number
+        }
+        Update: {
+          accuracy_percent?: number
+          attempts_count?: number
+          avg_response_time_ms?: number
+          correct_count?: number
+          created_at?: string
+          digits_count?: number
+          id?: string
+          level_up?: boolean
+          main_formula?: number | null
+          new_difficulty?: string | null
+          new_level?: number
+          old_difficulty?: string | null
+          old_level?: number
+          operation?: string
+          session_id?: string | null
+          streak_after_session?: number
+          terms_count?: number
+          topic?: string
+          user_id?: string
+          wrong_count?: number
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_progress_logs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_items: {
         Row: {
           category: string
@@ -1643,6 +1723,48 @@ export type Database = {
           rating?: number
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      topic_progress: {
+        Row: {
+          attempts_count: number
+          avg_response_time_ms: number
+          correct_count: number
+          current_difficulty: string
+          id: string
+          main_formula: number | null
+          mastery_percent: number
+          operation: string
+          topic: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attempts_count?: number
+          avg_response_time_ms?: number
+          correct_count?: number
+          current_difficulty?: string
+          id?: string
+          main_formula?: number | null
+          mastery_percent?: number
+          operation: string
+          topic: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attempts_count?: number
+          avg_response_time_ms?: number
+          correct_count?: number
+          current_difficulty?: string
+          id?: string
+          main_formula?: number | null
+          mastery_percent?: number
+          operation?: string
+          topic?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
