@@ -343,6 +343,9 @@ export const NumberTrainer = () => {
     enabled: !!user,
   });
 
+  // Adaptive Difficulty hook - misol murakkabligini boshqarish
+  const adaptiveDifficulty = useAdaptiveDifficulty();
+
   // Answer start time tracking for gamification - moved to refs section below
   
   const tabOrder = ['train', 'learn', 'daily', 'multiplayer', 'leaderboard', 'stats'];
