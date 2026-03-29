@@ -535,7 +535,8 @@ function generateFiveFormula(
   digitsCount: number,
   termsCount: number,
   maxAttempts: number = 500,
-  minPrimarySteps: number = 1
+  minPrimarySteps: number = 1,
+  difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   // Pure add/sub uchun max terms cheklangan (digit space tez to'ladi)
   // 5+ hadli misollar aralash add/sub kerak
