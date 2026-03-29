@@ -1396,7 +1396,7 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
     case '5': {
       const mf = mainFormula ?? ([1, 2, 3, 4][Math.floor(Math.random() * 4)]);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateFiveFormula(op, mf, digitCount, operationCount, 500, 1);
+      specializedResult = generateFiveFormula(op, mf, digitCount, operationCount, 500, 1, difficulty);
       break;
     }
     case '10': {
