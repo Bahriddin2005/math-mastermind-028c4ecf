@@ -1158,6 +1158,9 @@ export const NumberTrainer = () => {
     const newStreak = correct ? currentStreak + 1 : 0;
     setCurrentStreak(newStreak);
 
+    // Adaptive Difficulty - javobni qayd etish va murakkablikni sozlash
+    adaptiveDifficulty.recordAnswer(correct, responseTimeMs);
+
     // Adaptive Gamification - process answer
     if (user) {
       const difficultyMultiplier = digitCount + (formulaType === 'hammasi' ? 1 : 0);
