@@ -1154,7 +1154,7 @@ export const NumberTrainer = () => {
         }
       }
     }, speedMs);
-  }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber]);
+  }, [formulaType, digitCount, speed, problemCount, generateNextNumber, voiceEnabled, playSound, speakNumber, progressEngine]);
 
   // To'xtatish
   const stopGame = useCallback(() => {
