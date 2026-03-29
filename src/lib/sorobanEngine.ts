@@ -567,7 +567,7 @@ function generateFiveFormula(
         let termValid = true;
 
         for (const digit of currentDigits) {
-          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula);
+          const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits.push(choice.operandDigit);
         }
