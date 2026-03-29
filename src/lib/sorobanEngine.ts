@@ -1408,7 +1408,7 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
     case 'mix': {
       const mf = mainFormula ?? ([6, 7, 8, 9][Math.floor(Math.random() * 4)]);
       const op: OperationType = Math.random() > 0.5 ? 'add' : 'sub';
-      specializedResult = generateMixFormula(op, mf, digitCount, operationCount, 1000, 1);
+      specializedResult = generateMixFormula(op, mf, digitCount, operationCount, 1000, 1, difficulty);
       break;
     }
   }
