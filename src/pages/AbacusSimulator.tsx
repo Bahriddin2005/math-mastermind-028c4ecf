@@ -249,12 +249,6 @@ const AbacusSimulator = () => {
         </header>
 
         <main className="container mx-auto px-4 py-5 pb-24 space-y-5 relative z-10">
-          {/* Mode selector — refined card */}
-          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/30 p-3 shadow-sm">
-              <AbacusModeSelector mode={mode} onChange={setMode} />
-            </div>
-          </motion.div>
 
           {/* Settings panel */}
           <AnimatePresence>
