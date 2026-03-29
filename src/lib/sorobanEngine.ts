@@ -740,14 +740,6 @@ function chooseTenFormulaDigit(
   const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
   return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
 }
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
-  }
-
-  // Faqat primary qoldi
-  const d = primary[Math.floor(Math.random() * primary.length)];
-  return { operandDigit: d, formula: '10_primary', isPrimary: true };
-}
 
 function generateTenFormula(
   operation: OperationType,
