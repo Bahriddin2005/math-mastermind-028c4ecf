@@ -6,6 +6,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { ProgressResult } from './progressEngine';
+import { updateLeaderboardStats } from './leaderboardEngine';
 
 /**
  * Session progress natijalarini database ga saqlash
