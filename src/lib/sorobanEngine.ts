@@ -909,7 +909,8 @@ function chooseMixFormulaDigit(
   state: number[],
   pos: number,
   operation: OperationType,
-  mainFormula: number
+  mainFormula: number,
+  difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; formula: string; isPrimary: boolean } | null {
   const currentDigit = state[pos];
   const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
@@ -928,27 +929,28 @@ function chooseMixFormulaDigit(
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  // Probabilistik tanlash
-  if (primary.length > 0 && Math.random() < 0.65) {
-    const d = primary[Math.floor(Math.random() * primary.length)];
-    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
+  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
+  const weighted = chooseForMixFormula(primary, fallback10, fallback5, fallbackFormulasiz, difficulty);
+  if (weighted) {
+    const isPrimary = weighted.formula_group === 'primary';
+    let formula = 'formulasiz_fallback';
+    if (isPrimary) formula = 'mix_primary';
+    else if (weighted.formula_group === 'fallback_10') formula = '10_fallback';
+    else if (weighted.formula_group === 'fallback_5') formula = '5_fallback';
+    return { operandDigit: weighted.operand_digit, formula, isPrimary };
   }
 
-  const fallbacks = [
+  // Fallback: oddiy random
+  const allOptions = [
+    ...primary.map(d => ({ d, formula: 'mix_primary', isPrimary: true })),
     ...fallback10.map(d => ({ d, formula: '10_fallback', isPrimary: false })),
     ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
     ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
   ];
-
-  if (fallbacks.length > 0) {
-    const pick = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    return { operandDigit: pick.d, formula: pick.formula, isPrimary: false };
-  }
-
-  if (primary.length > 0) {
-    const d = primary[Math.floor(Math.random() * primary.length)];
-    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
-  }
+  if (allOptions.length === 0) return null;
+  const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
+  return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
+}
 
   return null;
 }
