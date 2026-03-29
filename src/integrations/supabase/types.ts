@@ -2264,6 +2264,51 @@ export type Database = {
           },
         ]
       }
+      user_period_stats: {
+        Row: {
+          attempts_count: number
+          avg_response_time_ms: number
+          correct_count: number
+          id: string
+          main_formula: number | null
+          operation: string | null
+          period_key: string
+          period_type: string
+          topic: string | null
+          updated_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          attempts_count?: number
+          avg_response_time_ms?: number
+          correct_count?: number
+          id?: string
+          main_formula?: number | null
+          operation?: string | null
+          period_key: string
+          period_type: string
+          topic?: string | null
+          updated_at?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          attempts_count?: number
+          avg_response_time_ms?: number
+          correct_count?: number
+          id?: string
+          main_formula?: number | null
+          operation?: string | null
+          period_key?: string
+          period_type?: string
+          topic?: string | null
+          updated_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
