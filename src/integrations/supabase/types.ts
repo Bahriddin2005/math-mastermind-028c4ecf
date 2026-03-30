@@ -2696,6 +2696,19 @@ export type Database = {
       }
     }
     Functions: {
+      get_leaderboard_by_period: {
+        Args: { period_days?: number }
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          id: string
+          level: number
+          total_score: number
+          total_xp: number
+          user_id: string
+          username: string
+        }[]
+      }
       get_leaderboard_profiles: {
         Args: never
         Returns: {
@@ -2705,6 +2718,20 @@ export type Database = {
           selected_frame: string
           total_problems_solved: number
           total_score: number
+          user_id: string
+          username: string
+        }[]
+      }
+      get_leaderboard_with_gamification: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          id: string
+          level: number
+          selected_frame: string
+          total_score: number
+          total_xp: number
           user_id: string
           username: string
         }[]
@@ -2770,6 +2797,24 @@ export type Database = {
           user_id: string
           username: string
           vip_expires_at: string
+        }[]
+      }
+      get_user_dashboard_stats: {
+        Args: { p_user_id: string }
+        Returns: {
+          avatar_url: string
+          best_streak: number
+          combo: number
+          current_streak: number
+          current_xp: number
+          daily_goal: number
+          energy: number
+          level: number
+          today_solved: number
+          total_problems_solved: number
+          total_score: number
+          total_xp: number
+          username: string
         }[]
       }
       get_user_total_score: {
