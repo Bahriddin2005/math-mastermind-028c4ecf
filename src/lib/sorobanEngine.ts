@@ -143,7 +143,7 @@ const TEN_ADD_ALLOWED: Record<number, Record<string, Set<number>>> = {
   6: { 'false': new Set([4, 9]), 'true': new Set([4, 9]) },
   7: { 'false': new Set([3, 4, 8, 9]), 'true': new Set([3, 4, 8, 9]) },
   8: { 'false': new Set([2, 3, 4, 7, 8, 9]), 'true': new Set([2, 3, 4, 7, 8, 9]) },
-  9: { 'false': new Set([1, 2, 3, 4, 6, 7, 8, 9]), 'true': new Set([1, 2, 3, 4, 6, 7, 8, 9]) },
+  9: { 'false': new Set([1, 2, 3, 4, 6, 7, 8, 9]), 'true': new Set([1, 2, 3, 6, 7, 8]) },
 };
 
 const TEN_SUB_ALLOWED: Record<number, Record<string, Set<number>>> = {
