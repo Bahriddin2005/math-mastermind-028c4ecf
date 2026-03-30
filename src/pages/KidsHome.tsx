@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Play, Trophy, Zap, Flame, Star, Target, BarChart3, FileText, Users, GraduationCap, Calculator } from 'lucide-react';
 import { HeroCarousel } from '@/components/HeroCarousel';
-import { SectionCarousel, kidsSection, parentsSection, teachersSection } from '@/components/SectionCarousel';
+import { SectionCarousel, kidsSection, parentsSection, teachersSection, blogSection } from '@/components/SectionCarousel';
 import { TeacherDashboard } from '@/components/TeacherDashboard';
 import { SubscriptionPlans } from '@/components/SubscriptionPlans';
 import { PullToRefresh } from '@/components/PullToRefresh';
