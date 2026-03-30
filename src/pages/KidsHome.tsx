@@ -55,55 +55,43 @@ const KidsHome = () => {
       return;
     }
 
-    // Fetch profile
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    try {
+      const { data: dashData } = await supabase.rpc('get_user_dashboard_stats', { p_user_id: user.id });
+      
+      const row = Array.isArray(dashData) ? dashData[0] : dashData;
+      
+      if (row) {
+        setProfile({
+          username: row.username || 'Player',
+          total_score: Number(row.total_score) || 0,
+          total_problems_solved: Number(row.total_problems_solved) || 0,
+          best_streak: Number(row.best_streak) || 0,
+          daily_goal: Number(row.daily_goal) || 20,
+          current_streak: Number(row.current_streak) || 0,
+          avatar_url: row.avatar_url,
+        });
 
-    if (profileData) {
-      setProfile({
-        username: profileData.username,
-        total_score: profileData.total_score || 0,
-        total_problems_solved: profileData.total_problems_solved || 0,
-        best_streak: profileData.best_streak || 0,
-        daily_goal: profileData.daily_goal || 20,
-        current_streak: profileData.current_streak || 0,
-        avatar_url: profileData.avatar_url,
-      });
+        setGamification({
+          level: Number(row.level) || 1,
+          current_xp: Number(row.current_xp) || 0,
+          energy: Number(row.energy) || 100,
+          combo: Number(row.combo) || 0,
+          total_xp: Number(row.total_xp) || 0,
+        });
+
+        const solved = Number(row.today_solved) || 0;
+        setTodaySolved(solved);
+
+        const goal = Number(row.daily_goal) || 20;
+        const progress = (solved / goal) * 100;
+        if (progress >= 100) {
+          triggerConfetti('stars');
+        }
+      }
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
     }
 
-    // Fetch gamification data
-    const { data: gamificationData } = await supabase
-      .from('user_gamification')
-      .select('level, current_xp, energy, combo, total_xp')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (gamificationData) {
-      setGamification(gamificationData);
-    }
-
-    // Get today's solved problems
-    const today = new Date().toISOString().split('T')[0];
-    const { data: sessionsData } = await supabase
-      .from('game_sessions')
-      .select('correct')
-      .eq('user_id', user.id)
-      .gte('created_at', today);
-
-    const solved = sessionsData?.reduce((sum, s) => sum + (s.correct || 0), 0) || 0;
-    setTodaySolved(solved);
-
-    // Celebrate if goal reached
-    const goal = profileData?.daily_goal || 20;
-    const progress = (solved / goal) * 100;
-    
-    if (progress >= 100) {
-      triggerConfetti('stars');
-    }
-    
     setLoading(false);
   }, [user, triggerConfetti]);
 

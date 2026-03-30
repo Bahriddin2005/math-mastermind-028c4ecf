@@ -37,98 +37,35 @@ export const Leaderboard = ({ currentUserId }: LeaderboardProps) => {
       setLoading(true);
 
       if (timeFilter === 'all') {
-        // Get profiles
-        const { data: profilesData } = await supabase
-          .from('profiles')
-          .select('id, user_id, username, total_score, best_streak, avatar_url')
-          .order('total_score', { ascending: false })
-          .limit(50);
-
-        if (profilesData) {
-          // Get gamification data for these users
-          const userIds = profilesData.map(p => p.user_id);
-          const { data: gamificationData } = await supabase
-            .from('user_gamification')
-            .select('user_id, level, total_xp')
-            .in('user_id', userIds);
-
-          const gamificationMap = new Map(
-            gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
-          );
-
-          setEntries(profilesData.map(p => ({
-            ...p,
-            level: gamificationMap.get(p.user_id)?.level || 1,
-            total_xp: gamificationMap.get(p.user_id)?.total_xp || 0,
+        const { data } = await supabase.rpc('get_leaderboard_with_gamification');
+        if (data) {
+          setEntries((data as any[]).map(d => ({
+            id: d.id,
+            user_id: d.user_id,
+            username: d.username,
+            total_score: d.total_score || 0,
+            best_streak: d.best_streak || 0,
+            avatar_url: d.avatar_url,
+            level: d.level || 1,
+            total_xp: d.total_xp || 0,
           })));
         }
       } else {
-        const now = new Date();
-        let startDate: Date;
-        
-        if (timeFilter === 'weekly') {
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 7);
+        const periodDays = timeFilter === 'weekly' ? 7 : 30;
+        const { data } = await supabase.rpc('get_leaderboard_by_period', { period_days: periodDays });
+        if (data) {
+          setEntries((data as any[]).map(d => ({
+            id: d.id,
+            user_id: d.user_id,
+            username: d.username,
+            total_score: Number(d.total_score) || 0,
+            best_streak: d.best_streak || 0,
+            avatar_url: d.avatar_url,
+            level: d.level || 1,
+            total_xp: d.total_xp || 0,
+          })));
         } else {
-          startDate = new Date(now);
-          startDate.setMonth(now.getMonth() - 1);
-        }
-
-        const { data: sessionsData } = await supabase
-          .from('game_sessions')
-          .select('user_id, score, best_streak')
-          .gte('created_at', startDate.toISOString());
-
-        if (sessionsData) {
-          const userScores = new Map<string, { totalScore: number; bestStreak: number }>();
-          
-          sessionsData.forEach(session => {
-            const existing = userScores.get(session.user_id) || { totalScore: 0, bestStreak: 0 };
-            userScores.set(session.user_id, {
-              totalScore: existing.totalScore + (session.score || 0),
-              bestStreak: Math.max(existing.bestStreak, session.best_streak || 0),
-            });
-          });
-
-          const userIds = Array.from(userScores.keys());
-          
-          if (userIds.length > 0) {
-            const { data: profilesData } = await supabase
-              .from('profiles')
-              .select('id, user_id, username, avatar_url')
-              .in('user_id', userIds);
-
-            // Get gamification data
-            const { data: gamificationData } = await supabase
-              .from('user_gamification')
-              .select('user_id, level, total_xp')
-              .in('user_id', userIds);
-
-            const gamificationMap = new Map(
-              gamificationData?.map(g => [g.user_id, { level: g.level, total_xp: g.total_xp }]) || []
-            );
-
-            if (profilesData) {
-              const leaderboardEntries: LeaderboardEntry[] = profilesData.map(profile => {
-                const scores = userScores.get(profile.user_id) || { totalScore: 0, bestStreak: 0 };
-                return {
-                  id: profile.id,
-                  user_id: profile.user_id,
-                  username: profile.username,
-                  total_score: scores.totalScore,
-                  best_streak: scores.bestStreak,
-                  avatar_url: profile.avatar_url,
-                  level: gamificationMap.get(profile.user_id)?.level || 1,
-                  total_xp: gamificationMap.get(profile.user_id)?.total_xp || 0,
-                };
-              });
-
-              leaderboardEntries.sort((a, b) => b.total_score - a.total_score);
-              setEntries(leaderboardEntries.slice(0, 50));
-            }
-          } else {
-            setEntries([]);
-          }
+          setEntries([]);
         }
       }
 
