@@ -306,6 +306,9 @@ const KidsHome = () => {
             {/* Section Carousels */}
             <div className="container px-3 xs:px-4 space-y-2">
               <SectionCarousel {...kidsSection} />
+              <SectionCarousel {...parentsSection} />
+              <SectionCarousel {...teachersSection} />
+              <SectionCarousel {...blogSection} />
             </div>
           </>
         )}
