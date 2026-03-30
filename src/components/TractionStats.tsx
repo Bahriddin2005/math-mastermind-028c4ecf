@@ -27,9 +27,29 @@ export const TractionStats = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const { data } = await supabase.rpc('get_platform_stats') as { data: any[] | null };
-      if (data && data.length > 0) {
-        setStats(data[0]);
+      try {
+        const { data, error } = await supabase.rpc('get_platform_stats');
+        if (error) {
+          console.error('get_platform_stats error:', error);
+          return;
+        }
+        if (!data) return;
+        
+        // Handle both array and object response formats
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row) {
+          setStats({
+            total_users: Number(row.total_users) || 0,
+            total_problems_solved: Number(row.total_problems_solved) || 0,
+            total_lessons: Number(row.total_lessons) || 0,
+            total_courses: Number(row.total_courses) || 0,
+            accuracy_rate: Number(row.accuracy_rate) || 0,
+            d7_retention: Number(row.d7_retention) || 0,
+            weekly_growth: Number(row.weekly_growth) || 0,
+          });
+        }
+      } catch (err) {
+        console.error('TractionStats fetch error:', err);
       }
     };
     fetchStats();
