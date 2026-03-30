@@ -1386,11 +1386,8 @@ export const generateProblem = (config: ProblemConfig): GeneratedProblem => {
 
   switch (stage) {
     case 'formulasiz': {
-      // Formulasiz uchun maxsus generator (aralash add/sub)
-      specializedResult = generateFormulasiz('add', digitCount, operationCount, 500);
-      if (!specializedResult) {
-        specializedResult = generateFormulasizMixed(digitCount, operationCount, 500);
-      }
+      // Formulasiz uchun doim aralash (mixed) generator — pure add faqat 9 ga olib boradi
+      specializedResult = generateFormulasizMixed(digitCount, operationCount, 500);
       break;
     }
     case '5': {
