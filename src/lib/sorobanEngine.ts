@@ -1004,7 +1004,11 @@ function generateMixFormula(
         const nextValue = digitsToNumber(state);
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
-        numbers.push(needMixed ? (curOp === 'add' ? term : -term) : term);
+        // Ketma-ket bir xil son bo'lmasin
+        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+
+        numbers.push(newVal);
         currentValue = nextValue;
         built = true;
         break;
