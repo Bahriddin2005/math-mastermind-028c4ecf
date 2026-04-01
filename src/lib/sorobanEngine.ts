@@ -408,8 +408,8 @@ function generateFormulasizMixed(
       const term = digitsToNumber(td);
       if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
       const signedVal = op === 'add' ? term : -term;
-      const prevSigned = signedTerms.length > 0 ? signedTerms[signedTerms.length - 1] : firstNumber;
-      if (signedVal === prevSigned) { ok = false; break; }
+      const prevAbs = signedTerms.length > 0 ? Math.abs(signedTerms[signedTerms.length - 1]) : null;
+      if (prevAbs !== null && term === prevAbs) { ok = false; break; }
       const next = op === 'add' ? currentValue + term : currentValue - term;
       if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
