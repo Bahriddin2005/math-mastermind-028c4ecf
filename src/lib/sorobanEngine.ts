@@ -790,8 +790,12 @@ function generateTenFormula(
         const nextValue = digitsToNumber(state);
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
+        // Ketma-ket bir xil son bo'lmasin
+        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+
         if (needMixed) {
-          numbers.push(curOp === 'add' ? term : -term);
+          numbers.push(newVal);
           signs.push(curOp === 'add' ? 1 : -1);
         } else {
           numbers.push(term);
