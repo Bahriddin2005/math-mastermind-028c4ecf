@@ -163,6 +163,7 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
   const setRunningResult = useCallback((value: number) => {
     runningResultRef.current = value;
     lastFormulaRef.current = null;
+    lastDeltaRef.current = null;
   }, []);
   
   /**

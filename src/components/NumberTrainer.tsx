@@ -996,14 +996,14 @@ export const NumberTrainer = () => {
             10
           );
 
-          if (candidate && isSequenceAcceptable(candidate.problem.sequence)) {
+          if (candidate && candidate.verification.isValid && isSequenceAcceptable(candidate.problem.sequence)) {
             verified = candidate;
             break;
           }
         }
       }
       
-      if (verified && isSequenceAcceptable(verified.problem.sequence)) {
+      if (verified && verified.verification.isValid && isSequenceAcceptable(verified.problem.sequence)) {
         // Verifikatsiyadan o'tgan misolni ishlatish
         preGeneratedProblemRef.current = verified.problem;
         preGeneratedIndexRef.current = 0;

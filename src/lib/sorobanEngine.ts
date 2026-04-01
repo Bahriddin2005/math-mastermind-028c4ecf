@@ -1525,9 +1525,29 @@ export const isKichikDostAllowed = (currentDigit: number, delta: number, isAdd: 
 export const isKattaDostAllowed = (currentValue: number, delta: number, isAdd: boolean): boolean => {
   const currentDigit = Math.abs(currentValue) % 10;
   const upperNonzero = Math.floor(Math.abs(currentValue) / 10) > 0;
-  if (isAdd) return isPrimaryTenAdd(currentDigit, delta, upperNonzero) || isMixAdd(currentDigit, delta);
-  return isPrimaryTenSub(currentDigit, delta, upperNonzero) || isMixSub(currentDigit, delta, upperNonzero);
+  if (isAdd) return isPrimaryTenAdd(currentDigit, delta, upperNonzero);
+  return isPrimaryTenSub(currentDigit, delta, upperNonzero);
 };
+
+function classificationToCategory(c: StepClassification): FormulaCategory | null {
+  if (c === 'unknown') return null;
+  return c;
+}
+
+function isClassificationAllowedForFormulas(
+  classification: StepClassification,
+  allowedFormulas: FormulaCategory[]
+): boolean {
+  if (classification === 'unknown') return false;
+  if (classification === 'mix') {
+    return allowedFormulas.includes('mix') || (
+      allowedFormulas.includes('katta_dost') && allowedFormulas.includes('kichik_dost')
+    );
+  }
+
+  const category = classificationToCategory(classification);
+  return category ? allowedFormulas.includes(category) : false;
+}
 
 export const getAvailableOperations = (
   currentValue: number,
@@ -1539,41 +1559,119 @@ export const getAvailableOperations = (
   const upperNonzero = Math.floor(Math.abs(currentValue) / 10) > 0;
 
   for (let delta = 1; delta <= 9; delta++) {
-    // Add
     const addClass = classifyStepGeneric('add', currentDigit, delta, upperNonzero);
-    if (addClass !== 'unknown') {
-      const cat = classificationToCategory(addClass);
-      if (cat && allowedFormulas.includes(cat)) {
+    if (isClassificationAllowedForFormulas(addClass, allowedFormulas)) {
+      const category = classificationToCategory(addClass);
+      if (category) {
         const isCarry = addClass === 'katta_dost' || addClass === 'mix';
         if (!isCarry || lastFormulaType !== 'katta_dost') {
-          operations.push({ delta, isAdd: true, formulaType: cat, isCarry });
+          operations.push({ delta, isAdd: true, formulaType: category, isCarry });
         }
       }
     }
-    // Sub
+
     const subClass = classifyStepGeneric('sub', currentDigit, delta, upperNonzero);
-    if (subClass !== 'unknown') {
-      const cat = classificationToCategory(subClass);
-      if (cat && allowedFormulas.includes(cat)) {
+    if (isClassificationAllowedForFormulas(subClass, allowedFormulas)) {
+      const category = classificationToCategory(subClass);
+      if (category) {
         const isCarry = subClass === 'katta_dost' || subClass === 'mix';
         if (!isCarry || lastFormulaType !== 'katta_dost') {
-          operations.push({ delta, isAdd: false, formulaType: cat, isCarry });
+          operations.push({ delta, isAdd: false, formulaType: category, isCarry });
         }
       }
     }
   }
+
   return operations;
 };
-
-function classificationToCategory(c: StepClassification): FormulaCategory | null {
-  if (c === 'unknown') return null;
-  if (c === 'mix') return 'katta_dost';
-  return c;
-}
 
 export const applyOperation = (currentValue: number, op: AllowedOperation): number => {
   return op.isAdd ? currentValue + op.delta : currentValue - op.delta;
 };
+
+function getVerificationWidth(currentValue: number, delta: number): number {
+  const nextValue = delta >= 0 ? currentValue + delta : currentValue + delta;
+  return Math.max(
+    1,
+    String(Math.abs(currentValue)).length,
+    String(Math.abs(delta)).length,
+    String(Math.abs(nextValue)).length
+  );
+}
+
+function aggregateStepClassification(classifications: StepClassification[]): StepClassification {
+  if (classifications.length === 0) return 'unknown';
+  if (classifications.includes('unknown')) return 'unknown';
+  if (classifications.includes('mix')) return 'mix';
+  if (classifications.includes('katta_dost')) return 'katta_dost';
+  if (classifications.includes('kichik_dost')) return 'kichik_dost';
+  return 'formulasiz';
+}
+
+function verifySingleSequenceStep(currentValue: number, delta: number): {
+  nextValue: number;
+  classifications: StepClassification[];
+  aggregate: StepClassification;
+  isCarry: boolean;
+  logs: StepLog[];
+  errors: string[];
+} {
+  const operation: OperationType = delta >= 0 ? 'add' : 'sub';
+  const absDelta = Math.abs(delta);
+  const width = getVerificationWidth(currentValue, delta);
+  const state = numberToDigits(currentValue, width);
+  const termDigits = numberToDigits(absDelta, width);
+  const logs: StepLog[] = [];
+  const classifications: StepClassification[] = [];
+  const errors: string[] = [];
+
+  for (let pos = width - 1; pos >= 0; pos--) {
+    const operandDigit = termDigits[pos];
+    if (operandDigit === 0) continue;
+
+    const beforeDigit = state[pos];
+    const upperBefore = pos > 0 ? state[pos - 1] : 0;
+    const classified = classifyStepGeneric(operation, beforeDigit, operandDigit, upperBefore > 0);
+
+    classifications.push(classified);
+    if (classified === 'unknown') {
+      errors.push(`unknown_operation: ${operation === 'add' ? '+' : '-'}${operandDigit} at digit ${beforeDigit}`);
+    }
+
+    applyDigit(state, pos, operandDigit, operation);
+
+    logs.push({
+      termIndex: 0,
+      displayPos: width - 1 - pos,
+      statePos: pos,
+      beforeDigit,
+      operandDigit,
+      operation,
+      classified,
+      isPrimary: false,
+      upperBefore,
+      afterDigit: state[pos],
+      upperAfter: pos > 0 ? state[pos - 1] : 0,
+    });
+  }
+
+  const computedNextValue = operation === 'add' ? currentValue + absDelta : currentValue - absDelta;
+  const stateIsBroken = state.some(d => d < 0 || d > 9);
+  const stateValue = stateIsBroken ? computedNextValue : digitsToNumber(state);
+
+  if (stateValue !== computedNextValue) {
+    errors.push(`state_mismatch: expected ${computedNextValue}, got ${stateValue}`);
+  }
+
+  return {
+    nextValue: computedNextValue,
+    classifications,
+    aggregate: aggregateStepClassification(classifications),
+    isCarry: classifications.some(c => c === 'katta_dost' || c === 'mix'),
+    logs,
+    errors,
+  };
+}
 
 export const generateVerifiedProblem = (
   config: ProblemConfig,
@@ -1590,9 +1688,7 @@ export const generateVerifiedProblem = (
     }
   }
 
-  const fallback = generateProblem(config);
-  const fallbackVerification = verifyProblem(fallback.startValue, fallback.sequence, stage);
-  return { problem: fallback, verification: fallbackVerification };
+  return null;
 };
 
 export const verifyProblem = (
@@ -1603,76 +1699,69 @@ export const verifyProblem = (
   const steps: StepLog[] = [];
   const errors: string[] = [];
   const formulaStats: Record<StepClassification, number> = {
-    formulasiz: 0, kichik_dost: 0, katta_dost: 0, mix: 0, unknown: 0,
+    formulasiz: 0,
+    kichik_dost: 0,
+    katta_dost: 0,
+    mix: 0,
+    unknown: 0,
   };
 
   let currentValue = startValue;
   let lastWasCarry = false;
+  let primarySteps = 0;
+  const primaryClass = expectedStage ? getStagePrimaryClassification(expectedStage) : null;
+  const allowedClassifications = expectedStage ? getStageAllowedClassifications(expectedStage) : null;
 
   for (let i = 0; i < sequence.length; i++) {
     const delta = sequence[i];
-    const isAdd = delta > 0;
-    const absDelta = Math.abs(delta);
-    const currentDigit = Math.abs(currentValue) % 10;
-    const upperNonzero = Math.floor(Math.abs(currentValue) / 10) > 0;
+    const stepResult = verifySingleSequenceStep(currentValue, delta);
 
-    const classification = classifyStepGeneric(isAdd ? 'add' : 'sub', currentDigit, absDelta, upperNonzero);
-    formulaStats[classification]++;
-
-    if (classification === 'unknown') {
-      errors.push(`unknown_operation: ${isAdd ? '+' : '-'}${absDelta} at digit ${currentDigit}`);
+    if (i > 0 && delta === sequence[i - 1]) {
+      errors.push(`consecutive_duplicate: ${delta}`);
     }
 
-    if (expectedStage && classification !== 'unknown') {
-      const allowed = getStageAllowedClassifications(expectedStage);
-      if (!allowed.includes(classification)) {
-        errors.push(`topic_mismatch: ${classification} in ${expectedStage}`);
+    for (const step of stepResult.logs) {
+      steps.push({
+        ...step,
+        termIndex: i,
+        isPrimary: primaryClass ? step.classified === primaryClass : false,
+      });
+      formulaStats[step.classified]++;
+
+      if (allowedClassifications && step.classified !== 'unknown' && !allowedClassifications.includes(step.classified)) {
+        errors.push(`topic_mismatch: ${step.classified} in ${expectedStage}`);
+      }
+
+      if (primaryClass && step.classified === primaryClass) {
+        primarySteps++;
       }
     }
 
-    const isCarry = classification === 'katta_dost' || classification === 'mix';
-    if (isCarry && lastWasCarry) {
+    errors.push(...stepResult.errors);
+
+    if (stepResult.isCarry && lastWasCarry) {
       errors.push('consecutive_carry');
     }
 
-    if (expectedStage === 'formulasiz' && isCarry) {
+    if ((expectedStage === 'formulasiz' || expectedStage === 'oddiy') && stepResult.isCarry) {
       errors.push('carry_used_in_formulasiz');
     }
 
-    steps.push({
-      termIndex: i,
-      displayPos: 0,
-      statePos: 0,
-      beforeDigit: currentDigit,
-      operandDigit: absDelta,
-      operation: isAdd ? 'add' : 'sub',
-      classified: classification,
-      isPrimary: false,
-      upperBefore: 0,
-      afterDigit: 0,
-      upperAfter: 0,
-    });
-
-    currentValue += delta;
-    lastWasCarry = isCarry;
+    currentValue = stepResult.nextValue;
+    lastWasCarry = stepResult.isCarry;
   }
 
-  let primaryFormulaRatio = 0;
-  if (expectedStage && steps.length > 0) {
-    const primaryClass = getStagePrimaryClassification(expectedStage);
-    if (primaryClass) {
-      primaryFormulaRatio = (formulaStats[primaryClass] || 0) / steps.length;
-    }
-  }
+  const uniqueErrors = [...new Set(errors)];
+  const primaryFormulaRatio = steps.length > 0 ? primarySteps / steps.length : 0;
 
   return {
-    isValid: errors.length === 0,
+    isValid: uniqueErrors.length === 0,
     answer: currentValue,
     totalSteps: steps.length,
-    primarySteps: 0,
+    primarySteps,
     stats: formulaStats as unknown as Record<string, number>,
     steps,
-    errors,
+    errors: uniqueErrors,
     formulaStats,
     primaryFormulaRatio,
   };
