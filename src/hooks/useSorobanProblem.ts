@@ -179,6 +179,7 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
   const reset = useCallback(() => {
     runningResultRef.current = 0;
     lastFormulaRef.current = null;
+    lastDeltaRef.current = null;
   }, []);
   
   return {
