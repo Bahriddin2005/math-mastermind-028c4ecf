@@ -1718,8 +1718,8 @@ export const verifyProblem = (
     const delta = sequence[i];
     const stepResult = verifySingleSequenceStep(currentValue, delta);
 
-    if (i > 0 && delta === sequence[i - 1]) {
-      errors.push(`consecutive_duplicate: ${delta}`);
+    if (i > 0 && Math.abs(delta) === Math.abs(sequence[i - 1])) {
+      errors.push(`consecutive_duplicate: ${Math.abs(delta)}`);
     }
 
     for (const step of stepResult.logs) {
