@@ -63,10 +63,23 @@ const heroSlides: HeroSlide[] = [
   },
 ];
 
-export const HeroCarousel = () => {
+interface HeroCarouselProps {
+  userRole?: 'student' | 'parent' | 'teacher' | 'admin' | null;
+}
+
+export const HeroCarousel = ({ userRole }: HeroCarouselProps = {}) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+
+  // Rolga qarab slaydlarni filtrlash
+  const filteredSlides = userRole === 'student' 
+    ? heroSlides.filter(s => s.id === 'kids')
+    : userRole === 'parent'
+    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'parents')
+    : userRole === 'teacher'
+    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'teachers')
+    : heroSlides;
 
   useEffect(() => {
     if (!api) return;
@@ -95,7 +108,7 @@ export const HeroCarousel = () => {
         className="w-full"
       >
         <CarouselContent className="-ml-0">
-          {heroSlides.map((slide) => (
+          {filteredSlides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0 basis-full">
               <div 
                 className={`relative w-full min-h-[280px] xs:min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] rounded-2xl sm:rounded-3xl bg-gradient-to-br ${slide.gradient} p-4 xs:p-5 sm:p-8 lg:p-10 flex flex-col justify-center overflow-hidden`}
@@ -157,7 +170,7 @@ export const HeroCarousel = () => {
 
         {/* Custom dots indicator */}
         <div className="flex justify-center gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-          {heroSlides.map((_, index) => (
+          {filteredSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}

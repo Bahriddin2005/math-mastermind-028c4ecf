@@ -250,7 +250,7 @@ const KidsHome = () => {
           <>
             {/* Hero Carousel */}
             <div className="container px-3 xs:px-4 py-2 sm:py-3">
-              <HeroCarousel />
+              <HeroCarousel userRole={role as any} />
             </div>
 
             {/* Daily Task Card */}
