@@ -365,6 +365,7 @@ function generateFormulasiz(
 
       const term = digitsToNumber(td);
       if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      if (numbers.length > 0 && term === numbers[numbers.length - 1]) { ok = false; break; }
       const next = operation === 'add' ? currentValue + term : currentValue - term;
       if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
