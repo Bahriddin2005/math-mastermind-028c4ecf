@@ -108,7 +108,7 @@ export const HeroCarousel = ({ userRole }: HeroCarouselProps = {}) => {
         className="w-full"
       >
         <CarouselContent className="-ml-0">
-          {heroSlides.map((slide) => (
+          {filteredSlides.map((slide) => (
             <CarouselItem key={slide.id} className="pl-0 basis-full">
               <div 
                 className={`relative w-full min-h-[280px] xs:min-h-[320px] sm:min-h-[380px] lg:min-h-[420px] rounded-2xl sm:rounded-3xl bg-gradient-to-br ${slide.gradient} p-4 xs:p-5 sm:p-8 lg:p-10 flex flex-col justify-center overflow-hidden`}
