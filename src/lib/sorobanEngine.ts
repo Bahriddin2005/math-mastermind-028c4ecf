@@ -580,9 +580,10 @@ function generateFiveFormula(
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
 
-        // Ketma-ket bir xil son bo'lmasin
+        // Ketma-ket bir xil ko'rinadigan son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
-        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+        const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
+        if (prevAbs !== null && term === prevAbs) continue;
 
         const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
