@@ -110,52 +110,51 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
     const nonCarryOps = availableOps.filter(op => !op.isCarry);
     const carryOps = availableOps.filter(op => op.isCarry);
     
-    let selectedOp: AllowedOperation;
-    
-    if (nonCarryOps.length > 0 && Math.random() > 0.25) {
-      selectedOp = nonCarryOps[Math.floor(Math.random() * nonCarryOps.length)];
-    } else if (carryOps.length > 0) {
-      selectedOp = carryOps[Math.floor(Math.random() * carryOps.length)];
-    } else {
-      selectedOp = availableOps[Math.floor(Math.random() * availableOps.length)];
-    }
-    
-    // Ko'p xonali misollar uchun delta ni kengaytirish
-    let finalDelta = selectedOp.delta;
-    if (digitCount > 1 && !selectedOp.isCarry) {
-      const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
-      finalDelta = selectedOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
-    }
-    
-    const signedDelta = selectedOp.isAdd ? finalDelta : -finalDelta;
-    
-    // Ketma-ket bir xil son chiqmasin
-    if (lastDeltaRef.current !== null && signedDelta === lastDeltaRef.current) {
-      // Boshqa variant tanlash
-      const otherOps = availableOps.filter(op => {
-        const d = op.isAdd ? (op.delta * (digitCount > 1 && !op.isCarry ? Math.min(Math.pow(10, Math.floor(Math.random() * digitCount)), Math.pow(10, digitCount - 1)) : 1)) : -(op.delta * (digitCount > 1 && !op.isCarry ? Math.min(Math.pow(10, Math.floor(Math.random() * digitCount)), Math.pow(10, digitCount - 1)) : 1));
-        return d !== lastDeltaRef.current;
-      });
-      if (otherOps.length > 0) {
-        const altOp = otherOps[Math.floor(Math.random() * otherOps.length)];
-        let altDelta = altOp.delta;
-        if (digitCount > 1 && !altOp.isCarry) {
-          const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
-          altDelta = altOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
-        }
-        const altSigned = altOp.isAdd ? altDelta : -altDelta;
-        runningResultRef.current = currentValue + altSigned;
-        lastFormulaRef.current = altOp.formulaType;
-        lastDeltaRef.current = altSigned;
-        return altSigned;
+    // 3 marta urinib, ketma-ket bir xil son chiqmasligini ta'minlash
+    for (let attempt = 0; attempt < 3; attempt++) {
+      let selectedOp: AllowedOperation;
+      
+      if (nonCarryOps.length > 0 && Math.random() > 0.25) {
+        selectedOp = nonCarryOps[Math.floor(Math.random() * nonCarryOps.length)];
+      } else if (carryOps.length > 0) {
+        selectedOp = carryOps[Math.floor(Math.random() * carryOps.length)];
+      } else {
+        selectedOp = availableOps[Math.floor(Math.random() * availableOps.length)];
       }
+      
+      // Ko'p xonali misollar uchun delta ni kengaytirish
+      let finalDelta = selectedOp.delta;
+      if (digitCount > 1 && !selectedOp.isCarry) {
+        const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+        finalDelta = selectedOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
+      }
+      
+      const signedDelta = selectedOp.isAdd ? finalDelta : -finalDelta;
+      
+      // Ketma-ket bir xil son bo'lsa, qayta urinish
+      if (lastDeltaRef.current !== null && signedDelta === lastDeltaRef.current && attempt < 2) {
+        continue;
+      }
+      
+      runningResultRef.current = currentValue + signedDelta;
+      lastFormulaRef.current = selectedOp.formulaType;
+      lastDeltaRef.current = signedDelta;
+      
+      return signedDelta;
     }
     
-    runningResultRef.current = currentValue + signedDelta;
-    lastFormulaRef.current = selectedOp.formulaType;
-    lastDeltaRef.current = signedDelta;
-    
-    return signedDelta;
+    // Fallback: istalgan variantni qabul qilish
+    const fallbackOp = availableOps[Math.floor(Math.random() * availableOps.length)];
+    let fallbackDelta = fallbackOp.delta;
+    if (digitCount > 1 && !fallbackOp.isCarry) {
+      const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+      fallbackDelta = fallbackOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
+    }
+    const fallbackSigned = fallbackOp.isAdd ? fallbackDelta : -fallbackDelta;
+    runningResultRef.current = currentValue + fallbackSigned;
+    lastFormulaRef.current = fallbackOp.formulaType;
+    lastDeltaRef.current = fallbackSigned;
+    return fallbackSigned;
   }, [digitCount, formulaType, ensurePositive]);
   
   /**
