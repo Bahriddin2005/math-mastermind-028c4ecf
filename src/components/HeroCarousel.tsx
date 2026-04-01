@@ -25,6 +25,7 @@ interface HeroSlide {
   buttonText: string;
   href: string;
   image: string;
+  roles: string[]; // qaysi rollarga ko'rsatiladi
 }
 
 const heroSlides: HeroSlide[] = [
@@ -38,6 +39,43 @@ const heroSlides: HeroSlide[] = [
     buttonText: "O'rganishni boshlash",
     href: "/train",
     image: heroKidsImg,
+    roles: ['student', 'parent', 'teacher', 'admin'],
+  },
+  {
+    id: 'competition',
+    title: "Musobaqalar",
+    subtitle: "Do'stlaring bilan bellashing!",
+    description: "Haftalik musobaqalarda qatnashing, reyting jadvalida birinchi o'ringa chiqing!",
+    icon: "🏆",
+    gradient: "from-violet-500 via-purple-500 to-fuchsia-500",
+    buttonText: "Musobaqaga o'tish",
+    href: "/weekly-game",
+    image: heroKidsImg,
+    roles: ['student', 'parent', 'teacher', 'admin'],
+  },
+  {
+    id: 'practice',
+    title: "Mashq qiling",
+    subtitle: "Har kuni mashq — har kuni yutuq!",
+    description: "Mental arifmetika bo'yicha tezlikni oshiring, rekordlaringizni yangilang!",
+    icon: "🧠",
+    gradient: "from-rose-500 via-pink-500 to-red-400",
+    buttonText: "Mashqni boshlash",
+    href: "/abacus-practice",
+    image: heroKidsImg,
+    roles: ['student', 'parent', 'teacher', 'admin'],
+  },
+  {
+    id: 'leaderboard',
+    title: "Reyting jadvali",
+    subtitle: "Eng yaxshilar orasida bo'ling!",
+    description: "O'z natijalaringizni boshqalar bilan solishtiring va motivatsiya oling!",
+    icon: "📊",
+    gradient: "from-cyan-500 via-teal-500 to-emerald-400",
+    buttonText: "Reytingni ko'rish",
+    href: "/records",
+    image: heroKidsImg,
+    roles: ['student', 'admin'],
   },
   {
     id: 'parents',
@@ -49,6 +87,7 @@ const heroSlides: HeroSlide[] = [
     buttonText: "Kuzatishni boshlash",
     href: "/statistics",
     image: heroParentsImg,
+    roles: ['parent', 'admin'],
   },
   {
     id: 'teachers',
@@ -60,6 +99,7 @@ const heroSlides: HeroSlide[] = [
     buttonText: "O'qitishni boshlash",
     href: "/courses",
     image: heroTeachersImg,
+    roles: ['teacher', 'admin'],
   },
 ];
 
@@ -73,12 +113,8 @@ export const HeroCarousel = ({ userRole }: HeroCarouselProps = {}) => {
   const [current, setCurrent] = useState(0);
 
   // Rolga qarab slaydlarni filtrlash
-  const filteredSlides = userRole === 'student' 
-    ? heroSlides.filter(s => s.id === 'kids')
-    : userRole === 'parent'
-    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'parents')
-    : userRole === 'teacher'
-    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'teachers')
+  const filteredSlides = userRole 
+    ? heroSlides.filter(s => s.roles.includes(userRole))
     : heroSlides;
 
   useEffect(() => {
