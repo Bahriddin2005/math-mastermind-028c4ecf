@@ -57,6 +57,7 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
   // Running result tracking
   const runningResultRef = useRef(0);
   const lastFormulaRef = useRef<FormulaCategory | null>(null);
+  const lastDeltaRef = useRef<number | null>(null);
   
   /**
    * Yangi misol generatsiya qilish
@@ -127,8 +128,32 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
     }
     
     const signedDelta = selectedOp.isAdd ? finalDelta : -finalDelta;
+    
+    // Ketma-ket bir xil son chiqmasin
+    if (lastDeltaRef.current !== null && signedDelta === lastDeltaRef.current) {
+      // Boshqa variant tanlash
+      const otherOps = availableOps.filter(op => {
+        const d = op.isAdd ? (op.delta * (digitCount > 1 && !op.isCarry ? Math.min(Math.pow(10, Math.floor(Math.random() * digitCount)), Math.pow(10, digitCount - 1)) : 1)) : -(op.delta * (digitCount > 1 && !op.isCarry ? Math.min(Math.pow(10, Math.floor(Math.random() * digitCount)), Math.pow(10, digitCount - 1)) : 1));
+        return d !== lastDeltaRef.current;
+      });
+      if (otherOps.length > 0) {
+        const altOp = otherOps[Math.floor(Math.random() * otherOps.length)];
+        let altDelta = altOp.delta;
+        if (digitCount > 1 && !altOp.isCarry) {
+          const multiplier = Math.pow(10, Math.floor(Math.random() * digitCount));
+          altDelta = altOp.delta * Math.min(multiplier, Math.pow(10, digitCount - 1));
+        }
+        const altSigned = altOp.isAdd ? altDelta : -altDelta;
+        runningResultRef.current = currentValue + altSigned;
+        lastFormulaRef.current = altOp.formulaType;
+        lastDeltaRef.current = altSigned;
+        return altSigned;
+      }
+    }
+    
     runningResultRef.current = currentValue + signedDelta;
     lastFormulaRef.current = selectedOp.formulaType;
+    lastDeltaRef.current = signedDelta;
     
     return signedDelta;
   }, [digitCount, formulaType, ensurePositive]);
@@ -154,6 +179,7 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
   const reset = useCallback(() => {
     runningResultRef.current = 0;
     lastFormulaRef.current = null;
+    lastDeltaRef.current = null;
   }, []);
   
   return {

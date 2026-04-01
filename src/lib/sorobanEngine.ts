@@ -365,6 +365,7 @@ function generateFormulasiz(
 
       const term = digitsToNumber(td);
       if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      if (numbers.length > 0 && term === numbers[numbers.length - 1]) { ok = false; break; }
       const next = operation === 'add' ? currentValue + term : currentValue - term;
       if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
@@ -406,10 +407,13 @@ function generateFormulasizMixed(
 
       const term = digitsToNumber(td);
       if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
+      const signedVal = op === 'add' ? term : -term;
+      const prevSigned = signedTerms.length > 0 ? signedTerms[signedTerms.length - 1] : firstNumber;
+      if (signedVal === prevSigned) { ok = false; break; }
       const next = op === 'add' ? currentValue + term : currentValue - term;
       if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
-      signedTerms.push(op === 'add' ? term : -term);
+      signedTerms.push(signedVal);
       currentValue = next;
     }
 
@@ -576,15 +580,14 @@ function generateFiveFormula(
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
 
+        // Ketma-ket bir xil son bo'lmasin
+        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+
         const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
-        // Mixed mode: store signed
-        if (needMixed) {
-          numbers.push(curOp === 'add' ? term : -term);
-        } else {
-          numbers.push(term);
-        }
+        numbers.push(newVal);
         currentValue = nextValue;
         built = true;
         break;
@@ -787,8 +790,12 @@ function generateTenFormula(
         const nextValue = digitsToNumber(state);
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
+        // Ketma-ket bir xil son bo'lmasin
+        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+
         if (needMixed) {
-          numbers.push(curOp === 'add' ? term : -term);
+          numbers.push(newVal);
           signs.push(curOp === 'add' ? 1 : -1);
         } else {
           numbers.push(term);
@@ -997,7 +1004,11 @@ function generateMixFormula(
         const nextValue = digitsToNumber(state);
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
-        numbers.push(needMixed ? (curOp === 'add' ? term : -term) : term);
+        // Ketma-ket bir xil son bo'lmasin
+        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+
+        numbers.push(newVal);
         currentValue = nextValue;
         built = true;
         break;
