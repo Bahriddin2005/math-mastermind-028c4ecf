@@ -271,7 +271,7 @@ function isMixAdd(currentDigit: number, operandDigit: number): boolean {
 function isMixSub(currentDigit: number, operandDigit: number, upperNonzero: boolean): boolean {
   if (operandDigit < 6 || operandDigit > 9) return false;
   if (!upperNonzero) return false;
-  const low = 10 - operandDigit;
+  const low = operandDigit - 5;
   return low <= currentDigit && currentDigit <= 4;
 }
 
