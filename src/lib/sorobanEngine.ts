@@ -792,7 +792,8 @@ function generateTenFormula(
 
         // Ketma-ket bir xil son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
-        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+        const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
+        if (prevAbs !== null && term === prevAbs) continue;
 
         if (needMixed) {
           numbers.push(newVal);
