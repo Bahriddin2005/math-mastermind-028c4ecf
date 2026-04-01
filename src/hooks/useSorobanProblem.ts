@@ -57,6 +57,7 @@ export const useSorobanProblem = (options: UseSorobanProblemOptions) => {
   // Running result tracking
   const runningResultRef = useRef(0);
   const lastFormulaRef = useRef<FormulaCategory | null>(null);
+  const lastDeltaRef = useRef<number | null>(null);
   
   /**
    * Yangi misol generatsiya qilish
