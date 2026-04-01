@@ -408,8 +408,8 @@ function generateFormulasizMixed(
       const term = digitsToNumber(td);
       if (hasZeroInDisplayed(term, digitsCount)) { ok = false; break; }
       const signedVal = op === 'add' ? term : -term;
-      const prevSigned = signedTerms.length > 0 ? signedTerms[signedTerms.length - 1] : firstNumber;
-      if (signedVal === prevSigned) { ok = false; break; }
+      const prevAbs = signedTerms.length > 0 ? Math.abs(signedTerms[signedTerms.length - 1]) : null;
+      if (prevAbs !== null && term === prevAbs) { ok = false; break; }
       const next = op === 'add' ? currentValue + term : currentValue - term;
       if (next < 0 || String(next).length > digitsCount) { ok = false; break; }
 
@@ -580,9 +580,10 @@ function generateFiveFormula(
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
 
-        // Ketma-ket bir xil son bo'lmasin
+        // Ketma-ket bir xil ko'rinadigan son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
-        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+        const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
+        if (prevAbs !== null && term === prevAbs) continue;
 
         const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
@@ -792,7 +793,8 @@ function generateTenFormula(
 
         // Ketma-ket bir xil son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
-        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+        const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
+        if (prevAbs !== null && term === prevAbs) continue;
 
         if (needMixed) {
           numbers.push(newVal);
@@ -1006,7 +1008,8 @@ function generateMixFormula(
 
         // Ketma-ket bir xil son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
-        if (numbers.length > 0 && newVal === numbers[numbers.length - 1]) continue;
+        const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
+        if (prevAbs !== null && term === prevAbs) continue;
 
         numbers.push(newVal);
         currentValue = nextValue;
@@ -1716,8 +1719,8 @@ export const verifyProblem = (
     const delta = sequence[i];
     const stepResult = verifySingleSequenceStep(currentValue, delta);
 
-    if (i > 0 && delta === sequence[i - 1]) {
-      errors.push(`consecutive_duplicate: ${delta}`);
+    if (i > 0 && Math.abs(delta) === Math.abs(sequence[i - 1])) {
+      errors.push(`consecutive_duplicate: ${Math.abs(delta)}`);
     }
 
     for (const step of stepResult.logs) {
