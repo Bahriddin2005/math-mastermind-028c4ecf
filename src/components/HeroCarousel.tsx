@@ -63,10 +63,23 @@ const heroSlides: HeroSlide[] = [
   },
 ];
 
-export const HeroCarousel = () => {
+interface HeroCarouselProps {
+  userRole?: 'student' | 'parent' | 'teacher' | 'admin' | null;
+}
+
+export const HeroCarousel = ({ userRole }: HeroCarouselProps = {}) => {
   const navigate = useNavigate();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
+
+  // Rolga qarab slaydlarni filtrlash
+  const filteredSlides = userRole === 'student' 
+    ? heroSlides.filter(s => s.id === 'kids')
+    : userRole === 'parent'
+    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'parents')
+    : userRole === 'teacher'
+    ? heroSlides.filter(s => s.id === 'kids' || s.id === 'teachers')
+    : heroSlides;
 
   useEffect(() => {
     if (!api) return;
