@@ -170,7 +170,7 @@ export const HeroCarousel = ({ userRole }: HeroCarouselProps = {}) => {
 
         {/* Custom dots indicator */}
         <div className="flex justify-center gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-          {heroSlides.map((_, index) => (
+          {filteredSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => api?.scrollTo(index)}
