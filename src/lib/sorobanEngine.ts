@@ -391,8 +391,18 @@ function generateFormulasizMixed(
     let ok = true;
 
     for (let t = 1; t < termsCount; t++) {
-      const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
-      const op: OperationType = avg >= 5 ? 'sub' : (Math.random() > 0.4 ? 'add' : 'sub');
+      const digits = numberToDigits(currentValue, digitsCount);
+      const avg = digits.reduce((a, b) => a + b, 0) / digitsCount;
+      
+      // Muvozanatli tanlash: avg yuqori bo'lsa ayirish, past bo'lsa qo'shish, o'rtada 50/50
+      let op: OperationType;
+      if (avg >= 6) {
+        op = 'sub';
+      } else if (avg <= 2) {
+        op = 'add';
+      } else {
+        op = Math.random() > 0.5 ? 'add' : 'sub';
+      }
       const table = op === 'add' ? FORMULASIZ_PLUS : FORMULASIZ_MINUS;
       const cd = numberToDigits(currentValue, digitsCount);
       const td: number[] = [];
