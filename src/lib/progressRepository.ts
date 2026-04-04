@@ -15,22 +15,31 @@ export async function saveProgressResult(result: ProgressResult): Promise<void> 
   const { sessionSummary, xp, level, streak, topicProgress } = result;
   const userId = sessionSummary.userId;
 
-  // 1. Update profiles table (total_score as XP proxy, streaks)
-  await supabase
+  // 1. Get current profile data first
+  const { data: currentProfile } = await supabase
+    .from('profiles')
+    .select('total_problems_solved')
+    .eq('user_id', userId)
+    .single();
+
+  const currentSolved = currentProfile?.total_problems_solved || 0;
+
+  // Update profiles table (total_score as XP, streaks, problems solved)
+  const { error: profileError } = await supabase
     .from('profiles')
     .update({
       total_score: xp.newTotalXp,
       current_streak: streak.currentStreak,
       best_streak: streak.bestStreak,
       last_active_date: streak.lastPracticeDate,
-      total_problems_solved: (await supabase
-        .from('profiles')
-        .select('total_problems_solved')
-        .eq('user_id', userId)
-        .single()
-        .then(r => (r.data?.total_problems_solved || 0) + sessionSummary.attemptsCount)),
+      total_problems_solved: currentSolved + sessionSummary.attemptsCount,
+      updated_at: new Date().toISOString(),
     })
     .eq('user_id', userId);
+
+  if (profileError) {
+    console.error('Profile update error:', profileError);
+  }
 
   // 2. Upsert topic_progress
   const { data: existingTopic } = await supabase

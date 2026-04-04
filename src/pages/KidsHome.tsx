@@ -56,11 +56,11 @@ const KidsHome = () => {
     }
 
     try {
-      const { data: dashData } = await supabase.rpc('get_user_dashboard_stats', { p_user_id: user.id });
+      const { data: dashData, error: rpcError } = await supabase.rpc('get_user_dashboard_stats', { p_user_id: user.id });
       
       const row = Array.isArray(dashData) ? dashData[0] : dashData;
       
-      if (row) {
+      if (!rpcError && row) {
         setProfile({
           username: row.username || 'Player',
           total_score: Number(row.total_score) || 0,
@@ -86,6 +86,47 @@ const KidsHome = () => {
         const progress = (solved / goal) * 100;
         if (progress >= 100) {
           triggerConfetti('stars');
+        }
+      } else {
+        // Fallback: RPC ishlamasa to'g'ridan-to'g'ri jadvallardan o'qish
+        console.warn('Dashboard RPC failed, using fallback:', rpcError?.message);
+        
+        const [profileRes, gamificationRes, todayRes] = await Promise.all([
+          supabase.from('profiles').select('*').eq('user_id', user.id).single(),
+          supabase.from('user_gamification').select('*').eq('user_id', user.id).single(),
+          supabase.from('game_sessions')
+            .select('correct')
+            .eq('user_id', user.id)
+            .gte('created_at', new Date().toISOString().split('T')[0]),
+        ]);
+
+        if (profileRes.data) {
+          const p = profileRes.data;
+          setProfile({
+            username: p.username || 'Player',
+            total_score: Number(p.total_score) || 0,
+            total_problems_solved: Number(p.total_problems_solved) || 0,
+            best_streak: Number(p.best_streak) || 0,
+            daily_goal: Number(p.daily_goal) || 20,
+            current_streak: Number(p.current_streak) || 0,
+            avatar_url: p.avatar_url,
+          });
+        }
+
+        if (gamificationRes.data) {
+          const g = gamificationRes.data;
+          setGamification({
+            level: Number(g.level) || 1,
+            current_xp: Number(g.current_xp) || 0,
+            energy: Number(g.energy) || 100,
+            combo: Number(g.combo) || 0,
+            total_xp: Number(g.total_xp) || 0,
+          });
+        }
+
+        if (todayRes.data) {
+          const solved = todayRes.data.reduce((sum, s) => sum + (Number(s.correct) || 0), 0);
+          setTodaySolved(solved);
         }
       }
     } catch (err) {
