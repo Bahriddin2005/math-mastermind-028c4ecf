@@ -28,26 +28,51 @@ export const TractionStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        // Try RPC first
         const { data, error } = await supabase.rpc('get_platform_stats');
-        if (error) {
-          console.error('get_platform_stats error:', error);
-          return;
+        if (!error && data) {
+          const row = Array.isArray(data) ? data[0] : data;
+          if (row) {
+            setStats({
+              total_users: Number(row.total_users) || 0,
+              total_problems_solved: Number(row.total_problems_solved) || 0,
+              total_lessons: Number(row.total_lessons) || 0,
+              total_courses: Number(row.total_courses) || 0,
+              accuracy_rate: Number(row.accuracy_rate) || 0,
+              d7_retention: Number(row.d7_retention) || 0,
+              weekly_growth: Number(row.weekly_growth) || 0,
+            });
+            return;
+          }
         }
-        if (!data) return;
-        
-        // Handle both array and object response formats
-        const row = Array.isArray(data) ? data[0] : data;
-        if (row) {
-          setStats({
-            total_users: Number(row.total_users) || 0,
-            total_problems_solved: Number(row.total_problems_solved) || 0,
-            total_lessons: Number(row.total_lessons) || 0,
-            total_courses: Number(row.total_courses) || 0,
-            accuracy_rate: Number(row.accuracy_rate) || 0,
-            d7_retention: Number(row.d7_retention) || 0,
-            weekly_growth: Number(row.weekly_growth) || 0,
-          });
-        }
+
+        console.warn('get_platform_stats RPC failed, using fallback queries:', error?.message);
+
+        // Fallback: query tables directly
+        const [profilesRes, sessionsRes, lessonsRes, coursesRes] = await Promise.all([
+          supabase.from('profiles').select('total_problems_solved', { count: 'exact', head: false }),
+          supabase.from('game_sessions').select('correct, incorrect'),
+          supabase.from('lessons').select('id', { count: 'exact', head: true }).eq('is_published', true),
+          supabase.from('courses').select('id', { count: 'exact', head: true }).eq('is_published', true),
+        ]);
+
+        const totalUsers = profilesRes.count || profilesRes.data?.length || 0;
+        const totalSolved = profilesRes.data?.reduce((sum, p) => sum + (Number(p.total_problems_solved) || 0), 0) || 0;
+        const totalCorrect = sessionsRes.data?.reduce((sum, s) => sum + (Number(s.correct) || 0), 0) || 0;
+        const totalIncorrect = sessionsRes.data?.reduce((sum, s) => sum + (Number(s.incorrect) || 0), 0) || 0;
+        const accuracyRate = (totalCorrect + totalIncorrect) > 0
+          ? Math.round((totalCorrect / (totalCorrect + totalIncorrect)) * 1000) / 10
+          : 0;
+
+        setStats({
+          total_users: totalUsers,
+          total_problems_solved: totalSolved,
+          total_lessons: lessonsRes.count || 0,
+          total_courses: coursesRes.count || 0,
+          accuracy_rate: accuracyRate,
+          d7_retention: 0,
+          weekly_growth: 0,
+        });
       } catch (err) {
         console.error('TractionStats fetch error:', err);
       }

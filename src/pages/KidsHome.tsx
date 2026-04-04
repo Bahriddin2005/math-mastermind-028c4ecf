@@ -265,14 +265,22 @@ const KidsHome = () => {
                     <p className="text-xs text-muted-foreground">Tez va aniq hisoblash mashqlari</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-4 gap-2 mb-3">
                   <div className="text-center p-2 rounded-xl bg-background/60">
-                    <p className="text-xs text-muted-foreground">⭐ Yig'ilgan ballar</p>
+                    <p className="text-xs text-muted-foreground">⭐ Ballar</p>
                     <p className="text-lg font-bold text-primary">{profile?.total_score || 0}</p>
                   </div>
                   <div className="text-center p-2 rounded-xl bg-background/60">
                     <p className="text-xs text-muted-foreground">🏆 Bosqich</p>
                     <p className="text-lg font-bold text-accent">{level}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-xl bg-background/60">
+                    <p className="text-xs text-muted-foreground">📝 Bugun</p>
+                    <p className="text-lg font-bold text-emerald-500">{todaySolved}/{dailyGoal}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-xl bg-background/60">
+                    <p className="text-xs text-muted-foreground">🔥 Streak</p>
+                    <p className="text-lg font-bold text-orange-500">{profile?.current_streak || 0}</p>
                   </div>
                 </div>
               </Card>

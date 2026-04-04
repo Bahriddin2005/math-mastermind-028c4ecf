@@ -82,10 +82,20 @@ export const GuestDashboard = () => {
         setTestimonials(testimonialsData);
       }
 
-      const { data: statsData } = await supabase.rpc('get_platform_stats');
+      const { data: statsData, error: statsError } = await supabase.rpc('get_platform_stats');
       
-      if (statsData && statsData.length > 0) {
-        setStats(statsData[0]);
+      if (!statsError && statsData) {
+        const row = Array.isArray(statsData) ? statsData[0] : statsData;
+        if (row) {
+          setStats(row);
+        }
+      } else if (statsError) {
+        console.warn('get_platform_stats fallback in GuestDashboard:', statsError.message);
+        // Fallback: basic count from profiles
+        const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+        if (count) {
+          setStats({ total_users: count, total_problems_solved: 0, accuracy_rate: 0, d7_retention: 0, weekly_growth: 0 });
+        }
       }
 
       setLoading(false);

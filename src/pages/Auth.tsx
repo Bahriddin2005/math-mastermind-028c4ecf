@@ -81,13 +81,21 @@ const Auth = () => {
     }
 
     const fetchStats = async () => {
-      const { data } = await supabase.rpc('get_platform_stats') as { data: any[] | null };
-      if (data && data.length > 0) {
+      const { data, error } = await supabase.rpc('get_platform_stats') as { data: any[] | null; error: any };
+      if (!error && data && data.length > 0) {
         const s = data[0];
         setStats([
           { value: formatStatNumber(s.total_users || 0), label: "Foydalanuvchilar" },
           { value: formatStatNumber(s.total_problems_solved || 0), label: "Yechilgan misollar" },
           { value: formatStatNumber(s.total_lessons || 0), label: "Video darslar" },
+        ]);
+      } else if (error) {
+        console.warn('Auth stats fallback:', error.message);
+        const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+        setStats([
+          { value: formatStatNumber(count || 0), label: "Foydalanuvchilar" },
+          { value: "1000+", label: "Yechilgan misollar" },
+          { value: "10+", label: "Video darslar" },
         ]);
       }
     };
