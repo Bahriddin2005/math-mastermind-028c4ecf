@@ -24,7 +24,6 @@ import {
   type DifficultyLevel,
   chooseForFiveFormula,
   chooseForTenFormula,
-  chooseForMixFormula,
 } from '@/hooks/useAdaptiveDifficulty';
 
 // ============= TYPES =============
@@ -476,10 +475,20 @@ function classifyFiveStageStep(
 ): string | null {
   if (operation === 'add') {
     if (isSmall5Add(currentDigit, operandDigit)) return '5';
+    // 5-lik modeda mix formulani aniq chiqarib tashlash
+    if (isMixAdd(currentDigit, operandDigit)) return null;
     if (isFormulasizAdd(currentDigit, operandDigit)) return 'formulasiz';
     return null;
   }
   if (isSmall5Sub(currentDigit, operandDigit)) return '5';
+  // Mix sub uchun: formulasiz jadvallar mix bilan overlap qilmaydi,
+  // lekin xavfsizlik uchun operand 6-9 va digit 1-4 ni tekshiramiz
+  if (operandDigit >= 6 && operandDigit <= 9 && currentDigit >= 1 && currentDigit <= 4) return null
+  }
+  if (isSmall5Sub(currentDigit, operandDigit)) return '5';
+  // Mix sub uchun: formulasiz jadvallar mix bilan overlap qilmaydi,
+  // lekin xavfsizlik uchun operand 6-9 va digit 1-4 ni tekshiramiz
+  if (operandDigit >= 6 && operandDigit <= 9 && currentDigit >= 1 && currentDigit <= 4) return null;
   if (isFormulasizSub(currentDigit, operandDigit)) return 'formulasiz';
   return null;
 }
@@ -543,44 +552,41 @@ function smartInitialForFive(operation: OperationType, mainFormula: number, digi
   return digitsToNumber(digits);
 }
 
-function generateFiveFormula(
-  operation: OperationType,
-  mainFormula: number,
-  digitsCount: number,
-  termsCount: number,
-  maxAttempts: number = 500,
+function generateFiveFor1000,
   minPrimarySteps: number = 1,
   difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
-  // Pure add/sub uchun max terms cheklangan (digit space tez to'ladi)
-  // 5+ hadli misollar aralash add/sub kerak
-  const needMixed = termsCount > 4;
+  // 5-lik formulada DOIMO oscillatsiya kerak:
+  // +N (primary) → digit yuqoriga → -formulasiz → digit pastga → +N (primary) ...
+  // Shuning uchun har doim aralash add/sub ishlatamiz
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     const firstNumber = smartInitialForFive(operation, mainFormula, digitsCount);
-    const numbers = [firstNumber];
+    const numbers: number[] = [firstNumber];
     let currentValue = firstNumber;
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      // Ko'p hadli misolda oscillatsiya qilish
-      let curOp = operation;
-      if (needMixed) {
-        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
-        if (operation === 'add') {
-          curOp = avg >= 6 ? 'sub' : 'add';
-        } else {
-          curOp = avg <= 3 ? 'add' : 'sub';
-        }
+      const currentDigits = numberToDigits(currentValue, digitsCount);
+      const avg = currentDigits.reduce((a, b) => a + b, 0) / digitsCount;
+
+      // Aqlli steering: primaryga qarab yo'naltirish
+      // +N primary uchun digit (5-N)..4 kerak → digit >= 5 bo'lsa sub, < 5 bo'lsa add
+      // -N primary uchun digit 5..(4+N) kerak → digit <= 4 bo'lsa add, > 4 bo'lsa sub
+      let curOp: OperationType;
+      if (operation === 'add') {
+        curOp = avg >= 5 ? 'sub' : 'add';
+      } else {
+        curOp = avg <= 4 ? 'add' : 'sub';
       }
 
       let built = false;
-      for (let _retry = 0; _retry < 15; _retry++) {
-        const currentDigits = numberToDigits(currentValue, digitsCount);
+      for (let _retry = 0; _retry < 30; _retry++) {
+        const curDigits = numberToDigits(currentValue, digitsCount);
         const termDigits: number[] = [];
         let termValid = true;
 
-        for (const digit of currentDigits) {
+        for (const digit of curDigits) {
           const choice = chooseFiveFormulaDigit(digit, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
           termDigits.push(choice.operandDigit);
@@ -590,15 +596,15 @@ function generateFiveFormula(
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
 
-        // Ketma-ket bir xil ko'rinadigan son bo'lmasin
-        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        // Signed term: + yoki - belgisi bilan
+        const signedVal = curOp === 'add' ? term : -term;
         const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
         if (prevAbs !== null && term === prevAbs) continue;
 
         const nextValue = curOp === 'add' ? currentValue + term : currentValue - term;
         if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
 
-        numbers.push(newVal);
+        numbers.push(signedVal);
         currentValue = nextValue;
         built = true;
         break;
@@ -609,36 +615,27 @@ function generateFiveFormula(
 
     if (!ok || numbers.length !== termsCount) continue;
 
-    // Mixed mode uchun verification skip (signed terms bor)
-    if (needMixed) {
-      // Verify manually
-      let val = numbers[0];
-      let valid = true;
-      let primaryCount = 0;
-      for (let i = 1; i < numbers.length; i++) {
-        const signed = numbers[i];
-        const term = Math.abs(signed);
-        const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
-        const cd = numberToDigits(val, digitsCount);
-        const td = numberToDigits(term, digitsCount);
-        for (let p = 0; p < digitsCount; p++) {
-          const cl = classifyFiveStageStep(termOp, cd[p], td[p]);
-          if (cl === null) { valid = false; break; }
-          if (cl === '5' && td[p] === mainFormula) primaryCount++;
-        }
-        if (!valid) break;
-        val = termOp === 'add' ? val + term : val - term;
-        if (val < 0) { valid = false; break; }
+    // Verifikatsiya: barcha qadamlar 5-lik yoki formulasiz, yetarli primary
+    let val = numbers[0];
+    let valid = true;
+    let primaryCount = 0;
+    for (let i = 1; i < numbers.length; i++) {
+      const signed = numbers[i];
+      const term = Math.abs(signed);
+      const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+      const cd = numberToDigits(val, digitsCount);
+      const td = numberToDigits(term, digitsCount);
+      for (let p = 0; p < digitsCount; p++) {
+        const cl = classifyFiveStageStep(termOp, cd[p], td[p]);
+        if (cl === null) { valid = false; break; }
+        if (cl === '5' && td[p] === mainFormula) primaryCount++;
       }
-      if (!valid || primaryCount < minPrimarySteps) continue;
-      return { numbers, answer: val, ok: true };
+      if (!valid) break;
+      val = termOp === 'add' ? val + term : val - term;
+      if (val < 0) { valid = false; break; }
     }
-
-    const verified = verifyFiveFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-    if (!verified.ok) continue;
-
-    return { numbers, answer: verified.answer!, ok: true };
-  }
+    if (!valid || primaryCount < minPrimarySteps) continue;
+    return { numbers, answer: val
   return null;
 }
 
@@ -921,16 +918,17 @@ function classifyMixStageStep(
   mainFormula: number
 ): string | null {
   if (operation === 'add') {
+    // Mix primary: asosiy formula operandi
     if (operandDigit === mainFormula && isMixAdd(currentDigit, operandDigit)) return 'mix_primary';
-    if (isPrimaryTenAdd(currentDigit, operandDigit, upperNonzero)) return '10_fallback';
-    if (isSmall5Add(currentDigit, operandDigit)) return '5_fallback';
+    // Mix secondary: boshqa mix operandlar (6-9)
+    if (operandDigit !== mainFormula && isMixAdd(currentDigit, operandDigit)) return 'mix_secondary';
+    // Faqat formulasiz (5-lik va 10-lik chiqarib tashlandi)
     if (isFormulasizAdd(currentDigit, operandDigit)) return 'formulasiz_fallback';
     return null;
   }
 
   if (operandDigit === mainFormula && isMixSub(currentDigit, operandDigit, upperNonzero)) return 'mix_primary';
-  if (isPrimaryTenSub(currentDigit, operandDigit, upperNonzero)) return '10_fallback';
-  if (isSmall5Sub(currentDigit, operandDigit)) return '5_fallback';
+  if (operandDigit !== mainFormula && isMixSub(currentDigit, operandDigit, upperNonzero)) return 'mix_secondary';
   if (isFormulasizSub(currentDigit, operandDigit)) return 'formulasiz_fallback';
   return null;
 }
@@ -940,46 +938,39 @@ function chooseMixFormulaDigit(
   pos: number,
   operation: OperationType,
   mainFormula: number,
-  difficulty: DifficultyLevel = 'medium'
+  _difficulty: DifficultyLevel = 'medium'
 ): { operandDigit: number; formula: string; isPrimary: boolean } | null {
   const currentDigit = state[pos];
   const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
 
   const primary: number[] = [];
-  const fallback10: number[] = [];
-  const fallback5: number[] = [];
+  const secondary: number[] = [];
   const fallbackFormulasiz: number[] = [];
 
   for (let d = 1; d <= 9; d++) {
     const classified = classifyMixStageStep(operation, currentDigit, d, upperNonzero, mainFormula);
     if (classified === null) continue;
     if (classified === 'mix_primary') primary.push(d);
-    else if (classified === '10_fallback') fallback10.push(d);
-    else if (classified === '5_fallback') fallback5.push(d);
+    else if (classified === 'mix_secondary') secondary.push(d);
     else if (classified === 'formulasiz_fallback') fallbackFormulasiz.push(d);
   }
 
-  // 10-BLOK: Weighted choice — difficulty ga qarab primary/fallback nisbati
-  const weighted = chooseForMixFormula(primary, fallback10, fallback5, fallbackFormulasiz, difficulty);
-  if (weighted) {
-    const isPrimary = weighted.formula_group === 'primary';
-    let formula = 'formulasiz_fallback';
-    if (isPrimary) formula = 'mix_primary';
-    else if (weighted.formula_group === 'fallback_10') formula = '10_fallback';
-    else if (weighted.formula_group === 'fallback_5') formula = '5_fallback';
-    return { operandDigit: weighted.operand_digit, formula, isPrimary };
+  // Mix primary eng yuqori ustuvorlik
+  if (primary.length > 0) {
+    const d = primary[Math.floor(Math.random() * primary.length)];
+    return { operandDigit: d, formula: 'mix_primary', isPrimary: true };
   }
-
-  // Fallback: oddiy random
-  const allOptions = [
-    ...primary.map(d => ({ d, formula: 'mix_primary', isPrimary: true })),
-    ...fallback10.map(d => ({ d, formula: '10_fallback', isPrimary: false })),
-    ...fallback5.map(d => ({ d, formula: '5_fallback', isPrimary: false })),
-    ...fallbackFormulasiz.map(d => ({ d, formula: 'formulasiz_fallback', isPrimary: false })),
-  ];
-  if (allOptions.length === 0) return null;
-  const pick = allOptions[Math.floor(Math.random() * allOptions.length)];
-  return { operandDigit: pick.d, formula: pick.formula, isPrimary: pick.isPrimary };
+  // Mix secondary (boshqa mix operandlar 6-9)
+  if (secondary.length > 0) {
+    const d = secondary[Math.floor(Math.random() * secondary.length)];
+    return { operandDigit: d, formula: 'mix_secondary', isPrimary: false };
+  }
+  // Formulasiz faqat (5-lik va 10-lik YO'Q)
+  if (fallbackFormulasiz.length > 0) {
+    const d = fallbackFormulasiz[Math.floor(Math.random() * fallbackFormulasiz.length)];
+    return { operandDigit: d, formula: 'formulasiz_fallback', isPrimary: false };
+  }
+  return null;
 }
 
 function generateMixFormula(
@@ -991,31 +982,48 @@ function generateMixFormula(
   minPrimarySteps: number = 1,
   difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
-  const needMixed = termsCount > 4;
+  // Mix formulada DOIMO oscillatsiya kerak:
+  // mix ADD (digit 5+) → digit 1-4 → mix SUB (digit 1-4, upper>0) → digit 5+ → ...
+  // Carry/borrow uchun stateWidth = digitsCount + 1
+  const stateWidth = digitsCount + 1;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
-    const firstNumber = randomNonZeroNumber(digitsCount);
-    const numbers = [firstNumber];
+    // Smart initial: DOIMO digit 5+ bilan boshlaymiz
+    // Mix ADD: digit 5+ da ishlaydi → carry hosil qiladi → upper > 0
+    // Mix SUB: digit 1-4, upper > 0 kerak → ADD dan keyin tabiiy hosil bo'ladi
+    const firstDigits: number[] = [];
+    for (let i = 0; i < digitsCount; i++) {
+      const low = 5;
+      const high = Math.min(8, 14 - mainFormula);
+      firstDigits.push(low + Math.floor(Math.random() * (high - low + 1)));
+    }
+    const firstNumber = digitsToNumber(firstDigits);
+    if (firstNumber <= 0 || hasZeroInDisplayed(firstNumber, digitsCount)) continue;
+
+    const numbers: number[] = [firstNumber];
     let currentValue = firstNumber;
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      let curOp = operation;
-      if (needMixed) {
-        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
-        curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
-      }
+      const currentDigits = numberToDigits(currentValue, stateWidth);
+      // Asosiy digitlar (carry pozitsiyasidan tashqari)
+      const mainDigits = currentDigits.slice(1);
+      const avg = mainDigits.reduce((a, b) => a + b, 0) / digitsCount;
+
+      // Oscillatsiya: digit 5+ → ADD (mix add ishlaydi), digit <5 → SUB (mix sub ishlaydi)
+      const curOp: OperationType = avg >= 5 ? 'add' : 'sub';
 
       let built = false;
-      for (let _retry = 0; _retry < 50; _retry++) {
-        const state = numberToDigits(currentValue, digitsCount);
+      for (let _retry = 0; _retry < 30; _retry++) {
+        const state = numberToDigits(currentValue, stateWidth);
         const termDigits = new Array(digitsCount).fill(0);
         let termValid = true;
 
-        for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        // pos: stateWidth-1 dan 1 gacha (0-pozitsiya carry/borrow uchun)
+        for (let pos = stateWidth - 1; pos >= 1; pos--) {
           const choice = chooseMixFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
-          termDigits[pos] = choice.operandDigit;
+          termDigits[pos - 1] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
         }
         if (!termValid) continue;
@@ -1025,14 +1033,13 @@ function generateMixFormula(
         if (state[0] >= 10 || state[0] < 0) continue;
 
         const nextValue = digitsToNumber(state);
-        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+        if (nextValue < 0 || String(nextValue).length > stateWidth) continue;
 
-        // Ketma-ket bir xil son bo'lmasin
-        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        const signedVal = curOp === 'add' ? term : -term;
         const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
         if (prevAbs !== null && term === prevAbs) continue;
 
-        numbers.push(newVal);
+        numbers.push(signedVal);
         currentValue = nextValue;
         built = true;
         break;
@@ -1043,26 +1050,20 @@ function generateMixFormula(
 
     if (!ok || numbers.length !== termsCount) continue;
 
-    if (!needMixed) {
-      const verified = verifyMixFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-      if (!verified.ok) continue;
-      return { numbers, answer: verified.answer!, ok: true };
-    }
-
-    // Mixed verification
+    // Verifikatsiya
     let val = numbers[0], valid = true, pCount = 0;
-    const simSt = numberToDigits(numbers[0], digitsCount);
+    const simSt = numberToDigits(numbers[0], stateWidth);
     for (let i = 1; i < numbers.length; i++) {
       const signed = numbers[i];
       const term = Math.abs(signed);
       const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
       const td = numberToDigits(term, digitsCount);
-      for (let pos = digitsCount - 1; pos >= 0; pos--) {
-        const un = pos > 0 ? simSt[pos - 1] > 0 : false;
-        const cl = classifyMixStageStep(termOp, simSt[pos], td[pos], un, mainFormula);
+      for (let pos = stateWidth - 1; pos >= 1; pos--) {
+        const un = simSt[pos - 1] > 0;
+        const cl = classifyMixStageStep(termOp, simSt[pos], td[pos - 1], un, mainFormula);
         if (cl === null) { valid = false; break; }
         if (cl === 'mix_primary') pCount++;
-        applyDigit(simSt, pos, td[pos], termOp);
+        applyDigit(simSt, pos, td[pos - 1], termOp);
       }
       if (!valid) break;
       val = digitsToNumber(simSt);
@@ -1076,44 +1077,50 @@ function generateMixFormula(
 
 function verifyMixFormula(
   numbers: number[],
-  operation: OperationType,
+  _operation: OperationType,
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
   minPrimarySteps: number = 1
 ): { ok: boolean; answer?: number; primarySteps?: number; error?: string } {
   if (numbers.length !== termsCount) return { ok: false, error: 'terms_count' };
+  const stateWidth = digitsCount + 1;
 
   for (let idx = 0; idx < numbers.length; idx++) {
-    if (hasZeroInDisplayed(numbers[idx], digitsCount)) return { ok: false, error: 'zero_digit' };
+    if (hasZeroInDisplayed(Math.abs(numbers[idx]), digitsCount)) return { ok: false, error: 'zero_digit' };
   }
 
-  const state = numberToDigits(numbers[0], digitsCount);
+  const state = numberToDigits(numbers[0], stateWidth);
   let primarySteps = 0;
 
   for (let termIndex = 1; termIndex < numbers.length; termIndex++) {
-    const termDigits = numberToDigits(numbers[termIndex], digitsCount);
+    const signed = numbers[termIndex];
+    const term = Math.abs(signed);
+    const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+    const termDigits = numberToDigits(term, digitsCount);
 
-    for (let pos = digitsCount - 1; pos >= 0; pos--) {
+    for (let pos = stateWidth - 1; pos >= 1; pos--) {
       const currentDigit = state[pos];
-      const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
-      const operandDigit = termDigits[pos];
+      const upperNonzero = state[pos - 1] > 0;
+      const operandDigit = termDigits[pos - 1];
 
-      const classified = classifyMixStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula);
+      const classified = classifyMixStageStep(termOp, currentDigit, operandDigit, upperNonzero, mainFormula);
       if (classified === null) return { ok: false, error: 'invalid_step' };
 
       if (classified === 'mix_primary') primarySteps++;
-      applyDigit(state, pos, operandDigit, operation);
+      applyDigit(state, pos, operandDigit, termOp);
     }
 
     const currentValue = digitsToNumber(state);
     if (currentValue < 0) return { ok: false, error: 'negative_result' };
-    if (String(currentValue).length > digitsCount) return { ok: false, error: 'overflow' };
+    if (String(currentValue).length > stateWidth) return { ok: false, error: 'overflow' };
   }
 
   const answer = digitsToNumber(state);
-  const plainAnswer = plainApply(numbers, operation);
-  if (plainAnswer !== answer) return { ok: false, error: 'answer_mismatch' };
+  // Signed termlar bilan tekshirish
+  let checkVal = numbers[0];
+  for (let i = 1; i < numbers.length; i++) { checkVal += numbers[i]; }
+  if (checkVal !== answer) return { ok: false, error: 'answer_mismatch' };
   if (primarySteps < minPrimarySteps) return { ok: false, error: 'not_enough_primary' };
 
   return { ok: true, answer, primarySteps };
@@ -1162,12 +1169,19 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
 
   // Re-simulate to build step logs
   if (stage !== 'formulasiz') {
-    // 10-lik formulada carry uchun 1 qo'shimcha pozitsiya kerak
-    const headroom = stage === '10' ? 1 : 0;
+    // 10-lik va mix formulada carry uchun 1 qo'shimcha pozitsiya kerak
+    const headroom = (stage === '10' || stage === 'mix') ? 1 : 0;
     const simStateWidth = digitsCount + headroom;
     const simState = numberToDigits(result.numbers[0], simStateWidth);
+    // Signed termlar bor-yo'qligini aniqlash (5-lik, 10-lik, mix mixed modeda)
+    const hasMixedSigns = result.numbers.slice(1).some(n => n < 0);
     for (let termIdx = 1; termIdx < result.numbers.length; termIdx++) {
-      const termDigits = numberToDigits(result.numbers[termIdx], digitsCount);
+      const rawTerm = result.numbers[termIdx];
+      // Signed term: sign = operation, unsigned: config operation
+      const termOp: OperationType = hasMixedSigns
+        ? (rawTerm >= 0 ? 'add' : 'sub')
+        : operation;
+      const termDigits = numberToDigits(Math.abs(rawTerm), digitsCount);
       for (let pos = simStateWidth - 1; pos >= headroom; pos--) {
         const tdIdx = pos - headroom;
         const currentDigit = simState[pos];
@@ -1179,24 +1193,24 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
         let isPrimary = false;
 
         if (stage === '5') {
-          const cl = classifyFiveStageStep(operation, currentDigit, operandDigit);
+          const cl = classifyFiveStageStep(termOp, currentDigit, operandDigit);
           formula = cl || 'unknown';
           isPrimary = cl === '5' && operandDigit === mainFormula;
         } else if (stage === '10') {
-          const cl = classifyTenStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          const cl = classifyTenStageStep(termOp, currentDigit, operandDigit, upperNonzero, mainFormula!);
           formula = cl || 'unknown';
           isPrimary = cl === '10_primary';
         } else {
-          const cl = classifyMixStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula!);
+          const cl = classifyMixStageStep(termOp, currentDigit, operandDigit, upperNonzero, mainFormula!);
           formula = cl || 'unknown';
           isPrimary = cl === 'mix_primary';
         }
 
         if (isPrimary) primarySteps++;
-        const genericCl = classifyStepGeneric(operation, currentDigit, operandDigit, upperNonzero);
+        const genericCl = classifyStepGeneric(termOp, currentDigit, operandDigit, upperNonzero);
         formulaStats[genericCl] = (formulaStats[genericCl] || 0) + 1;
 
-        applyDigit(simState, pos, operandDigit, operation);
+        applyDigit(simState, pos, operandDigit, termOp);
 
         stepLogs.push({
           termIndex: termIdx,
@@ -1204,7 +1218,7 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
           statePos: pos,
           beforeDigit: currentDigit,
           operandDigit,
-          operation,
+          operation: termOp,
           classified: genericCl,
           isPrimary,
           upperBefore,
@@ -1233,18 +1247,32 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
     terms: result.numbers,
     answer,
     stepLogs,
-    verification,
-    formatted: formatVerticalExample(result.numbers, answer, operation),
-  };
-}
-
-function formatVerticalExample(numbers: number[], answer: number, operation: OperationType): string {
-  const width = Math.max(String(Math.abs(answer)).length, ...numbers.map(t => String(t).length));
+    veriabsNumbers = numbers.map(n => Math.abs(n));
+  const width = Math.max(String(Math.abs(answer)).length, ...absNumbers.map(t => String(t).length)) + 1;
+  const hasMixedSigns = numbers.slice(1).some(n => n < 0);
   const lines: string[] = [];
   lines.push(String(numbers[0]).padStart(width));
-  const sign = operation === 'add' ? '+' : '-';
   for (let i = 1; i < numbers.length; i++) {
-    lines.push(sign + String(numbers[i]).padStart(width - 1));
+    let sign: string;
+    if (hasMixedSigns) {
+      sign = numbers[i] >= 0 ? '+' : '-';
+    } else {
+      sign = operation === 'add' ? '+' : '-';
+    }
+    lines.push(sign + String(Math.abs(numbers[i]) number[], answer: number, operation: OperationType): string {
+  const absNumbers = numbers.map(n => Math.abs(n));
+  const width = Math.max(String(Math.abs(answer)).length, ...absNumbers.map(t => String(t).length)) + 1;
+  const hasMixedSigns = numbers.slice(1).some(n => n < 0);
+  const lines: string[] = [];
+  lines.push(String(numbers[0]).padStart(width));
+  for (let i = 1; i < numbers.length; i++) {
+    let sign: string;
+    if (hasMixedSigns) {
+      sign = numbers[i] >= 0 ? '+' : '-';
+    } else {
+      sign = operation === 'add' ? '+' : '-';
+    }
+    lines.push(sign + String(Math.abs(numbers[i])).padStart(width - 1));
   }
   lines.push('-'.repeat(width));
   lines.push(String(answer).padStart(width));
