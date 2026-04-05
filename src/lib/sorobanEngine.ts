@@ -483,11 +483,6 @@ function classifyFiveStageStep(
   if (isSmall5Sub(currentDigit, operandDigit)) return '5';
   // Mix sub uchun: formulasiz jadvallar mix bilan overlap qilmaydi,
   // lekin xavfsizlik uchun operand 6-9 va digit 1-4 ni tekshiramiz
-  if (operandDigit >= 6 && operandDigit <= 9 && currentDigit >= 1 && currentDigit <= 4) return null
-  }
-  if (isSmall5Sub(currentDigit, operandDigit)) return '5';
-  // Mix sub uchun: formulasiz jadvallar mix bilan overlap qilmaydi,
-  // lekin xavfsizlik uchun operand 6-9 va digit 1-4 ni tekshiramiz
   if (operandDigit >= 6 && operandDigit <= 9 && currentDigit >= 1 && currentDigit <= 4) return null;
   if (isFormulasizSub(currentDigit, operandDigit)) return 'formulasiz';
   return null;
@@ -552,7 +547,12 @@ function smartInitialForFive(operation: OperationType, mainFormula: number, digi
   return digitsToNumber(digits);
 }
 
-function generateFiveFor1000,
+function generateFiveFormula(
+  operation: OperationType,
+  mainFormula: number,
+  digitsCount: number,
+  termsCount: number,
+  maxAttempts: number = 1000,
   minPrimarySteps: number = 1,
   difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
@@ -635,7 +635,8 @@ function generateFiveFor1000,
       if (val < 0) { valid = false; break; }
     }
     if (!valid || primaryCount < minPrimarySteps) continue;
-    return { numbers, answer: val
+    return { numbers, answer: val, ok: true };
+  }
   return null;
 }
 
@@ -765,22 +766,27 @@ function generateTenFormula(
   minPrimarySteps: number = 1,
   difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
-  const needMixed = termsCount > 4;
-  // 10-lik formulada carry/borrow bo'lgani uchun natija digitsCount + 1 xonalik bo'lishi mumkin
+  // 10-lik formulada DOIMO oscillatsiya kerak (5-lik va mix kabi)
+  // carry/borrow uchun stateWidth = digitsCount + 1
   const stateWidth = digitsCount + 1;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     const firstNumber = randomNonZeroNumber(digitsCount);
-    const numbers = [firstNumber];
-    const signs: (1 | -1)[] = [];
+    const numbers: number[] = [firstNumber];
     let currentValue = firstNumber;
     let ok = true;
 
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
-      let curOp = operation;
-      if (needMixed) {
-        const avg = numberToDigits(currentValue, stateWidth).reduce((a, b) => a + b, 0) / stateWidth;
-        curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
+      const currentDigits = numberToDigits(currentValue, stateWidth);
+      const mainDigits = currentDigits.slice(1);
+      const avg = mainDigits.reduce((a, b) => a + b, 0) / digitsCount;
+
+      // Oscillatsiya: 10-lik ADD→digit 9 ga yaqinlashadi→SUB kerak, SUB→digit 0 ga→ADD kerak
+      let curOp: OperationType;
+      if (operation === 'add') {
+        curOp = avg >= 6 ? 'sub' : 'add';
+      } else {
+        curOp = avg <= 3 ? 'add' : 'sub';
       }
 
       let built = false;
@@ -789,7 +795,6 @@ function generateTenFormula(
         const termDigits = new Array(digitsCount).fill(0);
         let termValid = true;
 
-        // pos: stateWidth-1 dan 1 gacha (0-pozitsiya carry uchun)
         for (let pos = stateWidth - 1; pos >= 1; pos--) {
           const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
@@ -800,24 +805,16 @@ function generateTenFormula(
 
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
-        // Carry pozitsiyasi overflow/underflow tekshiruvi
         if (state[0] >= 10 || state[0] < 0) continue;
 
         const nextValue = digitsToNumber(state);
-        // Natija digitsCount + 1 xonalik bo'lishi mumkin (carry tufayli)
         if (nextValue < 0 || String(nextValue).length > stateWidth) continue;
 
-        // Ketma-ket bir xil son bo'lmasin
-        const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
+        const signedVal = curOp === 'add' ? term : -term;
         const prevAbs = numbers.length > 1 ? Math.abs(numbers[numbers.length - 1]) : null;
         if (prevAbs !== null && term === prevAbs) continue;
 
-        if (needMixed) {
-          numbers.push(newVal);
-          signs.push(curOp === 'add' ? 1 : -1);
-        } else {
-          numbers.push(term);
-        }
+        numbers.push(signedVal);
         currentValue = nextValue;
         built = true;
         break;
@@ -828,13 +825,7 @@ function generateTenFormula(
 
     if (!ok || numbers.length !== termsCount) continue;
 
-    if (!needMixed) {
-      const verified = verifyTenFormula(numbers, operation, mainFormula, digitsCount, termsCount, minPrimarySteps);
-      if (!verified.ok) continue;
-      return { numbers, answer: verified.answer!, ok: true };
-    }
-
-    // Mixed verification
+    // Verifikatsiya
     let val = numbers[0], valid = true, pCount = 0;
     const simSt = numberToDigits(numbers[0], stateWidth);
     for (let i = 1; i < numbers.length; i++) {
@@ -861,7 +852,7 @@ function generateTenFormula(
 
 function verifyTenFormula(
   numbers: number[],
-  operation: OperationType,
+  _operation: OperationType,
   mainFormula: number,
   digitsCount: number,
   termsCount: number,
@@ -871,36 +862,40 @@ function verifyTenFormula(
   const stateWidth = digitsCount + 1;
 
   for (let idx = 0; idx < numbers.length; idx++) {
-    if (hasZeroInDisplayed(numbers[idx], digitsCount)) return { ok: false, error: 'zero_digit' };
+    if (hasZeroInDisplayed(Math.abs(numbers[idx]), digitsCount)) return { ok: false, error: 'zero_digit' };
   }
 
   const state = numberToDigits(numbers[0], stateWidth);
   let primarySteps = 0;
 
   for (let termIndex = 1; termIndex < numbers.length; termIndex++) {
-    const termDigits = numberToDigits(numbers[termIndex], digitsCount);
+    const signed = numbers[termIndex];
+    const term = Math.abs(signed);
+    const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
+    const termDigits = numberToDigits(term, digitsCount);
 
     for (let pos = stateWidth - 1; pos >= 1; pos--) {
       const currentDigit = state[pos];
       const upperNonzero = state[pos - 1] > 0;
       const operandDigit = termDigits[pos - 1];
 
-      const classified = classifyTenStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula);
+      const classified = classifyTenStageStep(termOp, currentDigit, operandDigit, upperNonzero, mainFormula);
       if (classified === null) return { ok: false, error: 'invalid_step' };
 
       if (classified === '10_primary') primarySteps++;
-      applyDigit(state, pos, operandDigit, operation);
+      applyDigit(state, pos, operandDigit, termOp);
     }
 
     const currentValue = digitsToNumber(state);
     if (currentValue < 0) return { ok: false, error: 'negative_result' };
-    // 10-lik formulada natija digitsCount + 1 xonalik bo'lishi mumkin
     if (String(currentValue).length > stateWidth) return { ok: false, error: 'overflow' };
   }
 
   const answer = digitsToNumber(state);
-  const plainAnswer = plainApply(numbers, operation);
-  if (plainAnswer !== answer) return { ok: false, error: 'answer_mismatch' };
+  // Signed termlar bilan tekshirish
+  let checkVal = numbers[0];
+  for (let i = 1; i < numbers.length; i++) { checkVal += numbers[i]; }
+  if (checkVal !== answer) return { ok: false, error: 'answer_mismatch' };
   if (primarySteps < minPrimarySteps) return { ok: false, error: 'not_enough_primary' };
 
   return { ok: true, answer, primarySteps };
@@ -1247,19 +1242,12 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
     terms: result.numbers,
     answer,
     stepLogs,
-    veriabsNumbers = numbers.map(n => Math.abs(n));
-  const width = Math.max(String(Math.abs(answer)).length, ...absNumbers.map(t => String(t).length)) + 1;
-  const hasMixedSigns = numbers.slice(1).some(n => n < 0);
-  const lines: string[] = [];
-  lines.push(String(numbers[0]).padStart(width));
-  for (let i = 1; i < numbers.length; i++) {
-    let sign: string;
-    if (hasMixedSigns) {
-      sign = numbers[i] >= 0 ? '+' : '-';
-    } else {
-      sign = operation === 'add' ? '+' : '-';
-    }
-    lines.push(sign + String(Math.abs(numbers[i]) number[], answer: number, operation: OperationType): string {
+    verification,
+    formatted: formatVerticalExample(result.numbers, answer, operation),
+  };
+}
+
+function formatVerticalExample(numbers: number[], answer: number, operation: OperationType): string {
   const absNumbers = numbers.map(n => Math.abs(n));
   const width = Math.max(String(Math.abs(answer)).length, ...absNumbers.map(t => String(t).length)) + 1;
   const hasMixedSigns = numbers.slice(1).some(n => n < 0);
