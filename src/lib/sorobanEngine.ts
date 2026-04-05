@@ -699,6 +699,8 @@ function classifyTenStageStep(
     if (operandDigit === mainFormula && isPrimaryTenAdd(currentDigit, operandDigit, upperNonzero)) {
       return '10_primary';
     }
+    // Mix formulani aniq chiqarib tashlash — 10-lik modeda mix bo'lmasligi kerak
+    if (isMixAdd(currentDigit, operandDigit)) return null;
     if (isSmall5Add(currentDigit, operandDigit)) return '5_fallback';
     if (isFormulasizAdd(currentDigit, operandDigit)) return 'formulasiz_fallback';
     return null;
@@ -707,6 +709,8 @@ function classifyTenStageStep(
   if (operandDigit === mainFormula && isPrimaryTenSub(currentDigit, operandDigit, upperNonzero)) {
     return '10_primary';
   }
+  // Mix formulani aniq chiqarib tashlash — 10-lik modeda mix bo'lmasligi kerak
+  if (isMixSub(currentDigit, operandDigit, upperNonzero)) return null;
   if (isSmall5Sub(currentDigit, operandDigit)) return '5_fallback';
   if (isFormulasizSub(currentDigit, operandDigit)) return 'formulasiz_fallback';
   return null;
@@ -765,6 +769,8 @@ function generateTenFormula(
   difficulty: DifficultyLevel = 'medium'
 ): FormulasizResult | null {
   const needMixed = termsCount > 4;
+  // 10-lik formulada carry/borrow bo'lgani uchun natija digitsCount + 1 xonalik bo'lishi mumkin
+  const stateWidth = digitsCount + 1;
 
   for (let _attempt = 0; _attempt < maxAttempts; _attempt++) {
     const firstNumber = randomNonZeroNumber(digitsCount);
@@ -776,30 +782,33 @@ function generateTenFormula(
     for (let termIndex = 1; termIndex < termsCount; termIndex++) {
       let curOp = operation;
       if (needMixed) {
-        const avg = numberToDigits(currentValue, digitsCount).reduce((a, b) => a + b, 0) / digitsCount;
+        const avg = numberToDigits(currentValue, stateWidth).reduce((a, b) => a + b, 0) / stateWidth;
         curOp = (operation === 'add' ? (avg >= 6 ? 'sub' : 'add') : (avg <= 3 ? 'add' : 'sub'));
       }
 
       let built = false;
       for (let _retry = 0; _retry < 50; _retry++) {
-        const state = numberToDigits(currentValue, digitsCount);
+        const state = numberToDigits(currentValue, stateWidth);
         const termDigits = new Array(digitsCount).fill(0);
         let termValid = true;
 
-        for (let pos = digitsCount - 1; pos >= 0; pos--) {
+        // pos: stateWidth-1 dan 1 gacha (0-pozitsiya carry uchun)
+        for (let pos = stateWidth - 1; pos >= 1; pos--) {
           const choice = chooseTenFormulaDigit(state, pos, curOp, mainFormula, difficulty);
           if (!choice) { termValid = false; break; }
-          termDigits[pos] = choice.operandDigit;
+          termDigits[pos - 1] = choice.operandDigit;
           applyDigit(state, pos, choice.operandDigit, curOp);
         }
         if (!termValid) continue;
 
         const term = digitsToNumber(termDigits);
         if (hasZeroInDisplayed(term, digitsCount)) continue;
+        // Carry pozitsiyasi overflow/underflow tekshiruvi
         if (state[0] >= 10 || state[0] < 0) continue;
 
         const nextValue = digitsToNumber(state);
-        if (nextValue < 0 || String(nextValue).length > digitsCount) continue;
+        // Natija digitsCount + 1 xonalik bo'lishi mumkin (carry tufayli)
+        if (nextValue < 0 || String(nextValue).length > stateWidth) continue;
 
         // Ketma-ket bir xil son bo'lmasin
         const newVal = needMixed ? (curOp === 'add' ? term : -term) : term;
@@ -830,18 +839,18 @@ function generateTenFormula(
 
     // Mixed verification
     let val = numbers[0], valid = true, pCount = 0;
-    const simSt = numberToDigits(numbers[0], digitsCount);
+    const simSt = numberToDigits(numbers[0], stateWidth);
     for (let i = 1; i < numbers.length; i++) {
       const signed = numbers[i];
       const term = Math.abs(signed);
       const termOp: OperationType = signed >= 0 ? 'add' : 'sub';
       const td = numberToDigits(term, digitsCount);
-      for (let pos = digitsCount - 1; pos >= 0; pos--) {
-        const un = pos > 0 ? simSt[pos - 1] > 0 : false;
-        const cl = classifyTenStageStep(termOp, simSt[pos], td[pos], un, mainFormula);
+      for (let pos = stateWidth - 1; pos >= 1; pos--) {
+        const un = simSt[pos - 1] > 0;
+        const cl = classifyTenStageStep(termOp, simSt[pos], td[pos - 1], un, mainFormula);
         if (cl === null) { valid = false; break; }
         if (cl === '10_primary') pCount++;
-        applyDigit(simSt, pos, td[pos], termOp);
+        applyDigit(simSt, pos, td[pos - 1], termOp);
       }
       if (!valid) break;
       val = digitsToNumber(simSt);
@@ -862,21 +871,22 @@ function verifyTenFormula(
   minPrimarySteps: number = 1
 ): { ok: boolean; answer?: number; primarySteps?: number; error?: string } {
   if (numbers.length !== termsCount) return { ok: false, error: 'terms_count' };
+  const stateWidth = digitsCount + 1;
 
   for (let idx = 0; idx < numbers.length; idx++) {
     if (hasZeroInDisplayed(numbers[idx], digitsCount)) return { ok: false, error: 'zero_digit' };
   }
 
-  const state = numberToDigits(numbers[0], digitsCount);
+  const state = numberToDigits(numbers[0], stateWidth);
   let primarySteps = 0;
 
   for (let termIndex = 1; termIndex < numbers.length; termIndex++) {
     const termDigits = numberToDigits(numbers[termIndex], digitsCount);
 
-    for (let pos = digitsCount - 1; pos >= 0; pos--) {
+    for (let pos = stateWidth - 1; pos >= 1; pos--) {
       const currentDigit = state[pos];
-      const upperNonzero = pos > 0 ? state[pos - 1] > 0 : false;
-      const operandDigit = termDigits[pos];
+      const upperNonzero = state[pos - 1] > 0;
+      const operandDigit = termDigits[pos - 1];
 
       const classified = classifyTenStageStep(operation, currentDigit, operandDigit, upperNonzero, mainFormula);
       if (classified === null) return { ok: false, error: 'invalid_step' };
@@ -887,7 +897,8 @@ function verifyTenFormula(
 
     const currentValue = digitsToNumber(state);
     if (currentValue < 0) return { ok: false, error: 'negative_result' };
-    if (String(currentValue).length > digitsCount) return { ok: false, error: 'overflow' };
+    // 10-lik formulada natija digitsCount + 1 xonalik bo'lishi mumkin
+    if (String(currentValue).length > stateWidth) return { ok: false, error: 'overflow' };
   }
 
   const answer = digitsToNumber(state);
@@ -1151,12 +1162,16 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
 
   // Re-simulate to build step logs
   if (stage !== 'formulasiz') {
-    const simState = numberToDigits(result.numbers[0], digitsCount);
+    // 10-lik formulada carry uchun 1 qo'shimcha pozitsiya kerak
+    const headroom = stage === '10' ? 1 : 0;
+    const simStateWidth = digitsCount + headroom;
+    const simState = numberToDigits(result.numbers[0], simStateWidth);
     for (let termIdx = 1; termIdx < result.numbers.length; termIdx++) {
       const termDigits = numberToDigits(result.numbers[termIdx], digitsCount);
-      for (let pos = digitsCount - 1; pos >= 0; pos--) {
+      for (let pos = simStateWidth - 1; pos >= headroom; pos--) {
+        const tdIdx = pos - headroom;
         const currentDigit = simState[pos];
-        const operandDigit = termDigits[pos];
+        const operandDigit = termDigits[tdIdx];
         const upperNonzero = pos > 0 ? simState[pos - 1] > 0 : false;
         const upperBefore = pos > 0 ? simState[pos - 1] : 0;
 
@@ -1185,7 +1200,7 @@ export function generateExample(cfg: ExampleConfig): GeneratedExample {
 
         stepLogs.push({
           termIndex: termIdx,
-          displayPos: pos,
+          displayPos: tdIdx,
           statePos: pos,
           beforeDigit: currentDigit,
           operandDigit,
