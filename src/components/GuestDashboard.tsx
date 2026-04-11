@@ -94,7 +94,7 @@ export const GuestDashboard = () => {
         // Fallback: basic count from profiles
         const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
         if (count) {
-          setStats({ total_users: count, total_problems_solved: 0, accuracy_rate: 0, d7_retention: 0, weekly_growth: 0 });
+          setStats({ total_users: count, total_problems_solved: 0, total_lessons: 0, total_courses: 0 });
         }
       }
 
@@ -159,9 +159,6 @@ export const GuestDashboard = () => {
     <div className="space-y-6 sm:space-y-10 pb-8 sm:pb-0">
       {/* ✨ HERO SECTION */}
       <HeroCarousel3D totalUsers={stats.total_users} />
-
-      {/* 📊 TRACTION STATS */}
-      <TractionStats />
 
       {/* 🎯 BU QANDAY ISHLAYDI */}
       <div className="space-y-4 sm:space-y-5">
@@ -478,6 +475,9 @@ export const GuestDashboard = () => {
           </Card>
         )}
       </div>
+
+      {/* 📊 TRACTION STATS */}
+      <TractionStats />
 
       {/* 🚀 FINAL CTA */}
       <Card className="p-5 sm:p-8 text-center bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/30 dark:to-card border border-emerald-200/60 dark:border-emerald-800/30">
