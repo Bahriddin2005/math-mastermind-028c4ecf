@@ -152,6 +152,7 @@ const App = () => (
             </PullToRefresh>
             <MobileBottomNav />
             
+          
             <Suspense fallback={null}>
               <HelpChatWidget />
             </Suspense>
