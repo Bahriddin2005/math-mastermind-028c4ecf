@@ -155,8 +155,8 @@ const Admin = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ open: boolean; userId: string; username: string }>({ open: false, userId: '', username: '' });
+  const [deletingUser, setDeletingUser] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
   const [stats, setStats] = useState<Stats>({
