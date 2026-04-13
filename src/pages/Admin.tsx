@@ -277,6 +277,7 @@ const Admin = () => {
     } finally {
       setDeletingUser(false);
     }
+  };
 
   const checkAdminRole = async () => {
     if (!user) return;
