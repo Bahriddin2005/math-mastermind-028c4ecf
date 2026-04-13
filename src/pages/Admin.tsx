@@ -873,18 +873,28 @@ const Admin = () => {
                               <p className="text-[10px] sm:text-xs text-muted-foreground">{formatDate(profile.created_at).split(',')[0]}</p>
                             </div>
                             {profile.user_id !== user?.id && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
-                                onClick={() => toggleAdminRole(profile.user_id)}
-                              >
-                                {adminUsers.includes(profile.user_id) ? (
-                                  <><X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin o'chirish</span><span className="sm:hidden">O'chirish</span></>
-                                ) : (
-                                  <><ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin qilish</span><span className="sm:hidden">Admin</span></>
-                                )}
-                              </Button>
+                              <div className="flex items-center gap-1 sm:gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
+                                  onClick={() => toggleAdminRole(profile.user_id)}
+                                >
+                                  {adminUsers.includes(profile.user_id) ? (
+                                    <><X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin o'chirish</span><span className="sm:hidden">O'chirish</span></>
+                                  ) : (
+                                    <><ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin qilish</span><span className="sm:hidden">Admin</span></>
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 sm:h-9 text-[10px] sm:text-sm px-1.5 sm:px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                                  onClick={() => setDeleteConfirmDialog({ open: true, userId: profile.user_id, username: profile.username })}
+                                >
+                                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                                </Button>
+                              </div>
                             )}
                           </div>
                         </div>
