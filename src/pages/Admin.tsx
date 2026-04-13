@@ -258,6 +258,26 @@ const Admin = () => {
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    setDeletingUser(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: userId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      setUsers(prev => prev.filter(u => u.user_id !== userId));
+      setAdminUsers(prev => prev.filter(id => id !== userId));
+      setDeleteConfirmDialog({ open: false, userId: '', username: '' });
+      toast.success("Foydalanuvchi o'chirildi");
+    } catch (err: any) {
+      console.error('Error deleting user:', err);
+      toast.error(err.message || "Foydalanuvchini o'chirishda xatolik");
+    } finally {
+      setDeletingUser(false);
+    }
+
   const checkAdminRole = async () => {
     if (!user) return;
     const { data, error } = await supabase
