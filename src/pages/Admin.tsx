@@ -155,6 +155,8 @@ const Admin = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ open: boolean; userId: string; username: string }>({ open: false, userId: '', username: '' });
+  const [deletingUser, setDeletingUser] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
   const [stats, setStats] = useState<Stats>({
@@ -253,6 +255,27 @@ const Admin = () => {
         console.error('Error assigning admin role:', error);
         toast.error("Admin huquqini berishda xatolik");
       }
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    setDeletingUser(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { user_id: userId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      setUsers(prev => prev.filter(u => u.user_id !== userId));
+      setAdminUsers(prev => prev.filter(id => id !== userId));
+      setDeleteConfirmDialog({ open: false, userId: '', username: '' });
+      toast.success("Foydalanuvchi o'chirildi");
+    } catch (err: any) {
+      console.error('Error deleting user:', err);
+      toast.error(err.message || "Foydalanuvchini o'chirishda xatolik");
+    } finally {
+      setDeletingUser(false);
     }
   };
 
@@ -850,18 +873,28 @@ const Admin = () => {
                               <p className="text-[10px] sm:text-xs text-muted-foreground">{formatDate(profile.created_at).split(',')[0]}</p>
                             </div>
                             {profile.user_id !== user?.id && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
-                                onClick={() => toggleAdminRole(profile.user_id)}
-                              >
-                                {adminUsers.includes(profile.user_id) ? (
-                                  <><X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin o'chirish</span><span className="sm:hidden">O'chirish</span></>
-                                ) : (
-                                  <><ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin qilish</span><span className="sm:hidden">Admin</span></>
-                                )}
-                              </Button>
+                              <div className="flex items-center gap-1 sm:gap-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
+                                  onClick={() => toggleAdminRole(profile.user_id)}
+                                >
+                                  {adminUsers.includes(profile.user_id) ? (
+                                    <><X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin o'chirish</span><span className="sm:hidden">O'chirish</span></>
+                                  ) : (
+                                    <><ShieldCheck className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /><span className="hidden sm:inline">Admin qilish</span><span className="sm:hidden">Admin</span></>
+                                  )}
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 sm:h-9 text-[10px] sm:text-sm px-1.5 sm:px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                                  onClick={() => setDeleteConfirmDialog({ open: true, userId: profile.user_id, username: profile.username })}
+                                >
+                                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                                </Button>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1118,6 +1151,31 @@ const Admin = () => {
             <Button variant="outline" onClick={() => setBlogDialogOpen(false)}>Bekor qilish</Button>
             <Button onClick={handleSavePost} disabled={savingPost}>
               {savingPost && <Loader2 className="h-4 w-4 animate-spin mr-2" />}Saqlash
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog open={deleteConfirmDialog.open} onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</DialogTitle>
+            <DialogDescription>
+              <strong>{deleteConfirmDialog.username}</strong> foydalanuvchisini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi — barcha ma'lumotlari (profil, o'yin natijalari, badgelar) o'chiriladi.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
+              Bekor qilish
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleDeleteUser(deleteConfirmDialog.userId)}
+              disabled={deletingUser}
+            >
+              {deletingUser && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Ha, o'chirish
             </Button>
           </DialogFooter>
         </DialogContent>
