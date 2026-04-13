@@ -689,7 +689,7 @@ const Admin = () => {
             {/* Mobile: Grid tabs - all visible - Dark mode optimized */}
             <div className="block md:hidden">
               <Card className="bg-card/70 dark:bg-card/50 backdrop-blur-md border-border/50 dark:border-border/30 shadow-lg dark:shadow-xl overflow-hidden">
-                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1 sm:p-1.5 gap-0.5 sm:gap-1">
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1 gap-0.5">
                   <TabsTrigger value="users" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-blue-500/30 transition-all">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="text-[9px] sm:text-[10px] font-medium">Users</span>
@@ -711,7 +711,7 @@ const Admin = () => {
                     <span className="text-[9px] sm:text-[10px] font-medium">Fayl</span>
                   </TabsTrigger>
                 </TabsList>
-                <TabsList className="grid w-full grid-cols-6 h-auto bg-transparent p-1 sm:p-1.5 pt-0 gap-0.5 sm:gap-1">
+                <TabsList className="grid w-full grid-cols-6 h-auto bg-transparent p-1 pt-0 gap-0.5">
                   <TabsTrigger value="faq" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-indigo-500/30 transition-all">
                     <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="text-[9px] sm:text-[10px] font-medium">FAQ</span>
@@ -1076,7 +1076,7 @@ const Admin = () => {
 
       {/* Message Dialog */}
       <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{selectedMessage?.subject}</DialogTitle>
             <DialogDescription>{selectedMessage?.name} ({selectedMessage?.email})</DialogDescription>
@@ -1095,7 +1095,7 @@ const Admin = () => {
 
       {/* Blog Post Dialog */}
       <Dialog open={blogDialogOpen} onOpenChange={setBlogDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto mx-2">
           <DialogHeader>
             <DialogTitle>{editingPost ? 'Maqolani tahrirlash' : 'Yangi maqola'}</DialogTitle>
           </DialogHeader>
@@ -1112,7 +1112,7 @@ const Admin = () => {
               <Label>To'liq matn</Label>
               <Textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} placeholder="Maqola matni..." rows={6} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label>Kategoriya</Label>
                 <Select value={blogForm.category} onValueChange={(value) => setBlogForm({ ...blogForm, category: value })}>
@@ -1127,7 +1127,7 @@ const Admin = () => {
                 <Input value={blogForm.read_time} onChange={(e) => setBlogForm({ ...blogForm, read_time: e.target.value })} placeholder="5 daqiqa" />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Label>Muallif</Label>
                 <Input value={blogForm.author} onChange={(e) => setBlogForm({ ...blogForm, author: e.target.value })} />
@@ -1158,7 +1158,7 @@ const Admin = () => {
 
       {/* Delete User Confirmation Dialog */}
       <Dialog open={deleteConfirmDialog.open} onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="max-w-[95vw] sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</DialogTitle>
             <DialogDescription>
