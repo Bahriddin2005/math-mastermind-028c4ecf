@@ -1155,6 +1155,31 @@ const Admin = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog open={deleteConfirmDialog.open} onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</DialogTitle>
+            <DialogDescription>
+              <strong>{deleteConfirmDialog.username}</strong> foydalanuvchisini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi — barcha ma'lumotlari (profil, o'yin natijalari, badgelar) o'chiriladi.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
+              Bekor qilish
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleDeleteUser(deleteConfirmDialog.userId)}
+              disabled={deletingUser}
+            >
+              {deletingUser && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              Ha, o'chirish
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageBackground>
   );
 };
