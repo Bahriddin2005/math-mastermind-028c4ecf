@@ -689,7 +689,7 @@ const Admin = () => {
             {/* Mobile: Grid tabs - all visible - Dark mode optimized */}
             <div className="block md:hidden">
               <Card className="bg-card/70 dark:bg-card/50 backdrop-blur-md border-border/50 dark:border-border/30 shadow-lg dark:shadow-xl overflow-hidden">
-                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1 sm:p-1.5 gap-0.5 sm:gap-1">
+                <TabsList className="grid w-full grid-cols-5 h-auto bg-transparent p-1 gap-0.5">
                   <TabsTrigger value="users" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-blue-500/30 transition-all">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="text-[9px] sm:text-[10px] font-medium">Users</span>
