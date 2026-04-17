@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { PageLoader } from "@/components/PageLoader";
+import { TractionStats } from "@/components/TractionStats";
 
 import { PageTransition } from "@/components/PageTransition";
 import { PullToRefresh } from "@/components/PullToRefresh";
@@ -150,6 +151,9 @@ const App = () => (
                 </PageTransition>
               </main>
             </PullToRefresh>
+            <div className="w-full flex justify-center mt-8 mb-4">
+              {/* TractionStats pastdan olib tashlandi */}
+            </div>
             <MobileBottomNav />
             
           
