@@ -127,7 +127,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Return safe defaults instead of throwing — prevents blank screen
+    // during HMR or when consumers render before provider mounts.
+    return {
+      user: null,
+      session: null,
+      loading: true,
+      signIn: async () => ({ error: new Error('AuthProvider not ready') as any }),
+      signUp: async () => ({ error: new Error('AuthProvider not ready') as any }),
+      signInWithGoogle: async () => ({ error: new Error('AuthProvider not ready') as any }),
+      signOut: async () => {},
+      resetPassword: async () => ({ error: new Error('AuthProvider not ready') as any }),
+      updatePassword: async () => ({ error: new Error('AuthProvider not ready') as any }),
+    } as any;
   }
   return context;
 };
