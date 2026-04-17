@@ -1,4 +1,4 @@
-  // Foydalanuvchini o'chirish
+// Foydalanuvchini o'chirish
   const handleDeleteUser = async (userId: string, id: string) => {
     if (!window.confirm("Foydalanuvchini o'chirishni tasdiqlaysizmi?")) return;
     console.log('O\'chirish uchun:', { userId, id });
@@ -176,7 +176,7 @@ const Admin = () => {
   
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ open: boolean; userId: string; username: string }>({ open: false, userId: '', username: '' });
   const [deletingUser, setDeletingUser] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
@@ -753,7 +753,7 @@ const Admin = () => {
                   <TabsTrigger value="messages" className="relative flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-red-500/30 transition-all">
                     <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="text-[9px] sm:text-[10px] font-medium">Xabar</span>
-                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 w-4 p-0 flex items-center justify-center text-[8px] animate-pulse shadow-lg">{unreadCount}</Badge>}
+                    {unreadCount > 0 && <Badge variant="destructive" className="absolute -top-0.5 -right-0.5 h-4 min-w-4 p-0 flex items-center justify-center text-[10px] animate-pulse shadow-lg">{unreadCount}</Badge>}
                   </TabsTrigger>
                   <TabsTrigger value="blog" className="flex flex-col items-center gap-0.5 py-2 sm:py-2.5 px-1 rounded-lg dark:text-foreground/80 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-lg dark:data-[state=active]:shadow-orange-500/30 transition-all">
                     <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -895,11 +895,7 @@ const Admin = () => {
                               <p className="text-[10px] sm:text-xs text-muted-foreground">{formatDate(profile.created_at).split(',')[0]}</p>
                             </div>
                             {profile.user_id !== user?.id && (
-<<<<<<< Updated upstream
-                              <div className="flex items-center gap-1 sm:gap-2">
-=======
                               <div className="flex gap-2">
->>>>>>> Stashed changes
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -913,14 +909,6 @@ const Admin = () => {
                                   )}
                                 </Button>
                                 <Button
-<<<<<<< Updated upstream
-                                  variant="outline"
-                                  size="sm"
-                                  className="h-7 sm:h-9 text-[10px] sm:text-sm px-1.5 sm:px-2 text-destructive border-destructive/30 hover:bg-destructive/10"
-                                  onClick={() => setDeleteConfirmDialog({ open: true, userId: profile.user_id, username: profile.username })}
-                                >
-                                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
-=======
                                   variant="destructive"
                                   size="sm"
                                   className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
@@ -929,7 +917,6 @@ const Admin = () => {
                                   <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   <span className="hidden sm:inline">O'chirish</span>
                                   <span className="sm:hidden">Del</span>
->>>>>>> Stashed changes
                                 </Button>
                               </div>
                             )}
@@ -1006,9 +993,15 @@ const Admin = () => {
             {/* Messages Tab */}
             <TabsContent value="messages">
               <Card className="overflow-hidden">
-                <CardHeader className="px-3 sm:px-6 py-3 sm:py-6">
-                  <CardTitle className="text-base sm:text-lg">Kontakt xabarlari</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Foydalanuvchilardan kelgan xabarlar</CardDescription>
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-6">
+                  <div>
+                    <CardTitle className="text-base sm:text-lg">Kontakt xabarlari</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Foydalanuvchilardan kelgan xabarlar</CardDescription>
+                  </div>
+                  <Button onClick={() => openBlogDialog()} size="sm" className="w-full sm:w-auto h-8 sm:h-10">
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    Yangi maqola
+                  </Button>
                 </CardHeader>
                 <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
                   {loadingMessages ? (
