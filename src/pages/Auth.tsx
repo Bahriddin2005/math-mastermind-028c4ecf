@@ -536,19 +536,12 @@ const Auth = () => {
                     disabled={loading}
                     onClick={async () => {
                       setLoading(true);
-                      try {
-                        const { lovable } = await import('@/integrations/lovable/index');
-                        const result = await lovable.auth.signInWithOAuth('google', {
-                          redirect_uri: window.location.origin,
-                        });
-                        if (result?.error) {
-                          toast.error("Google orqali kirishda xatolik yuz berdi");
-                        }
-                      } catch (err) {
-                        toast.error("Google orqali kirishda xatolik yuz berdi");
-                      } finally {
-                        setLoading(false);
-                      }
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: { redirectTo: window.location.origin }
+                      });
+                      if (error) toast.error("Google orqali kirishda xatolik yuz berdi");
+                      setLoading(false);
                     }}
                   >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -567,19 +560,12 @@ const Auth = () => {
                     disabled={loading}
                     onClick={async () => {
                       setLoading(true);
-                      try {
-                        const { lovable } = await import('@/integrations/lovable/index');
-                        const result = await lovable.auth.signInWithOAuth('apple', {
-                          redirect_uri: window.location.origin,
-                        });
-                        if (result?.error) {
-                          toast.error("Apple orqali kirishda xatolik yuz berdi");
-                        }
-                      } catch (err) {
-                        toast.error("Apple orqali kirishda xatolik yuz berdi");
-                      } finally {
-                        setLoading(false);
-                      }
+                      const { error } = await supabase.auth.signInWithOAuth({
+                        provider: 'apple',
+                        options: { redirectTo: window.location.origin }
+                      });
+                      if (error) toast.error("Apple orqali kirishda xatolik yuz berdi");
+                      setLoading(false);
                     }}
                   >
                     <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
