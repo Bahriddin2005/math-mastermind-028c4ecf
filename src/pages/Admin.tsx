@@ -1189,13 +1189,13 @@ const Admin = () => {
         onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}
       >
         <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
-          <AlertDialogHeader>
+          <div className="flex flex-col space-y-2 text-center sm:text-left">
             <AlertDialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</AlertDialogTitle>
             <AlertDialogDescription>
               <strong>{deleteConfirmDialog.username}</strong> foydalanuvchisini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi — barcha ma'lumotlari (profil, o'yin natijalari, badgelar) o'chiriladi.
             </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
+          </div>
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:space-x-2 sm:gap-0">
             <AlertDialogCancel onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
               Bekor qilish
             </AlertDialogCancel>
@@ -1210,7 +1210,7 @@ const Admin = () => {
               {deletingUser && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Ha, o'chirish
             </AlertDialogAction>
-          </AlertDialogFooter>
+          </div>
         </AlertDialogContent>
       </AlertDialog>
     </PageBackground>
