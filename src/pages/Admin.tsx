@@ -228,6 +228,7 @@ const Admin = () => {
 
   const toggleAdminRole = async (userId: string) => {
     const isCurrentlyAdmin = adminUsers.includes(userId);
+    console.log('[toggleAdminRole]', { userId, isCurrentlyAdmin });
     
     if (isCurrentlyAdmin) {
       const { error } = await supabase
@@ -240,8 +241,8 @@ const Admin = () => {
         setAdminUsers(prev => prev.filter(id => id !== userId));
         toast.success("Admin huquqi olib tashlandi");
       } else {
-        console.error('Error removing admin role:', error);
-        toast.error("Admin huquqini olib tashlashda xatolik");
+        console.error('[toggleAdminRole] Error removing admin role:', error);
+        toast.error(`Admin huquqini olib tashlashda xatolik: ${error.message}`);
       }
     } else {
       const { error } = await supabase
@@ -252,8 +253,8 @@ const Admin = () => {
         setAdminUsers(prev => [...prev, userId]);
         toast.success("Admin huquqi berildi");
       } else {
-        console.error('Error assigning admin role:', error);
-        toast.error("Admin huquqini berishda xatolik");
+        console.error('[toggleAdminRole] Error assigning admin role:', error);
+        toast.error(`Admin huquqini berishda xatolik: ${error.message}`);
       }
     }
   };
@@ -261,9 +262,17 @@ const Admin = () => {
   const handleDeleteUser = async (userId: string) => {
     setDeletingUser(true);
     try {
+      console.log('[handleDeleteUser] Calling delete-user with user_id:', userId);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Sessiya topilmadi. Qayta kiring.');
+
       const { data, error } = await supabase.functions.invoke('delete-user', {
         body: { user_id: userId },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
+      console.log('[handleDeleteUser] Response:', { data, error });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       
@@ -272,7 +281,7 @@ const Admin = () => {
       setDeleteConfirmDialog({ open: false, userId: '', username: '' });
       toast.success("Foydalanuvchi o'chirildi");
     } catch (err: any) {
-      console.error('Error deleting user:', err);
+      console.error('[handleDeleteUser] Error:', err);
       toast.error(err.message || "Foydalanuvchini o'chirishda xatolik");
     } finally {
       setDeletingUser(false);
