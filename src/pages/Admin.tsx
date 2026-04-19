@@ -1,25 +1,3 @@
-// Foydalanuvchini o'chirish
-  const handleDeleteUser = async (userId: string, id: string) => {
-    if (!window.confirm("Foydalanuvchini o'chirishni tasdiqlaysizmi?")) return;
-    console.log('O\'chirish uchun:', { userId, id });
-    // Avval user_id bo'yicha o'chirishga harakat qilamiz
-    let { error } = await supabase.from('profiles').delete().eq('user_id', userId);
-    if (!error) {
-      setUsers(prev => prev.filter(u => u.user_id !== userId));
-      toast.success("Foydalanuvchi o'chirildi");
-      return;
-    }
-    // Agar xatolik bo'lsa, id bo'yicha ham urinib ko'ramiz
-    console.warn('user_id bo\'yicha o\'chirishda xatolik:', error);
-    ({ error } = await supabase.from('profiles').delete().eq('id', id));
-    if (!error) {
-      setUsers(prev => prev.filter(u => u.id !== id));
-      toast.success("Foydalanuvchi o'chirildi (id orqali)");
-    } else {
-      console.error('id bo\'yicha ham o\'chmadi:', error);
-      toast.error("Foydalanuvchini o'chirishda xatolik (id orqali ham)");
-    }
-  };
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageBackground } from '@/components/layout/PageBackground';
@@ -912,7 +890,7 @@ const Admin = () => {
                                   variant="destructive"
                                   size="sm"
                                   className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
-                                  onClick={() => handleDeleteUser(profile.user_id, profile.id)}
+                                  onClick={() => setDeleteConfirmDialog({ open: true, userId: profile.user_id, username: profile.username || profile.full_name || '' })}
                                 >
                                   <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   <span className="hidden sm:inline">O'chirish</span>
