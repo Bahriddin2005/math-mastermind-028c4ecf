@@ -18,9 +18,18 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle,
-  DialogFooter,
   DialogDescription
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Select,
   SelectContent,
@@ -1174,29 +1183,35 @@ const Admin = () => {
       </Dialog>
 
       {/* Delete User Confirmation Dialog */}
-      <Dialog open={deleteConfirmDialog.open} onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
-        <DialogContent className="max-w-[95vw] sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</DialogTitle>
-            <DialogDescription>
+      <AlertDialog
+        open={deleteConfirmDialog.open}
+        onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}
+      >
+        <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</AlertDialogTitle>
+            <AlertDialogDescription>
               <strong>{deleteConfirmDialog.username}</strong> foydalanuvchisini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi — barcha ma'lumotlari (profil, o'yin natijalari, badgelar) o'chiriladi.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
               Bekor qilish
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => handleDeleteUser(deleteConfirmDialog.userId)}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(event) => {
+                event.preventDefault();
+                void handleDeleteUser(deleteConfirmDialog.userId);
+              }}
               disabled={deletingUser}
             >
               {deletingUser && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Ha, o'chirish
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PageBackground>
   );
 };
