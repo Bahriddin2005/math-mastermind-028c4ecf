@@ -22,14 +22,6 @@ import {
   DialogDescription
 } from '@/components/ui/dialog';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -163,7 +155,7 @@ const Admin = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [users, setUsers] = useState<any[]>([]);
-  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ open: boolean; userId: string; username: string }>({ open: false, userId: '', username: '' });
+  
   const [deletingUser, setDeletingUser] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
@@ -286,7 +278,6 @@ const Admin = () => {
       
       setUsers(prev => prev.filter(u => u.user_id !== userId));
       setAdminUsers(prev => prev.filter(id => id !== userId));
-      setDeleteConfirmDialog({ open: false, userId: '', username: '' });
       toast.success("Foydalanuvchi o'chirildi");
     } catch (err: any) {
       console.error('[handleDeleteUser] Error:', err);
@@ -907,7 +898,12 @@ const Admin = () => {
                                   variant="destructive"
                                   size="sm"
                                   className="h-7 sm:h-9 text-[10px] sm:text-sm px-2 sm:px-3"
-                                  onClick={() => setDeleteConfirmDialog({ open: true, userId: profile.user_id, username: profile.username || profile.full_name || '' })}
+                                  onClick={() => {
+                                    const confirmed = window.confirm(`${profile.username || profile.full_name || 'Bu foydalanuvchi'} ni o‘chirmoqchimisiz? Bu amalni qaytarib bo‘lmaydi.`);
+                                    if (confirmed) {
+                                      void handleDeleteUser(profile.user_id);
+                                    }
+                                  }}
                                 >
                                   <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   <span className="hidden sm:inline">O'chirish</span>
@@ -1181,36 +1177,6 @@ const Admin = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete User Confirmation Dialog */}
-      <AlertDialog
-        open={deleteConfirmDialog.open}
-        onOpenChange={(open) => !open && setDeleteConfirmDialog({ open: false, userId: '', username: '' })}
-      >
-        <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
-          <div className="flex flex-col space-y-2 text-center sm:text-left">
-            <AlertDialogTitle className="text-destructive">⚠️ Foydalanuvchini o'chirish</AlertDialogTitle>
-            <AlertDialogDescription>
-              <strong>{deleteConfirmDialog.username}</strong> foydalanuvchisini o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi — barcha ma'lumotlari (profil, o'yin natijalari, badgelar) o'chiriladi.
-            </AlertDialogDescription>
-          </div>
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:space-x-2 sm:gap-0">
-            <AlertDialogCancel onClick={() => setDeleteConfirmDialog({ open: false, userId: '', username: '' })}>
-              Bekor qilish
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(event) => {
-                event.preventDefault();
-                void handleDeleteUser(deleteConfirmDialog.userId);
-              }}
-              disabled={deletingUser}
-            >
-              {deletingUser && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              Ha, o'chirish
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </PageBackground>
   );
 };
