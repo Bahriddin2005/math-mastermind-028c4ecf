@@ -22,14 +22,6 @@ import {
   DialogDescription
 } from '@/components/ui/dialog';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -163,7 +155,7 @@ const Admin = () => {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [users, setUsers] = useState<any[]>([]);
-  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{ open: boolean; userId: string; username: string }>({ open: false, userId: '', username: '' });
+  
   const [deletingUser, setDeletingUser] = useState(false);
   const [gameSessions, setGameSessions] = useState<GameSession[]>([]);
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
