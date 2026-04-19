@@ -904,6 +904,7 @@ const Admin = () => {
                                       void handleDeleteUser(profile.user_id);
                                     }
                                   }}
+                                >
                                   <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                                   <span className="hidden sm:inline">O'chirish</span>
                                   <span className="sm:hidden">Del</span>
